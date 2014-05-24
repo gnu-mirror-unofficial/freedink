@@ -9,7 +9,7 @@ SUBDIRS = gnulib/lib gnulib/po nsis po src share
 EXTRA_DIST = acsite.m4 bootstrap gnulib/m4/gnulib-cache.m4
 # Documentation
 EXTRA_DIST += doc
-EXTRA_DIST += BUILD DEB TRANSLATIONS.txt TROUBLESHOOTING
+EXTRA_DIST += BUILD TRANSLATIONS.txt TROUBLESHOOTING
 # Packaging
 EXTRA_DIST += debian freedink.spec psp
 # Other programs of interest
