@@ -22,6 +22,9 @@
 
 - Improved build documentation.
 
+- Display SDL audio driver in debug mode
+
+
 1.08.20121209
 =============
 
