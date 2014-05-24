@@ -15,24 +15,8 @@ A: You can configure your screen scaling mode; with xrandr in a console:
 Sound
 -----
 
-Q: Under GNU/Linux, FreeDink freezes when trying to play a sound or
-   music.
-
-A: SDL_mixer (the component that provides the sound) is known to
-   freeze when:
-   * /dev/sequencer is present and
-   * /etc/timidity/timidity.cfg isn't.
-   An easy fix is to install Timidity++ (see BUILD).
-
-   More information at
-   http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=369670
-
-   Note that the Debian version of SDL_mixer now attemps to read
-   /etc/timidity/freepats.cfg as well.
-
-
 Q: I want FreeDink to use my MIDI hardware or fluidsynth setup, but it
-   uses TiMidity or Fluidsynth instead.
+   uses TiMidity or default Fluidsynth instead.
 
 A: SDL_mixer (the MIDI component that FreeDink uses) can use both
    hardware and software sequencer. If '/etc/timidity/timidity.cfg' is
@@ -47,6 +31,31 @@ A: SDL_mixer (the MIDI component that FreeDink uses) can use both
    '/dev/sequencer' is present but not functionnal, so it's best we
    use TiMidity by default for common Dinkers, and just let you remove
    '/etc/timidity/timidity.cfg' if you know better ;)
+
+
+Q: FreeDink is eating all the memory
+
+A: Try running FreeDink with fluidsynth *disabled* (see previous entry):
+
+     SDL_FORCE_SOUNDFONTS=1 SDL_SOUNDFONTS= freedink
+
+   Cf. https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=748090
+
+
+Q: Under GNU/Linux, FreeDink freezes when trying to play a sound or
+   music.
+
+A: SDL_mixer (the component that provides the sound) is known to
+   freeze when:
+   * /dev/sequencer is present and
+   * /etc/timidity/timidity.cfg isn't.
+   An easy fix is to install Timidity++ (see BUILD).
+
+   More information at
+   http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=369670
+
+   Note that the Debian version of SDL_mixer now attemps to read
+   /etc/timidity/freepats.cfg as well.
 
 
 Joystick
