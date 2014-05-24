@@ -15,6 +15,11 @@
 # This has to be exported to make some magic below work.
 export DH_OPTIONS
 
+# As of 2014-05, there are issues on Raspbian with -O2 or -Os
+# Cf. https://bugs.launchpad.net/raspbian/+bug/1322849
+ifeq ($(DEB_HOST_ARCH), armhf)
+	export DEB_CFLAGS_MAINT_SET=$(patsubst -O%,-O1,$(shell dpkg-buildflags --get CFLAGS))
+endif
 
 %:
 	dh $@ --parallel --with autotools_dev

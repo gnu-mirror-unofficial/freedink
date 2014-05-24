@@ -6,6 +6,7 @@ freedink (1.08.20121232-1) UNRELEASED; urgency=low
   * Bump compat to 9 to address lintian 'hardening-no-relro'
   * Bump Standards-Version to 3.9.4 (no changes)
   * Use XPM icon from src/ rather than duplicating it in debian/
+  * Compile with -O1 on Raspbian to avoid weird segfault
 
  -- Sylvain Beucler <beuc@debian.org>  Sun, 20 Oct 2013 14:15:58 +0200
 
