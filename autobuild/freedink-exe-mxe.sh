@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 # MS Woe release, built with MXE
 
-# Copyright (C) 2008, 2009, 2010, 2012  Sylvain Beucler
+# Copyright (C) 2008, 2009, 2010, 2012, 2013, 2014  Sylvain Beucler
 
 # This file is part of GNU FreeDink
 
@@ -20,7 +20,8 @@
 # <http://www.gnu.org/licenses/>.
 
 # cd /usr/src/mxe/
-## Disable MP3 support: src/sdl_mixer.pk: --enable-music-mp3 -> --disable-music-mp3
+## Disable MP3 support: src/sdl_mixer.mk: --enable-music-mp3 -> --disable-music-mp3
+## Use MinGW-w64 in /usr/src/mxe/settings.mk: MXE_TARGETS := x86_64-w64-mingw32 i686-w64-mingw32
 # make -j2 JOBS=$(nproc) gcc sdl sdl_gfx sdl_image sdl_mixer sdl_ttf libzip gettext nsis
 
 function copy_extra_files {

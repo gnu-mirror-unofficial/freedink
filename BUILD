@@ -35,13 +35,10 @@ sh bootstrap
 # Base: GCC, make & al.
 apt-get install build-essential
 # Required: SDL, libzip | zziplib
-# Note: if you're under Etch, you need to use newer versions of
-# FreeType and SDL_ttf from here:
-#deb http://www.freedink.org/snapshots/debian/etch-backports/ ./
 apt-get install pkg-config libsdl1.2-dev libsdl-gfx1.2-dev \
   libsdl-ttf2.0-dev libsdl-image1.2-dev libsdl-mixer1.2-dev \
-  libfontconfig1-dev libzzip-dev zip
-# | apt-get install libzip-dev
+  libfontconfig1-dev libzip-dev zip
+# | apt-get install libzzip-dev
 # Optional:
 # - upx compresses binary
 # - bzip is for .tar.bz2 release tarballs
