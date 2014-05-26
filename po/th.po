@@ -1,0 +1,209 @@
+# Translation of freedlink to Thai.
+# Copyright (C) 2013 Vatin Petaneelanon
+# This file is distributed under the same license as the freedink package.
+# Vatin Petaneelanon <vatin.p@gmail.com>, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: freedink 1.08.20120427\n"
+"Report-Msgid-Bugs-To: bug-freedink@gnu.org\n"
+"POT-Creation-Date: 2012-04-27 15:45+0200\n"
+"PO-Revision-Date: 2013-06-08 23:38+0700\n"
+"Last-Translator: Vatin Petaneelanon <vatin.p@gmail.com>\n"
+"Language-Team: Thai <translation-team-th@lists.sourceforge.net>\n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.5\n"
+
+#: src/init.c:108
+#, c-format
+msgid "Usage: %s [OPTIONS]...\n"
+msgstr "การใช้งาน %s [OPTIONS]...\n"
+
+#: src/init.c:110
+#, c-format
+msgid "Starts the Dink Smallwood game or one of its D-Mods."
+msgstr "เริ่มเกม Drink Smallwood หรือหนึ่งใน D-Mods"
+
+#: src/init.c:112
+#, c-format
+msgid "Edit the Dink Smallwood game or one of its D-Mods."
+msgstr "แก้ไขเกม Dink Smallwood หรือหนึ่งใน D-Mods"
+
+#: src/init.c:115
+#, c-format
+msgid "  -h, --help            Display this help screen\n"
+msgstr "  -h, --help            แสดงหน้าวิธีใช้นี้\n"
+
+#: src/init.c:116
+#, c-format
+msgid "  -v, --version         Display the version\n"
+msgstr " -v, --version         แสดงเวอร์ชัน\n"
+
+#: src/init.c:118
+#, c-format
+msgid "  -g, --game <dir>      Specify a DMod directory\n"
+msgstr "  -g, --game <dir>      ระบุไดเรกทอรี DMod\n"
+
+#: src/init.c:119
+#, c-format
+msgid "  -r, --refdir <dir>    Specify base directory for dink/graphics, D-Mods, etc.\n"
+msgstr "  -r, --refdir <dir>    ระบุไดเรกทอรีฐานสำหรับเครื่องดื่ม/กราฟิก, D-Mods, ฯลฯ\n"
+
+#: src/init.c:121
+#, c-format
+msgid "  -d, --debug           Explain what is being done\n"
+msgstr "  -d, --debug           อธิบายว่าได้ทำอะไรไปบ้าง\n"
+
+#: src/init.c:122
+#, c-format
+msgid "  -i, --noini           Do not attempt to write dinksmallwood.ini\n"
+msgstr "  -i, --noini           อย่าพยายามเขียน dinksmallwood.ini\n"
+
+#: src/init.c:123
+#, c-format
+msgid "  -j, --nojoy           Do not attempt to use joystick\n"
+msgstr "  -j, --nojoy           อย่าพยายามใช้จอยสติ๊ก\n"
+
+#: src/init.c:124
+#, c-format
+msgid "  -s, --nosound         Do not play sound\n"
+msgstr "  -s, --nosound         ปิดเสียง\n"
+
+#: src/init.c:125
+#, c-format
+msgid "  -t, --truecolor       Allow more colours (for recent D-Mod graphics)\n"
+msgstr "  -t, --truecolor       ใช้สีมากขึ้น (สำหรับกราฟิก D-Mod เมื่อเร็วๆ นี้)\n"
+
+#: src/init.c:126
+#, c-format
+msgid "  -w, --window          Use windowed mode instead of screen mode\n"
+msgstr "  -w, --window          ใช้โหมดหน้าต่างแทนโหมดจอภาพ\n"
+
+#: src/init.c:127
+#, c-format
+msgid "  -7, --v1.07           Enable v1.07 compatibility mode\n"
+msgstr "  -7, --v1.07           เปิดใช้โหมดความเข้ากันได้ v1.07\n"
+
+#. TRANSLATORS: The placeholder indicates the bug-reporting address
+#. for this package.  Please add _another line_ saying "Report
+#. translation bugs to <...>\n" with the address for translation
+#. bugs (typically your translation team's web or email
+#. address).
+#: src/init.c:137
+#, c-format
+msgid "Report bugs to %s.\n"
+msgstr "รายงานปัญหาที่ %s.\n"
+
+#: src/init.c:277
+#, c-format
+msgid "Note: -nomovie is accepted for compatiblity, but has no effect.\n"
+msgstr "Note: ยอมรับความเข้ากันได้ -nomovie แต่ไม่มีผล\n"
+
+#: src/freedink.c:2675
+msgid "`$I don't see anything here."
+msgstr "`$ฉันไม่พบอะไรที่นี่"
+
+#: src/freedink.c:2676
+msgid "`$Huh?"
+msgstr "`$หือ?"
+
+#: src/freedink.c:2677
+msgid "`$I'm fairly sure I can't talk to or use that."
+msgstr "`$ฉันค่อนข้างแน่ใจว่าฉันพูดหรือใช้สิ่งนั้นไม่ได้"
+
+#: src/freedink.c:2678
+msgid "`$What?"
+msgstr "`$อะไรนะ?"
+
+#: src/freedink.c:2679
+msgid "`$I'm bored."
+msgstr "`$ฉันรู้สึกเบื่อ"
+
+#: src/freedink.c:2680
+msgid "`$Not much happening here."
+msgstr "`$ไม่มีค่อยมีอะไรเกิดขึ้นที่นี่"
+
+#: src/freedink.c:2788
+msgid "`$I don't know any magic."
+msgstr "`$ฉันไม่รู้จักเวทมนตร์อะไร"
+
+#: src/freedink.c:2789
+msgid "`$I'm no wizard!"
+msgstr "`$ฉันไม่ใช่พ่อมด!"
+
+#: src/freedink.c:2790
+msgid "`$I need to learn magic before trying this."
+msgstr "`$ฉันต้องเรียนรู้เวทมนตร์ก่อนลองสิ่งนี้"
+
+#: src/freedink.c:2791
+msgid "`$I'm gesturing wildly to no avail!"
+msgstr "`$ฉันออกท่าออกทางอย่างไร้จุดหมายโดยไม่เกิดผล!"
+
+#: src/freedink.c:2792
+msgid "`$Nothing happened."
+msgstr "`$ไม่มีอะไรเกิดขึ้น"
+
+#: src/freedink.c:2793
+msgid "`$Hocus pocus!"
+msgstr "`$โอม เพี้ยง!"
+
+#: src/dinkc.c:687
+msgid "Attack"
+msgstr "โจมตี"
+
+#: src/dinkc.c:688
+msgid "Talk/Examine"
+msgstr "สนทนา/สำรวจ"
+
+#: src/dinkc.c:689
+msgid "Magic"
+msgstr "เวทมนตร์"
+
+#: src/dinkc.c:690
+msgid "Item Screen"
+msgstr "หน้าจอรายการ"
+
+#: src/dinkc.c:691
+msgid "Main Menu"
+msgstr "เมนูหลัก"
+
+#: src/dinkc.c:692
+msgid "Map"
+msgstr "แผนที่"
+
+#: src/dinkc.c:693 src/dinkc.c:694 src/dinkc.c:695 src/dinkc.c:696
+msgid "Unused"
+msgstr "ไม่ได้ใช้งาน"
+
+#: src/dinkc.c:697
+msgid "Down"
+msgstr "ลง"
+
+#: src/dinkc.c:698
+msgid "Left"
+msgstr "ซ้าย"
+
+#: src/dinkc.c:699
+msgid "Right"
+msgstr "ขวา"
+
+#: src/dinkc.c:700
+msgid "Up"
+msgstr "บน"
+
+#: src/dinkc.c:701
+msgid "Error: not mapped"
+msgstr "ผิดพลาด: ไม่ได้ทำแผนที่ไว้"
+
+#: src/dinkc.c:712
+#, c-format
+msgid "Slot %d - %d:%02d - %s"
+msgstr "สล็อต %d - %d:%02d - %s"
+
+#: src/dinkc.c:715
+#, c-format
+msgid "Slot %d - Empty"
+msgstr "สล็อต %d - ว่างเปล่า"
