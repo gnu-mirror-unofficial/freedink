@@ -22,9 +22,9 @@ Cf. doc/bootstrap.txt
 On the developer computer:
 --------------------------
 
-VERSION=1.08.$(date +%Y%m%d)
+VERSION=108.2
 cd freedink/
-git checkout -b branch-$VERSION-stable
+git checkout -b $VERSION
 git2cl > ChangeLog
 # Edit NEWS
 # Edit configure.ac (AC_INIT)

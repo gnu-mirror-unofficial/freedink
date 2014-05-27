@@ -1,6 +1,6 @@
 Name:		freedink
-Version:	1.08.20121209
-Release:	3%{?dist}
+Version:	108.2
+Release:	1%{?dist}
 Summary:	Adventure and role-playing game
 
 Group:		Amusements/Games
@@ -133,6 +133,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue May 27 2014 Sylvain Beucler <beuc@beuc.net> - 108.2-1
+- New upstream release
+
 * Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.08.20121209-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
 

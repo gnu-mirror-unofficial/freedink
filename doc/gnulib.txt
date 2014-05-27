@@ -48,3 +48,5 @@ We may consider dropping relocation support to ease the releases.
 
 Version used for 1.08.20121209 :
   6f909c901db3ebf5ff66e87c035eff800ed5daef + patched install-reloc
+Version used for 108.2:
+  39cf9dff9bc7883e2a589b049fb11ee7beaadd4f

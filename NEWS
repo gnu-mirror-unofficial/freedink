@@ -1,7 +1,5 @@
-1.08.20121232
-=============
-
-* UNRELEASED *
+108.2
+=====
 
 * User-visible changes:
 
@@ -14,6 +12,8 @@
 
 - Update translations of the engine strings (thanks Translation
   Project)
+
+- New versioning scheme, without scary 20YYMMDD date
 
 * Developer notes:
 
