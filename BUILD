@@ -27,7 +27,8 @@ cd freedink/
 # libsdl1.2-dev: for sdl.m4
 # help2man: to rebuild manpages
 # gettext autopoint: for i18n
-apt-get install autoconf automake pkg-config libsdl1.2-dev help2man gettext autopoint
+# rsync: to fetch translationproject.org
+apt-get install autoconf automake pkg-config libsdl1.2-dev help2man gettext autopoint rsync
 sh bootstrap
 
 
@@ -80,7 +81,8 @@ cd freedink/
 # SDL_devel: for sdl.m4
 # help2man: to rebuild manpages
 # gettext autpoint: for i18n
-yum install autoconf automake pkg-config SDL_devel help2man gettext-devel
+# rsync: to fetch translationproject.org
+yum install autoconf automake pkg-config SDL_devel help2man gettext-devel rsync
 sh bootstrap
 
 
@@ -247,7 +249,8 @@ cd freedink/
 # libsdl1.2-dev: for sdl.m4
 # help2man: to rebuild manpages
 # gettext autopoint: for i18n
-pkg install -y autoconf automake pkgconf sdl help2man gettext
+# rsync: to fetch translationproject.org
+pkg install -y autoconf automake pkgconf sdl help2man gettext rsync
 sh bootstrap
 
 
