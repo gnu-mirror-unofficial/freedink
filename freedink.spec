@@ -107,7 +107,7 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}edit.desktop
 # liberation-fonts<->liberation-sans-fonts conflicts in the
 # freedink.org repository
 %else
-# Remove it for compliance with Fedore guidelines
+# Remove it for compliance with Fedora guidelines
 rm $RPM_BUILD_ROOT%{_datadir}/%{name}/LiberationSans-Regular.ttf
 %endif
 
