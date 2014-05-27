@@ -10,10 +10,10 @@
 - New translation for the engine strings in Brazilian Portuguese
   (thanks Enrico Nicoletto)
 
-- Update translations of the engine strings (thanks Translation
-  Project)
+- Update translations of the engine strings
+  (thanks Translation Project)
 
-- New versioning scheme, without scary 20YYMMDD date
+- New versioning scheme, without scary .20YYMMDD date.
 
 * Developer notes:
 
@@ -22,7 +22,9 @@
 
 - Improved build documentation.
 
-- Display SDL audio driver in debug mode
+- Display SDL audio driver in debug mode.
+
+- Add AppStream/AppData file for GNU/Linux software centers.
 
 
 1.08.20121209
