@@ -1,5 +1,5 @@
 #!/bin/bash -ex
-# Debian release
+# Debian snapshot
 
 # Copyright (C) 2008, 2009  Sylvain Beucler
 

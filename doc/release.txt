@@ -35,11 +35,13 @@ git2cl > ChangeLog
 # Edit doc/gnulib.txt with the version used $(git rev-parse HEAD)
 
 make distcheck
-git commit -am "Release $VERSION"
-git tag -s v$VERSION -m v$VERSION -u ...
-git push origin branch-$VERSION-stable master
-git push --tags
+git commit -am "Start branch $VERSION"
+git push origin $VERSION master
 # Here you can test the release in the autobuilder
+
+# When everything is tested:
+git tag -s v$VERSION -m v$VERSION -u ...
+git push --tags
 
 # Cleanly merge stable branch back to trunk
 git checkout master
