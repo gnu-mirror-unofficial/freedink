@@ -1,4 +1,4 @@
--freedink (108.2-1) unstable; urgency=low
+freedink (108.2-1) unstable; urgency=low
 
   * New Upstream Version
   * Depend on fonts-liberation rather than on renamed ttf-liberation
