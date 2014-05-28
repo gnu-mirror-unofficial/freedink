@@ -5,15 +5,14 @@ Summary:	Adventure and role-playing game
 
 Group:		Amusements/Games
 BuildRequires:	SDL-devel SDL_gfx-devel SDL_ttf-devel SDL_image-devel SDL_mixer-devel
-BuildRequires:  fontconfig-devel
-BuildRequires:  desktop-file-utils
+BuildRequires:	fontconfig-devel
+BuildRequires:	desktop-file-utils
 %if 0%{?suse_version}
-BuildRequires:  update-desktop-files
+BuildRequires:	update-desktop-files
 %endif
 License:	GPLv3+
 URL:		http://www.gnu.org/software/freedink/
 Source0:	ftp://ftp.gnu.org/gnu/freedink/freedink-%{version}.tar.gz
-#Source0:	http://www.freedink.org/snapshots/freedink-%{version}.tar.gz
 
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires:	freedink-engine = %{version}-%{release}  freedink-dfarc
@@ -30,7 +29,7 @@ GNU FreeDink is a new and portable version of the game engine, which
 runs the original game as well as its D-Mods, with close
 compatibility, under multiple platforms.
 
-This package is a metapackage to install the game, its data and a
+This package is a meta-package to install the game, its data and a
 front-end to manage game options and D-Mods.
 
 
@@ -59,7 +58,7 @@ Requires: liberation-fonts
 
 %description engine
 Dink Smallwood is an adventure/role-playing game, similar to Zelda,
-made by RTsoft. Besides twisted humour, it includes the actual game
+made by RTsoft. Besides twisted humor, it includes the actual game
 editor, allowing players to create hundreds of new adventures called
 Dink Modules or D-Mods for short.
 
