@@ -126,6 +126,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %doc AUTHORS COPYING NEWS README THANKS TROUBLESHOOTING ChangeLog
 %{_bindir}/*
+%{_datadir}/appdata/*
 %{_datadir}/applications/*
 %{_datadir}/%{name}/
 %{_datadir}/pixmaps/*
