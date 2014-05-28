@@ -4,7 +4,7 @@ freedink (108.2-1) unstable; urgency=low
   * Depend on fonts-liberation rather than on renamed ttf-liberation
     (Closes: #722357)
   * Bump compat to 9 to address lintian 'hardening-no-relro'
-  * Bump Standards-Version to 3.9.4 (no changes)
+  * Bump Standards-Version to 3.9.5 (no changes)
   * Use XPM icon from src/ rather than duplicating it in debian/
   * Compile with -O1 on Raspbian to avoid weird segfault
   * watch: add pgpsigurlmangle option (fixes Lintian

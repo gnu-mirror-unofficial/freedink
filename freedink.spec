@@ -1,7 +1,7 @@
 Name:		freedink
 Version:	108.2
 Release:	1%{?dist}
-Summary:	Adventure and role-playing game
+Summary:	Humorous top-down adventure and role-playing game
 
 Group:		Amusements/Games
 BuildRequires:	SDL-devel SDL_gfx-devel SDL_ttf-devel SDL_image-devel SDL_mixer-devel
@@ -34,7 +34,7 @@ front-end to manage game options and D-Mods.
 
 
 %package engine
-Summary:	Adventure and role-playing game (engine)
+Summary:	humorous top-down adventure and role-playing game (engine)
 Group:		Amusements/Games
 Requires:	freedink-data
 # TiMidity++ is useful to play midis when /dev/sequencer isn't
