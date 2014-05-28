@@ -32,7 +32,7 @@ git2cl > ChangeLog
 # Sync freedink.spec
 # Edit freedink.spec (Version/Release + %changelog)
 # (Note: po/freedink.pot is updated automatically)
-# Edit doc/gnulib.txt with the version used $(git rev-parse HEAD)
+# Edit doc/gnulib.txt with the version used
 
 make distcheck
 git commit -am "Start branch $VERSION"

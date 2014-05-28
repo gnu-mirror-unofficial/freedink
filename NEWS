@@ -3,6 +3,8 @@
 
 * User-visible changes:
 
+- New, simple versioning scheme, without scary .20YYMMDD date.
+
 - Properly play Dink's intro screen music (see below).
 
 - FreeDinkedit plays sounds on Windows.
@@ -13,7 +15,7 @@
 - Update translations of the engine strings
   (thanks Translation Project)
 
-- New versioning scheme, without scary .20YYMMDD date.
+- 64-bit support for Windows.
 
 * Developer notes:
 
