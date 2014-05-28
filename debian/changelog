@@ -1,4 +1,4 @@
-freedink (108.2-1) unstable; urgency=low
+-freedink (108.2-1) unstable; urgency=low
 
   * New Upstream Version
   * Depend on fonts-liberation rather than on renamed ttf-liberation
@@ -7,6 +7,8 @@ freedink (108.2-1) unstable; urgency=low
   * Bump Standards-Version to 3.9.4 (no changes)
   * Use XPM icon from src/ rather than duplicating it in debian/
   * Compile with -O1 on Raspbian to avoid weird segfault
+  * watch: add pgpsigurlmangle option (fixes Lintian
+    debian-watch-may-check-gpg-signature)
 
  -- Sylvain Beucler <beuc@debian.org>  Sun, 20 Oct 2013 14:15:58 +0200
 
