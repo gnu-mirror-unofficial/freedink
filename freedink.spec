@@ -34,7 +34,7 @@ front-end to manage game options and D-Mods.
 
 
 %package engine
-Summary:	humorous top-down adventure and role-playing game (engine)
+Summary:	Humorous top-down adventure and role-playing game (engine)
 Group:		Amusements/Games
 Requires:	freedink-data
 # TiMidity++ is useful to play midis when /dev/sequencer isn't
