@@ -1,3 +1,90 @@
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/control: debian: not using intltool quite yet
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/changelog, debian/control, freedink.spec,
+	share/appdata/freedink.appdata.xml,
+	share/applications/freedink.desktop,
+	share/applications/freedinkedit.desktop: Use consistent package
+	description
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/rules: debian: drop reference to my old autotools script
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/release.txt: debian: simplify release process
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* freedink.spec: rpm: fix some .spec warnings
+
+2014-05-28  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, autobuild/freedink-exe-mxe.sh, doc/gnulib.txt,
+	doc/release.txt, nsis/README: doc fixes
+
+2014-05-28  Sylvain Beucler <beuc@beuc.net>
+
+	* freedink.spec: rpm: fix appstream/appdata install
+
+2014-05-28  Sylvain Beucler <beuc@beuc.net>
+
+	* gnulib/lib/.gitignore: gnulib update
+
+2014-05-28  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/changelog: typo
+
+2014-05-28  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/changelog, debian/upstream/signing-key.asc, debian/watch: 
+	debian: watch: add pgpsigurlmangle option
+
+2014-05-28  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-debs.sh: Clean-up pbuilding
+
+2014-05-27  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS: Tidy NEWS
+
+2014-05-27  Sylvain Beucler <beuc@beuc.net>
+
+	* share/appdata/freedink.appdata.xml: Add AppStream/AppData
+	description file (2)
+
+2014-05-27  Sylvain Beucler <beuc@beuc.net>
+
+	* share/Makefile.am: Add AppStream/AppData description file
+
+2014-05-27  Sylvain Beucler <beuc@beuc.net>
+
+	* BUILD: gnulib: recommend installing rsync to fetch
+	translationproject.org, otherwise it falls back to wget with --quiet
+	where errors are easy to miss (fix sent to gnulib)
+
+2014-05-27  Sylvain Beucler <beuc@beuc.net>
+
+	* freedink.spec: Typo
+
+2014-05-27  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/control: debian: update reference Git repo
+
+2014-05-27  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-debs.sh, autobuild/freedink-rpms.sh,
+	doc/release.txt: Update release procedure
+
+2014-05-27  Sylvain Beucler <beuc@beuc.net>
+
+	* ChangeLog, NEWS, configure.ac, debian/changelog, doc/gnulib.txt,
+	doc/release.txt, freedink.spec: Start branch 108.2
+
 2014-05-26  Sylvain Beucler <beuc@beuc.net>
 
 	* BUILD, autobuild/freedink-exe-mxe.sh: Refresh build instructions
