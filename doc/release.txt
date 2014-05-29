@@ -102,7 +102,7 @@ Submit the release to:
 - Savannah / GNU Planet
   http://savannah.gnu.org/p/freedink
 - freshmeat
-  http://freshmeat.net/projects/freedink/
+  https://freecode.com/projects/freedink
 - Translation Project
   http://translationproject.org/html/maintainers.html
 - Dink Network (.zip releases)
