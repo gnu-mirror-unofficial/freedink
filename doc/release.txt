@@ -152,5 +152,5 @@ http://fedoraproject.org/wiki/PackageMaintainers/UpdatingPackageHowTo#Example
 which is detailing this step.
 
 See also:
-https://admin.fedoraproject.org/pkgdb/acls/name/freedink
+https://admin.fedoraproject.org/pkgdb/package/freedink/
 http://pkgs.fedoraproject.org/cgit/freedink.git/
