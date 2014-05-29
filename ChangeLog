@@ -1,5 +1,25 @@
 2014-05-29  Sylvain Beucler <beuc@beuc.net>
 
+	* freedink.spec: rpm: lint
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/release.txt: rpm: change package URL again
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* freedink.spec: rpm: typo
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/release.txt: Update ChangeLog later in the release process
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* ChangeLog: Update ChangeLog
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
 	* debian/control: debian: not using intltool quite yet
 
 2014-05-29  Sylvain Beucler <beuc@beuc.net>
