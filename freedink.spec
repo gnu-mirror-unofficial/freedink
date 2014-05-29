@@ -21,7 +21,7 @@ Provides:	bundled(gnulib)
 
 %description
 Dink Smallwood is an adventure/role-playing game, similar to Zelda,
-made by RTsoft. Besides twisted humour, it includes the actual game
+made by RTsoft. Besides twisted humor, it includes the actual game
 editor, allowing players to create hundreds of new adventures called
 Dink Modules or D-Mods for short.
 
