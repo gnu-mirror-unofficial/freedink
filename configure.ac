@@ -47,6 +47,8 @@ gl_EARLY
 
 AM_CONDITIONAL(PSP, test "$host" == "mipsallegrexel-psp-elf")
 
+PKG_CHECK_MODULES([CHECK], [check >= 0.9.4])
+
 # Check if we can fork&exec (for fallback xmessage errors)
 AC_CHECK_FUNCS(execlp)
 # Check if we've got malloc stats

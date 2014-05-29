@@ -139,3 +139,9 @@ install-psp:
 		/media/$(DEVICE)/PSP/GAME/$(TARGET)
 	pumount /dev/$(DEVICE)
 endif
+
+
+TESTS = check_freedink
+check_PROGRAMS = check_freedink
+check_freedink_SOURCES = $(COMMON_OBJS) check_freedink.c
+check_freedink_LDADD = $(LDADD) @CHECK_LIBS@
