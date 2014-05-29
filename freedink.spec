@@ -15,7 +15,7 @@ URL:		http://www.gnu.org/software/freedink/
 Source0:	ftp://ftp.gnu.org/gnu/freedink/freedink-%{version}.tar.gz
 
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-Requires:	freedink-engine = %{version}-%{release}  freedink-dfarc
+Requires:	freedink-engine = %{version}-%{release} freedink-dfarc
 # Reference bundled copy of gnulib - cf. https://fedorahosted.org/fpc/ticket/174
 Provides:	bundled(gnulib)
 
