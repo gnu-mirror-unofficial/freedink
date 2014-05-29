@@ -133,7 +133,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Tue May 27 2014 Sylvain Beucler <beuc@beuc.net> - 108.2-1
+* Thu May 29 2014 Sylvain Beucler <beuc@beuc.net> - 108.2-1
 - New upstream release
 
 * Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.08.20121209-3

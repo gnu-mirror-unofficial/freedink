@@ -10,7 +10,7 @@ freedink (108.2-1) unstable; urgency=low
   * watch: add pgpsigurlmangle option (fixes Lintian
     debian-watch-may-check-gpg-signature)
 
- -- Sylvain Beucler <beuc@debian.org>  Sun, 20 Oct 2013 14:15:58 +0200
+ -- Sylvain Beucler <beuc@debian.org>  Thu, 29 May 2014 10:34:38 +0200
 
 freedink (1.08.20121209-1) experimental; urgency=low
 
