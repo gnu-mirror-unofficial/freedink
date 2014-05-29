@@ -59,7 +59,7 @@ git push --tags
 
 # Cleanly merge stable branch back to trunk
 git checkout master
-git merge branch-$VERSION-stable --no-commit
+git merge $VERSION --no-commit
 # Edit configure.ac (AC_INIT)
 # Edit NEWS
 git commit -m "Merge $VERSION"
