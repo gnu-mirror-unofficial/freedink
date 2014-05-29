@@ -110,7 +110,7 @@ void strchar(char *string, char ch)
 /**
  * Split 'str' in words separated by _one_ 'sep', and copy the #'num'
  * one to 'return1'. The function does not alter 'str'. Return empty
- * string is not found. Several 'sep' enclose empty words
+ * string if not found. Several 'sep' enclose empty words
  * (e.g. separators are not collapsed, unlike 'get_word(...)').
  */
 char* separate_string (char* line, int num, char sep)
