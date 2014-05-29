@@ -2510,8 +2510,8 @@ morestuff:
  *    2=string
  *    0=no more args (10 args max)
  *
- * Known bug: passing no argument to a function expecting 1 int
- * argument is considered valid..
+ * Known compatibility issue: passing no argument to a function
+ * expecting 1 int argument is considered valid..
  *
  * Return: 0 if parse error, 1 if success
  */
@@ -2525,6 +2525,9 @@ int get_parms(char proc_name[20], int script, char *str_params, int* spec)
       slist[i][0] = '\0';
   }
 
+  /* Safety */
+  char* limit = str_params + strlen(str_params);
+
   strip_beginning_spaces(str_params);
   if (str_params[0] == '(')
     {
@@ -2533,7 +2536,7 @@ int get_parms(char proc_name[20], int script, char *str_params, int* spec)
     }
   else
     {
-      log_error("[DinkC] Missing ( in %s, offset %d.", rinfo[script]->name, rinfo[script]->current);
+      log_error("[DinkC] Missing '(' in %s, offset %d.", rinfo[script]->name, rinfo[script]->current);
       return 0;
     }
 
@@ -2576,12 +2579,13 @@ int get_parms(char proc_name[20], int script, char *str_params, int* spec)
 	  char* parm = NULL;
 	  parm = separate_string(str_params, 2, '"');
 
-	  // replace DinkC string paramater
+	  // replace DinkC string parameter
 	  free(slist[i]);
 	  slist[i] = parm;
 
 	  // move to next param
-	  str_params += strlen(parm) + 2;
+	  str_params += strlen(parm) + 2; // 2x"
+	  if (str_params > limit) str_params = limit;
 	}
 
       if ((i+1) == 10 || spec[i+1] == 0) // this was the last arg
