@@ -43,7 +43,7 @@
 #include <xalloc.h>
 int get_parms(char proc_name[20], int script, char *str_params, int* spec);
 
-START_TEST(test_freedink_strtoupper)
+START_TEST(test_strutil_strtoupper)
 {
   char str[] = "toto";
   strtoupper(str);
@@ -51,28 +51,49 @@ START_TEST(test_freedink_strtoupper)
 }
 END_TEST
 
-START_TEST(test_freedink_get_parms)
+START_TEST(test_strutil_reverse)
 {
+  char str[] = "toto";
+  reverse(str);
+  ck_assert_str_eq(str, "otot");
+}
+END_TEST
+
+
+void test_dinkc_setup() {
   dinkc_bindings_init();
   rinfo[0] = XZALLOC(struct refinfo);
   rinfo[0]->name = "";
-  // segfault? best used with valgrind
+}
+
+void test_dinkc_teardown() {
+  free(rinfo[0]);
+  dinkc_bindings_quit();
+}
+
+START_TEST(test_dinkc_getparms_bounds)
+{
+  // memory bounds
   {
     char* str_params = strdup("(\"");
     int spec[] = { 2, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     ck_assert_int_eq(get_parms("ignored", 0, str_params, spec), 0);
     free(str_params);
   }
+}
+END_TEST
+START_TEST(test_dinkc_getparms_int)
+{
+  // Basic int test
   {
-    char str_params[] = "(21,22050,0,0,0);";
+    char str_params[] = "(21,22050, 0,0,0);";
     int spec[] = { 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 };
     ck_assert_int_eq(get_parms("ignored", 0, str_params, spec), 1);
   }
-  {
-    char str_params[] = "(1,1,1)";
-    int spec[] = { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0 };
-    ck_assert_int_eq(get_parms("ignored", 0, str_params, spec), 1);
-  }
+}
+END_TEST
+START_TEST(test_dinkc_getparms_emptyint)
+{
   // [empty] is considered a valid int
   {
     char str_params[] = "(,)";
@@ -97,6 +118,16 @@ START_TEST(test_freedink_get_parms)
     int spec[] = { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
     ck_assert_int_eq(get_parms("ignored", 0, str_params, spec), 0);
   }
+  // Good test
+  {
+    char str_params[] = "(1,1)";
+    int spec[] = { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
+    ck_assert_int_eq(get_parms("ignored", 0, str_params, spec), 1);
+  }
+}
+END_TEST
+START_TEST(test_dinkc_getparms_parens)
+{
   // Opening paren is mandatory
   {
     char str_params[] = "sp_dir[1,2)";
@@ -119,34 +150,42 @@ START_TEST(test_freedink_get_parms)
     int spec[] = { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     ck_assert_int_eq(get_parms("ignored", 0, str_params, spec), 0);
   }
-  free(rinfo[0]);
-  dinkc_bindings_quit();
+  // Good test
+  {
+    char str_params[] = "(1,\"a\")";
+    int spec[] = { 1, 2, 0, 0, 0, 0, 0, 0, 0, 0 };
+    ck_assert_int_eq(get_parms("ignored", 0, str_params, spec), 1);
+  }
 }
 END_TEST
 
-Suite *
-freedink_suite (void)
+
+Suite* freedink_suite()
 {
   Suite *s = suite_create("FreeDink");
 
-  TCase *tc_str_util = tcase_create("String utilities");
-  tcase_add_test(tc_str_util, test_freedink_strtoupper);
-  suite_add_tcase(s, tc_str_util);
+  TCase *tc_strutil = tcase_create("String utilities");
+  tcase_add_test(tc_strutil, test_strutil_strtoupper);
+  tcase_add_test(tc_strutil, test_strutil_reverse);
+  suite_add_tcase(s, tc_strutil);
 
   TCase *tc_dinkc = tcase_create("DinkC");
-  tcase_add_test(tc_dinkc, test_freedink_get_parms);
+  tcase_add_checked_fixture(tc_dinkc, test_dinkc_setup, test_dinkc_teardown);
+  tcase_add_test(tc_dinkc, test_dinkc_getparms_bounds);
+  tcase_add_test(tc_dinkc, test_dinkc_getparms_int);
+  tcase_add_test(tc_dinkc, test_dinkc_getparms_emptyint);
+  tcase_add_test(tc_dinkc, test_dinkc_getparms_parens);
   suite_add_tcase(s, tc_dinkc);
 
   return s;
 }
 
-int
-main (void)
+int main()
 {
   int number_failed;
   Suite *s = freedink_suite();
   SRunner *sr = srunner_create(s);
-  srunner_run_all(sr, CK_NORMAL);
+  srunner_run_all(sr, CK_ENV);
   number_failed = srunner_ntests_failed(sr);
   srunner_free(sr);
   return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
