@@ -4,18 +4,18 @@ Priority: extra
 Maintainer: Debian Games Team <pkg-games-devel@lists.alioth.debian.org>
 Uploaders: Sylvain Beucler <beuc@debian.org>
 Build-Depends: debhelper (>= 9), autotools-dev, pkg-config, libsdl1.2-dev, libsdl-gfx1.2-dev, libsdl-ttf2.0-dev, libsdl-image1.2-dev, libsdl-mixer1.2-dev, libfontconfig1-dev
-Standards-Version: 3.9.4
+Standards-Version: 3.9.5
 Homepage: http://www.gnu.org/software/freedink/
-Vcs-Git: git://git.debian.org/git/pkg-games/freedink.git
-Vcs-Browser: http://git.debian.org/?p=pkg-games/freedink.git
+Vcs-Git: git://git.savannah.gnu.org/freedink.git
+Vcs-Browser: http://git.savannah.gnu.org/cgit/freedink.git
 
 Package: freedink-engine
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, freedink-data, fonts-liberation, freepats
 Recommends: freedink-dfarc
-Description: adventure and role-playing game (engine)
+Description: humorous top-down adventure and role-playing game (engine)
  Dink Smallwood is an adventure/role-playing game, similar to Zelda,
- made by RTsoft. Besides twisted humour, it includes the actual game
+ made by RTsoft. Besides twisted humor, it includes the actual game
  editor, allowing players to create hundreds of new adventures called
  Dink Modules or D-Mods for short.
  .
@@ -31,7 +31,7 @@ Architecture: any
 Depends: ${misc:Depends}, freedink-engine (= ${binary:Version})
 Description: debugging symbols for freedink
  Dink Smallwood is an adventure/role-playing game, similar to Zelda,
- made by RTsoft. Besides twisted humour, it includes the actual game
+ made by RTsoft. Besides twisted humor, it includes the actual game
  editor, allowing players to create hundreds of new adventures called
  Dink Modules or D-Mods for short.
  .
@@ -44,9 +44,9 @@ Description: debugging symbols for freedink
 Package: freedink
 Architecture: all
 Depends: ${misc:Depends}, freedink-engine, freedink-dfarc
-Description: adventure and role-playing game
+Description: humorous top-down adventure and role-playing game
  Dink Smallwood is an adventure/role-playing game, similar to Zelda,
- made by RTsoft. Besides twisted humour, it includes the actual game
+ made by RTsoft. Besides twisted humor, it includes the actual game
  editor, allowing players to create hundreds of new adventures called
  Dink Modules or D-Mods for short.
  .

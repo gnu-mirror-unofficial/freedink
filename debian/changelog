@@ -1,14 +1,16 @@
-freedink (1.08.20121232-1) UNRELEASED; urgency=low
+freedink (108.2-1) unstable; urgency=low
 
   * New Upstream Version
   * Depend on fonts-liberation rather than on renamed ttf-liberation
     (Closes: #722357)
   * Bump compat to 9 to address lintian 'hardening-no-relro'
-  * Bump Standards-Version to 3.9.4 (no changes)
+  * Bump Standards-Version to 3.9.5 (no changes)
   * Use XPM icon from src/ rather than duplicating it in debian/
   * Compile with -O1 on Raspbian to avoid weird segfault
+  * watch: add pgpsigurlmangle option (fixes Lintian
+    debian-watch-may-check-gpg-signature)
 
- -- Sylvain Beucler <beuc@debian.org>  Sun, 20 Oct 2013 14:15:58 +0200
+ -- Sylvain Beucler <beuc@debian.org>  Thu, 29 May 2014 10:34:38 +0200
 
 freedink (1.08.20121209-1) experimental; urgency=low
 

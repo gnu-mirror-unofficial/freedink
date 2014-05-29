@@ -22,6 +22,7 @@
 # cd /usr/src/mxe/
 ## Disable MP3 support: src/sdl_mixer.mk: --enable-music-mp3 -> --disable-music-mp3
 ## Use MinGW-w64 in /usr/src/mxe/settings.mk: MXE_TARGETS := x86_64-w64-mingw32 i686-w64-mingw32
+## Use SDL_gfx 2.0.25: git checkout origin/master src/sdl_gfx.mk
 # make -j2 JOBS=$(nproc) gcc sdl sdl_gfx sdl_image sdl_mixer sdl_ttf libzip gettext nsis
 
 function copy_extra_files {

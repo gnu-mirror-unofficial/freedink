@@ -1,4 +1,4 @@
-This is a scrip for the NullSoft Installer System, a tool that can
+This is a script for the NullSoft Installer System, a tool that can
 generate an installer for ms woe, with support for cross-compilation.
 
 It expects the 'freedink', 'dfarc' and 'dink' directory to be present:

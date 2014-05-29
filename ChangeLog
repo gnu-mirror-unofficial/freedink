@@ -1,3 +1,352 @@
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* freedink.spec: rpm: lint
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/release.txt: rpm: change package URL again
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* freedink.spec: rpm: typo
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/release.txt: Update ChangeLog later in the release process
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* ChangeLog: Update ChangeLog
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/control: debian: not using intltool quite yet
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/changelog, debian/control, freedink.spec,
+	share/appdata/freedink.appdata.xml,
+	share/applications/freedink.desktop,
+	share/applications/freedinkedit.desktop: Use consistent package
+	description
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/rules: debian: drop reference to my old autotools script
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/release.txt: debian: simplify release process
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* freedink.spec: rpm: fix some .spec warnings
+
+2014-05-28  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, autobuild/freedink-exe-mxe.sh, doc/gnulib.txt,
+	doc/release.txt, nsis/README: doc fixes
+
+2014-05-28  Sylvain Beucler <beuc@beuc.net>
+
+	* freedink.spec: rpm: fix appstream/appdata install
+
+2014-05-28  Sylvain Beucler <beuc@beuc.net>
+
+	* gnulib/lib/.gitignore: gnulib update
+
+2014-05-28  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/changelog: typo
+
+2014-05-28  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/changelog, debian/upstream/signing-key.asc, debian/watch: 
+	debian: watch: add pgpsigurlmangle option
+
+2014-05-28  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-debs.sh: Clean-up pbuilding
+
+2014-05-27  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS: Tidy NEWS
+
+2014-05-27  Sylvain Beucler <beuc@beuc.net>
+
+	* share/appdata/freedink.appdata.xml: Add AppStream/AppData
+	description file (2)
+
+2014-05-27  Sylvain Beucler <beuc@beuc.net>
+
+	* share/Makefile.am: Add AppStream/AppData description file
+
+2014-05-27  Sylvain Beucler <beuc@beuc.net>
+
+	* BUILD: gnulib: recommend installing rsync to fetch
+	translationproject.org, otherwise it falls back to wget with --quiet
+	where errors are easy to miss (fix sent to gnulib)
+
+2014-05-27  Sylvain Beucler <beuc@beuc.net>
+
+	* freedink.spec: Typo
+
+2014-05-27  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/control: debian: update reference Git repo
+
+2014-05-27  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-debs.sh, autobuild/freedink-rpms.sh,
+	doc/release.txt: Update release procedure
+
+2014-05-27  Sylvain Beucler <beuc@beuc.net>
+
+	* ChangeLog, NEWS, configure.ac, debian/changelog, doc/gnulib.txt,
+	doc/release.txt, freedink.spec: Start branch 108.2
+
+2014-05-26  Sylvain Beucler <beuc@beuc.net>
+
+	* BUILD, autobuild/freedink-exe-mxe.sh: Refresh build instructions
+
+2014-05-26  Sylvain Beucler <beuc@beuc.net>
+
+	* po/Makevars: translations: use the same options as the Translation
+	Project robot
+
+2014-05-26  Sylvain Beucler <beuc@beuc.net>
+
+	* po/ca.po, po/da.po, po/de.po, po/el.po, po/eo.po, po/es.po,
+	po/eu.po, po/fi.po, po/fr.po, po/hr.po, po/id.po, po/it.po,
+	po/nb.po, po/nl.po, po/pl.po, po/th.po, po/vi.po: translations: sync
+	with TP
+
+2014-05-24  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/changelog, debian/rules: Compile with -O1 on Raspbian to
+	avoid weird segfault
+
+2014-05-24  Sylvain Beucler <beuc@beuc.net>
+
+	* Makefile.am: Makefile.am: DEB was removed
+
+2014-05-24  Sylvain Beucler <beuc@beuc.net>
+
+	* TROUBLESHOOTING: TROUBLESHOOTING: reference sdl_mixer/fluidsynth
+	memory leak + reorder
+
+2014-05-24  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, src/sfx.c: Display SDL audio driver in debug mode
+
+2014-05-04  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/changelog, debian/copyright, src/SDL_rwops_libzip.c,
+	src/SDL_rwops_libzip.h, src/SDL_rwops_zzip.c, src/SDL_rwops_zzip.h: 
+	Centralize copyright information some more
+
+2014-05-04  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/update-autotools-config.sh: debian: remove
+	update-autotools-config.sh, we don't use it anymore, and probably
+	nobody needs it, actually
+
+2014-05-04  Sylvain Beucler <beuc@beuc.net>
+
+	* DEB, Makefile.am, debian/changelog, debian/gbp.conf: Put back
+	debian/ in releases, since we're using format 3.0 which supports
+	that
+
+2014-05-04  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/control: debian: fix
+	package-needs-versioned-debhelper-build-depends
+
+2014-05-04  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/README.source: debian: remove obsolete source documentation
+
+2014-05-04  Sylvain Beucler <beuc@beuc.net>
+
+	* TROUBLESHOOTING: TROUBLESHOOTING: explain how to enforce aspect
+	ratio on 16:9 screens
+
+2014-05-04  Sylvain Beucler <beuc@beuc.net>
+
+	* TROUBLESHOOTING: Remove obsolete TROUBLESHOOTING entries
+
+2014-05-04  Sylvain Beucler <beuc@beuc.net>
+
+	* src/gfx_fonts.c: double-free segfault on exit traced to FreeType
+	not freeing system_font, better not free it than risking a segfault
+	leaving the user in 640*480
+
+2014-05-04  Sylvain Beucler <beuc@beuc.net>
+
+	* src/gfx_fonts.c: fonts: vgasys_fon can be considered read-only
+	memory
+
+2014-05-04  Sylvain Beucler <beuc@beuc.net>
+
+	* valgrind/suppressions-debian_testing.txt: Use Valgrind
+	suppressions file with newer syntax
+
+2014-05-04  Sylvain Beucler <beuc@beuc.net>
+
+	* valgrind/suppressions-debian_etch.txt,
+	valgrind/suppressions-debian_lenny.txt: Remove obsolete Valgrind
+	suppressions files
+
+2014-05-02  Sylvain Beucler <beuc@beuc.net>
+
+	* po/LINGUAS: FreeBSD: disable en@quot and en@boldquot locales,
+	unused and causing issues
+
+2014-05-02  Sylvain Beucler <beuc@beuc.net>
+
+	* BUILD: FreeBSD: link to X11 config
+
+2014-05-01  Sylvain Beucler <beuc@beuc.net>
+
+	* gnulib/lib/.gitignore, gnulib/m4/.gitignore,
+	gnulib/m4/gnulib-cache.m4: Update gnulib
+
+2014-05-01  Sylvain Beucler <beuc@beuc.net>
+
+	* BUILD: Update BUILD instructions
+
+2014-05-01  Sylvain Beucler <beuc@beuc.net>
+
+	* src/meminfo.c: Fix compilation on FreeBSD
+
+2014-01-03  Sylvain Beucler <beuc@beuc.net>
+
+	* BUILD, freedink.spec: Sync Fedora + fix old changelog weekdays
+
+2013-11-09  Sylvain Beucler <beuc@beuc.net>
+
+	* gnulib/lib/.gitignore, gnulib/m4/.gitignore: Gnulib update
+
+2013-11-09  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-exe-mxe.sh: 64-bit woe build support
+
+2013-10-20  Sylvain Beucler <beuc@beuc.net>
+
+	* AUTHORS, NEWS, debian/copyright, po/LINGUAS, po/cs.po,
+	po/pt_BR.po, po/sl.po, po/sr.po: Update translations
+
+2013-10-20  Sylvain Beucler <beuc@beuc.net>
+
+	* TROUBLESHOOTING: Document issue with laptop accelerometer
+
+2013-10-20  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS: Update NEWS file
+
+2013-10-20  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, src/dinkc_bindings.c: Properly play Dink's intro screen
+	music
+
+2013-10-20  Sylvain Beucler <beuc@beuc.net>
+
+	* TROUBLESHOOTING, doc/midi.txt: Document new fluidsynth backend for
+	SDL-Mixer
+
+2013-10-20  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/changelog, debian/compat, debian/control,
+	debian/freedink.xpm, debian/install, debian/rules: Debian packaging:
+	fix Lintian 'hardening-no-relro' + reuse XPM icon from src/
+
+2013-10-20  Sylvain Beucler <beuc@beuc.net>
+
+	* gnulib/m4/gnulib-cache.m4: Update gnulib
+
+2013-10-19  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/changelog, debian/control: Update Debian package name for
+	Liberation
+
+2013-10-19  Sylvain Beucler <beuc@beuc.net>
+
+	* Makefile.am, autopackage/.gitignore, autopackage/Makefile.am,
+	autopackage/Makefile.autopackage, autopackage/default.apspec.in,
+	autopackage/extract-package.sh,
+	autopackage/skeletons/@libsdl.org/sdl_ttf/skeleton.1, configure.ac: 
+	Remove autopackage support - if there's interest in resurrecting it,
+	cf. the superseding Listaller project
+
+2013-10-19  Sylvain Beucler <beuc@beuc.net>
+
+	*
+	gentoo/games-rpg/freedink-engine/freedink-engine-1.08.20080920.ebui
+	ld, gentoo/games-rpg/freedink-engine/metadata.xml,
+	gentoo/games-rpg/freedink/freedink-1.08.20080920.ebuild,
+	gentoo/games-rpg/freedink/metadata.xml: Remove obsolete gentoo
+	ebuild - get it from official Gentoo instead :)
+
+2013-10-18  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-rpms.sh: Document my RPM build setup
+
+2012-12-20  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-exe-mxe.sh: Minor fix to mxe build doc
+
+2012-12-19  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-exe-mxe.sh, configure.ac, doc/mxe.txt: Detect
+	SDL and SDL_* with pkg-config; this allows to automatically detect
+	libs for static compilation
+
+2012-12-16  Sylvain Beucler <beuc@beuc.net>
+
+	* nsis/README, nsis/freedink-all.nsi: Refresh the NSIS bundle
+	installer
+
+2012-12-16  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-exe-mxe.sh, autobuild/freedink-exe.sh: Adapt
+	woe autobuild script for MXE
+
+2012-12-16  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am: stop.wav and jump.wav have free replacements now,
+	so we can bundle them in freedinkedit.exe
+
+2012-12-16  Sylvain Beucler <beuc@beuc.net>
+
+	* src/init.c, src/paths.c: Fix early debugging of paths detection
+
+2012-12-16  Sylvain Beucler <beuc@beuc.net>
+
+	* configure.ac, doc/autopackage.txt, doc/cross.txt, doc/fonts.txt,
+	doc/mingw-cross-env.txt, doc/mxe.txt, doc/woe-compile.txt: woe
+	build: update docs
+
+2012-12-09  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/release.txt: Precise pbuilder instructions
+
+2012-12-09  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, configure.ac: Merge 1.08.20121209
+
+2012-12-09  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/changelog, debian/patches/install-reloc.patch,
+	debian/patches/series: Release 1.08.20121209
+
+2012-12-09  Sylvain Beucler <beuc@beuc.net>
+
+	* ChangeLog, NEWS, configure.ac, debian/changelog, freedink.spec,
+	po/ca.po, po/cs.po, po/da.po, po/de.po, po/el.po, po/eo.po,
+	po/es.po, po/eu.po, po/fi.po, po/fr.po, po/hr.po, po/id.po,
+	po/it.po, po/nb.po, po/nl.po, po/pl.po, po/sl.po, po/sr.po,
+	po/vi.po: Release 1.08.20121209
+
 2012-12-09  Sylvain Beucler <beuc@beuc.net>
 
 	* doc/gnulib.txt, doc/release.txt, gnulib/lib/.gitignore,

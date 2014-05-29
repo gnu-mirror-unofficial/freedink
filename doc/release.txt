@@ -3,14 +3,27 @@ How to make a release     -*- shell-script -*-
 Version scheme
 --------------
 
-Currently FreeDink aims at compatibility with the original v1.08
-version, so the versions are 1.08.$(date +%Y%m%d).  We will switch to
-1.09.x or 109.x/109.x.y if we start adding new features.
+- Release = x.y  (y is even)
+- Snapshot = x.$((y+1)).$(date +%Y%m%d)
 
-The scheme is minimalist and does not allow versions that indicates a
-stable branch with bugfixes (usually x.y.z).  Instead we just issue a
-new version.  This prevents fixing a previous (non-latest) release,
-but as of 2009 we do not need it.
+The release number follows the Gnits standard (only 2 numbers to avoid
+complex versions). If a quick fix is necessary to the latest release,
+while the development version is unstable, we may branch and use
+x.y.z.
+
+Why not simply rely on $(date) being greater than any released .z?
+- The snapshots separate branch (x.y+1) clearly distinguish them from
+  stable releases.
+- Auto-builders also can follow the stable branch and build
+  x.y.$(date) without version conflict.
+
+The next release has a version number higher than the latest snapshot,
+so that people tracking the snapshots also upgrade when there is a new
+release.
+
+Currently FreeDink aims at compatibility with the original v1.08
+version, so the versions are 108.x(.y).  We will switch to 109.x(.y)
+when we start adding new features.
 
 
 Bootstrapping
@@ -22,28 +35,31 @@ Cf. doc/bootstrap.txt
 On the developer computer:
 --------------------------
 
-VERSION=1.08.$(date +%Y%m%d)
+VERSION=108.2
 cd freedink/
-git checkout -b branch-$VERSION-stable
-git2cl > ChangeLog
+git checkout -b $VERSION
 # Edit NEWS
 # Edit configure.ac (AC_INIT)
 # Sync debian/
 # Sync freedink.spec
 # Edit freedink.spec (Version/Release + %changelog)
 # (Note: po/freedink.pot is updated automatically)
-# Edit doc/gnulib.txt with the version used $(git rev-parse HEAD)
+# Edit doc/gnulib.txt with the version used
 
 make distcheck
-git commit -am "Release $VERSION"
-git tag -s v$VERSION -m v$VERSION -u ...
-git push origin branch-$VERSION-stable master
-git push --tags
+git commit -am "Start branch $VERSION"
+git push origin $VERSION master
 # Here you can test the release in the autobuilder
+
+# When everything is tested:
+git2cl > ChangeLog
+git commit -m "Update ChangeLog" ChangeLog
+git tag -s v$VERSION -m v$VERSION -u ...
+git push --tags
 
 # Cleanly merge stable branch back to trunk
 git checkout master
-git merge branch-$VERSION-stable --no-commit
+git merge $VERSION --no-commit --no-ff
 # Edit configure.ac (AC_INIT)
 # Edit NEWS
 git commit -m "Merge $VERSION"
@@ -78,35 +94,6 @@ git push origin pristine-tar
 # Upload sigs to freedink.org
 
 
-On the website:
----------------
-
-PACKAGE=freedink
-DISTRO_PACKAGE=$PACKAGE
-cd www/releases/
-
-mv ../snapshots/$PACKAGE/$VERSION/ $PACKAGE/
-ln -nfs ../../releases/$PACKAGE/$VERSION ../snapshots/$PACKAGE
-
-pushd debian
-    for f in ../../snapshots/debian/$DISTRO_PACKAGE*$VERSION*; do
-        mv $f .
-        ln -nfs ../../releases/debian/$(basename $f) $f
-    done
-    make
-popd
-
-# On a Fedora vserver:
-pushd fedora
-    for f in ../../snapshots/fedora/$DISTRO_PACKAGE-*$VERSION*; do
-        mv $f .
-        ln -nfs ../../releases/fedora/$(basename $f) $f
-    done
-    make
-    cp -a ../../snapshots/fedora/$DISTRO_PACKAGE.spec .
-popd
-
-
 Submit the release to:
 ----------------------
 
@@ -133,8 +120,6 @@ Submit the release to:
   contact Stephen
 - Ubuntu GNU/Linux (Debian merge request)
   contact shirish
-- Linux Game Tome
-  http://happypenguin.org/update?GNU%20Freedink
 - JeuxLibres
   http://jeuxlibres.net/postgame/299.html
 - Press...
@@ -147,25 +132,12 @@ Check this for updates:
 - /usr/share/doc/debian-policy/upgrading-checklist.txt.gz
 - http://lintian.debian.org/full/pkg-games-devel@lists.alioth.debian.org.html#freedink
 
-# http://wiki.debian.org/Games/VCS
-# http://wiki.debian.org/Games/VCS/git
-git clone YOU@git.debian.org:/git/pkg-games/freedink
-cd freedink
-git checkout -b pristine-tar origin/pristine-tar
-git checkout -b upstream origin/upstream
-
-#export DEBEMAIL=xxx
+#export DEBEMAIL=x@x
+#export DEBFULLNAME=xxx
 #export EDITOR=emacs
 
-git checkout master
-git-import-orig --pristine-tar ../freedink-$VERSION.tar.gz
-# - Import debian/ from "upstream"
-# - Fix stuff...
-git commit -am "New upstream release - v$VERSION"
-git-buildpackage --git-tag
-sudo pbuilder --build --basetgz /var/cache/pbuilder/base-testing.tar.gz ../freedink_$VERSION-1.dsc
-git push origin master pristine-tar upstream
-git push --tags
+pdebuild
+
 # http://mentors.debian.net/cgi-bin/maintainer-intro
 cd /var/cache/pbuilder/result/
 debsign freedink_$VERSION-1_*.changes
@@ -182,5 +154,5 @@ http://fedoraproject.org/wiki/PackageMaintainers/UpdatingPackageHowTo#Example
 which is detailing this step.
 
 See also:
-https://admin.fedoraproject.org/pkgdb/acls/name/freedink
+https://admin.fedoraproject.org/pkgdb/package/freedink/
 http://pkgs.fedoraproject.org/cgit/freedink.git/

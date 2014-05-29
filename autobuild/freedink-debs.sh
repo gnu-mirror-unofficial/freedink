@@ -1,7 +1,7 @@
 #!/bin/bash -ex
-# Debian release
+# Debian snapshot
 
-# Copyright (C) 2008, 2009  Sylvain Beucler
+# Copyright (C) 2008, 2009, 2010, 2011, 2014  Sylvain Beucler
 
 # This file is part of GNU FreeDink
 
@@ -35,13 +35,12 @@ cp -a $PUBDIR/$TARBALL .
 tar xzf $TARBALL
 ln -s $TARBALL ${PACKAGE}_$VERSION.orig.tar.gz 
 cd $PACKAGE-$VERSION/
-cp -a ../../$PACKAGE/debian .
 yes | DEBEMAIL="beuc@debian.org" DEBFULLNAME="Sylvain Beucler" dch -D stable \
   --newversion $VERSION-1 \
   --force-bad-version -- \
   "New upstream release"
 pdebuild --debbuildopts '-sa' --buildresult /mnt/snapshots/debian \
-  -- --basetgz /var/cache/pbuilder/base-lenny-bpo.tar.gz --bindmounts /usr/src/backports/lenny/debs
+  -- --basetgz /var/cache/pbuilder/base-wheezy-bpo.tar.gz
 popd
 make -C /mnt/snapshots/debian
 rm -rf t
@@ -50,31 +49,8 @@ exit;
 
 # construction:
 
-# with cowbuilder / etch:
-aptitude install cowbuilder fakeroot sudo
-aptitude install debhelper # for dh_clean
-mkdir /mnt/snapshots/debian/etch-backports/
-(cd /mnt/snapshots/debian/etch-backports/ && apt-ftparchive packages . | gzip > Packages.gz)
-cowbuilder --create --basepath /var/cache/pbuilder/base-etch.cow --distribution=etch \
-  --othermirror "deb http://backports.org/debian etch-backports main|deb file:///mnt/snapshots/debian/etch-backports/ ./" \
-  --bindmounts /mnt/snapshots/debian/etch-backports
+# with pbuilder / wheezy:
+pbuilder --create --basetgz /var/cache/pbuilder/base-wheezy-bpo.tar.gz --distribution wheezy \
+  --othermirror "deb http://http.debian.net/debian wheezy-backports main"
 # update:
-cowbuilder --update --basepath /var/cache/pbuilder/base-etch.cow/ --bindmounts /mnt/snapshots/debian/etch-backports --debian-etch-workaround
-
-# with pbuilder / lenny:
-mkdir -p /usr/src/backports/squeeze/debs
-(cd /usr/src/backports/squeeze/debs && apt-ftparchive packages | gzip > Packages.gz)
-pbuilder --create --basetgz /var/cache/pbuilder/base-lenny-bpo.tar.gz --distribution lenny \
-  --othermirror "deb http://backports.org/debian lenny-backports main|deb file:///usr/src/backports/lenny/debs ./" \
-  --bindmounts /usr/src/backports/lenny/debs
-# update:
-pbuilder --update --basetgz /var/cache/pbuilder/base-lenny-bpo.tar.gz --bindmounts /usr/src/backports/lenny/debs
-
-# with pbuilder / squeeze:
-mkdir -p /usr/src/backports/squeeze/debs
-(cd /usr/src/backports/squeeze/debs && apt-ftparchive packages | gzip > Packages.gz)
-pbuilder --create --basetgz /var/cache/pbuilder/base-squeeze-bpo.tar.gz --distribution squeeze \
-  --othermirror "deb http://backports.org/debian squeeze-backports main|deb file:///usr/src/backports/squeeze/debs ./" \
-  --bindmounts /usr/src/backports/squeeze/debs
-# update:
-pbuilder --update --basetgz /var/cache/pbuilder/base-squeeze-bpo.tar.gz --bindmounts /usr/src/backports/squeeze/debs
+pbuilder --update --basetgz /var/cache/pbuilder/base-wheezy-bpo.tar.gz

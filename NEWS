@@ -1,9 +1,15 @@
-1.08.20121232
-=============
+108.3
+=====
 
-* UNRELEASED *
+* UNRELEASED
+
+
+108.2
+=====
 
 * User-visible changes:
+
+- New, simple versioning scheme, without scary .20YYMMDD date.
 
 - Properly play Dink's intro screen music (see below).
 
@@ -12,8 +18,10 @@
 - New translation for the engine strings in Brazilian Portuguese
   (thanks Enrico Nicoletto)
 
-- Update translations of the engine strings (thanks Translation
-  Project)
+- Update translations of the engine strings
+  (thanks Translation Project)
+
+- 64-bit support for Windows.
 
 * Developer notes:
 
@@ -22,7 +30,9 @@
 
 - Improved build documentation.
 
-- Display SDL audio driver in debug mode
+- Display SDL audio driver in debug mode.
+
+- Add AppStream/AppData file for GNU/Linux software centers.
 
 
 1.08.20121209
