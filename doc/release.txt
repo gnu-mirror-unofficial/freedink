@@ -38,7 +38,6 @@ On the developer computer:
 VERSION=108.2
 cd freedink/
 git checkout -b $VERSION
-git2cl > ChangeLog
 # Edit NEWS
 # Edit configure.ac (AC_INIT)
 # Sync debian/
@@ -53,6 +52,8 @@ git push origin $VERSION master
 # Here you can test the release in the autobuilder
 
 # When everything is tested:
+git2cl > ChangeLog
+git commit -m "Update ChangeLog" ChangeLog
 git tag -s v$VERSION -m v$VERSION -u ...
 git push --tags
 
