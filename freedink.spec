@@ -38,7 +38,7 @@ Summary:	Humorous top-down adventure and role-playing game (engine)
 Group:		Amusements/Games
 Requires:	freedink-data
 # TiMidity++ is useful to play midis when /dev/sequencer isn't
-# functional (most of the case) and installing it prevents some
+# functional (most of the time) and installing it prevents some
 # SDL_mixer freezes (see TROUBLESHOOTING).  In Fedora this is done
 # through SDL_mixer dependencies.
 %if 0%{?suse_version}
