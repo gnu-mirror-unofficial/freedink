@@ -1,7 +1,7 @@
 /**
  * FreeDink test suite
 
- * Copyright (C) 2014  Sylvain Beucler
+ * Copyright (C) 2005, 2014  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
