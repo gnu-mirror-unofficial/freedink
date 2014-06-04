@@ -495,7 +495,7 @@ int search_var_with_this_scope_107(char* variable, int var_scope)
 }
 
 /**
- * v1.08-style scope: local variables are search before global
+ * v1.08-style scope: local variables are searched before global
  * variables.
  *
  * Return -1 if not found, slot index >1 if found. Slot 0 isn't
