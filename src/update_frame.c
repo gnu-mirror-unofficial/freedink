@@ -33,7 +33,7 @@
 /* #include <windows.h> */
 /* #include <ddraw.h> */
 #include "SDL.h"
-#include "SDL_framerate.h"
+#include "SDL2_framerate.h"
 
 #include "dinkvar.h"
 #include "game_engine.h"

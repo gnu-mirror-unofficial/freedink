@@ -51,7 +51,6 @@ int fcur_weapon, fcur_magic;
 
 /* Sound - BGM */
 int sound_on = 1;
-int cd_inserted;
 int midi_active = 1;
 
 

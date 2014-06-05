@@ -39,16 +39,6 @@
    logical palette, but not for the hardware palette */
 static SDL_Color phys_palette[256];
 
-/* Palette change: with SDL, SDL_SetColors (aka
-   SDL_SetPalette(SDL_PHYSPAL)) apparently triggers a Flip, which
-   displays weird colors on the screen for a brief but displeasing
-   moment. Besides, SDL_Flip() does not refresh the hardware palette,
-   so update the physical palette needs to be done manually - but only
-   when the surface is already in its final form. The palette may need
-   to be changed before the screen content is ready, so we'll make the
-   engine know when he needs to refresh the physical palette: */
-static int trigger_palette_change = 0;
-
 
 /**
  * Get local copy of physical palette
@@ -84,31 +74,6 @@ void gfx_palette_set_phys(SDL_Color* new_palette)
   phys_palette[255].r = 255;
   phys_palette[255].g = 255;
   phys_palette[255].b = 255;
-  
-  /* Applying the logical palette to the physical screen may trigger
-     a Flip, so don't do it right now */
-  trigger_palette_change = 1;
-}
-
-/**
- * Apply the recently-updated copy of the physical palette to the
- * physical screen. This may trigger a Flip (so don't do that until
- * Back is ready).
- */
-void gfx_palette_apply_phys()
-{
-  if (trigger_palette_change == 1)
-    gfx_palette_restore_phys();
-  trigger_palette_change = 0;
-}
-
-/**
- * Set the physical screen palette unconditionaly (e.g.: because it
- * was changed, or lost)
- */
-void gfx_palette_restore_phys()
-{
-  SDL_SetPalette(GFX_lpDDSBack, SDL_PHYSPAL, phys_palette, 0, 256);
 }
 
 
@@ -141,6 +106,7 @@ void gfx_palette_reset()
       = palette[i].b
       = 0;
 
+  /* Set palette with DX bug overwrite */
   gfx_palette_set_phys(palette);
 }
 
@@ -159,6 +125,10 @@ gfx_palette_set_from_surface(SDL_Surface *bmp)
       palette[i].r = bmp->format->palette->colors[i].r;
       palette[i].g = bmp->format->palette->colors[i].g;
       palette[i].b = bmp->format->palette->colors[i].b;
+      // Caution: SDL_Color.a is significant in SDL2
+      palette[i].a = bmp->format->palette->colors[i].a;
+      //log_debug("palette[%03d] = #%02X%02X%02X %02X", i,
+      //  palette[i].r, palette[i].g, palette[i].b, palette[i].a);
     }
 
   gfx_palette_set_phys(palette);
@@ -183,7 +153,7 @@ gfx_palette_set_from_bmp(char *filename)
       free(fullpath);
       if (bmp == NULL)
 	{
-	  fprintf(stderr, "load_palette_from_bmp: couldn't open %s\n", filename);
+	  log_error("load_palette_from_bmp: couldn't open: %s", filename);
 	  return -1;
 	}
     }

@@ -23,6 +23,6 @@
 #ifndef _MSGBOX_H
 #define _MSGBOX_H
 
-void msgbox_init_error(char* msg, ...);
+void msgbox(char* msg, ...);
 
 #endif

@@ -24,11 +24,6 @@
 #ifndef _BGM_H
 #define _BGM_H
 
-extern int last_cd_track;
-
-extern int cdplaying();
-extern int killcd();
-extern int PlayCD(int cd_track);
 extern int something_playing(void);
 extern int PlayMidi(char *sFileName);
 extern int PauseMidi();

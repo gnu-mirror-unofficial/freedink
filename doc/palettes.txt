@@ -60,7 +60,7 @@ CyclePalette(), etc.) and when applied to the screen
 (change_screen_palette). No original, non-overwritten palette
 currently exist in the game.
 
-False bad idea: instead of setting the same palette to all surfaces,
+False good idea: instead of setting the same palette to all surfaces,
 we could replace SDL_BlitSurface with a wrapper that sets identical
 palettes before the blits or more generally does not makes palette
 conversion during the blit.  But this wouldn't take care of on-load

@@ -53,6 +53,9 @@ extern SDL_Surface *GFX_lpDDSBack;
 extern SDL_Surface *GFX_lpDDSTrick;
 extern SDL_Surface *GFX_lpDDSTrick2;
 extern SDL_Surface *GFX_lpDDSTwo;
+extern SDL_Window* window;
+extern SDL_Renderer* renderer;
+extern SDL_Texture* render_texture;
 
 extern SDL_Color GFX_real_pal[256];
 
@@ -62,7 +65,6 @@ extern Uint32 truecolor_fade_lasttick;
 extern enum gfx_init_state gfx_get_init_state(void);
 
 extern int gfx_init(enum gfx_windowed_state, char* splash_path);
-extern int gfx_init_failsafe();
 extern void gfx_quit(void);
 extern void change_screen_palette(SDL_Color* new_palette);
 extern SDL_Surface* load_bmp(char *filename);

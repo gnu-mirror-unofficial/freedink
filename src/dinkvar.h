@@ -33,7 +33,7 @@
 #include <limits.h>
 
 #include "SDL.h"
-#include "SDL_framerate.h"
+#include "SDL2_framerate.h"
 #include "game_engine.h"
 #include "rect.h"
 #include "dinkc.h"

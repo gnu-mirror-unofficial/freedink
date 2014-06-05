@@ -8,6 +8,14 @@ These instructions may sound redundant with the packaging specs (.deb,
 compile the latest, not-yet-packaged sources :)
 
 
+Required fixes for SDL2:
+- SDL2_gfx 1.0.0: proper pkg-config file - https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=750131
+- SDL2_ttf 2.0.12: vgasys.fon does load - https://bugzilla.libsdl.org/show_bug.cgi?id=2574
+- SDL2_mixer 2.0.0:
+  - speed issues with TiMIDity back-end - https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=750706
+  - Fluidsynth can't be enabled AFAICS
+
+
 On a minimal Debian system
 ==========================
 
@@ -35,11 +43,14 @@ sh bootstrap
 ## Dependencies
 # Base: GCC, make & al.
 apt-get install build-essential
-# Required: SDL, libzip | zziplib
-apt-get install pkg-config libsdl1.2-dev libsdl-gfx1.2-dev \
-  libsdl-ttf2.0-dev libsdl-image1.2-dev libsdl-mixer1.2-dev \
-  libfontconfig1-dev libzip-dev zip
-# | apt-get install libzzip-dev
+# Required: SDL
+apt-get install pkg-config \
+  libsdl2-dev libsdl2-dbg \
+  libsdl2-image-dev libsdl2-image-dbg \
+  libsdl2-mixer-dev libsdl2-mixer-dbg \
+  libsdl2-ttf-dev libsdl2-ttf-dbg \
+  libsdl2-gfx-dev libsdl2-gfx-dbg \
+  libfontconfig1-dev
 # Optional:
 # - upx compresses binary
 # - bzip is for .tar.bz2 release tarballs

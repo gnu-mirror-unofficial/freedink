@@ -53,7 +53,6 @@
 
 #include "SDL.h"
 #include "SDL_image.h"
-#include "SDL_framerate.h"
 
 #include "game_engine.h"
 #include "screen.h"
@@ -202,15 +201,6 @@ struct player_info play;
 
 int bActive = /*false*/0;        // is application active/foreground?
 //LPDIRECTINPUT lpDI;
-
-
-//direct input stuff for mouse reading
-
-/* LPDIRECTINPUT          g_pdi = NULL; */
-/* LPDIRECTINPUTDEVICE    g_pMouse = NULL; */
-/* #define DINPUT_BUFFERSIZE           16 */
-
-/* HANDLE                 g_hevtMouse = NULL; */
 
 
 //LPCDIDATAFORMAT lpc;
@@ -3816,15 +3806,15 @@ void show_bmp(char* name, int showdot, int script)
 	 image to the new palette. This also converts 24->8bit if
 	 necessary. */
       {
-	SDL_Surface* converted = SDL_DisplayFormat(image);
-	SDL_SetPalette(converted, SDL_LOGPAL, phys_pal, 0, 256);
+	SDL_Surface* converted = SDL_ConvertSurfaceFormat(image, SDL_PIXELFORMAT_INDEX8, 0);
+	SDL_SetPaletteColors(converted->format->palette, phys_pal, 0, 256);
 	SDL_BlitSurface(image, NULL, converted, NULL);
 	SDL_FreeSurface(image);
 	image = converted;
       }
 
       /* Next blit without palette conversion */
-      SDL_SetPalette(image, SDL_LOGPAL, GFX_real_pal, 0, 256);
+      SDL_SetPaletteColors(image->format->palette, GFX_real_pal, 0, 256);
     }
 
   showb.active = /*true*/1;
@@ -3859,6 +3849,7 @@ void copy_bmp(char* name)
   if (!truecolor)
     {
       gfx_palette_set_from_surface(image);
+      /* Grab back palette with DX bug overwrite */
       SDL_Color phys_pal[256];
       gfx_palette_get_phys(phys_pal);
 
@@ -3866,15 +3857,16 @@ void copy_bmp(char* name)
 	 image to the new palette. This also converts 24->8bit if
 	 necessary. */
       {
-	SDL_Surface* converted = SDL_DisplayFormat(image);
-	SDL_SetPalette(converted, SDL_LOGPAL, phys_pal, 0, 256);
+	SDL_Surface* converted =  SDL_CreateRGBSurface(0, image->w,image->h,
+						       8, 0,0,0,0);
+	SDL_SetPaletteColors(converted->format->palette, phys_pal, 0, 256);
 	SDL_BlitSurface(image, NULL, converted, NULL);
 	SDL_FreeSurface(image);
 	image = converted;
       }
 
       /* Next blit without palette conversion */
-      SDL_SetPalette(image, SDL_LOGPAL, GFX_real_pal, 0, 256);
+      SDL_SetPaletteColors(image->format->palette, GFX_real_pal, 0, 256);
     }
 
   SDL_BlitSurface(image, NULL, GFX_lpDDSTwo, NULL);

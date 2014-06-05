@@ -48,31 +48,34 @@ static int cur_line = 0;
 static int console_return_value = 0;
 
 
-void dinkc_console_process_key(SDL_KeyboardEvent kev)
+void dinkc_console_process_key(SDL_Event ev)
 {
-  if (kev.keysym.sym == SDLK_UP)
+  if (ev.type == SDL_KEYDOWN) {
+    SDL_KeyboardEvent kev = ev.key;
+    if (kev.keysym.sym == SDLK_UP)
+      {
+	cur_line--;
+	/* Using (a+N)%N instead of a%N to avoid negative results */
+	cur_line = (cur_line + NB_LINES) % NB_LINES;
+      }
+    else if(kev.keysym.sym == SDLK_DOWN)
+      {
+	cur_line++;
+	cur_line %= NB_LINES;
+      }
+    else if (kev.keysym.sym == SDLK_BACKSPACE)
+      {
+	/* Delete last char */
+	int len = strlen(history[cur_line]);
+	if (len > 0)
+	  history[cur_line][len-1] = '\0';
+      }
+    else if (kev.keysym.sym == SDLK_ESCAPE)
     {
-      cur_line--;
-      /* Using (a+N)%N instead of a%N to avoid negative results */
-      cur_line = (cur_line + NB_LINES) % NB_LINES;
-    }
-  else if(kev.keysym.sym == SDLK_DOWN)
-    {
-      cur_line++;
-      cur_line %= NB_LINES;
-    }
-  else if (kev.keysym.sym == SDLK_BACKSPACE)
-    {
-      /* Delete last char */
-      int len = strlen(history[cur_line]);
-      if (len > 0)
-	history[cur_line][len-1] = '\0';
-    }
-  else if (kev.keysym.sym == SDLK_ESCAPE)
-    {
+      SDL_EventState(SDL_TEXTINPUT, SDL_IGNORE);
       console_active = 0;
     }
-  else if (kev.keysym.unicode == SDLK_RETURN)
+  else if (kev.keysym.sym == SDLK_RETURN)
     {
       /* Try to parse the string */
       console_return_value = dinkc_execute_one_liner(history[cur_line]);
@@ -84,12 +87,12 @@ void dinkc_console_process_key(SDL_KeyboardEvent kev)
       if (len > 0)
 	history[cur_line][0] = '\0';
     }
-  else if (kev.keysym.unicode != 0)
-    {
-      /* Append character to the current line */
-      if (strlen(history[cur_line]) < MAX_LINE_LEN)
-	strchar(history[cur_line], kev.keysym.unicode);
-    }
+  } else {
+    /* Append character to the current line */
+    if (strlen(history[cur_line] + 1) <= MAX_LINE_LEN)
+      if (isprint(ev.text.text[0]))
+	strchar(history[cur_line], ev.text.text[0]);
+  }
 }
 
 char* dinkc_console_get_cur_line()

@@ -178,8 +178,8 @@ void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
 
 	if (match == NULL && i == 0)
 	  {
-	    msgbox_init_error("Invalid --refdir option: %s and/or %s are not accessible.",
-			      dir_graphics_ci, dir_tiles_ci);
+	    msgbox("Invalid --refdir option: %s and/or %s are not accessible.",
+		   dir_graphics_ci, dir_tiles_ci);
 	    exit(1);
 	  }
 
@@ -208,7 +208,7 @@ void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
 	asprintf_append(&msg, "The reference directory contains among others the "
 		"'dink/graphics/' and 'dink/tiles/' directories (as well as "
 		"D-Mods).");
-	msgbox_init_error(msg);
+	msgbox(msg);
 	free(msg);
 	exit(1);
       }
@@ -252,7 +252,7 @@ void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
 	      asprintf_append(&msg, "- ./%s\n", dmoddir_opt);
 	    asprintf_append(&msg, "- %s (refdir is '%s')", dmoddir, refdir);
 
-	    msgbox_init_error(msg);
+	    msgbox(msg);
 	    free(msg);
 	    exit(1);
 	  }

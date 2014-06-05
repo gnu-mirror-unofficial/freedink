@@ -34,6 +34,8 @@
 #include <stdarg.h>
 #include <string.h>
 
+// TODO SDL2: use SDL_Log*
+
 char last_debug[200];
 int debug_mode = 0;
 static enum log_priority cur_priority  = LOG_PRIORITY_ERROR;

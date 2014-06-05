@@ -93,14 +93,14 @@ static void draw_wait()
 	{
 	  SDL_Rect dst = {232, 0, GFX_k[seq[423].frame[7]].k->w, GFX_k[seq[423].frame[7]].k->h};
 	  SDL_BlitSurface(GFX_k[seq[423].frame[7]].k, NULL, GFX_lpDDSBack, &dst);
-	  SDL_UpdateRects(GFX_lpDDSBack, 1, &dst);
+	  flip_it();
 	  please_wait = 0;
 	}
       else
 	{
 	  SDL_Rect dst = {232, 0, GFX_k[seq[423].frame[8]].k->w, GFX_k[seq[423].frame[8]].k->h};
 	  SDL_BlitSurface(GFX_k[seq[423].frame[8]].k, NULL, GFX_lpDDSBack, &dst);
-	  SDL_UpdateRects(GFX_lpDDSBack, 1, &dst);
+	  flip_it();
 	  please_wait = 1;
 	}
     }
@@ -271,7 +271,7 @@ void load_sprite_pak(char seq_path_prefix[100], int seq_no, int delay, int xoffs
 	 graphics in v1.08. */
 
       if (!truecolor)
-	SDL_SetPalette(GFX_k[myslot].k, SDL_LOGPAL, GFX_real_pal, 0, 256);
+	SDL_SetPaletteColors(GFX_k[myslot].k->format->palette, GFX_real_pal, 0, 256);
 
       Uint8 *p = (Uint8 *)GFX_k[myslot].k->pixels;
       Uint8 *last = p + GFX_k[myslot].k->h * GFX_k[myslot].k->pitch;
@@ -297,7 +297,8 @@ void load_sprite_pak(char seq_path_prefix[100], int seq_no, int delay, int xoffs
 		*p = 30;   // darker white
 	      p++;
 	    }
-	  SDL_SetColorKey(GFX_k[myslot].k, SDL_SRCCOLORKEY|SDL_RLEACCEL, 255);
+	  SDL_SetColorKey(GFX_k[myslot].k, SDL_TRUE, 255);
+	  SDL_SetSurfaceRLE(GFX_k[myslot].k, 1);
 	  /* Force RLE encoding now to save memory space */
 	  SDL_BlitSurface(GFX_k[myslot].k, NULL, GFX_lpDDSTrick2, NULL);
 	}
@@ -310,7 +311,8 @@ void load_sprite_pak(char seq_path_prefix[100], int seq_no, int delay, int xoffs
 		*p = 249;    // brighter black
 	      p++;
 	    }
-	  SDL_SetColorKey(GFX_k[myslot].k, SDL_SRCCOLORKEY|SDL_RLEACCEL, 0);
+	  SDL_SetColorKey(GFX_k[myslot].k, SDL_TRUE, 0);
+	  SDL_SetSurfaceRLE(GFX_k[myslot].k, 1);
 	  /* Force RLE encoding now to save memory space */
 	  SDL_BlitSurface(GFX_k[myslot].k, NULL, GFX_lpDDSTrick2, NULL);
 	}
@@ -523,16 +525,17 @@ void load_sprites(char seq_path_prefix[100], int seq_no, int delay, int xoffset,
       /** Configure current frame **/
       
       /* Disable alpha in 32bit BMPs, like the original engine */
-      SDL_SetAlpha(GFX_k[myslot].k, 0, SDL_ALPHA_OPAQUE);
+      SDL_SetSurfaceBlendMode(GFX_k[myslot].k, SDL_BLENDMODE_NONE);
       /* Set transparent color: either black or white */
       if (black)
-	SDL_SetColorKey(GFX_k[myslot].k, SDL_SRCCOLORKEY|SDL_RLEACCEL,
+	SDL_SetColorKey(GFX_k[myslot].k, SDL_TRUE,
 			SDL_MapRGB(GFX_k[myslot].k->format, 0, 0, 0));
       else
-	SDL_SetColorKey(GFX_k[myslot].k, SDL_SRCCOLORKEY|SDL_RLEACCEL,
+	SDL_SetColorKey(GFX_k[myslot].k, SDL_TRUE,
 			SDL_MapRGB(GFX_k[myslot].k->format, 255, 255, 255));
-      
+
       /* Force RLE encoding now to save memory space */
+      SDL_SetSurfaceRLE(GFX_k[myslot].k, 1);
       SDL_BlitSurface(GFX_k[myslot].k, NULL, GFX_lpDDSTrick2, NULL);
       /* Note: there is definitely a performance improvement when
 	 using RLEACCEL under truecolor mode (~80%CPU -> 70%CPU) */

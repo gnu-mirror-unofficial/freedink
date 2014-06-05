@@ -29,8 +29,9 @@
 #include <math.h>
 
 #include "SDL.h"
+#include "SDL_syswm.h"
 #include "SDL_image.h"
-#include "SDL_rotozoom.h"
+#include "SDL2_rotozoom.h"
 
 #include "freedink_xpm.h"
 #include "io_util.h"
@@ -47,18 +48,6 @@
 
 /* Is the screen depth more than 8bit? */
 int truecolor = 0;
-
-// // DELETEME
-// LPDIRECTDRAW            lpDD = NULL;           // DirectDraw object
-// //LPDIxRECTDRAWSURFACE     lpDDSOne;       // Offscreen surface 1
-
-// LPDIRECTDRAWSURFACE     lpDDSPrimary = NULL;   // DirectDraw primary surface
-// LPDIRECTDRAWSURFACE     lpDDSBack = NULL;      // DirectDraw back surface
-
-// LPDIRECTDRAWSURFACE     lpDDSTwo = NULL;       // Offscreen surface 2
-// LPDIRECTDRAWSURFACE     lpDDSTrick = NULL;       // Offscreen surface 2
-// LPDIRECTDRAWSURFACE     lpDDSTrick2 = NULL;       // Offscreen surface 2
-
 
 SDL_Surface *GFX_lpDDSBack = NULL; /* Backbuffer and link to physical
 				      screen*/
@@ -88,6 +77,13 @@ SDL_Surface *GFX_lpDDSTrick = NULL;
 /* Used in freedink.cpp and update_frame.cpp */
 SDL_Surface *GFX_lpDDSTrick2 = NULL;
 
+/* Main window and associated renderer */
+SDL_Window* window = NULL;
+SDL_Renderer* renderer = NULL;
+/* Streaming texture to push software buffer -> hardware */
+SDL_Texture* render_texture = NULL;
+/* Intermediary texture to convert 8bit->32bit in non-truecolor */
+SDL_Surface *rgba_screen = NULL;
 
 /* Reference palette: this is the canonical Dink palette, loaded from
    TS01.bmp (for freedink) and esplash.bmp (for freedinkedit). The
@@ -103,8 +99,6 @@ double truecolor_fade_brightness = 256;
 Uint32 truecolor_fade_lasttick = -1;
 
 
-static int cur_video_flags = 0;
-
 /**
  * Check if the graphics system is initialized, so we know if we can
  * use it to display error messages to the user
@@ -113,52 +107,6 @@ static enum gfx_init_state init_state = GFX_NOT_INITIALIZED;
 enum gfx_init_state gfx_get_init_state()
 {
   return init_state;
-}
-
-
-void gfx_dumpflags(Uint32 flags)
-{
-  char buf[256]; // enough to display all flags
-
-  sprintf(buf, "0x%8.8x", flags);
-
-  strcat(buf, " ");
-  char c[2] = "x";
-  int i = 32-1;
-  for (; i >= 0; i--)
-    {
-      unsigned int b = flags >> i;
-      c[0] = '0' + (b & 0x1);
-      strcat(buf, c);
-    }
-
-  if (flags & SDL_HWSURFACE)
-    strcat(buf, " SDL_HWSURFACE");
-  else
-    strcat(buf, " SDL_SWSURFACE");
-	
-  if (flags & SDL_HWPALETTE)
-    strcat(buf, " | SDL_HWPALETTE");
-  
-  if (flags & SDL_FULLSCREEN)
-    strcat(buf, " | SDL_FULLSCREEN");
-  
-  if (flags & SDL_DOUBLEBUF)
-    strcat(buf, " | SDL_DOUBLEBUF");
-  
-  if (flags & SDL_SRCCOLORKEY)
-    strcat(buf, " | SDL_SRCCOLORKEY");
-  
-  if (flags & SDL_SRCALPHA)
-    strcat(buf, " | SDL_SRCALPHA");
-  
-  if (flags & SDL_RLEACCEL)
-    strcat(buf, " | SDL_RLEACCEL");
-  
-  if (flags & SDL_RLEACCELOK)
-    strcat(buf, " | SDL_RLEACCELOK");
-
-  log_info(buf);
 }
 
 /**
@@ -176,112 +124,118 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
       return -1;
     }
 
-  const SDL_VideoInfo* info = SDL_GetVideoInfo();
+  log_info("Truecolor mode: %s", truecolor ? "on" : "off");
 
-  if (info->wm_available)
+  window = SDL_CreateWindow(PACKAGE_STRING,
+    SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+    640, 480,
+    windowed == GFX_WINDOWED ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
+  /* Note: SDL_WINDOW_FULLSCREEN[!_DESKTOP] may not respect aspect ratio */
+  if (window == NULL)
     {
-      SDL_Surface *icon = NULL;
-      SDL_WM_SetCaption(PACKAGE_STRING, NULL);
-      
-      if ((icon = IMG_ReadXPMFromArray(freedink_xpm)) == NULL)
-	{
-	  log_error("Error loading icon: %s", IMG_GetError());
-	}
-      else
-	{
-	  SDL_WM_SetIcon(icon, NULL);
-	  SDL_FreeSurface(icon);
-	}
-    }
-
-
-  /* SDL_HWSURFACE gives direct 2D memory access if that's possible */
-  /* SDL_DOUBLEBUF is supposed to enable hardware double-buffering
-     and is a pre-requisite for SDL_Flip to use hardware, see
-     http://www.libsdl.org/cgi/docwiki.cgi/FAQ_20Hardware_20Surfaces_20Flickering */
-  int flags = SDL_HWSURFACE | SDL_DOUBLEBUF;
-
-  if (windowed != GFX_WINDOWED)
-    flags |= SDL_FULLSCREEN;
-
-
-  int bits_per_pixel = 8;
-  if (truecolor)
-    {
-      /* Recommended depth: */
-      log_info("Recommended depth is %d", info->vfmt->BitsPerPixel);
-      bits_per_pixel = info->vfmt->BitsPerPixel;
-      
-      if (bits_per_pixel < 15)
-	{
-	  /* Running truecolor mode in 8bit resolution? Let's emulate,
-	     the user must know what he's doing. */
-	  bits_per_pixel = 15;
-	  log_info("Emulating truecolor mode within 8bit mode");
-	}
-    }
-  else
-    {
-      /* SDL_HWPALETTE makes sure we can use all the colors we need
-	 (override system palette reserved colors?) */
-      flags |= SDL_HWPALETTE;
-    }
-  log_info("Requesting depth %d", bits_per_pixel);
-
-  putenv("SDL_VIDEO_CENTERED=1");
-  putenv("SDL_ASPECT_RATIO=4:3"); /* used by PSP to keep aspect ratio */
-  if (GFX_lpDDSBack == NULL)
-    {
-      /* Hardware mode */
-      log_info("Requesting video flags: "); gfx_dumpflags(flags);
-      GFX_lpDDSBack = SDL_SetVideoMode(640, 480, bits_per_pixel, flags);
-      if (GFX_lpDDSBack == NULL)
-	log_warn("Unable to use hardware mode: %s", SDL_GetError());
-    }
-  if (GFX_lpDDSBack == NULL)
-    {
-      /* Software mode - in theory SDL automatically fallbacks to
-	 software mode if hardware mode isn't available, but some
-	 architectures need to do it explicitely, e.g. PSP's
-	 640x480stretch mode that only work with
-	 SDL_SWSURFACE|SDL_FULLSCREEN */
-      flags &= ~SDL_HWSURFACE;
-      flags &= ~SDL_DOUBLEBUF;
-      flags |= SDL_SWSURFACE;
-      log_info("Requesting video flags: "); gfx_dumpflags(flags);
-      GFX_lpDDSBack = SDL_SetVideoMode(640, 480, bits_per_pixel, flags);
-      if (GFX_lpDDSBack == NULL)
-	log_error("Unable to use software fullscreen mode: %s", SDL_GetError());
-    }
-  if (GFX_lpDDSBack == NULL)
-    {
-      init_set_error_msg("Unable to set 640x480 video: %s\n", SDL_GetError());
+      init_set_error_msg("Unable to create 640x480 window: %s\n", SDL_GetError());
       return -1;
     }
-  log_info("Obtained video flags:   "); gfx_dumpflags(flags);
-  cur_video_flags = flags;
-  log_info("Video format: %d-bit R=0x%08x G=0x%08x B=0x%08x A=0x%08x",
-	   GFX_lpDDSBack->format->BitsPerPixel,
-	   GFX_lpDDSBack->format->Rmask, GFX_lpDDSBack->format->Gmask,
-	   GFX_lpDDSBack->format->Bmask, GFX_lpDDSBack->format->Amask);
 
-  char buf[1024];
-  if (SDL_VideoDriverName(buf, 1024) != NULL)
-    log_info("INFO: Video driver is '%s'", buf);
-  else
-    log_info("INFO: Unable to determine video driver name");
-  if (GFX_lpDDSBack->flags & SDL_HWSURFACE)
-    log_info("INFO: Using hardware video mode.");
-  else
-    log_info("INFO: Not using a hardware video mode.");
-  log_info("INFO: SDL depth is %d", bits_per_pixel);
+  log_info("Video driver: %s", SDL_GetCurrentVideoDriver());
+  if (0) {
+    // Segfaults on quit:
+    //SDL_SetHint(SDL_HINT_FRAMEBUFFER_ACCELERATION, "opengl");
+    SDL_Surface* window_surface = SDL_GetWindowSurface(window);
+    log_info("Video fall-back surface (unused): %s",
+	     SDL_GetPixelFormatName(window_surface->format->format));
+  }
+  log_info("Video fall-back surface (unused): %s",
+	   SDL_GetPixelFormatName(SDL_GetWindowPixelFormat(window)));
 
+  /* Renderer */
+  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
+  /* TODO SDL2: make it configurable for speed: nearest/linear/DX-specific-best */
+  //SDL_SetHint(SDL_HINT_RENDER_DRIVER, "software");
+  /* TODO SDL2: make render driver configurable to ease software-mode testing */
+  renderer = SDL_CreateRenderer(window, -1/*autoselect*/, 0);
+  /* TODO SDL2: optionally pass SDL_RENDERER_PRESENTVSYNC to 3rd param */
+  if (renderer == NULL)
+    {
+      init_set_error_msg("Unable to create renderer: %s\n", SDL_GetError());
+      return -1;
+    }
+  // Renderer reset window's size, set it back to avoid window to stay
+  // full size after fullscreen toggling
+  SDL_SetWindowSize(window, 640, 480);
+  // Specify aspect ratio
+  SDL_RenderSetLogicalSize(renderer, 640, 480);
 
-  /* Hide mouse */
-  SDL_ShowCursor(SDL_DISABLE);
+  SDL_RendererInfo info;
+  SDL_GetRendererInfo(renderer, &info);
+  log_info("Renderer driver: %s", info.name);
+  /* Uint32 flags a mask of supported renderer flags; see Remarks for details */
+  for (int i = 0; i < info.num_texture_formats; i++)
+    log_info("Renderer texture formats: %s",
+	     SDL_GetPixelFormatName(info.texture_formats[i]));
+  log_info("Renderer max texture width: %d", info.max_texture_width);
+  log_info("Renderer max texture height: %d", info.max_texture_height);
 
-  /* Disable Alt-Tab and any other window-manager shortcuts */
-  /* SDL_WM_GrabInput(SDL_GRAB_ON); */
+  /* Window configuration */
+  {
+    // TODO SDL2: add transparency
+    SDL_Surface *icon = NULL;
+    if ((icon = IMG_ReadXPMFromArray(freedink_xpm)) == NULL)
+      {
+	log_error("Error loading icon: %s", IMG_GetError());
+      }
+    else
+      {
+	SDL_SetWindowIcon(window, icon);
+	SDL_FreeSurface(icon);
+      }
+  }
+
+  /* Create destination surface */
+  {
+    Uint32 Rmask=0, Gmask=0, Bmask=0, Amask=0; int bpp=0;
+    if (!truecolor) {
+      SDL_PixelFormatEnumToMasks(SDL_PIXELFORMAT_INDEX8, &bpp,
+				 &Rmask, &Gmask, &Bmask, &Amask);
+    } else {
+      SDL_PixelFormatEnumToMasks(SDL_PIXELFORMAT_RGB888, &bpp,
+				 &Rmask, &Gmask, &Bmask, &Amask);
+    }
+    GFX_lpDDSBack = SDL_CreateRGBSurface(0, 640, 480, bpp,
+      Rmask, Gmask, Bmask, Amask);
+    log_info("Main buffer: %s %d-bit R=0x%08x G=0x%08x B=0x%08x A=0x%08x",
+	     SDL_GetPixelFormatName(GFX_lpDDSBack->format->format),
+	     bpp, Rmask, Gmask, Bmask, Amask);
+  }
+
+  /* Surface is then transfered to destination texture */
+  {
+    render_texture = SDL_CreateTexture(renderer,
+      SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 640, 480);
+    if (render_texture == NULL) {
+      init_set_error_msg("Unable to create render texture: %s", SDL_GetError());
+      return -1;
+    }
+
+    Uint32 format;
+    int access, w, h;
+    SDL_QueryTexture(render_texture, &format, &access, &w, &h);
+    log_info("Render texture: format: %s", SDL_GetPixelFormatName(format));
+    char* str_access;
+    switch(access) {
+    case SDL_TEXTUREACCESS_STATIC:
+      str_access = "SDL_TEXTUREACCESS_STATIC"; break;
+    case SDL_TEXTUREACCESS_STREAMING:
+      str_access = "SDL_TEXTUREACCESS_STREAMING"; break;
+    case SDL_TEXTUREACCESS_TARGET:
+      str_access = "SDL_TEXTUREACCESS_TARGET"; break;
+    default:
+      str_access = "Unknown!"; break;
+    }
+    log_info("Render texture: access: %s", str_access);
+    log_info("Render texture: width : %d", w);
+    log_info("Render texture: height: %d", h);
+  }
 
 
   /* Default palette (may be used by early init error messages) */
@@ -301,12 +255,20 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
      image to the internal palette at load time - and we never change
      the buffer's palette again, so we're sure there isn't any
      conversion even if we change the screen palette: */
-  if (!truecolor)
-    SDL_SetPalette(GFX_lpDDSBack, SDL_LOGPAL, GFX_real_pal, 0, 256);
-  GFX_lpDDSTwo    = SDL_DisplayFormat(GFX_lpDDSBack);
-  GFX_lpDDSTrick  = SDL_DisplayFormat(GFX_lpDDSBack);
-  GFX_lpDDSTrick2 = SDL_DisplayFormat(GFX_lpDDSBack);
+  if (!truecolor) {
+    SDL_SetPaletteColors(GFX_lpDDSBack->format->palette, GFX_real_pal, 0, 256);
 
+    Uint32 render_texture_format;
+    SDL_QueryTexture(render_texture, &render_texture_format, NULL, NULL, NULL);
+    Uint32 Rmask, Gmask, Bmask, Amask; int bpp;
+    SDL_PixelFormatEnumToMasks(render_texture_format, &bpp,
+      &Rmask, &Gmask, &Bmask, &Amask);
+    rgba_screen = SDL_CreateRGBSurface(0, 640, 480, bpp,
+      Rmask, Gmask, Bmask, Amask);
+  }
+  GFX_lpDDSTwo    = SDL_ConvertSurface(GFX_lpDDSBack, GFX_lpDDSBack->format, 0);
+  GFX_lpDDSTrick  = SDL_ConvertSurface(GFX_lpDDSBack, GFX_lpDDSBack->format, 0);
+  GFX_lpDDSTrick2 = SDL_ConvertSurface(GFX_lpDDSBack, GFX_lpDDSBack->format, 0);
 
   /* Display splash picture, as early as possible */
   {
@@ -327,12 +289,14 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
 	/* Copy splash to the background buffer so that D-Mod can
 	   start an effect from it (e.g. Pilgrim Quest's burning
 	   splash screen effect) */
-	SDL_BlitSurface(splash, NULL, GFX_lpDDSTwo, NULL);
+	if (SDL_BlitSurface(splash, NULL, GFX_lpDDSTwo, NULL) < 0)
+	  log_error("Error blitting splash to temp buffer");
 	SDL_FreeSurface(splash);
       }
     
     /* Copy splash screen (again) to the screen during loading time */
-    SDL_BlitSurface(GFX_lpDDSTwo, NULL, GFX_lpDDSBack, NULL);
+    if (SDL_BlitSurface(GFX_lpDDSTwo, NULL, GFX_lpDDSBack, NULL) < 0)
+      log_error("Error blitting splash to back buffer");
 
     flip_it();
   }
@@ -346,22 +310,6 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
   /* Compute fade cache if necessary */
   gfx_fade_init();
 
-  /* Mouse */
-  /* Center mouse and reset relative positionning */
-  SDL_WarpMouse(320, 240);
-  SDL_PumpEvents();
-  SDL_GetRelativeMouseState(NULL, NULL);
-
-
-  /* SDL_MouseMotionEvent: If the cursor is hidden (SDL_ShowCursor(0))
-     and the input is grabbed (SDL_WM_GrabInput(SDL_GRAB_ON)), then
-     the mouse will give relative motion events even when the cursor
-     reaches the edge of the screen. This is currently only
-     implemented on Windows and Linux/Unix-alikes. */
-  /* So it's not portable and it blocks Alt+Tab, so let's try
-     something else - maybe enable it as a command line option. */
-  /* SDL_WM_GrabInput(SDL_GRAB_ON); */
-
   /* make all pointers to NULL */
   memset(&gfx_tiles, 0, sizeof(gfx_tiles));
   memset(&k, 0, sizeof(k));
@@ -373,57 +321,6 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
   
   init_state = GFX_INITIALIZED;
   return 0;
-}
-
-/**
- * Failsafe graphics mode to display initialization error messages
- */
-int gfx_init_failsafe()
-{
-  /* Init graphics subsystem */
-  if (SDL_WasInit(SDL_INIT_VIDEO) == 0 && SDL_InitSubSystem(SDL_INIT_VIDEO) == -1)
-    {
-      log_fatal("Unable to init failsafe video: %s", SDL_GetError());
-      return -1;
-    }
-
-  const SDL_VideoInfo* info = SDL_GetVideoInfo();
-  if (info->wm_available)
-    {
-      SDL_WM_SetCaption(PACKAGE_STRING " - Initialization error", NULL);
-      SDL_Surface *icon = IMG_ReadXPMFromArray(freedink_xpm);
-      if (icon != NULL)
-	{
-	  SDL_WM_SetIcon(icon, NULL);
-	  SDL_FreeSurface(icon);
-	}
-    }
-
-  putenv("SDL_VIDEO_CENTERED=1");
-  putenv("SDL_ASPECT_RATIO=4:3"); /* used by PSP to keep aspect ratio */
-#ifdef _PSP
-  //GFX_lpDDSBack = SDL_SetVideoMode(480, 272, 32, SDL_HWSURFACE | SDL_FULLSCREEN);
-  GFX_lpDDSBack = SDL_SetVideoMode(640, 480, 32, SDL_SWSURFACE | SDL_FULLSCREEN);
-#else
-  GFX_lpDDSBack = SDL_SetVideoMode(640, 480, 0, SDL_DOUBLEBUF);
-#endif
-  if (GFX_lpDDSBack == NULL)
-    {
-      log_fatal("Unable to set failsafe video mode: %s", SDL_GetError());
-      return -1;
-    }
-
-  if (GFX_lpDDSBack->format->BitsPerPixel > 8)
-    truecolor = 1;
-
-  /* Default physical and reference palettes */
-  gfx_palette_reset();
-  gfx_palette_get_phys(GFX_real_pal);
-
-  /* Set palette immediately (don't wait for flip_it()) */
-  SDL_SetPalette(GFX_lpDDSBack, SDL_PHYSPAL|SDL_LOGPAL, GFX_real_pal, 0, 256);
-
-  return gfx_fonts_init_failsafe();
 }
 
 /**
@@ -489,7 +386,7 @@ static SDL_Surface* load_bmp_internal(char *filename, SDL_RWops *rw, int from_me
 	 'DX-bug-messed' Dink palette (GFX_real_pal with overwritten
 	 indexes 0 and 255). */
       /* converted = SDL_ConvertSurface(image, image->format, image->flags); */
-      SDL_Surface *converted = SDL_DisplayFormat(image);
+      SDL_Surface *converted = SDL_ConvertSurface(image, image->format, 0);
 
       /* TODO: the following is probably unnecessary, I think that's
 	 exactly what SDL_DisplayFormat does: convert the surface to
@@ -500,7 +397,7 @@ static SDL_Surface* load_bmp_internal(char *filename, SDL_RWops *rw, int from_me
 	   other surfaces/buffers.  Blits should also be faster(?).
 	   Alternatively we could replace SDL_BlitSurface with a
 	   wrapper that sets identical palettes before the blits. */
-	SDL_SetPalette(converted, SDL_LOGPAL, GFX_real_pal, 0, 256);
+	SDL_SetPaletteColors(converted->format->palette, GFX_real_pal, 0, 256);
 	
 	/* Blit the copy back to the original, with a potentially
 	   different palette, which triggers color conversion to
@@ -553,23 +450,22 @@ int gfx_blit_nocolorkey(SDL_Surface *src, SDL_Rect *src_rect,
 {
   int retval = -1;
 
-  Uint32 colorkey_flags, colorkey, alpha_flags, alpha;
-  colorkey_flags = src->flags & (SDL_SRCCOLORKEY|SDL_RLEACCEL);
-#if SDL_VERSION_ATLEAST(1, 3, 0)
-  SDL_GetColorKey(src, &colorkey);
-  /* 1.3 TODO: alpha */
-#else
-  colorkey = src->format->colorkey;
-  alpha_flags = src->flags & (SDL_SRCALPHA|SDL_RLEACCEL);
-  alpha = src->format->alpha;
-#endif
-  SDL_SetColorKey(src, 0, -1);
-  SDL_SetAlpha(src, 0, -1);
-  
+  Uint32 colorkey;
+  SDL_BlendMode blendmode;
+  Uint32 rle_flags = src->flags & SDL_RLEACCEL;
+  int has_colorkey = (SDL_GetColorKey(src, &colorkey) != -1);
+  SDL_GetSurfaceBlendMode(src, &blendmode);
+
+  if (has_colorkey)
+    SDL_SetColorKey(src, SDL_FALSE, 0);
+  SDL_SetSurfaceBlendMode(src, SDL_BLENDMODE_NONE);
   retval = SDL_BlitSurface(src, src_rect, dst, dst_rect);
   
-  SDL_SetColorKey(src, colorkey_flags, colorkey);
-  SDL_SetAlpha(src, alpha_flags, alpha);
+  SDL_SetSurfaceBlendMode(src, blendmode);
+  if (has_colorkey)
+    SDL_SetColorKey(src, SDL_TRUE, colorkey);
+  if (rle_flags)
+    SDL_SetSurfaceRLE(src, 1);
 
   return retval;
 }
@@ -602,17 +498,12 @@ int gfx_blit_stretch(SDL_Surface *src_surf, SDL_Rect *src_rect,
       /* Keep the same transparency / alpha parameters (SDL_gfx bug,
 	 report submitted to the author: SDL_gfx adds transparency to
 	 non-transparent surfaces) */
-      int colorkey_flag = src_surf->flags & SDL_SRCCOLORKEY;
       Uint8 r, g, b, a;
-#if SDL_VERSION_ATLEAST(1, 3, 0)
       Uint32 colorkey;
-      SDL_GetColorKey(src_surf, &colorkey);
-# else
-      Uint32 colorkey = src_surf->format->colorkey;
-#endif
+      int colorkey_enabled = (SDL_GetColorKey(src_surf, &colorkey) != -1);
       SDL_GetRGBA(colorkey, src_surf->format, &r, &g, &b, &a);
 
-      SDL_SetColorKey(scaled, colorkey_flag,
+      SDL_SetColorKey(scaled, colorkey_enabled,
 		      SDL_MapRGBA(scaled->format, r, g, b, a));
       /* Don't mess with alpha transparency, though: */
       /* int alpha_flag = src->flags & SDL_SRCALPHA; */
@@ -641,34 +532,45 @@ int gfx_blit_stretch(SDL_Surface *src_surf, SDL_Rect *src_rect,
  */
 void flip_it(void)
 {
-  /* We work directly on either lpDDSBack (no lpDDSPrimary as in
-     the original game): the double buffer (Back) is directly
-     managed by SDL; SDL_Flip is used to refresh the physical
-     screen. */
+  /* For now we do all operations on the CPU side and perform a big
+     texture update at each frame; this is necessary to perform
+     palette changes. */
+  // TODO SDL2: implement truecolor mode on GPU side
 
-  if (!truecolor)
-    gfx_palette_apply_phys();
-  
   if (truecolor_fade_brightness < 256)
     gfx_fade_apply(truecolor_fade_brightness);
 
-  SDL_Flip(GFX_lpDDSBack);
+  /* Convert to destination buffer format */
+  SDL_Surface* source = GFX_lpDDSBack;
+  if (!truecolor) {
+    /* Convert 8-bit buffer for truecolor texture upload */
+    source = rgba_screen;
+
+    /* Use "physical" screen palette */
+    SDL_Color pal_copy[256];
+    SDL_Color pal_phys[256];
+    memcpy(pal_copy, GFX_lpDDSBack->format->palette->colors, sizeof(pal_copy));
+    gfx_palette_get_phys(pal_phys);
+    SDL_SetPaletteColors(GFX_lpDDSBack->format->palette, pal_phys, 0, 256);
+
+    if (SDL_BlitSurface(GFX_lpDDSBack, NULL, rgba_screen, NULL) < 0) {
+      log_error("ERROR: 8-bit->truecolor conversion failed: %s", SDL_GetError());
+    }
+    SDL_SetPaletteColors(GFX_lpDDSBack->format->palette, pal_copy, 0, 256);
+  }
+
+  SDL_UpdateTexture(render_texture, NULL, source->pixels, source->pitch);
+  SDL_RenderClear(renderer);
+  SDL_RenderCopy(renderer, render_texture, NULL, NULL);
+  SDL_RenderPresent(renderer);
 }
 
-/* Like SDL_WM_ToggleFullScreen(), except that it works under more
-   platforms */
-void gfx_toggle_fullscreen(void)
+void gfx_toggle_fullscreen()
 {
-  if ((cur_video_flags & SDL_FULLSCREEN) == SDL_FULLSCREEN)
-    cur_video_flags &= ~SDL_FULLSCREEN;
-  else
-    cur_video_flags |= SDL_FULLSCREEN;
-  GFX_lpDDSBack = SDL_SetVideoMode(640, 480, GFX_lpDDSBack->format->BitsPerPixel, cur_video_flags);
-
-  /* Palette was lost in the process */
-  if (!truecolor)
-    SDL_SetPalette(GFX_lpDDSBack, SDL_LOGPAL, GFX_real_pal, 0, 256);
-  gfx_palette_restore_phys();
+  SDL_SetWindowFullscreen(window,
+    (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN)
+    ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
+  // Note: software is buggy in 2.0.2: it doesn't resize the surface
 }
 
 /**

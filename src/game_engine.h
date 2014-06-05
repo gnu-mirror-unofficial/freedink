@@ -201,7 +201,6 @@ extern int flife, fexp, fstrength, fdefense, fgold, fmagic,
 /* Sound - BGM */
 extern /*bool*/int midi_active;
 extern /*bool*/int sound_on;
-extern /*bool*/int cd_inserted;
 
 
 /* dink.dat */

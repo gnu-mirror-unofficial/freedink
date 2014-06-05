@@ -41,70 +41,10 @@
 #include "paths.h"
 #include "log.h"
 
-/* CD-ROM handle */
-#if SDL_VERSION_ATLEAST(1, 3, 0)
-static void* cdrom = NULL;
-#define SDL_CDStatus(cdrom) -1 /* CD_ERROR */
-#define SDL_CDStop(cdrom) 0
-#define CD_INDRIVE(i) 0
-#define SDL_CDPlayTracks(cdrom, start_track, start_frame, ntracks, nframes) -1
-#define SDL_CDClose(cdrom) 0
-#else
-static SDL_CD *cdrom = NULL;
-#endif
-
 /* Current background music (not cd) */
 static Mix_Music *music_data = NULL;
 static char* last_midi = NULL;
-int last_cd_track = 0;
 static int loop_midi = 0;
-
-/*
- * Audio CD Functions
- */
-
-/**
- * Return whether an audio track currently playing
- */
-// TODO: test
-int
-cdplaying(void)
-{
-#if SDL_VERSION_ATLEAST(1, 3, 0)
-  return 0;
-#else
-  return (SDL_CDStatus(cdrom) == CD_PLAYING);
-#endif
-}
-
-int
-killcd()
-{
-  last_cd_track = 0;	
-  return SDL_CDStop(cdrom);
-} 
-
-/**
- * Play a CD track
- */
-int
-PlayCD(int cd_track)
-{
-  Mix_HaltMusic();
-
-  last_cd_track = cd_track;
-
-  /* Play track #cd_track */
-  if (cdrom == NULL)
-    return -1;
-
-  if (CD_INDRIVE(SDL_CDStatus(cdrom)))
-    return SDL_CDPlayTracks(cdrom, cd_track - 1, 0, 1, 0);
-  else
-    return -1;
-} 
-
-
 
 /*
  * MIDI functions
@@ -206,10 +146,6 @@ int PlayMidi(char *midi_filename)
     free(last_midi);
   last_midi = strdup(midi_filename);
 
-  /* Stop CD track */
-  log_info("Killing cd...");
-  killcd();
-
 
   /* Stop whatever is playing before we play something else. */
   Mix_HaltMusic ();
@@ -280,37 +216,21 @@ void check_midi(void)
     return;
 
   /* There is music information associated with this screen */
-  if (map.music[*pmap] == -1)
-    /* Kill cd music */
-    {
-      log_info("Stopped cd");
-      killcd();
-    }
-  else if (map.music[*pmap] > 1000)
-    /* Try to play a CD track */
-    {
-      int cd_track = map.music[*pmap] - 1000;
-      if (cd_inserted)
-	/* Play track */
-	{
-	  /* Do nothing if already playing the right track */
-	  if (cd_track == last_cd_track
-	      && cdplaying())
-	    return;
-	 
-	  if (PlayCD(cd_track) >= 0)
-	    return; /* Playing fine */
-	}
-      /* If couldn't play the CD track, fallback to midi */
-      sprintf(midi_filename, "%d.mid", map.music[*pmap] - 1000);
-      PlayMidi(midi_filename);
-    }
-  else
-    {
-      /* Just play the specified MIDI */
-      sprintf(midi_filename, "%d.mid", map.music[*pmap]);
-      PlayMidi(midi_filename);
-    }
+  if (map.music[*pmap] != -1) {
+    if (map.music[*pmap] > 1000)
+      /* Try to play a CD track (unsupported) - fall back to MIDI */
+      {
+	int cd_track = map.music[*pmap] - 1000;
+	sprintf(midi_filename, "%d.mid", map.music[*pmap] - 1000);
+	PlayMidi(midi_filename);
+      }
+    else
+      {
+	/* Just play the specified MIDI */
+	sprintf(midi_filename, "%d.mid", map.music[*pmap]);
+	PlayMidi(midi_filename);
+      }
+  }
 }
 
 /**
@@ -319,59 +239,15 @@ void check_midi(void)
  */
 void bgm_init(void)
 {
-#if SDL_VERSION_ATLEAST(1, 3, 0)
-  log_info("No CDROM support (SDL 1.3 dropped it)");
-#else
-  if (SDL_Init(SDL_INIT_CDROM) == -1)
-    {
-      log_error("SDL_Init: %s", SDL_GetError());
-      return;
-    }
-
-  /* Check for CD drives */
-  if (!SDL_CDNumDrives()){
-    /* None found */
-    log_info("No CDROM devices available");
-    return;
-  }
-  
-  /* Open the default drive */
-  cdrom = SDL_CDOpen(0);
-  
-  /* Did if open? Check if cdrom is NULL */
-  if (cdrom == NULL)
-    {
-      log_error("Couldn't open drive: %s", SDL_GetError());
-      return;
-    }
-  
-  if (CD_INDRIVE(SDL_CDStatus(cdrom)))
-    if (cdrom->numtracks == 19)
-      /* only enable CD for the original game CD; and well, it makes
-	 sense not to try to play the CD anytime the user left a CD in
-	 the drive */
-      cd_inserted = 1;
-  
-  /* This newly opened CD-ROM becomes the default CD used when other
-     CD functions are passed a NULL CD-ROM handle. */
-#endif  
+  log_info("No CDROM support (SDL2 dropped it)");
 }
 
 void bgm_quit(void)
 {
   Mix_HaltMusic();
-  log_info("Shutting down CD stuff.");
-  killcd();
   if (last_midi != NULL)
     free(last_midi);
   last_midi = NULL;
-  if (cdrom != NULL)
-    SDL_CDClose(cdrom);
-  cdrom = NULL;
-#if SDL_VERSION_ATLEAST(1, 3, 0)
-#else
-  SDL_QuitSubSystem(SDL_INIT_CDROM);
-#endif
 }
 
 

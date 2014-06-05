@@ -20,7 +20,7 @@
 # <http://www.gnu.org/licenses/>.
  
 AC_PREREQ(2.61)
-AC_INIT([GNU FreeDink],[108.3],[bug-freedink@gnu.org])
+AC_INIT([GNU FreeDink],[109.0],[bug-freedink@gnu.org])
 AC_CONFIG_AUX_DIR(autotools)
 # For future version of aclocal:
 AC_CONFIG_MACRO_DIR(autotools/macros)
@@ -97,10 +97,13 @@ AM_CONDITIONAL(HAVE_UPX, test "$UPX" != "")
 
 
 # SDL and core libs
-PKG_CHECK_MODULES([SDL], [sdl >= 1.2  SDL_image  SDL_mixer  SDL_ttf >= 2.0.9  SDL_gfx],
-  [CFLAGS="$CFLAGS $SDL_CFLAGS"; LIBS="$SDL_LIBS $LIBS"],
-  AC_MSG_WARN($SDL_PKG_ERRORS); LACK_SDL=1)
-
+PKG_CHECK_MODULES([SDL2], [sdl2 >= 2.0  SDL2_image  SDL2_mixer  SDL2_ttf > 2.0.12],
+  [CFLAGS="$CFLAGS $SDL2_CFLAGS"; LIBS="$SDL2_LIBS $LIBS"],
+  AC_MSG_WARN($SDL2_PKG_ERRORS); LACK_SDL2=1)
+# No support for pkg-config in SDL2_gfx 1.0.0
+AC_CHECK_LIB(SDL2_gfx, pixelColor,
+  LIBS="-lSDL2_gfx $LIBS",
+  AC_MSG_WARN([You need to install SDL2_gfx]); LACK_SDL2_GFX=1)
 
 case "${host}" in
 # (cf. (autoconf.info)Using System Type) (2002)
@@ -199,9 +202,13 @@ echo "Errors and warnings recap:"
 error=0
 warning=0
 
-if test "$LACK_SDL" = 1; then
+if test "$LACK_SDL2" = 1; then
   echo "* You need to install the SDL libraries:"
-  echo "$SDL_PKG_ERRORS"
+  echo "$SDL2_PKG_ERRORS"
+  error=1
+fi
+if test "$LACK_SDL2_GFX" = 1; then
+  echo "* You need to install the SDL2_gfx library"
   error=1
 fi
 if test "$USE_NLS" = no; then

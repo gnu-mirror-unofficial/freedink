@@ -24,7 +24,7 @@
 #define _INIT_H
 
 extern int init(int argc, char *argv[], char* splash_bmp);
-extern void init_set_error_msg(char *fmt, ...);
+extern void init_set_error_msg(const char *fmt, ...);
 extern void log_path(/*bool*/int playing);
 extern void finiObjects();
 

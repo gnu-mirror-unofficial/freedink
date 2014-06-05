@@ -53,31 +53,49 @@ i18n
     Liberation-Sans though.
 
 
-SDL 1.3
+SDL 2.0
 =======
 
-As of 2010-11-01
+As of 2014-06, what was done - and hence what needs testing ;)
 
-[ ] Fix relative mouse movements in the title screen
+- New SDL2 dependencies
 
-[ ] Set window caption and icon
+- Graphics processing currently entirely moved to software.  This
+  doesn't change much from before, since hardware surfaces aren't well
+  supported these days.  Performances are worse than with SDL1 still,
+  due to emphasizing targetting a 3D card, but let's first find a
+  platform where that's a problem.
 
-[ ] Fix fade to black - too fast(?) in non-truecolor mode
-    Actually, it takes the same amount of frames (exactly 5), but I
-    guess that the palette issue below makes is far less striking.
+  We need palette support on the final display to support dynamic
+  palette change in "Lyna's Story" (semi-complete palette inversion)
+  and "Cycles of Evil" (change of colours to match seasons, seems
+  manual and more complex to reproduce than a simple color
+  modulation).
 
-[ ] Fix fade to black - white pixels palette mess E.g.: fade_down()
-    when going out of Dink's house Looks like there's a pixels palette
-    conversion during the backbuffer->frontbuffer blit, instead of a
-    plain palette index substitution :/  Possibly an issue in the SDL
-    1.3 compatibility mode; indeed, SDL_SetPalette now ignores the
-    'flags' (SDL_LOGPAL / SDL_PHYSPAL) entirely.
+  We also need palette processing (dithering/conversion, which I
+  updated for SDL2) for color correctness in non-truecolor mode - but
+  that can be done at graphics loading time, before a hardware upload.
+  That could be necessary to get the same white pixels during
+  fade_down() (which targets #FFFFFF precisely).
 
-[ ] Fix FreeDinkedit text input
+  Last fill_screen() relies on propoer palette loading with
+  reproduction of DX bugs.
 
-[ ] Unfinished: alpha support in gfx_blit_nocolorkey
+  Just recap'ing doc/palettes.txt...
 
-[ ] Fix fullscreen toggle
+- Replaced custom relative mouse motion handling with SDL's
 
-[X] Wrong Pulseaudio detection [reported]
-    http://bugzilla.libsdl.org/show_bug.cgi?id=1072
+- Replaced 'failsafe' SDL window with SDL_ShowSimpleMessageBox()
+
+- Text input (DinkC Console and FreeDinkEdit) now uses SDL_TextInput
+  events
+
+- Updated full-screen toggling (FreeDink and FreeDinkedit)
+
+- Updated joystick
+
+- CD-ROM disabled
+
+- Cleaned-up some 'abort_this_flip' due to not having
+  SDL_SetPalette(PHYS) triggering a flip anymore (since we had to
+  reimplement it..)

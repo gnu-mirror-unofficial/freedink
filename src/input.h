@@ -68,34 +68,13 @@ extern "C"
                                  // (used to compute .button and to release an arrow with the bow)
     // Note: also used by Dinkedit, but with fewer different actions
     
-    /* Only used in the editor (for now): */
-    /* State of the keyboard, SDL-supported keys */
-#if SDL_VERSION_ATLEAST(1, 3, 0)
-    /* SDL 1.3 TODO */
-#else
-    int keystate[SDLK_LAST]; /* current GetAsyncKeyState value, in
-    				cache */
-    int keyjustpressed[SDLK_LAST]; /* true if key was just pressed, false
-    				      if kept pressed or released */
-#endif
-
-    /* Idem, but with unicode characters - layout-independant */
-    char charstate[65536];
-    char charjustpressed[65536];
-    char key2char[65536]; /* to retrieve matching unicode on SDL_KEYUP,
-			     if possible */
-    Uint16 last_unicode; /* last character typed by the user, used for
-			    text input */
-    Uint16 last_nokey_unicode; /* char with no key match, so no KEYUP
-				  support - reset it next time */
-    
     int right,left,up,down; // is this arrow currently pressed?
     int rightd,leftd,upd,downd; // was this arrow just pressed (not maintained pressed)?
     int rightold,leftold,upold,downold; // copy of previous state (used to compute *d)
   };
   extern struct seth_joy sjoy;
 
-  extern int GetKeyboard(int key);
+  extern int GetKeyboard(SDL_Keycode key);
   extern void input_init(void);
   extern void input_quit(void);
   extern void input_set_default_buttons(void);

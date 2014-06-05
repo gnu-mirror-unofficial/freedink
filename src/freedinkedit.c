@@ -44,8 +44,8 @@
 #include <getopt.h>
 
 #include "SDL.h"
-#include "SDL_rotozoom.h"
-#include "SDL_framerate.h"
+#include "SDL2_rotozoom.h"
+#include "SDL2_framerate.h"
 
 #include "init.h"
 #include "dinkvar.h"
@@ -205,6 +205,14 @@ static int m2x,m2y;
 static int m3x,m3y;
 static int cur_tile;
 
+
+/* State of the keyboard, SDL-supported keys */
+/* current GetAsyncKeyState value, in cache */
+int scancodestate[SDL_NUM_SCANCODES];
+/* true if key was just pressed, false if kept pressed or released */
+int scancodejustpressed[SDL_NUM_SCANCODES];
+
+
 /**
  * Get the screen tile under coords x,y
  */
@@ -220,10 +228,6 @@ int xy2screentile(int x, int y)
 // PROC NAMES
 
 /*BOOL*/int initFail(char mess[200] );
-
-int getkeystate(int key);
-int getcharstate(Uint16 character);
-char key_convert(int key);
 
 void draw_map(void);
 void draw_minimap(void);
@@ -602,25 +606,15 @@ int add_new_map(void)
 
 
 
-/* Read key "is pressed?" status from cache */
-int
-getkeystate(int key)
+/* Mark keys meant to be layout-dependent */
+/* Using SDL_Keycode should work, if not let's switch to TextInput */
+int getcharstate(SDL_Keycode ch)
 {
-  if (sjoy.keystate[key])
-    return 1;
-  else
-    return 0;
+  return scancodestate[SDL_GetScancodeFromKey(ch)];
 }
-
-/* Read key "is pressed?" status from cache - but with a character
-   code*/
-int
-getcharstate(Uint16 character)
+int getcharjustpressed(SDL_Keycode ch)
 {
-  if (sjoy.charstate[character])
-    return 1;
-  else
-    return 0;
+  return scancodejustpressed[SDL_GetScancodeFromKey(ch)];
 }
 
 /* Set the keyboard state in sjoy */
@@ -628,66 +622,33 @@ void check_keyboard()
 {
   /* Keys state */
   /* Check if the key was just pressed, or only maintained pressed */
-  int keystate_size;
-  Uint8 *new_keystate;
-  new_keystate = SDL_GetKeyState(&keystate_size);
+  int scancodestate_size;
+  const Uint8 *new_scancodestate;
+  new_scancodestate = SDL_GetKeyboardState(&scancodestate_size);
   int x = 0;
-  for (x = 0; x < keystate_size; x++)
+  for (x = 0; x < scancodestate_size; x++)
     {
       /* Put the current keyboard state in cache */
-      /* getkey() then can check sjoy.keystate - that is, from the cache */
-      int last_state = sjoy.keystate[x];
-      sjoy.keystate[x] = new_keystate[x];
+      /* getkey() then can check scancodestate - that is, from the cache */
+      int last_state = scancodestate[x];
+      scancodestate[x] = new_scancodestate[x];
 
-      if (last_state == 0 && sjoy.keystate[x] == 1)
+      if (last_state == 0 && scancodestate[x] == 1)
 	/* We just changed from "released" to "pressed" */
-	sjoy.keyjustpressed[x] = 1;
+	scancodejustpressed[x] = 1;
       else
-	sjoy.keyjustpressed[x] = 0;
+	scancodejustpressed[x] = 0;
     }
+}
 
-  /* Layout-independant character state */
-  /* Reset 'just pressed' field */
-  memset(sjoy.charjustpressed, 0, sizeof(sjoy.charjustpressed));
-  sjoy.last_unicode = 0;
-  if (sjoy.last_nokey_unicode != 0)
-    {
-      sjoy.charstate[sjoy.last_nokey_unicode] = 0;
-      sjoy.charjustpressed[sjoy.last_nokey_unicode] = 0;
-      sjoy.last_nokey_unicode = 0;
-    }
-
-  /* Pick ONE event, so as not to miss keystorkes in text input
-     mode */
-  SDL_Event event;
-  if (SDL_PeepEvents(&event, 1, SDL_GETEVENT,
-		     SDL_EVENTMASK(SDL_KEYDOWN)|SDL_EVENTMASK(SDL_KEYUP)) > 0)
-    {
-      int key = event.key.keysym.sym;
-      Uint16 unicode = event.key.keysym.unicode;
-      switch (event.type)
-	{
-	case SDL_KEYDOWN:
-	  sjoy.charstate[unicode] = 1;
-	  sjoy.charjustpressed[unicode] = 1;
-	  sjoy.last_unicode = unicode;
-	  if (key != 0)
-	    sjoy.key2char[key] = unicode;
-	  else
-	    /* No possible 'kept pressed' support, so will be marked
-	       'not pressed' next time */
-	    sjoy.last_nokey_unicode = unicode;
-	  break;
-	case SDL_KEYUP:
-	  /* No Unicode on KEYUP :/ */
-	  if (key != 0)
-	    {
-	      unicode = sjoy.key2char[key];
-	      sjoy.charstate[unicode] = 0;
-	    }
-	  break;
-	}
-    }
+void show_text_box(int enabled) {
+  if (enabled) {
+    in_enabled = 1;
+    SDL_EventState(SDL_TEXTINPUT, SDL_ENABLE);
+  } else {
+    in_enabled = 0;
+    SDL_EventState(SDL_TEXTINPUT, SDL_IGNORE);
+  }
 }
 
 
@@ -745,15 +706,15 @@ void check_joystick(void)
   /* Refresh keyboard state */
   check_keyboard();
 
-  if (getkeystate(SDLK_ESCAPE)) sjoy.joybit[EDITOR_ACTION_ESCAPE] = 1;
-  if (getkeystate(SDLK_RETURN)) sjoy.joybit[EDITOR_ACTION_RETURN] = 1;
-  if (getcharstate('x')) sjoy.joybit[EDITOR_ACTION_X] = 1;
-  if (getcharstate('z')) sjoy.joybit[EDITOR_ACTION_Z] = 1;
-  if (getkeystate(SDLK_TAB)) sjoy.joybit[EDITOR_ACTION_TAB] = 1;
-  if (getkeystate(SDLK_RIGHT)) sjoy.right = 1;
-  if (getkeystate(SDLK_LEFT)) sjoy.left = 1;
-  if (getkeystate(SDLK_DOWN)) sjoy.down = 1;
-  if (getkeystate(SDLK_UP)) sjoy.up = 1;
+  if (scancodestate[SDL_SCANCODE_ESCAPE]) sjoy.joybit[EDITOR_ACTION_ESCAPE] = 1;
+  if (scancodestate[SDL_SCANCODE_RETURN]) sjoy.joybit[EDITOR_ACTION_RETURN] = 1;
+  if (getcharstate(SDLK_x)) sjoy.joybit[EDITOR_ACTION_X] = 1;
+  if (getcharstate(SDLK_z)) sjoy.joybit[EDITOR_ACTION_Z] = 1;
+  if (scancodestate[SDL_SCANCODE_TAB]) sjoy.joybit[EDITOR_ACTION_TAB] = 1;
+  if (scancodestate[SDL_SCANCODE_RIGHT]) sjoy.right = 1;
+  if (scancodestate[SDL_SCANCODE_LEFT]) sjoy.left = 1;
+  if (scancodestate[SDL_SCANCODE_DOWN]) sjoy.down = 1;
+  if (scancodestate[SDL_SCANCODE_UP]) sjoy.up = 1;
   
   {
     int a = EDITOR_ACTION_FIRST;
@@ -766,40 +727,6 @@ void check_joystick(void)
 	sjoy.joybitold[a] = sjoy.joybit[a];
       }
   }
-}
-
-/* Human-readable representation of the keycode, used to display which
-   key is currently pressed */
-/* Note: key constants may be found in winuser.h. The
-   "Keycodes"/keycodes.txt file by Dan Walma also brings some clues
-   about the _OEM keys. */
-char
-key_convert(int key)
-{
-  if (SDL_GetModState()&KMOD_SHIFT) key = toupper(key);
-
-  if (key == 190 /* VK_OEM_PERIOD */) { if (SDL_GetModState()&KMOD_SHIFT) key = '>'; else key = '.'; }
-  if (key == 188 /* VK_OEM_COMMA */)  { if (SDL_GetModState()&KMOD_SHIFT) key = '<'; else key = ','; }
-
-  if (key == '1') if (SDL_GetModState()&KMOD_SHIFT) key = '!';
-  if (key == '2') if (SDL_GetModState()&KMOD_SHIFT) key = '@';
-  if (key == '3') if (SDL_GetModState()&KMOD_SHIFT) key = '#';
-  if (key == '4') if (SDL_GetModState()&KMOD_SHIFT) key = '$';
-  if (key == '5') if (SDL_GetModState()&KMOD_SHIFT) key = '%';
-  if (key == '6') if (SDL_GetModState()&KMOD_SHIFT) key = '^';
-  if (key == '7') if (SDL_GetModState()&KMOD_SHIFT) key = '&';
-  if (key == '8') if (SDL_GetModState()&KMOD_SHIFT) key = '*';
-  if (key == '9') if (SDL_GetModState()&KMOD_SHIFT) key = '(';
-  if (key == '0') if (SDL_GetModState()&KMOD_SHIFT) key = ')';
-
-  if (key == 189 /* VK_OEM_MINUS */) { if (SDL_GetModState()&KMOD_SHIFT) key = '_'; else key = '-'; }
-  if (key == 187 /* VK_OEM_PLUS */) { if (SDL_GetModState()&KMOD_SHIFT) key = '+'; else key = '='; }
-  if (key == 186 /* VK_OEM_1 */) { if (SDL_GetModState()&KMOD_SHIFT) key = ':'; else key = ';'; }
-  if (key == 222 /* VK_OEM_7 */) { if (SDL_GetModState()&KMOD_SHIFT) key = '\"'; else key = '\''; }
-  if (key == 191 /* VK_OEM_2 */) { if (SDL_GetModState()&KMOD_SHIFT) key = '?'; else key = '/'; }
-  if (key == 220 /* VK_OEM_5 */) { if (SDL_GetModState()&KMOD_SHIFT) key = '|'; else key = '\\'; }
-
-  return(key);
 }
 
 
@@ -1316,7 +1243,7 @@ void check_in(void)
   /* in_int =  pointer to the integer value to update */
   /* in_string = pointer to the string to update */
   /* in_onflag = trigger the creation of an input window */
-  /* in_enabled ? */
+  /* in_enabled = text box input mode */
 
   if (in_master == 1)
     {
@@ -1719,142 +1646,37 @@ void shrink_screen_to_these_cords(int x1, int y1)
 }
 
 
-/****************************************************************************
- *
- *      UpdateCursorPosition
- *
- *      Move our private cursor in the requested direction, subject
- *      to clipping, scaling, and all that other stuff.
- *
- *      This does not redraw the cursor.  You need to do that yourself.
- *
- ****************************************************************************/
+/* Update mouse position with relative motion coordinates */
 void UpdateCursorPosition(int dx, int dy)
 {
-
-    /*
-     *  Pick up any leftover fuzz from last time.  This is important
-     *  when scaling down mouse motions.  Otherwise, the user can
-     *  drag to the right extremely slow for the length of the table
-     *  and not get anywhere.
-     */
     sp_cycle = 0;
     spr[1].x += dx;
     spr[1].y += dy;
-    /* Clip the cursor to our client area */
-
-    /* Try to get the mouse (and the focus) within the window, not
-       100% safe but good enough */
-    SDL_WarpMouse(320, 240);
-    /* Ignore the mouse event generated by SDL_WarpMouse: */
-    SDL_PumpEvents();
-    SDL_GetRelativeMouseState(NULL, NULL);
-    /* Alternatively, we can do this all the time, even when dx and dy
-       are zero, and the mouse will always return to the
-       application. We'd need to avoid that when the application is
-       backgrounded though, otherwise FreeDink will keep warping the
-       mouse. */
 }
 
 
-void  Scrawl_OnMouseInput(void)
+// TODO: merge me with freedink.c's
+void Scrawl_OnMouseInput()
 {
-  SDL_Event event;
-  int dx, dy;
-
   mouse1 = /*false*/0;
   if (mode != 6) return;
 
-  SDL_PumpEvents();
-  SDL_GetRelativeMouseState(&dx, &dy);
-  if (dx != 0 || dy != 0)
-    UpdateCursorPosition(dx, dy);
+  SDL_Event ev;
+  /* Process stacked motion events */
+  while (SDL_PeepEvents(&ev, 1, SDL_GETEVENT,
+			SDL_MOUSEMOTION, SDL_MOUSEMOTION) > 0)
+    {
+      UpdateCursorPosition(ev.motion.xrel, ev.motion.yrel);
+    }
 
   /* Process stacked clicks */
-  while (SDL_PeepEvents(&event, 1, SDL_GETEVENT,
-			SDL_EVENTMASK(SDL_MOUSEBUTTONDOWN)) > 0)
+  while (SDL_PeepEvents(&ev, 1, SDL_GETEVENT,
+			SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONDOWN) > 0)
     {
-      SDL_MouseButtonEvent *button_event = (SDL_MouseButtonEvent*)&event;
-      if (button_event->button == SDL_BUTTON_LEFT)
+      if (ev.button.button == SDL_BUTTON_LEFT)
 	mouse1 = /*true*/1;
     }
   return;
-
-
-/* 	BOOL fDone = 0; */
-
-/*     while (!fDone) { */
-
-/* 		DIDEVICEOBJECTDATA od; */
-
-/*         DWORD dwElements = 1; */
-
-/*         HRESULT hr = g_pMouse->GetDeviceData( */
-/*                              sizeof(DIDEVICEOBJECTDATA), &od, */
-/*                              &dwElements, 0); */
-
-/*         if (hr == DIERR_INPUTLOST) { */
-/*             /\* */
-/*              *  We had acquisition, but lost it.  Try to reacquire it. */
-/*              * */
-/*              *  WARNING!  DO NOT ATTEMPT TO REACQUIRE IF YOU GET */
-/*              *  DIERR_NOTACQUIRED!  Otherwise, you're extremely likely */
-/*              *  to get caught in an infinite loop:  The acquire will fail, */
-/*              *  and you'll get another DIERR_NOTACQUIRED so you'll */
-/*              *  try to aquire again, and that'll fail, etc. */
-/*              *\/ */
-/*         //    PostMessage(hwnd, WM_SYNCACQUIRE, 0, 0L); */
-/*          //   break; */
-
-/* 		Msg("Have no aquisition!!"); */
-/* 		g_pMouse->Acquire(); */
-
-/* 		} */
-
-/*         /\* Unable to read data or no data available *\/ */
-/*         if (FAILED(hr) || dwElements == 0) { */
-/*            // Msg("No mouse data there."); */
-/* 			break; */
-/*         } */
-
-        /* Look at the element to see what happened */
-
-/*
-        switch (od.dwOfs) {
-
-        // DIMOFS_X: Mouse horizontal motion
-        case DIMOFS_X: UpdateCursorPosition(od.dwData, 0); break;
-
-
-        //DIMOFS_Y: Mouse vertical motion
-        case DIMOFS_Y: UpdateCursorPosition(0, od.dwData); break;
-
-case DIDFT_BUTTON: if (od.dwData > 0) mouse1 = true; break;
-
-
-
-
-
-        }
-*/
-
-/*         if (od.dwOfs == DIMOFS_X) */
-/*         { */
-/*          // DIMOFS_X: Mouse horizontal motion */
-/*          UpdateCursorPosition(od.dwData, 0); */
-/*         } */
-/*         else if (od.dwOfs == DIMOFS_Y) */
-/*         { */
-/*          //DIMOFS_Y: Mouse vertical motion */
-/*          UpdateCursorPosition(0, od.dwData); */
-/*         } */
-/*         else if (od.dwOfs == DIDFT_BUTTON) */
-/*         { */
-/*          if (od.dwData > 0) mouse1 = true; */
-/*         } */
-
-/*     } */
-
 }
 
 
@@ -1875,62 +1697,62 @@ void write_moves(void)
     strcpy(fname, "CRAP");
 
 
-  if (sjoy.keyjustpressed[SDLK_KP8 /* 104 */])
+  if (scancodejustpressed[SDL_SCANCODE_KP_8])
     {
       EditorSoundPlayEffect( SOUND_JUMP );
       sprintf(crap, "story/%s.c",fname);
       sprintf(move, "move_stop(&current_sprite, 8, %d, 1)\n", spr[1].y);
       add_text(move, crap);
     }
-  if (sjoy.keyjustpressed[SDLK_KP4 /* 100 */])
+  if (scancodejustpressed[SDL_SCANCODE_KP_4])
     {
       EditorSoundPlayEffect( SOUND_JUMP );
       sprintf(crap, "story/%s.c",fname);
       sprintf(move, "move_stop(&current_sprite, 4, %d, 1)\n", spr[1].x);
       add_text(move, crap);
     }
-  if (sjoy.keyjustpressed[SDLK_KP5 /* 101 */])
+  if (scancodejustpressed[SDL_SCANCODE_KP_5])
     {
       EditorSoundPlayEffect(SOUND_JUMP);
       sprintf(crap, "story/%s.c",fname);
       add_text("//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n", crap);
     }
-  if (sjoy.keyjustpressed[SDLK_KP2 /* 98 */])
+  if (scancodejustpressed[SDL_SCANCODE_KP_2])
     {
       EditorSoundPlayEffect(SOUND_JUMP);
       sprintf(crap, "story/%s.c", fname);
       sprintf(move, "move_stop(&current_sprite, 2, %d, 1)\n", spr[1].y);
       add_text(move, crap);
     }
-  if (sjoy.keyjustpressed[SDLK_KP6 /* 102 */])
+  if (scancodejustpressed[SDL_SCANCODE_KP_6])
     {
       EditorSoundPlayEffect( SOUND_JUMP );
       sprintf(crap, "story/%s.c",fname);
       sprintf(move, "move_stop(&current_sprite, 6, %d, 1)\n", spr[1].x);
       add_text(move, crap);
     }
-  if (sjoy.keyjustpressed[SDLK_KP7 /* 103 */])
+  if (scancodejustpressed[SDL_SCANCODE_KP_7])
     {
       EditorSoundPlayEffect( SOUND_JUMP );
       sprintf(crap, "story/%s.c",fname);
       sprintf(move, "move_stop(&current_sprite, 7, %d, 1)\n", spr[1].x);
       add_text(move, crap);
     }
-  if (sjoy.keyjustpressed[SDLK_KP1 /* 97 */])
+  if (scancodejustpressed[SDL_SCANCODE_KP_1])
     {
       EditorSoundPlayEffect( SOUND_JUMP );
       sprintf(crap, "story/%s.c",fname);
       sprintf(move, "move_stop(&current_sprite, 1, %d, 1)\n", spr[1].x);
       add_text(move, crap);
     }
-  if (sjoy.keyjustpressed[SDLK_KP9 /* 105 */])
+  if (scancodejustpressed[SDL_SCANCODE_KP_9])
     {
       EditorSoundPlayEffect( SOUND_JUMP );
       sprintf(crap, "story/%s.c",fname);
       sprintf(move, "move_stop(&current_sprite, 9, %d, 1)\n", spr[1].x);
       add_text(move, crap);
     }
-  if (sjoy.keyjustpressed[SDLK_KP3 /* 99 */])
+  if (scancodejustpressed[SDL_SCANCODE_KP_3])
     {
       EditorSoundPlayEffect( SOUND_JUMP );
       sprintf(crap, "story/%s.c",fname);
@@ -2180,7 +2002,7 @@ void updateFrame(void)
 
 			  }
 
-			if (sjoy.keyjustpressed[SDLK_TAB /* 9 */])
+			if (scancodejustpressed[SDL_SCANCODE_TAB])
 			  {
 
 			    //they hit tab, lets toggle what mode they are in
@@ -2188,7 +2010,7 @@ void updateFrame(void)
 
 
 			  }
-			if (sjoy.charjustpressed['s' /* 83 */])
+			if (getcharjustpressed(SDLK_s))
 			  {
 
 			    //they hit tab, lets toggle what mode they are in
@@ -2219,25 +2041,25 @@ void updateFrame(void)
 
 			    if (SDL_GetModState()&KMOD_CTRL)
 			      {
-				if (sjoy.keyjustpressed[SDLK_RIGHT /* 39 */])
+				if (scancodejustpressed[SDL_SCANCODE_RIGHT])
 				  {
 				    k[seq[sp_seq].frame[sp_frame]].xoffset += modif;
 				    EditorSoundPlayEffect( SOUND_STOP );
 				  }
 
-				if (sjoy.keyjustpressed[SDLK_LEFT /* 37 */])
+				if (scancodejustpressed[SDL_SCANCODE_LEFT])
 				  {
 
 				    k[seq[sp_seq].frame[sp_frame]].xoffset -= modif;
 				    EditorSoundPlayEffect( SOUND_STOP );
 				  }
-				if (sjoy.keyjustpressed[SDLK_UP /* 38 */])
+				if (scancodejustpressed[SDL_SCANCODE_UP])
 				  {
 				    k[seq[sp_seq].frame[sp_frame]].yoffset -= modif;
 				    EditorSoundPlayEffect( SOUND_STOP );
 				  }
 
-				if (sjoy.keyjustpressed[SDLK_DOWN /* 40 */])
+				if (scancodejustpressed[SDL_SCANCODE_DOWN])
 				  {
 				    k[seq[sp_seq].frame[sp_frame]].yoffset += modif;
 				    EditorSoundPlayEffect( SOUND_STOP );
@@ -2283,25 +2105,25 @@ void updateFrame(void)
 
 			    if (SDL_GetModState()&KMOD_CTRL)
 			      {
-				if (sjoy.keyjustpressed[SDLK_RIGHT /* 39 */])
+				if (scancodejustpressed[SDL_SCANCODE_RIGHT])
 				  {
 				    k[seq[sp_seq].frame[sp_frame]].hardbox.right += modif;
 				    EditorSoundPlayEffect( SOUND_STOP );
 				  }
 
-				if (sjoy.keyjustpressed[SDLK_LEFT /* 37 */])
+				if (scancodejustpressed[SDL_SCANCODE_LEFT])
 				  {
 
 				    k[seq[sp_seq].frame[sp_frame]].hardbox.right -= modif;
 				    EditorSoundPlayEffect( SOUND_STOP );
 				  }
-				if (sjoy.keyjustpressed[SDLK_UP /* 38 */])
+				if (scancodejustpressed[SDL_SCANCODE_UP])
 				  {
 				    k[seq[sp_seq].frame[sp_frame]].hardbox.bottom -= modif;
 				    EditorSoundPlayEffect( SOUND_STOP );
 				  }
 
-				if (sjoy.keyjustpressed[SDLK_DOWN /* 40 */])
+				if (scancodejustpressed[SDL_SCANCODE_DOWN])
 				  {
 				    k[seq[sp_seq].frame[sp_frame]].hardbox.bottom += modif;
 				    EditorSoundPlayEffect( SOUND_STOP );
@@ -2355,25 +2177,25 @@ void updateFrame(void)
 
 			    if (SDL_GetModState()&KMOD_CTRL)
 			      {
-				if (sjoy.keyjustpressed[SDLK_RIGHT /* 39 */])
+				if (scancodejustpressed[SDL_SCANCODE_RIGHT])
 				  {
 				    k[seq[sp_seq].frame[sp_frame]].hardbox.left += modif;
 				    EditorSoundPlayEffect( SOUND_STOP );
 				  }
 
-				if (sjoy.keyjustpressed[SDLK_LEFT /* 37 */])
+				if (scancodejustpressed[SDL_SCANCODE_LEFT])
 				  {
 
 				    k[seq[sp_seq].frame[sp_frame]].hardbox.left -= modif;
 				    EditorSoundPlayEffect( SOUND_STOP );
 				  }
-				if (sjoy.keyjustpressed[SDLK_UP /* 38 */])
+				if (scancodejustpressed[SDL_SCANCODE_UP])
 				  {
 				    k[seq[sp_seq].frame[sp_frame]].hardbox.top -= modif;
 				    EditorSoundPlayEffect( SOUND_STOP );
 				  }
 
-				if (sjoy.keyjustpressed[SDLK_DOWN /* 40 */])
+				if (scancodejustpressed[SDL_SCANCODE_DOWN])
 				  {
 				    k[seq[sp_seq].frame[sp_frame]].hardbox.top += modif;
 				    EditorSoundPlayEffect( SOUND_STOP );
@@ -2447,7 +2269,7 @@ void updateFrame(void)
 		    if (mode == MODE_SCREEN_SPRITES)
 		      {
 			// place sprite
-			if ( (sjoy.charjustpressed['v']) )
+			if ( (getcharjustpressed(SDLK_v)) )
 			  {
 			    in_master = INPUT_SCREEN_VISION; // Set screen vision?
 			  }
@@ -2456,7 +2278,7 @@ void updateFrame(void)
 			if (SDL_GetModState()&KMOD_SHIFT)
 			  modif = 9;
 
-			if (sjoy.charjustpressed['m'])
+			if (getcharjustpressed(SDLK_m))
 			  {
 			    if (sp_screenmatch)
 			      sp_screenmatch = /*false*/0;
@@ -2468,7 +2290,7 @@ void updateFrame(void)
 			if (SDL_GetModState()&KMOD_ALT) // alt
 			  {
 			    //alt is held down 87
-			    if (sjoy.charjustpressed['w' /* 87 */])
+			    if (getcharjustpressed(SDLK_w))
 			      {
 				//pressed W
 				if (((spr[1].pseq == 10) && (spr[1].pframe == 8)))
@@ -2501,26 +2323,26 @@ void updateFrame(void)
 			    if (spr[1].size > 1500) spr[1].size = 1500;
 
 			    /* if (GetKeyboard(VK_OEM_4 /\* 219 *\/)) // '[' for US */
-			    if (getcharstate('['))
+			    if (scancodestate[SDL_SCANCODE_LEFTBRACKET])
 			      spr[1].size -= 1+modif;
 			    /* if (GetKeyboard(VK_OEM_6 /\* 221 *\/)) // ']' for US */
-			    if (getcharstate(']'))
+			    if (scancodestate[SDL_SCANCODE_RIGHTBRACKET])
 			      spr[1].size += 1+modif;
 
 
 			    if (SDL_GetModState()&KMOD_SHIFT)
 			      {
 				//shift is being held down
-				if (getkeystate('1') || getkeystate(SDLK_KP1) || getkeystate(SDLK_F1))  in_master = 11;
-				if (getkeystate('2') || getkeystate(SDLK_KP2) || getkeystate(SDLK_F2))  in_master = 12;
-				if (getkeystate('3') || getkeystate(SDLK_KP3) || getkeystate(SDLK_F3))  in_master = 13;
-				if (getkeystate('4') || getkeystate(SDLK_KP4) || getkeystate(SDLK_F4))  in_master = 14;
-				if (getkeystate('5') || getkeystate(SDLK_KP5) || getkeystate(SDLK_F5))  in_master = 15;
+				if (scancodestate[SDL_SCANCODE_1] || scancodestate[SDL_SCANCODE_KP_1] || scancodestate[SDL_SCANCODE_F1])  in_master = 11;
+				if (scancodestate[SDL_SCANCODE_2] || scancodestate[SDL_SCANCODE_KP_2] || scancodestate[SDL_SCANCODE_F2])  in_master = 12;
+				if (scancodestate[SDL_SCANCODE_3] || scancodestate[SDL_SCANCODE_KP_3] || scancodestate[SDL_SCANCODE_F3])  in_master = 13;
+				if (scancodestate[SDL_SCANCODE_4] || scancodestate[SDL_SCANCODE_KP_4] || scancodestate[SDL_SCANCODE_F4])  in_master = 14;
+				if (scancodestate[SDL_SCANCODE_5] || scancodestate[SDL_SCANCODE_KP_5] || scancodestate[SDL_SCANCODE_F5])  in_master = 15;
 
-				if (getkeystate('6') || getkeystate(SDLK_KP6) || getkeystate(SDLK_F6))  in_master = 16;
-				if (getkeystate('7') || getkeystate(SDLK_KP7) || getkeystate(SDLK_F7))  in_master = 17;
-				if (getkeystate('8') || getkeystate(SDLK_KP8) || getkeystate(SDLK_F8))  in_master = 18;
-				if (getkeystate('9') || getkeystate(SDLK_KP9) || getkeystate(SDLK_F9))  in_master = 19;
+				if (scancodestate[SDL_SCANCODE_6] || scancodestate[SDL_SCANCODE_KP_6] || scancodestate[SDL_SCANCODE_F6])  in_master = 16;
+				if (scancodestate[SDL_SCANCODE_7] || scancodestate[SDL_SCANCODE_KP_7] || scancodestate[SDL_SCANCODE_F7])  in_master = 17;
+				if (scancodestate[SDL_SCANCODE_8] || scancodestate[SDL_SCANCODE_KP_8] || scancodestate[SDL_SCANCODE_F8])  in_master = 18;
+				if (scancodestate[SDL_SCANCODE_9] || scancodestate[SDL_SCANCODE_KP_9] || scancodestate[SDL_SCANCODE_F9])  in_master = 19;
 
 
 
@@ -2528,9 +2350,9 @@ void updateFrame(void)
 			    else if (SDL_GetModState()&KMOD_ALT)
 			      {
 				  //alt is being held down
-				  if (getkeystate('1') || getkeystate(SDLK_KP1) || getkeystate(SDLK_F1))  in_master = 20;
-				  if (getkeystate('2') || getkeystate(SDLK_KP2) || getkeystate(SDLK_F2))  in_master = 21;
-				  if (getkeystate('3') || getkeystate(SDLK_KP3) || getkeystate(SDLK_F3))  in_master = 22;
+				  if (scancodestate[SDL_SCANCODE_1] || scancodestate[SDL_SCANCODE_KP_1] || scancodestate[SDL_SCANCODE_F1])  in_master = 20;
+				  if (scancodestate[SDL_SCANCODE_2] || scancodestate[SDL_SCANCODE_KP_2] || scancodestate[SDL_SCANCODE_F2])  in_master = 21;
+				  if (scancodestate[SDL_SCANCODE_3] || scancodestate[SDL_SCANCODE_KP_3] || scancodestate[SDL_SCANCODE_F3])  in_master = 22;
 				  /*(getkeystate('4' /\* 52 *\/))  in_master = 14;
 				    if (getkeystate(53))  in_master = 15;
 
@@ -2544,20 +2366,20 @@ void updateFrame(void)
 			    else
 			      {
 				  //shift is not being held down
-				  if (getkeystate('1') || getkeystate(SDLK_KP1) || getkeystate(SDLK_F1)) in_master = 1;
-				  if (getkeystate('2') || getkeystate(SDLK_KP2) || getkeystate(SDLK_F2)) in_master = 2;
-				  if (getkeystate('3') || getkeystate(SDLK_KP3) || getkeystate(SDLK_F3)) in_master = 3;
-				  if (getkeystate('4') || getkeystate(SDLK_KP4) || getkeystate(SDLK_F4)) in_master = 4;
-				  if (getkeystate('5') || getkeystate(SDLK_KP5) || getkeystate(SDLK_F5)) in_master = 5;
-				  if (getkeystate('6') || getkeystate(SDLK_KP6) || getkeystate(SDLK_F6)) in_master = 6;
-				  if (getkeystate('7') || getkeystate(SDLK_KP7) || getkeystate(SDLK_F7)) in_master = 7;
-				  if (getkeystate('8') || getkeystate(SDLK_KP8) || getkeystate(SDLK_F8)) in_master = 8;
-				  if (getkeystate('9') || getkeystate(SDLK_KP9) || getkeystate(SDLK_F9)) in_master = 9;
-				  if (getkeystate('0') || getkeystate(SDLK_KP0) || getkeystate(SDLK_F10)) in_master = 10;
+				  if (scancodestate[SDL_SCANCODE_1] || scancodestate[SDL_SCANCODE_KP_1] || scancodestate[SDL_SCANCODE_F1]) in_master = 1;
+				  if (scancodestate[SDL_SCANCODE_2] || scancodestate[SDL_SCANCODE_KP_2] || scancodestate[SDL_SCANCODE_F2]) in_master = 2;
+				  if (scancodestate[SDL_SCANCODE_3] || scancodestate[SDL_SCANCODE_KP_3] || scancodestate[SDL_SCANCODE_F3]) in_master = 3;
+				  if (scancodestate[SDL_SCANCODE_4] || scancodestate[SDL_SCANCODE_KP_4] || scancodestate[SDL_SCANCODE_F4]) in_master = 4;
+				  if (scancodestate[SDL_SCANCODE_5] || scancodestate[SDL_SCANCODE_KP_5] || scancodestate[SDL_SCANCODE_F5]) in_master = 5;
+				  if (scancodestate[SDL_SCANCODE_6] || scancodestate[SDL_SCANCODE_KP_6] || scancodestate[SDL_SCANCODE_F6]) in_master = 6;
+				  if (scancodestate[SDL_SCANCODE_7] || scancodestate[SDL_SCANCODE_KP_7] || scancodestate[SDL_SCANCODE_F7]) in_master = 7;
+				  if (scancodestate[SDL_SCANCODE_8] || scancodestate[SDL_SCANCODE_KP_8] || scancodestate[SDL_SCANCODE_F8]) in_master = 8;
+				  if (scancodestate[SDL_SCANCODE_9] || scancodestate[SDL_SCANCODE_KP_9] || scancodestate[SDL_SCANCODE_F9]) in_master = 9;
+				  if (scancodestate[SDL_SCANCODE_0] || scancodestate[SDL_SCANCODE_KP_0] || scancodestate[SDL_SCANCODE_F10]) in_master = 10;
 			      }
 
 
-			    if (sjoy.charjustpressed['s' /* 83 */])
+			    if (getcharjustpressed(SDLK_s))
 			      {
 				smart_add();
 
@@ -2575,7 +2397,7 @@ void updateFrame(void)
 
 			      }
 
-			    if (sjoy.keyjustpressed[SDLK_DELETE /* 46 */])
+			    if (scancodejustpressed[SDL_SCANCODE_DELETE])
 			      {
 
 				spr[1].pseq = 10;
@@ -2607,15 +2429,14 @@ void updateFrame(void)
 			      {
 
 				/* if (sjoy.keyjustpressed[VK_OEM_4 /\* 219 *\/]) // '[' for US */
-				if (sjoy.charjustpressed['['])
+				if (scancodejustpressed[SDL_SCANCODE_LEFTBRACKET])
 				  {
 				    sp_cycle--;
 				    if (sp_cycle < 1)
 				      sp_cycle = max_spr;
 				  }
 
-				/* if (sjoy.keyjustpressed[VK_OEM_6 /\* 221 *\/]) // ']' for US */
-				if (sjoy.charjustpressed[']'])
+				if (scancodejustpressed[SDL_SCANCODE_RIGHTBRACKET])
 				  {
 				    sp_cycle++;
 				    if (sp_cycle > max_spr)
@@ -2808,7 +2629,7 @@ void updateFrame(void)
 			      }
 
 
-			    if ((SDL_GetModState()&KMOD_ALT) && (getkeystate(SDLK_DELETE /* 46 */)))
+			    if ((SDL_GetModState()&KMOD_ALT) && (scancodestate[SDL_SCANCODE_DELETE]))
 			      {
 				int ll;
 				for (ll = 1; ll < 100; ll++)
@@ -2821,34 +2642,34 @@ void updateFrame(void)
 			  }
 
 			/** Trim a sprite **/
-			if (getcharstate('z') || (getcharstate('x')))
+			if (getcharstate(SDLK_z) || (getcharstate(SDLK_x)))
 			  {
 			    if ((spr[h].alt.right == 0) && (spr[h].alt.left == 0)
 				&& (spr[h].alt.top == 0) && (spr[h].alt.bottom == 0))
 			      rect_copy(&spr[h].alt, &k[getpic(h)].box);
 			  }
 
-                        if (getcharstate('z'))
+                        if (getcharstate(SDLK_z))
 			  {
 
-			    if (sjoy.keyjustpressed[SDLK_RIGHT /* 39 */])
+			    if (scancodejustpressed[SDL_SCANCODE_RIGHT])
 			      {
 				spr[h].alt.left += spr[h].speed + modif;
 				EditorSoundPlayEffect( SOUND_STOP );
 			      }
 
-			    if (sjoy.keyjustpressed[SDLK_LEFT /* 37 */])
+			    if (scancodejustpressed[SDL_SCANCODE_LEFT])
 			      {
 				spr[h].alt.left -= spr[h].speed +modif;
 				EditorSoundPlayEffect( SOUND_STOP );
 			      }
-			    if (sjoy.keyjustpressed[SDLK_DOWN /* 40 */])
+			    if (scancodejustpressed[SDL_SCANCODE_DOWN])
 			      {
 				spr[h].alt.top += spr[h].speed + modif;
 				EditorSoundPlayEffect( SOUND_STOP );
 			      }
 
-			    if (sjoy.keyjustpressed[SDLK_UP /* 38 */])
+			    if (scancodejustpressed[SDL_SCANCODE_UP])
 			      {
 				spr[h].alt.top -= spr[h].speed + modif;
 				EditorSoundPlayEffect( SOUND_STOP );
@@ -2862,28 +2683,25 @@ void updateFrame(void)
 
 
 
-			if (getcharstate('x'))
+			if (getcharstate(SDLK_x))
 			  {
-
-			    if (sjoy.keyjustpressed[SDLK_RIGHT /* 39 */])
+			    if (scancodejustpressed[SDL_SCANCODE_RIGHT])
 			      {
 				spr[h].alt.right += spr[h].speed + modif;
 				EditorSoundPlayEffect( SOUND_STOP );
 			      }
 
-			    if (sjoy.keyjustpressed[SDLK_LEFT /* 37 */])
+			    if (scancodejustpressed[SDL_SCANCODE_LEFT])
 			      {
-
 				spr[h].alt.right -= spr[h].speed +modif;
 				EditorSoundPlayEffect( SOUND_STOP );
 			      }
-			    if (sjoy.keyjustpressed[SDLK_DOWN /* 40 */])
+			    if (scancodejustpressed[SDL_SCANCODE_DOWN])
 			      {
 				spr[h].alt.bottom += spr[h].speed + modif;
 				EditorSoundPlayEffect( SOUND_STOP );
 			      }
-
-			    if (sjoy.keyjustpressed[SDLK_UP /* 38 */])
+			    if (scancodejustpressed[SDL_SCANCODE_UP])
 			      {
 				spr[h].alt.bottom -= spr[h].speed + modif;
 				EditorSoundPlayEffect( SOUND_STOP );
@@ -2908,7 +2726,7 @@ void updateFrame(void)
 			   pressed again. */
 			if (SDL_GetModState()&KMOD_CTRL)
 			  {
-			    if (sjoy.keyjustpressed[SDLK_RIGHT /* 39 */])
+			    if (scancodejustpressed[SDL_SCANCODE_RIGHT])
 			      {
 				
 				sp_cycle = 0;
@@ -2917,20 +2735,20 @@ void updateFrame(void)
 				EditorSoundPlayEffect( SOUND_STOP );
 			      }
 			    
-			    if (sjoy.keyjustpressed[SDLK_LEFT /* 37 */])
+			    if (scancodejustpressed[SDL_SCANCODE_LEFT])
 			      {
 				spr[h].x -= spr[h].speed +modif;
 				EditorSoundPlayEffect( SOUND_STOP );
 				sp_cycle = 0;
 			      }
-			    if (sjoy.keyjustpressed[SDLK_UP /* 38 */])
+			    if (scancodejustpressed[SDL_SCANCODE_UP])
 			      {
 				spr[h].y -= spr[h].speed + modif;
 				EditorSoundPlayEffect( SOUND_STOP );
 				sp_cycle = 0;
 			      }
 			    
-			    if (sjoy.keyjustpressed[SDLK_DOWN /* 40 */])
+			    if (scancodejustpressed[SDL_SCANCODE_DOWN])
 			      {
 				spr[h].y += spr[h].speed + modif;
 				EditorSoundPlayEffect( SOUND_STOP );
@@ -3004,7 +2822,7 @@ void updateFrame(void)
 			  }
 
 
-			if (sjoy.charjustpressed['e'])
+			if (getcharjustpressed(SDLK_e))
 			  {
 			    //they hit E, go to sprite picker
 			    rect_set(&spr[1].alt,0,0,0,0);
@@ -3090,7 +2908,7 @@ void updateFrame(void)
 			    {
 			      //they are in select sprite phase 2
 
-			      if (sjoy.charjustpressed['e'])
+			      if (getcharjustpressed(SDLK_e))
 				{
 				  //they want to 'edit' the sprite
 				  mode = MODE_SPRITE_HARDNESS;
@@ -3214,7 +3032,7 @@ void updateFrame(void)
 			    }
 
 			  /* if (sjoy.keyjustpressed[VK_OEM_4 /\* 219 *\/]) // '[' for US */
-			  if (sjoy.charjustpressed['['])
+			  if (scancodejustpressed[SDL_SCANCODE_LEFTBRACKET])
 			    {
 			      if (sp_picker > 95) sp_picker -= 96; else
 				{
@@ -3223,7 +3041,7 @@ void updateFrame(void)
 			      draw15(sp_picker);
 			    }
 			    /* if (sjoy.keyjustpressed[VK_OEM_6 /\* 221 *\/]) // ']' for US */
-			  if (sjoy.charjustpressed[']'])
+			  if (scancodejustpressed[SDL_SCANCODE_RIGHTBRACKET])
 			    {
 			      if (sp_picker < 400) sp_picker += 96;
 			      draw15(sp_picker);
@@ -3280,7 +3098,7 @@ void updateFrame(void)
 		      {
 			if (spr[h].seq == 0)
 			  {
-			    if ((SDL_GetModState()&KMOD_SHIFT) && (getkeystate(SDLK_RIGHT)))
+			    if ((SDL_GetModState()&KMOD_SHIFT) && (scancodestate[SDL_SCANCODE_RIGHT]))
 			      {
 				spr[h].seq = 4;
 				spr[h].frame = 1;
@@ -3288,7 +3106,7 @@ void updateFrame(void)
 				goto b1fun;
 			      }
 
-			    if ((SDL_GetModState()&KMOD_SHIFT) && (getkeystate(SDLK_LEFT)))
+			    if ((SDL_GetModState()&KMOD_SHIFT) && (scancodestate[SDL_SCANCODE_LEFT]))
 			      {
 				spr[h].seq = 4;
 				spr[h].frame = 1;
@@ -3296,7 +3114,7 @@ void updateFrame(void)
 				goto b1fun;
 			      }
 
-			    if ((SDL_GetModState()&KMOD_SHIFT) && (getkeystate(SDLK_UP)))
+			    if ((SDL_GetModState()&KMOD_SHIFT) && (scancodestate[SDL_SCANCODE_UP]))
 			      {
 				spr[h].seq = 4;
 				spr[h].frame = 1;
@@ -3304,7 +3122,7 @@ void updateFrame(void)
 				goto b1fun;
 			      }
 
-			    if ((SDL_GetModState()&KMOD_SHIFT) && (getkeystate(SDLK_DOWN)))
+			    if ((SDL_GetModState()&KMOD_SHIFT) && (scancodestate[SDL_SCANCODE_DOWN]))
 			      {
 				spr[h].seq = 4;
 				spr[h].frame = 1;
@@ -3357,7 +3175,7 @@ void updateFrame(void)
 			  }
 
 			//change a piece to hard
-			if (getcharstate('z'))
+			if (getcharstate(SDLK_z))
 			  {
 			    int y;
 			    for (y = 0; y < sely; y++)
@@ -3373,7 +3191,7 @@ void updateFrame(void)
 
 
 			//change a piece to soft
-			if (getcharstate('x'))
+			if (getcharstate(SDLK_x))
 			  {
 			    int y;
 			    for (y = 0; y < sely; y++)
@@ -3388,7 +3206,7 @@ void updateFrame(void)
 			  }
 
 
-			if ( (getcharstate('a')) && (SDL_GetModState()&KMOD_ALT ) )
+			if ( (getcharstate(SDLK_a)) && (SDL_GetModState()&KMOD_ALT ) )
 			  {
 			    //change ALL to 'low hard'
 			    change_tile(hard_tile, 2);
@@ -3397,7 +3215,7 @@ void updateFrame(void)
 			    return;
 			  }
 
-			if ( (getcharstate('s')) && (SDL_GetModState()&KMOD_ALT ) )
+			if ( (getcharstate(SDLK_s)) && (SDL_GetModState()&KMOD_ALT ) )
 			  {
 			    //change ALL to 'low hard'
 			    change_tile(hard_tile, 3);
@@ -3405,7 +3223,7 @@ void updateFrame(void)
 
 			    return;
 			  }
-			if ( (getcharstate('x')) && (SDL_GetModState()&KMOD_ALT ) )
+			if ( (getcharstate(SDLK_x)) && (SDL_GetModState()&KMOD_ALT ) )
 			  {
 			    //change ALL to 'low hard'
 			    change_tile(hard_tile, 1);
@@ -3415,7 +3233,7 @@ void updateFrame(void)
 			  }
 
 
-                        if (getcharstate('a'))
+                        if (getcharstate(SDLK_a))
 			  {
 			    int y;
 			    for (y = 0; y < sely; y++)
@@ -3429,7 +3247,7 @@ void updateFrame(void)
 			      }
 
 			  }
-                        if (getcharstate('s'))
+                        if (getcharstate(SDLK_s))
 			  {
 			    int y;
 			    for (y = 0; y < sely; y++)
@@ -3496,14 +3314,14 @@ void updateFrame(void)
 
 		    //THEY WANT TO EDIT HARDNESS
 
-		    if ( (sjoy.charjustpressed['b']) )
+		    if ( (getcharjustpressed(SDLK_b)) )
 		      {
 			in_master = 31;
 
 
 		      }
 
-		    if ( (sjoy.charjustpressed['v']) )
+		    if ( (getcharjustpressed(SDLK_v)) )
 		      {
 			in_master = INPUT_SCREEN_VISION;
 		      }
@@ -3511,7 +3329,7 @@ void updateFrame(void)
 
 
 		    if (((mode == MODE_SCREEN_TILES) && (sjoy.button[EDITOR_ACTION_RETURN]))
-			|| ((mode == MODE_TILE_PICKER) && (getkeystate(SDLK_SPACE))))
+			|| ((mode == MODE_TILE_PICKER) && (scancodestate[SDL_SCANCODE_SPACE])))
 
 		      {
 
@@ -3608,7 +3426,7 @@ void updateFrame(void)
 		      {
 			//resizing the box
 
-			if ((SDL_GetModState()&KMOD_SHIFT) && (getkeystate(SDLK_RIGHT /* 39 */)) )
+			if ((SDL_GetModState()&KMOD_SHIFT) && (scancodestate[SDL_SCANCODE_RIGHT]) )
 			  {
 			    spr[h].seq = 3;
 			    spr[h].seq_orig = 3;
@@ -3616,7 +3434,7 @@ void updateFrame(void)
 			    goto b1end;
 			  }
 
-			if ((SDL_GetModState()&KMOD_SHIFT) && (getkeystate(SDLK_LEFT /* 37 */)) )
+			if ((SDL_GetModState()&KMOD_SHIFT) && (scancodestate[SDL_SCANCODE_LEFT]) )
 			  {
 			    spr[h].seq = 3;
 			    spr[h].seq_orig = 3;
@@ -3625,7 +3443,7 @@ void updateFrame(void)
 
 			  }
 
-			if ((SDL_GetModState()&KMOD_SHIFT) && (getkeystate(SDLK_UP /* 38 */)) )
+			if ((SDL_GetModState()&KMOD_SHIFT) && (scancodestate[SDL_SCANCODE_UP]) )
 			  {
 			    spr[h].seq = 3;
 			    spr[h].seq_orig = 3;
@@ -3633,7 +3451,7 @@ void updateFrame(void)
 			    goto b1end;
 			  }
 
-			if ((SDL_GetModState()&KMOD_SHIFT) && (getkeystate(SDLK_DOWN /* 40 */)) )
+			if ((SDL_GetModState()&KMOD_SHIFT) && (scancodestate[SDL_SCANCODE_DOWN]) )
 			  {
 			    spr[h].seq = 3;
 			    spr[h].seq_orig = 3;
@@ -3644,7 +3462,7 @@ void updateFrame(void)
 		      }
 
 
-		    if (getkeystate(SDLK_RIGHT))
+		    if (scancodestate[SDL_SCANCODE_RIGHT])
 		      {
 			spr[h].x += spr[h].speed;
 			spr[h].seq = spr[h].seq_orig;
@@ -3652,7 +3470,7 @@ void updateFrame(void)
 		      }
 
 
-		    if ((getcharstate('s')) && (mode == MODE_SCREEN_TILES))
+		    if ((getcharstate(SDLK_s)) && (mode == MODE_SCREEN_TILES))
 		      {
 			int y;
 			spr[h].seq = 3;
@@ -3680,7 +3498,7 @@ void updateFrame(void)
 
 
 
-		    if ((getcharstate('c')) && (mode == MODE_SCREEN_TILES))
+		    if ((getcharstate(SDLK_c)) && (mode == MODE_SCREEN_TILES))
 		      {
 			spr[h].seq = 3;
 			spr[h].seq_orig = 3;
@@ -3693,16 +3511,16 @@ void updateFrame(void)
 		    if (mode == MODE_SCREEN_TILES || mode == MODE_TILE_PICKER)
 		      {
 			int unit = 0, tile_no = 0;
-			if (getkeystate('1') || getkeystate(SDLK_KP1) || getkeystate(SDLK_F1)) unit = 1;
-			if (getkeystate('2') || getkeystate(SDLK_KP2) || getkeystate(SDLK_F2)) unit = 2;
-			if (getkeystate('3') || getkeystate(SDLK_KP3) || getkeystate(SDLK_F3)) unit = 3;
-			if (getkeystate('4') || getkeystate(SDLK_KP4) || getkeystate(SDLK_F4)) unit = 4;
-			if (getkeystate('5') || getkeystate(SDLK_KP5) || getkeystate(SDLK_F5)) unit = 5;
-			if (getkeystate('6') || getkeystate(SDLK_KP6) || getkeystate(SDLK_F6)) unit = 6;
-			if (getkeystate('7') || getkeystate(SDLK_KP7) || getkeystate(SDLK_F7)) unit = 7;
-			if (getkeystate('8') || getkeystate(SDLK_KP8) || getkeystate(SDLK_F8)) unit = 8;
-			if (getkeystate('9') || getkeystate(SDLK_KP9) || getkeystate(SDLK_F9)) unit = 9;
-			if (getkeystate('0') || getkeystate(SDLK_KP0) || getkeystate(SDLK_F10)) unit = 10;
+			if (scancodestate[SDL_SCANCODE_1] || scancodestate[SDL_SCANCODE_KP_1] || scancodestate[SDL_SCANCODE_F1]) unit = 1;
+			if (scancodestate[SDL_SCANCODE_2] || scancodestate[SDL_SCANCODE_KP_2] || scancodestate[SDL_SCANCODE_F2]) unit = 2;
+			if (scancodestate[SDL_SCANCODE_3] || scancodestate[SDL_SCANCODE_KP_3] || scancodestate[SDL_SCANCODE_F3]) unit = 3;
+			if (scancodestate[SDL_SCANCODE_4] || scancodestate[SDL_SCANCODE_KP_4] || scancodestate[SDL_SCANCODE_F4]) unit = 4;
+			if (scancodestate[SDL_SCANCODE_5] || scancodestate[SDL_SCANCODE_KP_5] || scancodestate[SDL_SCANCODE_F5]) unit = 5;
+			if (scancodestate[SDL_SCANCODE_6] || scancodestate[SDL_SCANCODE_KP_6] || scancodestate[SDL_SCANCODE_F6]) unit = 6;
+			if (scancodestate[SDL_SCANCODE_7] || scancodestate[SDL_SCANCODE_KP_7] || scancodestate[SDL_SCANCODE_F7]) unit = 7;
+			if (scancodestate[SDL_SCANCODE_8] || scancodestate[SDL_SCANCODE_KP_8] || scancodestate[SDL_SCANCODE_F8]) unit = 8;
+			if (scancodestate[SDL_SCANCODE_9] || scancodestate[SDL_SCANCODE_KP_9] || scancodestate[SDL_SCANCODE_F9]) unit = 9;
+			if (scancodestate[SDL_SCANCODE_0] || scancodestate[SDL_SCANCODE_KP_0] || scancodestate[SDL_SCANCODE_F10]) unit = 10;
 
 			tile_no = unit;
 			if (SDL_GetModState()&KMOD_SHIFT)
@@ -3715,12 +3533,12 @@ void updateFrame(void)
 			if (unit > 0) /* make sure one key was pressed */
 			  loadtile(tile_no);
 
-			/* Exception: tile #41 = Alt+` */
+			/* Exception: tile #41 = Alt+[top-left key below escape] */
 			if (SDL_GetModState()&KMOD_ALT
-			    && getkeystate(SDLK_BACKQUOTE))
+			    && scancodestate[SDL_SCANCODE_GRAVE])
 			  loadtile(41);
-			/* alternatives for non-US keyboards */
-			if (getkeystate(SDLK_F11) || getkeystate(SDLK_KP_PERIOD))
+			/* alternatives */
+			if (scancodestate[SDL_SCANCODE_F11] || scancodestate[SDL_SCANCODE_KP_PERIOD])
 			  loadtile(41);
 		      }
 
@@ -3767,14 +3585,14 @@ void updateFrame(void)
 		      }
 
 
-		    if ( (sjoy.keyjustpressed[SDLK_SPACE])  && (mode == MODE_MINIMAP))
+		    if ( (scancodejustpressed[SDL_SCANCODE_SPACE])  && (mode == MODE_MINIMAP))
 		      {
 			//make_map_tiny();
 			draw_map_tiny = 0;
 
 		      }
 
-		    if ( (sjoy.charjustpressed['l'])  && (mode == MODE_MINIMAP))
+		    if ( (getcharjustpressed(SDLK_l))  && (mode == MODE_MINIMAP))
 		      {
 
 			//if (map.loc[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)] != 0)
@@ -3786,7 +3604,7 @@ void updateFrame(void)
 		      }
 
 
-		    if ( (sjoy.keyjustpressed[SDLK_ESCAPE /* 27 */]) && (mode == MODE_MINIMAP))
+		    if ( (scancodejustpressed[SDL_SCANCODE_ESCAPE]) && (mode == MODE_MINIMAP))
 		      {
 			load_info();
 			draw_minimap();
@@ -3795,21 +3613,21 @@ void updateFrame(void)
 		      }
 
 
-		    if ( (sjoy.charjustpressed['m']) && (mode == MODE_MINIMAP))
+		    if ( (getcharjustpressed(SDLK_m)) && (mode == MODE_MINIMAP))
 		      {
 			//set music # for this block
 			in_int = &map.music[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)];
 			in_master = INPUT_SCREEN_MIDI;
 		      }
 
-		    if ( (sjoy.charjustpressed['s']) && (mode == MODE_MINIMAP))
+		    if ( (getcharjustpressed(SDLK_s)) && (mode == MODE_MINIMAP))
 		      {
 			//set music # for this block
 			in_int = &map.indoor[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)];
 			in_master = INPUT_SCREEN_TYPE;
 		      }
 
-		    if ( (sjoy.charjustpressed['q']) && (mode == MODE_MINIMAP))
+		    if ( (getcharjustpressed(SDLK_q)) && (mode == MODE_MINIMAP))
 		      {
 			save_hard();
 			log_info("Info saved.");
@@ -3895,16 +3713,15 @@ void updateFrame(void)
 
 
 
-		    /* TODO: where is it in the editor, and what are
-		       the keys in the original dinkedit? */
-		    if ( (mode == MODE_SCREEN_TILES) && (getkeystate(189 /* VK_OEM_MINUS */)) )
+		    /* Cycle the current tile square (displayed at the bottom-right) */
+		    if ((mode == MODE_SCREEN_TILES) && scancodestate[SDL_SCANCODE_MINUS])
 		      {
 			spr[h].seq = 3;
 			spr[h].seq_orig = 3;
 			cur_tile--;
 			if (cur_tile < 0) cur_tile = 0;
 		      }
-		    if ( (mode == MODE_SCREEN_TILES) && (getkeystate(187 /* VK_OEM_PLUS */)) )
+		    if ((mode == MODE_SCREEN_TILES) && scancodestate[SDL_SCANCODE_EQUALS])
 		      {
 			spr[h].seq = 3;
 			spr[h].seq_orig = 3;
@@ -3914,7 +3731,7 @@ void updateFrame(void)
 		      }
 
 
-		    if ((mode == MODE_SCREEN_TILES) && (sjoy.charjustpressed['h']))
+		    if ((mode == MODE_SCREEN_TILES) && (getcharjustpressed(SDLK_h)))
 		      {
 			//start althard mode
 
@@ -3925,7 +3742,7 @@ void updateFrame(void)
 		    if (mode == MODE_SCREEN_HARDNESS)
 		      {
 			//mode for it
-			if (sjoy.keyjustpressed[SDLK_ESCAPE])
+			if (scancodejustpressed[SDL_SCANCODE_ESCAPE])
 			  {
 			    //exit mode 8
 			    mode = MODE_SCREEN_TILES;
@@ -3936,25 +3753,25 @@ void updateFrame(void)
 			  }
 
 			/* if (sjoy.keyjustpressed[/\* VK_OEM_4 *\/ 219]) // '[' for US */
-			if (sjoy.charjustpressed['['])
+			if (scancodejustpressed[SDL_SCANCODE_LEFTBRACKET])
 			  {
 			    hard_tile--;
 			    if (hard_tile < 0) hard_tile = 799;
 			  }
 			/* if (sjoy.keyjustpressed[/\* VK_OEM_6 *\/ 221]) // ']' for US */
-			if (sjoy.charjustpressed[']'])
+			if (scancodejustpressed[SDL_SCANCODE_RIGHTBRACKET])
 			  {
 			    hard_tile++;
 			    if (hard_tile > 799) hard_tile = 0;
 			  }
 
-			if (sjoy.charjustpressed['c'])
+			if (getcharjustpressed(SDLK_c))
 			  {
 			    //copy tile hardness from current block
 			    hard_tile = realhard(xy2screentile(spr[1].x, spr[1].y));
 			  }
 
-			if (sjoy.charjustpressed['s'])
+			if (getcharjustpressed(SDLK_s))
 			  {
 			    //stamp tile hardness to selected
 			    pam.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].althard = hard_tile;
@@ -3964,7 +3781,7 @@ void updateFrame(void)
 			    return;
 			  }
 
-			if (sjoy.keyjustpressed[SDLK_DELETE])
+			if (scancodejustpressed[SDL_SCANCODE_DELETE])
 			  {
 			    //stamp tile hardness to selected
 			    pam.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].althard = 0;
@@ -3981,7 +3798,7 @@ void updateFrame(void)
 
 			draw_hard_tile(spr[1].x,spr[1].y, hard_tile);
 
-			if (sjoy.keyjustpressed[SDLK_RETURN])
+			if (scancodejustpressed[SDL_SCANCODE_RETURN])
 			  {
 			    //they want to edit this alt hardness, let's do it
 			    cur_tile = pam.t[xy2screentile(spr[1].x, spr[1].y)].square_full_idx0;
@@ -4041,7 +3858,7 @@ void updateFrame(void)
 
 		    if ((mode == MODE_SCREEN_TILES)
 			&& (SDL_GetModState()&KMOD_ALT)
-			&& sjoy.charjustpressed['x'])
+			&& getcharjustpressed(SDLK_x))
 		      {
 			spr[h].seq = 2;
 			spr[h].seq_orig = 2;
@@ -4078,21 +3895,21 @@ void updateFrame(void)
 		      }
 
 
-		    if (getkeystate(SDLK_LEFT))
+		    if (scancodestate[SDL_SCANCODE_LEFT])
 		      {
 			spr[h].x -= spr[h].speed;
 			spr[h].seq = spr[h].seq_orig;
 			EditorSoundPlayEffect(SOUND_STOP);
 		      }
 
-		    if (getkeystate(SDLK_DOWN))
+		    if (scancodestate[SDL_SCANCODE_DOWN])
 		      {
 			spr[h].y += spr[h].speed;
 			spr[h].seq = spr[h].seq_orig;
 			EditorSoundPlayEffect(SOUND_STOP);
 		      }
 
-		    if (getkeystate(SDLK_UP))
+		    if (scancodestate[SDL_SCANCODE_UP])
 		      {
 			spr[h].y -= spr[h].speed;
 			spr[h].seq = spr[h].seq_orig;
@@ -4494,15 +4311,16 @@ void updateFrame(void)
 	}
 
       {
-	int x;
-	for (x = 0; x < 256; x++)
-	  {
-	    if (getkeystate(x))
-	      {
-		sprintf(msg + strlen(msg), " (Key %i)", x);
-	      }
-	  }
+       int x;
+       for (x = 0; x < 256; x++)
+         {
+           if (scancodestate[x])
+             {
+               sprintf(msg + strlen(msg), " (Scancode %i)", x);
+             }
+         }
       }
+
       rcRect.left = 0;
       rcRect.top = 400;
       if (mode == MODE_TILE_HARDNESS) rcRect.top = 450;
@@ -4523,7 +4341,7 @@ void updateFrame(void)
 
   if ((mode == MODE_MINIMAP))
     {
-      if (sjoy.charjustpressed['z'])
+      if (getcharjustpressed(SDLK_z))
 	{
 	  if (show_display) show_display = /*false*/0;
 	  else show_display = /*true*/1;
@@ -4534,7 +4352,7 @@ void updateFrame(void)
   if ( (mode == MODE_SCREEN_SPRITES) | (mode == MODE_SCREEN_TILES) )
     {
       /* Show sprites info */
-      if (getcharstate('i'))
+      if (getcharstate(SDLK_i))
 	{
 	  int j;
 	  for (j = 1; j < 100; j++)
@@ -4573,10 +4391,13 @@ void updateFrame(void)
 		    dst.y = box_crap.top;
 		    /* Simplified blit, no scaling, the sprite is already 50x50 */
 		    /* We need to avoid transparency though */
-		    Uint32 colorkey = sprite->format->colorkey;
-		    SDL_SetColorKey(sprite, 0, 0); /* Temporarily disable transparent color */
+		    Uint32 colorkey;
+		    int has_colorkey = SDL_GetColorKey(sprite, &colorkey);
+		    if (has_colorkey)
+		      SDL_SetColorKey(sprite, SDL_FALSE, 0);
 		    SDL_BlitSurface(sprite, NULL, GFX_lpDDSBack, &dst);
-		    SDL_SetColorKey(sprite, SDL_SRCCOLORKEY, colorkey);
+		    if (has_colorkey)
+		      SDL_SetColorKey(sprite, SDL_TRUE, colorkey);
 		  }
 
 		  char crap5[200];
@@ -4683,9 +4504,9 @@ void updateFrame(void)
   
   if (in_enabled)
     {
-      //text window is open, lets act accordingly
+      //text box is open, lets act accordingly
       //check_joystick();
-      if (getkeystate(SDLK_RETURN) || getkeystate(SDLK_KP_ENTER))
+      if (scancodestate[SDL_SCANCODE_RETURN] || scancodestate[SDL_SCANCODE_KP_ENTER])
 	{
 	  //exit text mode
 	  
@@ -4783,24 +4604,30 @@ void updateFrame(void)
 		}
 	    }
 	  
-	  in_enabled = 0;
+	  show_text_box(0);
 	}
-      else if (sjoy.keyjustpressed[SDLK_ESCAPE])
+      else if (scancodejustpressed[SDL_SCANCODE_ESCAPE])
 	{
-	  in_enabled = 0;
+	  show_text_box(0);
 	}
-      else if (sjoy.keyjustpressed[SDLK_BACKSPACE])
+      else if (scancodejustpressed[SDL_SCANCODE_BACKSPACE])
 	//	if (getkey(8)) //this is a much faster backspace than the above
 	{
 	  if (strlen(in_temp) > 0)
 	    in_temp[strlen(in_temp)-1] = 0;
 
 	}
-      else if (strlen(in_temp) < in_max)
-	{
-	  if (isprint(sjoy.last_unicode))
-	    sprintf(in_temp + strlen(in_temp), "%c", sjoy.last_unicode);
+      else {
+	SDL_Event ev;
+	if (SDL_PeepEvents(&ev, 1, SDL_GETEVENT,
+			   SDL_TEXTINPUT, SDL_TEXTINPUT) > 0) {
+	  if (strlen(in_temp) < in_max)
+	    {
+	      if (isprint(ev.text.text[0]))
+		sprintf(in_temp + strlen(in_temp), "%c", ev.text.text[0]);
+	    }
 	}
+      }
 
       if (in_enabled)
 	{
@@ -4846,7 +4673,7 @@ void updateFrame(void)
       in_x = 270;
       in_y = 190;
       in_onflag = /*false*/0;
-      in_enabled = /*true*/1;
+      show_text_box(1);
 
 
 
@@ -4857,7 +4684,7 @@ void updateFrame(void)
   //MAIN PAGE FLIP DONE HERE
 
 
-  if (getkeystate(SDLK_SPACE) && (mode != 1))
+  if (scancodestate[SDL_SCANCODE_SPACE] && (mode != 1))
     {
       drawallhard();
 
@@ -4979,11 +4806,6 @@ static int doInit(int argc, char *argv[])
   if (init(argc, argv, "tiles/esplash.bmp") < 0)
     return -1;
 
-  /* Difference with the game: attempt to get a Unicode key state
-     (to handle '[' and ']' in a layout-independant way, namely) */
-  SDL_EventState(SDL_KEYUP, SDL_ENABLE);
-  
-
   /** SETUP **/
   /* Manually setup basic sequences */
   {
@@ -5081,6 +4903,9 @@ int main(int argc, char *argv[])
 
   if (init_ret == 0)
     {
+      /* Avoid toggling continuously while Return is pressed */
+      int block_toggle_fullscreen = 0;
+
       /* Main loop */
       while(1)
 	{
@@ -5089,18 +4914,21 @@ int main(int argc, char *argv[])
 	  
 	  /* Check if we need to quit */
 	  if (SDL_PeepEvents(&event, 1, SDL_GETEVENT,
-			     SDL_EVENTMASK(SDL_QUIT)) > 0)
+			     SDL_QUIT, SDL_QUIT) > 0)
 	    break;
 	  
 	  /* Fullscreen <-> window */
-	  if ((SDL_GetModState()&KMOD_ALT) && GetKeyboard(SDLK_RETURN))
+	  if ((SDL_GetModState()&KMOD_ALT) && GetKeyboard(SDLK_RETURN)
+	      && !block_toggle_fullscreen)
 	    {
-	      /* Note: as of 2008-08-07, only works under X11 */
-	      int success = SDL_WM_ToggleFullScreen(GFX_lpDDSBack);
-	      if (!success)
-		/* Try using a more portable way: */
-		gfx_toggle_fullscreen();
+	      gfx_toggle_fullscreen();
+	      block_toggle_fullscreen = 1;
+	      // TODO SDL2: ignore keystroke
+	      // Maybe synthetize keyup event and refresh scancodestate?
+	      // Or switch to keyboard event processing loop
 	    }
+	  if (GetKeyboard(SDLK_RETURN) == 0)
+	    block_toggle_fullscreen = 0;
 	  
 	  updateFrame();
 

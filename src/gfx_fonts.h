@@ -35,7 +35,6 @@ typedef enum enum_font
 
 
 extern int gfx_fonts_init(void);
-extern int gfx_fonts_init_failsafe(void);
 extern void gfx_fonts_init_colors(void);
 extern void gfx_fonts_quit(void);
 extern void FONTS_SetTextColor(Uint8 r, Uint8 g, Uint8 b);

@@ -761,9 +761,7 @@ int InitSound()
   
   /* Dump audio info */
   {
-    char namebuf[128] = "";
-    SDL_AudioDriverName(namebuf, 128);
-    log_info("Audio driver: %s", namebuf);
+    log_info("Audio driver: %s", SDL_GetCurrentAudioDriver());
 
     int numtimesopened;
     numtimesopened = Mix_QuerySpec(&hw_freq, &hw_format, &hw_channels);
@@ -864,6 +862,7 @@ void QuitSound(void)
 
   free(fake_buf);
 
+  Mix_Quit();
   Mix_CloseAudio();
   SDL_QuitSubSystem(SDL_INIT_AUDIO);
 }

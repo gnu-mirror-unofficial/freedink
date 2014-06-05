@@ -38,7 +38,7 @@
 #include "SDL.h"
 #include "SDL_image.h"
 #include "SDL_ttf.h"
-#include "SDL_framerate.h"
+#include "SDL2_framerate.h"
 #include "binreloc.h"
 #include "progname.h"
 #include "game_engine.h"
@@ -74,7 +74,7 @@ PSP_HEAP_SIZE_MAX();
 static int g_b_no_write_ini = 0; // -noini passed to command line?
 static char* init_error_msg = NULL;
 
-void init_set_error_msg(char *fmt, ...)
+void init_set_error_msg(const char *fmt, ...)
 {
   va_list ap;
   va_start(ap, fmt);
@@ -198,7 +198,7 @@ void finiObjects()
  */
 int initFail(char *message)
 {
-  msgbox_init_error(message);
+  msgbox(message);
   return -1; /* used when "return initFail(...);" */
 }
 
@@ -403,8 +403,6 @@ int init(int argc, char *argv[], char* splash_path)
       if (sound_on)
 	bgm_init();
     }
-  if (cd_inserted)
-    PlayCD(7);
 
 
   SDL_initFramerate(&framerate_manager);
@@ -421,23 +419,6 @@ int init(int argc, char *argv[], char* splash_path)
   log_info("Loading hard...");
   load_hard();
   log_info(" done!");
-
-  /* We'll handle those events manually */
-  SDL_EventState(SDL_ACTIVEEVENT, SDL_IGNORE);
-  SDL_EventState(SDL_VIDEOEXPOSE, SDL_IGNORE);
-  SDL_EventState(SDL_VIDEORESIZE, SDL_IGNORE);
-  SDL_EventState(SDL_USEREVENT, SDL_IGNORE);
-  SDL_EventState(SDL_SYSWMEVENT, SDL_IGNORE);
-  SDL_EventState(SDL_KEYUP, SDL_IGNORE);
-  SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
-  SDL_EventState(SDL_MOUSEBUTTONUP, SDL_IGNORE);
-  /* We still process through a SDL_PollEvent() loop: */
-  /* - SDL_QUIT: quit on window close and Ctrl+C */
-  /* - SDL_MOUSEBUTTONDOWN: don't miss quick clicks */
-  /* - Joystick: apparently we need to keep them, otherwise joystick
-       doesn't work at all */
-  /* - SDL_KEYDOWN: we want the keydown events for text input
-       (show_console and editor input dialog) */
 
   return 0;
 }

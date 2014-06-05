@@ -40,30 +40,47 @@ struct seth_joy sjoy;
 static enum buttons_actions buttons_map[NB_BUTTONS];
 
 
-/* TODO: maybe it's not necessary to SDL_PumpEvents every time, since
-   it's usually done before this function is called */
-int GetKeyboard(int key)
+// returns 0 if the key has been depressed, else returns 1 and sets
+// key to code recd.
+int GetKeyboard(SDL_Keycode key)
 {
-  // returns 0 if the key has been depressed, else returns 1 and sets key to code recd.
-  int keystate_size;
-  Uint8* keystate;
-  //SDL_PumpEvents();
-#if SDL_VERSION_ATLEAST(1, 3, 0)
-  keystate = SDL_GetKeyboardState(&keystate_size);
-  SDLKey scancode = SDL_GetScancodeFromKey(key);
+  const Uint8* keystate;
+  keystate = SDL_GetKeyboardState(NULL);
+  SDL_Scancode scancode = SDL_GetScancodeFromKey(key);
   return keystate[scancode];
-#else
-  keystate = SDL_GetKeyState(&keystate_size);
-  return keystate[key];
-#endif
 }
 
 void input_init(void)
 {
-  /* Enable Unicode to be able to grab what letter the user actually
-     typed, taking the keyboard layout/language into account. Used for
-     the console (game) and the input dialogs (editor). */
-  SDL_EnableUNICODE(1);
+  /* Mouse: keep it within the window and get relative motion events
+     ((+x,+y) rather than (x,y)) */
+
+  // Use mouse warping rather than raw input - raw input has a
+  // different resolution and acceleration under (at least) X11.
+  // It also keeps the mouse within the window in software mode.
+  SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_WARP, "1");
+
+  int ret = SDL_SetRelativeMouseMode(SDL_TRUE);
+  if (ret == -1)
+    log_error("Relative mouse positionning not supported on this platform.");
+  /* TODO SDL2: free mouse when the game is not using it */
+
+  /* We'll handle those events manually */
+  SDL_EventState(SDL_USEREVENT, SDL_IGNORE);
+  SDL_EventState(SDL_SYSWMEVENT, SDL_IGNORE);
+  SDL_EventState(SDL_KEYUP, SDL_IGNORE);
+  /* Only track button down events */
+  SDL_EventState(SDL_MOUSEBUTTONUP, SDL_IGNORE);
+  /* We'll enable text inputs on demande (dinkc_console, editor textbox) */
+  SDL_EventState(SDL_TEXTINPUT, SDL_IGNORE);
+  /* We still process through a SDL_PollEvent() loop: */
+  /* - SDL_QUIT: quit on window close and Ctrl+C */
+  /* - SDL_MOUSEMOTION: easier for SDL_SetRelativeMouseMode() */
+  /* - SDL_MOUSEBUTTONDOWN: don't miss quick clicks */
+  /* - SDL_KEYDOWN: we want the keydown events for text input
+       (show_console and editor input dialog) */
+  /* - Joystick: apparently we need to keep them, otherwise joystick
+       doesn't work at all */
 
   /* Clear keyboard/joystick buffer */
   memset(&sjoy,0,sizeof(sjoy));
@@ -104,16 +121,21 @@ void input_init(void)
 	      int i;
 	      log_info("%i joysticks were found.", SDL_NumJoysticks());
 	      log_info("The names of the joysticks are:");
-	      for (i=0; i < SDL_NumJoysticks(); i++)
-		log_info("    %s", SDL_JoystickName(i));
+	      for (i=0; i < SDL_NumJoysticks(); i++) {
+		SDL_Joystick* jinfo = SDL_JoystickOpen(i);
+		log_info("    %s", SDL_JoystickName(jinfo));
+	      }
+
 	      log_info("Picking the first one...");
+	      // TODO: make joystick # configurable
+
 	      jinfo = SDL_JoystickOpen(0);
 	      /* Don't activate joystick events, Dink polls joystick
 		 manually.  Plus events would pile up in the queue. */
 	      SDL_JoystickEventState(SDL_IGNORE);
 	      
 	      if (jinfo) {
-		log_info("Name: %s", SDL_JoystickName(0));
+		log_info("Name: %s", SDL_JoystickName(jinfo));
 		log_info("Number of axes: %d", SDL_JoystickNumAxes(jinfo));
 		log_info("Number of buttons: %d", SDL_JoystickNumButtons(jinfo));
 		log_info("Number of balls: %d", SDL_JoystickNumBalls(jinfo));

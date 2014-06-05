@@ -41,84 +41,9 @@
 #endif
 
 #include "SDL.h"
-#include "SDL_image.h"
-
-#include "gfx.h"
-#include "gfx_fonts.h"
-#include "game_engine.h"
 
 /**
- * Display a message on the current SDL screen
- */
-void msgbox_sdl(char* msg)
-{
-  SDL_FillRect(GFX_lpDDSBack, NULL, SDL_MapRGB(GFX_lpDDSBack->format, 100, 100, 100));
-
-  {
-    int margin_h = 50;
-    int margin_v = 20;
-    rect dst = {margin_h, margin_v, 640-margin_h, margin_v+20}; /* top line */
-    FONTS_SetTextColor(255, 255, 255); /* white */
-    print_text_wrap("FreeDink failed to start!", &dst, 1, 0, FONT_SYSTEM);
-  }
-  {
-    int margin_h = 50;
-    int margin_v = 100;
-    SDL_Rect dst2 = {margin_h-1, margin_v-1, 640-(margin_h*2)+2, 480-(margin_v*2)+2};
-    SDL_FillRect(GFX_lpDDSBack, &dst2, SDL_MapRGB(GFX_lpDDSBack->format, 200, 200, 200));
-    SDL_Rect dst3 = {margin_h, margin_v, 640-(margin_h*2), 480-(margin_v*2)};
-    SDL_FillRect(GFX_lpDDSBack, &dst3, SDL_MapRGB(GFX_lpDDSBack->format, 255, 255, 255));
-
-    /* Display error message */
-    int border = 5;
-    rect dst = {margin_h+border, margin_v+border, 640-margin_h-border, 480-margin_v-border}; /* centered with margin */
-    FONTS_SetTextColor(0, 0, 0); /* black */
-    if (msg != NULL)
-      print_text_wrap(msg, &dst, 0, 0, FONT_SYSTEM);
-  }
-  {
-    int margin_h = 50;
-    int margin_v = 20;
-    rect dst = {margin_h, 480-margin_v-20, 640-margin_h, 480-margin_v}; /* bottom line */
-    FONTS_SetTextColor(255, 255, 255); /* white */
-    print_text_wrap("Press ESC to exit", &dst, 1, 0, FONT_SYSTEM);
-  }
-
-  SDL_Flip(GFX_lpDDSBack);
-
-  /* Wait for user to press a key */
-  if (SDL_WasInit(SDL_INIT_JOYSTICK) == 0
-      && SDL_InitSubSystem(SDL_INIT_JOYSTICK) != -1
-      && SDL_NumJoysticks() > 0)
-    jinfo = SDL_JoystickOpen(0);
-  if (jinfo != NULL)
-    SDL_JoystickEventState(SDL_ENABLE);
-
-  SDL_Event e;
-  while (SDL_WaitEvent(&e))
-    {
-      if (e.type == SDL_KEYDOWN || e.type == SDL_KEYUP)
-	{
-	  if (e.key.keysym.sym == SDLK_ESCAPE
-	      || e.key.keysym.sym == SDLK_SPACE
-	      || e.key.keysym.sym == SDLK_RETURN
-	      || e.key.keysym.sym == 'q')
-	    break;
-	}
-      else if (e.type == SDL_QUIT)
-	{
-	  break;
-	}
-      else if (e.type == SDL_JOYBUTTONDOWN || e.type == SDL_JOYBUTTONUP)
-	{
-	  break;
-	}
-    }
-}
-
-
-/**
- * Emergency message box for when SDL is not even starting
+ * Emergency message box for when even SDL_ShowSimpleMessageBox fails
  */
 void msgbox_os(char *msg)
 {
@@ -129,6 +54,7 @@ void msgbox_os(char *msg)
 
 #else
 #  ifdef HAVE_EXECLP
+
   /* 'xmessage' basic (and ugly) X utility */
   pid_t pid = 0;
   if ((pid = fork()) < 0)
@@ -151,46 +77,11 @@ void msgbox_os(char *msg)
       waitpid(child_pid, &status, 0);
     }
 #  else
+
   /* Add more OS-specific fallbacks here. */
+
 #  endif
 #endif
-}
-
-
-void msgbox(char* msg)
-{
-  /* Try initializing graphics if not already */
-  int graphics_on = 0;
-  switch (gfx_get_init_state())
-    {
-    /* No screen */
-    case GFX_NOT_INITIALIZED:
-    case GFX_INITIALIZING_VIDEO:
-      graphics_on = !(gfx_init_failsafe() < 0);
-      break;
-
-    /* Screen initialized, no fonts */
-    case GFX_INITIALIZING_FONTS:
-      graphics_on = !(gfx_fonts_init_failsafe() < 0);
-      break;
-
-    /* Screen and fonts initialized */
-    case GFX_INITIALIZED:
-      graphics_on = 1;
-      break;
-
-    /* Unknown state, internal error */
-    default:
-      graphics_on = 0;
-      break;
-    }
-
-  /* Display a SDL message box if possible, otherwise fall back to a
-     system message box */
-  if (graphics_on)
-    msgbox_sdl(msg);
-  else
-    msgbox_os(msg);
 }
 
 
@@ -198,7 +89,7 @@ void msgbox(char* msg)
  * Display an error for the user's immediate attention, during
  * initialization (so we can use the SDL window if needed)
  */
-void msgbox_init_error(char* fmt, ...)
+void msgbox(char* fmt, ...)
 {
   va_list ap;
 
@@ -212,8 +103,12 @@ void msgbox_init_error(char* fmt, ...)
   vasprintf(&buf, fmt, ap);
   va_end(ap);
 
+  /* Display a SDL message box if possible, otherwise fall back to a
+     system message box */
   fprintf(stderr, "%s\n", buf);
-  msgbox(buf);
+  SDL_Quit();
+  if (SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, PACKAGE_STRING, buf, NULL) < 0)
+    msgbox_os(buf);
 
   free(buf);
 }

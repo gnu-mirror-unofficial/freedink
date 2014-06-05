@@ -123,27 +123,6 @@ char* get_fontconfig_path(char* fontname)
 }
 #endif
 
-/**
- * Init font subsystem and one built-in font, so we can display error
- * messages in emergency (init error) situations
- */
-int gfx_fonts_init_failsafe()
-{
-  if (!TTF_WasInit() && TTF_Init() == -1)
-    return -1;
-
-  /* Load system font from compiled data */
-  if (system_font == NULL)
-    {
-      system_font = TTF_OpenFontRW(SDL_RWFromConstMem(vgasys_fon, sizeof(vgasys_fon)),
-				   1, FONT_SIZE);
-      if (system_font == NULL)
-	return -1;
-      setup_font(system_font);
-    }
-
-  return 0;
-}
 
 /**
  * Init font subsystem and load the default fonts
@@ -160,7 +139,8 @@ int gfx_fonts_init()
 			       1, FONT_SIZE);
   if (system_font == NULL)
     {
-      init_set_error_msg("Failed to load builtin 'vgasys.fon' font.");
+      init_set_error_msg("Failed to load built-in 'vgasys.fon' font: %s",
+			 SDL_GetError());
       return -1;
     }
   setup_font(system_font);

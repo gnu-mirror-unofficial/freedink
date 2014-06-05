@@ -1,7 +1,24 @@
-108.3
+109.0
 =====
 
 * UNRELEASED
+
+- Rewrite graphics/sounds/inputs against SDL2
+
+  - Enforce full-screen aspect ratio (no more 4:3 stretched to 16:9).
+
+  - Runs in current resolution so leave the screen clean if something
+    goes wrong (no more stuck in 640x480).
+
+    Also smoother full-screen / windowed toggle.
+
+  - FreeDink respect local keyboard layout for keys (ALT+... shortcuts
+    and custom D-Mod keys) on Windows.
+
+  - FreeDinkedit now uses layout-independent scancodes - no longer
+    searching where '[' or '`' was relocated.
+
+  - CD-ROM support dropped.
 
 - New translation for the engine strings in Russian
   (thanks Yuri Kozlov)

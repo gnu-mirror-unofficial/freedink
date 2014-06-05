@@ -991,8 +991,7 @@ void dc_scripts_used(int script, int* yield, int* preturnint)
 
 void dc_stopcd(int script, int* yield, int* preturnint)
 {
-  log_debug("Stopped cd");
-  killcd();
+  /* No-op */
 }
 
 void dc_stopmidi(int script, int* yield, int* preturnint)
@@ -1191,29 +1190,12 @@ void dc_playmidi(int script, int* yield, int* preturnint,
       int cd_track = regm - 1000;
       log_info("playmidi - cd play command detected.");
       
-      if (cd_inserted)
-	{
-	  if (cd_track == last_cd_track
-	      && cdplaying())
-	    {
-	      *yield = 1;
-	      return;
-	    }
-	  
-	  log_info("Playing CD track %d.", cd_track);
-	  if (PlayCD(cd_track) >= 0)
-	    return;
-	}
-      else
-	{
-	  //cd isn't instered, can't play CD song!!!
-	  char buf[10+4+1];
-	  sprintf(buf, "%d.mid", cd_track);
-	  log_info("Playing midi %s.", buf);
-	  PlayMidi(buf);
-	  // then try to play 'midi_file' as well:
-	  // (necessary for START.c:playmidi("1003.mid"))
-	}
+      char buf[10+4+1];
+      sprintf(buf, "%d.mid", cd_track);
+      log_info("Playing midi %s.", buf);
+      PlayMidi(buf);
+      // then try to play 'midi_file' as well:
+      // (necessary for START.c:playmidi("1003.mid"))
     }
   log_info("Playing midi %s.", midi_file);
   PlayMidi(midi_file);
@@ -1709,6 +1691,7 @@ void dc_get_truecolor(int script, int* yield, int* preturnint)
 void dc_show_console(int script, int* yield, int* preturnint)
 {
     console_active = 1;
+    SDL_EventState(SDL_TEXTINPUT, SDL_ENABLE);
 }
 
 void dc_show_inventory(int script, int* yield, int* preturnint)
