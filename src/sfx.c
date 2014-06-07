@@ -731,7 +731,12 @@ int InitSound()
       log_error("SDL_Init(SDL_INIT_AUDIO): %s", SDL_GetError());
       return -1;
     }
-  
+
+  /* Work-around to disable fluidsynth and fallback to TiMidity++: */
+  /* TODO: allow user to set it at run-time */
+  /* SDL_putenv("SDL_SOUNDFONTS="); */
+  /* SDL_putenv("SDL_FORCE_SOUNDFONTS=1"); */
+
   /* MIX_DEFAULT_FREQUENCY is ~22kHz are considered a good default,
      44kHz is considered too CPU-intensive on older computers */
   /* MIX_DEFAULT_FORMAT is 16bit adapted to current architecture
@@ -767,6 +772,49 @@ int InitSound()
     else
       log_info("Audio hardware info: frequency=%dHz\tformat=%s\tchannels=%d\topened=%d times",
 	       hw_freq, format2string(hw_format), hw_channels, numtimesopened);
+  }
+
+  /* Test SDL_mixer capabilities */
+  {
+    int i, total;
+    total = Mix_GetNumChunkDecoders();
+    for (i = 0; i < total; i++)
+      log_info("Audio chunk decoder: %s", Mix_GetChunkDecoder(i));
+
+    total = Mix_GetNumMusicDecoders();
+    int ogg_available = 0;
+    for (i = 0; i < total; i++) {
+      if (strcmp(Mix_GetMusicDecoder(i), "OGG") == 0)
+	  ogg_available = 1;
+      if (strcmp(Mix_GetMusicDecoder(i), "MP3") == 0)
+	log_info("Audio music decoder: MP3 (MP3 is patented, prefer Ogg Vorbis!)");
+      else
+	log_info("Audio music decoder: %s", Mix_GetMusicDecoder(i));
+    }
+    if (!ogg_available)
+      log_error("Audio music decoder: no Ogg support");
+
+    int available;
+    /* Don't mess with loading/unloading too much */
+    /*
+    available = Mix_Init(MIX_INIT_MOD);     // libmikmod
+    log_info("Audio dynload: MOD        %s", available ? "ok" : Mix_GetError());
+    available = Mix_Init(MIX_INIT_MODPLUG); // libmodplug
+    log_info("Audio dynload: MODPLUG    %s", available ? "ok" : Mix_GetError());
+    available = Mix_Init(MIX_INIT_FLUIDSYNTH);
+    log_info("Audio dynload: FLUIDSYNTH %s", available ? "ok" : Mix_GetError());
+    available = Mix_Init(MIX_INIT_FLAC);
+    log_info("Audio dynload: FLAC       %s", available ? "ok" : Mix_GetError());
+    available = Mix_Init(MIX_INIT_MP3);
+    log_info("Audio dynload: MP3        %s", available ? "ok" : Mix_GetError());
+    Mix_Quit();
+    */
+    available = Mix_Init(MIX_INIT_OGG);
+    log_info("Audio dynload: OGG: %s", available ? "ok" : Mix_GetError());
+    if (!available)
+      log_error("Audio dynload: no Ogg support");
+
+    // TODO: test MOD support (btw does mikmod and modplug conflict?)
   }
 
   /* Allocate fake buffer - use the same size as the audio buffer */

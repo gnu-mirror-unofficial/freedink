@@ -25,7 +25,9 @@ A: SDL_mixer (the MIDI component that FreeDink uses) can use both
 
    Under Debian, you can disable fluidsynth by using a wrong soundfont
    path:
-     SDL_FORCE_SOUNDFONTS=1 SDL_SOUNDFONTS= freedink
+     SDL_FORCE_SOUNDFONTS=1 freedink
+
+   (you may also try fiddling with SDL_SOUNDFONTS=<paths>)
 
    You can also see above that there are some issues if
    '/dev/sequencer' is present but not functionnal, so it's best we
