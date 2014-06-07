@@ -260,6 +260,10 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
     }
   log_info("Obtained video flags:   "); gfx_dumpflags(flags);
   cur_video_flags = flags;
+  log_info("Video format: %d-bit R=0x%08x G=0x%08x B=0x%08x A=0x%08x",
+	   GFX_lpDDSBack->format->BitsPerPixel,
+	   GFX_lpDDSBack->format->Rmask, GFX_lpDDSBack->format->Gmask,
+	   GFX_lpDDSBack->format->Bmask, GFX_lpDDSBack->format->Amask);
 
   char buf[1024];
   if (SDL_VideoDriverName(buf, 1024) != NULL)
