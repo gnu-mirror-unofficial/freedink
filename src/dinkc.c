@@ -1231,7 +1231,7 @@ void make_int(char name[80], int value, int scope, int script)
 	      }
 	    else
 	      {
-		log_error("[DinkC] %s:%d: var %s is already a global, not changing value",
+		log_warn("[DinkC] %s:%d: var %s is already a global, not changing value",
 			  rinfo[script]->name, rinfo[script]->debug_line, name);
 	      }
 	    return;
