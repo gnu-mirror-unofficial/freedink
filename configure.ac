@@ -24,7 +24,7 @@ AC_INIT([GNU FreeDink],[109.0],[bug-freedink@gnu.org])
 AC_CONFIG_AUX_DIR(autotools)
 # For future version of aclocal:
 AC_CONFIG_MACRO_DIR(autotools/macros)
-AM_INIT_AUTOMAKE([gnits dist-bzip2 dist-zip])
+AM_INIT_AUTOMAKE([gnits dist-zip])
 
 AC_CONFIG_HEADERS(config.h)
 # Define $host $host_os + distributes config.guess and config.sub
