@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-# Copyright (C) 2007, 2008, 2009  Sylvain Beucler
+# Copyright (C) 2007, 2008, 2009, 2010, 2012, 2014  Sylvain Beucler
 
 # This file is part of GNU FreeDink
 
