@@ -1,0 +1,60 @@
+== SDL2 ==
+
+Official documentation is in SDL2/README-android.txt
+
+=== Pre-requisites ===
+
+* Install minimal Java environment:
+ sudo apt-get install openjdk-7-jdk ant
+* Install NDK (tested with r9d)
+* Install the latest SDK, run 'android' and install API 12
+
+=== Test 1: SDL wrapper for simple programs ===
+
+* Compile a sample app (calls ndk-build):
+ cd /usr/src/SDL2/build-scripts/
+ ./androidbuild.sh org.libsdl.testgles ../test/testgles.c
+* Follow the instructions to install on your device:
+ cd /usr/src/SDL2/build/org.libsdl.testgles/
+ ant debug install
+
+Notes:
+- triple armeabi/armeabi-v7a/x86 compilation!
+- application doesn't quit
+
+
+=== Test 2: SDL wrapper + SDL_image ===
+
+First, modify showimage.c to show an embedded image or something.
+
+To compile:
+
+ cd /usr/src/SDL2/build-scripts/
+ ./androidbuild.sh org.libsdl.showimage /usr/src/SDL2_image/showimage.c
+ cd /usr/src/SDL2/build/org.libsdl.showimage/
+ ln -s /usr/src/SDL2_image jni/
+ ln -s /usr/src/SDL2_image/external/libwebp-0.3.0 jni/webp
+ # - Edit jni/Android.mk
+ #   LOCAL_SHARED_LIBRARIES := ... SDL2_image
+ # - Edit android-project/src/org/libsdl/app/SDLActivity.java:
+ #   System.loadLibrary("SDL2_image");
+ # - Edit jni/Application.mk: remove x86 where jpeg-9 doesn't build
+ ndk-build -j$(nproc)
+ ant debug install
+
+Notes:
+- application doesn't restart properly
+
+
+=== FreeDink ===
+
+/usr/src/android-ndk-r9d/build/tools/make-standalone-toolchain.sh \
+  --platform=android-12 --install-dir=/usr/src/ndk-standalone-12
+PATH=/usr/src/ndk-standalone-12/bin:$PATH
+mkdir cross-android
+../configure --host=arm-linux-androideabi --prefix=/freedink
+# => issues with wchat even without -c99
+
+Notes:
+- gnulib wasn't functional on Android as of 2012-01, progressed since?
+  https://lists.gnu.org/archive/html/bug-gnulib/2012-01/msg00295.html
