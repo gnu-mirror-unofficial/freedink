@@ -69,6 +69,7 @@ void input_init(void)
   SDL_EventState(SDL_USEREVENT, SDL_IGNORE);
   SDL_EventState(SDL_SYSWMEVENT, SDL_IGNORE);
   SDL_EventState(SDL_KEYUP, SDL_IGNORE);
+  SDL_EventState(SDL_KEYDOWN, SDL_IGNORE);
   /* Only track button down events */
   SDL_EventState(SDL_MOUSEBUTTONUP, SDL_IGNORE);
   /* We'll enable text inputs on demande (dinkc_console, editor textbox) */
@@ -77,8 +78,6 @@ void input_init(void)
   /* - SDL_QUIT: quit on window close and Ctrl+C */
   /* - SDL_MOUSEMOTION: easier for SDL_SetRelativeMouseMode() */
   /* - SDL_MOUSEBUTTONDOWN: don't miss quick clicks */
-  /* - SDL_KEYDOWN: we want the keydown events for text input
-       (show_console and editor input dialog) */
   /* - Joystick: apparently we need to keep them, otherwise joystick
        doesn't work at all */
 

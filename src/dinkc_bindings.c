@@ -1690,8 +1690,7 @@ void dc_get_truecolor(int script, int* yield, int* preturnint)
 
 void dc_show_console(int script, int* yield, int* preturnint)
 {
-    console_active = 1;
-    SDL_EventState(SDL_TEXTINPUT, SDL_ENABLE);
+  dinkc_console_show();
 }
 
 void dc_show_inventory(int script, int* yield, int* preturnint)
