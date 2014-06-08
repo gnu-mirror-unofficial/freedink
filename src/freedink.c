@@ -1934,9 +1934,9 @@ void bounce_brain(int h)
 }
 //end bounce brain		
 
+/* Capture the current's backbuffer game zone for screen transition */
 void grab_trick(int trick)
 {
-  /* Capture the current game zone from the backbuffer */
   SDL_Rect src, dst;
   src.x = playl;
   src.y = 0;
@@ -1946,31 +1946,23 @@ void grab_trick(int trick)
   SDL_BlitSurface(GFX_lpDDSBack, &src, GFX_lpDDSTrick, &dst);
   
   move_screen = trick;			
-  trig_man = /*true*/1;
-  
   move_counter = 0;
 }
 
-
-
-
-
-
-void did_player_cross_screen(/*bool*/int real, int h)
+int did_player_cross_screen(int lock_sprite, int h)
 {
   if (walk_off_screen == 1)
-    return;
+    return 0;
 	
-
-  //DO MATH TO SEE IF THEY HAVE CROSSED THE SCREEN, IF SO LOAD NEW ONE
-	
+  int ret = 0;
+  // DO MATH TO SEE IF THEY HAVE CROSSED THE SCREEN, IF SO LOAD NEW ONE
   if ((spr[h].x) < playl) 
     {
       if ((*pmap-1) >= 1 && map.loc[*pmap-1] > 0 && screenlock == 0)
 	{
 	  //move one map to the left
-	  if (real)
-	    return;
+	  if (lock_sprite)
+	    return 0;
 	  
 	  update_screen_time();
 	  grab_trick(4);
@@ -1982,6 +1974,7 @@ void did_player_cross_screen(/*bool*/int real, int h)
 	  spr[h].x = 619;
 	  spr[h].y = spr[h].lpy[0];
 	  draw_map_game();
+	  ret = 1;
 	}
       else
 	{
@@ -1994,8 +1987,8 @@ void did_player_cross_screen(/*bool*/int real, int h)
       if ((*pmap+1) <= 24*32 && map.loc[*pmap+1] > 0 && screenlock == 0)
 	{
 	  //move one map to the right
-	  if (real)
-	    return;
+	  if (lock_sprite)
+	    return 0;
 	  
 	  update_screen_time();
 	  grab_trick(6);
@@ -2007,6 +2000,7 @@ void did_player_cross_screen(/*bool*/int real, int h)
 	  spr[h].x = playl;
 	  spr[h].y = spr[h].lpy[0];
 	  draw_map_game();
+	  ret = 1;
 	}
       else
 	{
@@ -2019,8 +2013,8 @@ void did_player_cross_screen(/*bool*/int real, int h)
       if ((*pmap-32) >= 1 && map.loc[*pmap-32] > 0 && screenlock == 0)
 	{
 	  //move one map up
-	  if (real)
-	    return;
+	  if (lock_sprite)
+	    return 0;
 
 	  update_screen_time();
 	  grab_trick(8);
@@ -2032,6 +2026,7 @@ void did_player_cross_screen(/*bool*/int real, int h)
 	  spr[h].x = spr[h].lpx[0];
 	  spr[h].y = 399;
 	  draw_map_game();
+	  ret = 1;
 	}
       else
 	{
@@ -2045,8 +2040,8 @@ void did_player_cross_screen(/*bool*/int real, int h)
       if ((*pmap+32) <= 24*32 && map.loc[*pmap+32] > 0 && screenlock == 0)
 	{
 	  //move one map down
-	  if (real)
-	    return;
+	  if (lock_sprite)
+	    return 0;
 	  
 	  update_screen_time();
 	  grab_trick(2);
@@ -2058,12 +2053,14 @@ void did_player_cross_screen(/*bool*/int real, int h)
 	  spr[h].y = 0;
 	  spr[h].x = spr[h].lpx[0];
 	  draw_map_game();
+	  ret = 1;
 	}
       else
 	{
 	  spr[h].y = 399;
 	}
     }
+  return ret;
 }
 
 
@@ -3161,7 +3158,10 @@ shootm:
   ;
 }
 
-
+/**
+ * Screen transition with scrolling effect.
+ * Returns 0 when transition is finished.
+ */
 /*bool*/int transition()
 {
   SDL_Rect src, dst;
@@ -3204,10 +3204,9 @@ shootm:
       
       if (move_counter >= 595)
 	{
-	  total_trigger = /*false*/0;
+	  transition_in_progress = 0;
 	  move_screen = 0;
 	  move_counter = 0;
-	  trig_man = 0;
 	  //draw_map();
 	  return /*false*/0;
 	}
@@ -3239,10 +3238,9 @@ shootm:
       
       if (move_counter >= 595)
 	{
-	  total_trigger = /*false*/0;
+	  transition_in_progress = 0;
 	  move_screen = 0;
 	  move_counter = 0;
-	  trig_man = 0;
 	  //draw_map();
 	  return /*false*/0;
 	}
@@ -3274,10 +3272,9 @@ shootm:
       
       if (move_counter >= 398)
 	{
-	  total_trigger = /*false*/0;
+	  transition_in_progress = 0;
 	  move_screen = 0;
 	  move_counter = 0;
-	  trig_man = 0;
 	  //draw_map();
 	  return /*false*/0;
 	}
@@ -3309,10 +3306,9 @@ shootm:
       
       if (move_counter >= 398)
 	{
-	  total_trigger = /*false*/0;
+	  transition_in_progress = 0;
 	  move_screen = 0;
 	  move_counter = 0;
-	  trig_man = 0;
 	  //draw_map();
 	  return /*false*/0;
 	}
@@ -4883,8 +4879,6 @@ int main(int argc, char* argv[])
 
       /* Avoid toggling continuously while Return is pressed */
       int block_toggle_fullscreen = 0;
-
-      int last_console_active = 0;
       
       /* Windows event loop */
       while(!g_b_kill_app)
@@ -4917,38 +4911,18 @@ int main(int argc, char* argv[])
 	    {
 	      game_set_normal_speed();
 	    }
-	  
-	  /* TODO: maybe check for application active/background state and
-	     pause the game accordingly - but this may be an annoying
-	     behavior. */
-	  if (g_b_kill_app == /*false*/0)
-	    updateFrame();
 
 	  /* Clean-up finished sounds: normally this is done by
 	     SDL_mixer but since we're using effects tricks to
 	     stream&resample sounds, we need to do this manually. */
 	  sfx_cleanup_finished_channels();
 	  
-	  if (console_active == 0 || last_console_active == 0)
-	    /* Get rid of keyboard events, otherwise they'll pile-up. Also
-	       purge them just when console is turned on. We poll the
-	       keyboard state directly in the rest of the game, so no
-	       keystroke will be lost. */
-	    while (SDL_PeepEvents(&event, 1, SDL_GETEVENT,
-				  SDL_KEYDOWN, SDL_KEYDOWN) > 0);
-
-	  if (console_active == 1)
-	    {
-	      SDL_Event ev;
-	      if (SDL_PeepEvents(&ev, 1, SDL_GETEVENT,
-				 SDL_TEXTINPUT, SDL_TEXTINPUT) > 0)
-		dinkc_console_process_key(ev);
-	      if (SDL_PeepEvents(&ev, 1, SDL_GETEVENT,
-				 SDL_KEYDOWN, SDL_KEYDOWN) > 0)
-		dinkc_console_process_key(ev);
-	    }
-	  
-	  last_console_active = console_active;
+	  /* Game logic */
+	  /* TODO: maybe check for application active/background state and
+	     pause the game accordingly - but this may be an annoying
+	     behavior. */
+	  if (g_b_kill_app == /*false*/0)
+	    updateFrame();
 	}
     }
 

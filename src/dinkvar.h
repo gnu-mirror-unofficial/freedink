@@ -187,8 +187,7 @@ extern struct talk_struct talk;
 extern Uint32 thisTickCount;
 extern Uint32 lastTickCount;
 extern FPSmanager framerate_manager;
-extern /*bool*/int total_trigger;
-extern /*bool*/int trig_man;
+extern /*bool*/int transition_in_progress;
 
 /* extern HRESULT ddrval; */
 /* extern LPDIRECTDRAWPALETTE lpDDPal; /\* The primary surface palette *\/ */

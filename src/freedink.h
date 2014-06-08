@@ -37,7 +37,7 @@ extern void button_brain(int h );
 extern void bounce_brain(int h);
 extern int check_if_move_is_legal(int u);
 extern void check_joystick(void);
-extern void did_player_cross_screen(/*bool*/int real, int h);
+extern int did_player_cross_screen(int lock_sprite, int h);
 extern void dragon_brain(int h);
 extern void drawscreenlock( void );
 extern void flip_it(void);

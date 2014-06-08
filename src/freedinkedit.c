@@ -4929,13 +4929,14 @@ int main(int argc, char *argv[])
 	    }
 	  if (GetKeyboard(SDLK_RETURN) == 0)
 	    block_toggle_fullscreen = 0;
-	  
-	  updateFrame();
 
 	  /* Clean-up finished sounds: normally this is done by
 	     SDL_mixer but since we're using effects tricks to
 	     stream&resample sounds, we need to do this manually. */
 	  sfx_cleanup_finished_channels();
+
+	  /* Main editor logic */
+	  updateFrame();
 	}
     }
 

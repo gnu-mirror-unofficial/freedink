@@ -72,87 +72,103 @@ void updateFrame( void )
     }
   frames++;
   
-/*     RECT                box_crap,box_real; */
-    SDL_Rect GFX_box_crap;
 
-/* 	DDBLTFX     ddbltfx; */
-    char msg[100];
-	
-/* 	HDC         hdc; */
-/*     HRESULT             ddrval; */
-
-    int move_result ;
+  char msg[100];
+  int move_result ;
     
-    /* Probably a debug variable, only set in a "if (5 > 9)" block. I
-       don't know what this allows to debug though; this involves
-       copying the screen to lpDDSTrick2 */
-    /*bool*/int get_frame = /*false*/0;
+  int max_s;
+  int rank[MAX_SPRITES_AT_ONCE];
 
-	int max_s;
-	int rank[MAX_SPRITES_AT_ONCE];
+  SDL_Rect GFX_box_crap;
+  
+  abort_this_flip = /*false*/0;
+
 	
-	abort_this_flip = /*false*/0;
-	
-	if (5 > 9)
-	{
-trigger_start:
-	trig_man = /*false*/0;
-    get_frame = /*true*/1;    
-	}
-	
-	check_joystick();
-	
-	if (GetKeyboard('m') && (GetKeyboard(SDLK_LALT) || GetKeyboard(SDLK_RALT)))
-	{
-		//shutdown music
-		StopMidi();
-		return;
-	}
-	
-	if (GetKeyboard('d') && (GetKeyboard(SDLK_LALT) || GetKeyboard(SDLK_RALT)))
-	  {	
-	    if (debug_mode)
-	      {
-		log_debug_off();
-	      }
-	    else
-	      {
-		log_debug_on();
-	      }
-	}
-		  
-	
-	
-	if (GetKeyboard('q') && (GetKeyboard(SDLK_LALT) || GetKeyboard(SDLK_RALT)))
-	{
-	  //shutdown game
-	  //	PostMessage(hWndMain, WM_CLOSE, 0, 0);
-	  SDL_Event ev;
-	  ev.type = SDL_QUIT;
-	  SDL_PushEvent(&ev);
-	  return;
-	}
-	
-	if (mode == 1) Scrawl_OnMouseInput(); else
-	{
-		if (keep_mouse)
-		{
-			if ((talk.active) || (spr[1].brain == 13))
-				Scrawl_OnMouseInput();
-		}
-		
-	}
-	
-/* demon: */
-	
-/*	while(GetTickCount() < (lastTickCount+ 20))
-{
-//wait
-}
-	*/
-	
-	lastTickCount = thisTickCount;
-	thisTickCount = game_GetTicks();
+  /* This run prepares a screen transition (when Dink runs to the border) */
+  /*bool*/int get_frame = /*false*/0;
+
+  /* Screen transition preparation start point */
+ trigger_start:
+  
+
+  /* Inputs */
+  check_joystick();
+  
+  if (GetKeyboard('m') && (GetKeyboard(SDLK_LALT) || GetKeyboard(SDLK_RALT)))
+    {
+      //shutdown music
+      StopMidi();
+      return;
+    }
+
+  if (GetKeyboard('q') && (GetKeyboard(SDLK_LALT) || GetKeyboard(SDLK_RALT)))
+    {
+      //shutdown game
+      //	PostMessage(hWndMain, WM_CLOSE, 0, 0);
+      SDL_Event ev;
+      ev.type = SDL_QUIT;
+      SDL_PushEvent(&ev);
+      return;
+    }
+
+  /* Debug mode */
+  static int last_d = 0;
+  if (GetKeyboard('d') && (GetKeyboard(SDLK_LALT) || GetKeyboard(SDLK_RALT)) && !last_d)
+    {	
+      if (!debug_mode)
+	log_debug_on();
+      else
+	log_debug_off();
+    }
+  last_d = GetKeyboard('d');
+
+  static int last_c = 0;
+  if (GetKeyboard('c') && (GetKeyboard(SDLK_LALT) || GetKeyboard(SDLK_RALT)) && !last_c)
+    {
+      if (!console_active)
+	dinkc_console_show();
+      else
+	dinkc_console_hide();
+    }
+  last_c = GetKeyboard('c');
+  // TODO SDL2: ignore keystroke
+  // Maybe synthetize keyup event and refresh scancodestate?
+  // Or switch to keyboard event processing loop
+
+  /* DinkC console */
+  if (console_active == 1) {
+      SDL_Event ev;
+      if (SDL_PeepEvents(&ev, 1, SDL_GETEVENT,
+			 SDL_TEXTINPUT, SDL_TEXTINPUT) > 0)
+	dinkc_console_process_key(ev);
+      if (SDL_PeepEvents(&ev, 1, SDL_GETEVENT,
+			 SDL_KEYDOWN, SDL_KEYDOWN) > 0)
+	dinkc_console_process_key(ev);
+  } else {
+    /* Get rid of keyboard events, otherwise they'll pile-up. Also
+       purge them just when console is turned on. We poll the
+       keyboard state directly in the rest of the game, so no
+       keystroke will be lost. */
+    SDL_Event ev;
+    while (SDL_PeepEvents(&ev, 1, SDL_GETEVENT,
+			  SDL_KEYDOWN, SDL_KEYDOWN) > 0);
+  }
+
+  
+
+  if (mode == 1)
+    {
+      Scrawl_OnMouseInput(); 
+    } else {
+    if (keep_mouse)
+      {
+	if ((talk.active) || (spr[1].brain == 13))
+	  Scrawl_OnMouseInput();
+      }  
+  }
+  
+  lastTickCount = thisTickCount;
+  thisTickCount = game_GetTicks();
 	
 	
       {
@@ -257,12 +273,14 @@ trigger_start:
 	}
 	
 	
-	if (total_trigger) 
-		
-	{
-		if (transition()) goto flip;   else return;
-	}
-
+	if (transition_in_progress) 
+	  {
+	    if (transition()) /* transition not finished */
+	      goto flip;
+	    else
+	      return;
+	  }
+	
 	
 	/* Fade to black, etc. */
 	if (process_upcycle) up_cycle();
@@ -598,10 +616,8 @@ animate:
 				}
 				
 				
-				if (spr[h].active) if (spr[h].brain == 1)
-				{
-					did_player_cross_screen(/*true*/1, h);
-				}		
+				if (spr[h].active && spr[h].brain == 1)
+				  did_player_cross_screen(/*true*/1, h);
 				
 past: 
 				check_seq_status(spr[h].seq);
@@ -802,43 +818,34 @@ past:
 	}
 	
 	
-	
-	if (spr[1].active && spr[1].brain == 1)
-	  did_player_cross_screen(/*false*/0, 1);
-	
-	if (trig_man)
-	{
-		goto trigger_start;
-		
+	/* Screen transition? */
+	if (spr[1].active && spr[1].brain == 1) {
+	  if (did_player_cross_screen(/*false*/0, 1)) {
+	    /* let's restart and draw the next screen,
+	       did_player_cross_screen->grab_trick captured the current one */
+	    get_frame = 1;
+	    goto trigger_start;
+	  }
 	}
 	
+	/* Screen transition */
 	if (get_frame)
 	{
-/* 		RECT rcRect1; */
-		
-		total_trigger = /*true*/1;
-		get_frame = /*false*/0;
-/* 		rcRect1.left = playl; */
-/* 		rcRect1.top = 0; */
-/* 		rcRect1.right = 620; */
-/* 		rcRect1.bottom = 400; */
-		//return;
-		
-/* 		ddrval = lpDDSTrick2->BltFast( 0, 0, lpDDSBack, */
-/* 			&rcRect1, DDBLTFAST_NOCOLORKEY | DDBLTFAST_WAIT); */
-/* 		if (ddrval != DD_OK) dderror(ddrval); */
-		// GFX
-		{
-		  SDL_Rect src, dst;
-		  src.x = playl;
-		  src.y = 0;
-		  src.w = 620 - playl;
-		  src.h = 400;
-		  dst.x = dst.y = 0;
-		  SDL_BlitSurface(GFX_lpDDSBack, &src, GFX_lpDDSTrick2, &dst);
-		}
-		
-		return;
+	  get_frame = 0;
+	  transition_in_progress = 1;
+
+	  // GFX
+	  {
+	    SDL_Rect src, dst;
+	    src.x = playl;
+	    src.y = 0;
+	    src.w = 620 - playl;
+	    src.h = 400;
+	    dst.x = dst.y = 0;
+	    SDL_BlitSurface(GFX_lpDDSBack, &src, GFX_lpDDSTrick2, &dst);
+	  }
+	  
+	  return;
 	}
 	
 	

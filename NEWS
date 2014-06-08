@@ -20,6 +20,12 @@
 
   - CD-ROM support dropped.
 
+- Debug mode is toggled once when Alt+D is pressed (no more fighting
+  with continous toggling).
+
+- DinkC console is toggled when Alt-C is pressed (no more creating a
+  key-xx.c with just "show_console()" inside).
+
 - New translation for the engine strings in Russian
   (thanks Yuri Kozlov)
 

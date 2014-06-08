@@ -187,8 +187,8 @@ int mode;
 struct small_map pam;
 
 
-/*bool*/int trig_man = /*false*/0;
-/*bool*/int total_trigger = /*false*/0;
+/* Screen transition */
+/*bool*/int transition_in_progress = /*false*/0;
 
 struct player_info play;
 
