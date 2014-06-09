@@ -67,12 +67,19 @@ conversion during the blit.  But this wouldn't take care of on-load
 dithering, so we still need DisplayFormat and unified palettes, making
 such a wrapper unnecessary.
 
-The Lyna's Story palette change technique, based on DinkC's
-copy_bmp_to_screen(), replaces the physical screen palette
-(phys_palette / GFX_lpDDSBack+SDL_PHYSPAL).  This is reverted to the
-reference palette by the next call to fade_up() (also called internaly
-by player warping), which means copy_bmp_to_screen() is called pretty
-regularly in the game.
+
+2 palette changing techniques replace the physical screen palette
+(phys_palette / GFX_lpDDSBack+SDL_PHYSPAL).
+
+- copy_bmp_to_screen(): this changes the physical palette, but it's
+  reverted to the reference palette by the next call to fade_up()
+  (also called internaly by player warping), which means
+  copy_bmp_to_screen() is called pretty regularly in the game.
+
+- load_palette() introduced by v1.08 changes both the physical palette
+  and the reference palette. This makes it overall buggy since sprites
+  loaded after a palette change are dithered to that palette forever.
+
 
 When the SDL physical screen palette is changed (phys_palette applied
 to GFX_lpDDSBack+SDL_PHYSPAL), loading a sprite with
@@ -94,14 +101,49 @@ need it for 2 reasons:
 
 -----
 
+White pixels during fade_down: due to the DX bug, color white is left
+untouched during fade_down() and fade_up().  This is actually a
+feature: text is mapped to white and is readable; a few background
+pixels stay white so moving sprites can be seen.  Truecolor mode
+reproduces this behavior.
 
-White pixels during fade_down: index 255 is reserved by DX, and
-overwritten with color white. It cannot be altered, so color white is
-left untouched during fade_down() and fade_up(). To achieve
-correctness in such situations, without modifying that DX behavior/bug
-which is used by other parts of the game (fill_screen()...), I guess
-we should interpolate to a temporary buffer where index 255 == index 0
-== black, so as not to use that index. Using index 0 doesn't matter in
-that case, because black stays black during fade_down(). However, we
-may need a similar trick with index 0 if we implement fade_to_white()
-in the future.
+-----
+
+When do we actually need palette mode (aka when truecolor gives
+incorrect results)?
+
+- Games that use palette switches:
+
+  - Lyna's Story (copy_bmp_to_screen): after meeting the Dead Dragon
+    Carcass, you are sent to the Shadow World which is color-inverted
+    (except for pure white and pure black)
+
+  - Cycles of Evil (copy_bmp_to_screen): palette changes with seasons
+    as the story progresses
+
+  - Dink Goes Boating (load_palette): a pillbug switches the screen
+    regularly between a handful of palettes as a feature
+    demonstration, late in the game after you get the best boat, find
+    the burning castle, run errands with the Dinkers to find BigTed
+    and get sent to another part of the map.
+
+  - After doing some mass-grep in the D-Mods I found 5 more of them
+    using full palette changes, most often by copying either of Lyna,
+    COE or BoatDink:
+
+    - Eternal Suicide (lyna): inversion in a few cut-scenes
+    - City of the Dead (lyna): flash inversion during a cut-scene
+    - Adventures with Jani (coe): same seasons
+    - Prelude (boatdink): greyscale when you die
+    - Dink's world (boatdink): not sure about this one, only a
+      "colorchange.c" file that could be a test
+
+    None of them mention it in the dmod.diz :/
+
+- Games that loads 24-bit graphics, color key transparency, and
+  incorrect pixel value for the color key (e.g. near white rather than
+  white): dithering to the palette unifies the whites and gives proper
+  transparency.  Truecolor mode obviously skips dithering and graphics
+  get a white background.
+
+Cf. http://www.dinknetwork.com/forum.cgi?MID=186076
