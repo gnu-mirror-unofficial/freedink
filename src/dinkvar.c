@@ -1348,11 +1348,8 @@ void save_info(void)
       // load palette
       if (strlen(play.palette) > 0)
 	{
-	  char *name = play.palette;
-	  char* fullpath = paths_dmodfile(name);
-	  
-	  if (gfx_palette_set_from_bmp(fullpath) < 0)
-	    log_error("Couldn't load palette from '%s': %s", name, SDL_GetError());
+	  if (gfx_palette_set_from_bmp(play.palette) < 0)
+	    log_error("Couldn't load palette from '%s': %s", play.palette, SDL_GetError());
 	  gfx_palette_get_phys(GFX_real_pal);
 	}
       

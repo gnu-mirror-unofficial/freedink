@@ -1803,12 +1803,9 @@ void dc_map_hard_tile(int script, int* yield, int* preturnint, int tile_position
 
 void dc_load_palette(int script, int* yield, int* preturnint, char* bmp_file)
 {
-  // load a pallete from any bmp
-  char *name = bmp_file;
-  char* fullpath = paths_dmodfile(name);
-  
-  if (gfx_palette_set_from_bmp(fullpath) < 0)
-    log_error("[DinkC] Couldn't load palette from '%s': %s", name, SDL_GetError());
+  // load a palette from any bmp
+  if (gfx_palette_set_from_bmp(bmp_file) < 0)
+    log_error("[DinkC] Couldn't load palette from '%s': %s", bmp_file, SDL_GetError());
   gfx_palette_get_phys(GFX_real_pal);
   
   //Store in save game
