@@ -165,7 +165,7 @@ int main(int argc, char *argv[])
       FILE *in;
       if ((in = fopen(*argv, "rb")) == NULL)
 	{
-	  perror("");
+	  perror(argv);
 	}
       else
 	{
@@ -176,7 +176,7 @@ int main(int argc, char *argv[])
 	  debug("outfile=%s\n", outfile);
 	  if ((out = fopen(outfile, "wb")) == NULL)
 	    {
-	      perror("");
+	      perror(outfile);
 	    }
 	  else
 	    {
