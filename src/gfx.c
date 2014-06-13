@@ -385,8 +385,7 @@ static SDL_Surface* load_bmp_internal(char *filename, SDL_RWops *rw, int from_me
 	 the Dink palette (the one from the .bmp) to the
 	 'DX-bug-messed' Dink palette (GFX_real_pal with overwritten
 	 indexes 0 and 255). */
-      /* converted = SDL_ConvertSurface(image, image->format, image->flags); */
-      SDL_Surface *converted = SDL_ConvertSurface(image, image->format, 0);
+      SDL_Surface *converted = SDL_ConvertSurface(image, GFX_lpDDSTrick2->format, 0);
 
       /* TODO: the following is probably unnecessary, I think that's
 	 exactly what SDL_DisplayFormat does: convert the surface to
@@ -402,7 +401,7 @@ static SDL_Surface* load_bmp_internal(char *filename, SDL_RWops *rw, int from_me
 	/* Blit the copy back to the original, with a potentially
 	   different palette, which triggers color conversion to
 	   image's palette. */
-	SDL_BlitSurface(image, NULL, converted, NULL);
+	gfx_blit_nocolorkey(image, NULL, converted, NULL);
       }
       SDL_FreeSurface(image);
       image = NULL;

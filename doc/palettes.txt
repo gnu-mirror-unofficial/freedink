@@ -146,4 +146,10 @@ incorrect results)?
   transparency.  Truecolor mode obviously skips dithering and graphics
   get a white background.
 
+  Example: in "Apex", the wizard in the intro cutscene
+  (graphics/fwil-01.bmp) is supposed to have a transparent background
+  in paletted mode, except for a thin white antialias artifact.  In
+  true-color only a small square part is transparent.  If something
+  goes wrong the full background will be white.
+
 Cf. http://www.dinknetwork.com/forum.cgi?MID=186076
