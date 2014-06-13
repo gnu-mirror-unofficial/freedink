@@ -569,7 +569,7 @@ void gfx_toggle_fullscreen()
   SDL_SetWindowFullscreen(window,
     (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN)
     ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
-  // Note: software is buggy in 2.0.2: it doesn't resize the surface
+  // Note: software renderer is buggy in SDL 2.0.2: it doesn't resize the surface
 }
 
 /**
