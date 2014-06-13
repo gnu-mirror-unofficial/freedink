@@ -70,6 +70,39 @@ START_TEST(test_strutil_reverse)
 }
 END_TEST
 
+START_TEST(test_strutil_separate_string)
+{
+  char str[] = "a!:b!c";
+  char* ret;
+  ret = separate_string(str, 1, '-');
+  ck_assert_str_eq(ret, str);
+  free(ret);
+  ret = separate_string(str, 2, '-');
+  ck_assert_str_eq(ret, "");
+  free(ret);
+  ret = separate_string(str, 3, '-');
+  ck_assert_str_eq(ret, "");
+  free(ret);
+
+  ret = separate_string(str, 1, ':');
+  ck_assert_str_eq(ret, "a!");
+  free(ret);
+
+  ret = separate_string(str, 1, '!');
+  ck_assert_str_eq(ret, "a");
+  free(ret);
+  ret = separate_string(str, 2, '!');
+  ck_assert_str_eq(ret, ":b");
+  free(ret);
+  ret = separate_string(str, 3, '!');
+  ck_assert_str_eq(ret, "c");
+  free(ret);
+  ret = separate_string(str, 4, '!');
+  ck_assert_str_eq(ret, "");
+  free(ret);
+}
+END_TEST
+
 
 #define TESTDIR "check_freedink TestDir/"
 void test_ioutil_setup() {
@@ -255,6 +288,7 @@ Suite* freedink_suite()
   TCase *tc_strutil = tcase_create("String utilities");
   tcase_add_test(tc_strutil, test_strutil_strtoupper);
   tcase_add_test(tc_strutil, test_strutil_reverse);
+  tcase_add_test(tc_strutil, test_strutil_separate_string);
   suite_add_tcase(s, tc_strutil);
 
   TCase *tc_ioutil = tcase_create("I/O utilities");
