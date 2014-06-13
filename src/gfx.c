@@ -448,6 +448,10 @@ int gfx_blit_nocolorkey(SDL_Surface *src, SDL_Rect *src_rect,
 			 SDL_Surface *dst, SDL_Rect *dst_rect)
 {
   int retval = -1;
+  if (src == NULL) {
+    log_error("attempting to blit a NULL surface");
+    return retval;
+  }
 
   Uint32 colorkey;
   SDL_BlendMode blendmode;
