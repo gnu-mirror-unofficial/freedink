@@ -206,11 +206,66 @@ static /*bool*/int load_game_small(int num, char line[196], int *mytime)
 }
 
 
+/* Find available script slot */
+int script_find_slot() {
+  int k = 1;
+  for (k = 1; k < MAX_SCRIPTS; k++)
+    if (rbuf[k] == NULL)
+      break;
+
+  if (k < MAX_SCRIPTS)
+    return k;
+  else
+    return -1;
+}
+
+/**
+ * Initialize script structure
+ * TODO: initialize rbuf at the same time?
+ */
+int script_init(const char* name) {
+  int script = script_find_slot();
+  if (script <= 0)
+    return -1;
+
+  rinfo[script] = XZALLOC(struct refinfo);
+  if (rinfo[script] == NULL)
+      return -1;
+
+  memset(rinfo[script], 0, sizeof(struct refinfo));
+
+  rinfo[script]->name = strdup(name);
+  /* For clarity: */
+  rinfo[script]->current  = 0;
+  rinfo[script]->cur_line = 1;
+  rinfo[script]->cur_col  = 0;
+  rinfo[script]->debug_line = 1;
+
+  return script;
+}
+
+/**
+ * Start a simple script, usually from the script console
+ */
+int dinkc_execute_one_liner(char* line)
+{
+  int script = script_init("one-liner");
+  if (script <= 0)
+    return -1;
+
+  rinfo[script]->sprite = 1000; /* survice screen change */
+  rinfo[script]->level = 1; /* skip 'void main(void) {' parsing */
+  rbuf[script] = strdup(line);
+  process_line(script, rbuf[script], 0);
+  return returnint;
+}
+
+
 /**
  * Load script from 'filename', save it in the first available script
  * slot, attach to game sprite #'sprite' if 'set_sprite' is 1.
  **/
-int load_script(char filename[15], int sprite, /*bool*/int set_sprite)
+int load_script(char* filename, int sprite, /*bool*/int set_sprite)
 {
   char temp[100];
   int script = 0;
@@ -248,36 +303,16 @@ int load_script(char filename[15], int sprite, /*bool*/int set_sprite)
     comp = 1;
   else
     comp = 0;
-  
-  {
-    int k = 1;
-    for (; k < MAX_SCRIPTS; k++)
-      if (rbuf[k] == NULL)
-	break;
-    script = k;
-  }
-  
-  if (script == MAX_SCRIPTS)
+
+  // Create script
+  log_info("Loading script %s.. (slot %d)", temp, script);
+  script = script_init(filename);
+  if (script < 0)
     {
       log_error("Couldn't find unused buffer for script.");
       fclose(in);
       return 0;
     }
-
-  log_info("Loading script %s.. (slot %d)", temp, script);
-  rinfo[script] = XZALLOC(struct refinfo);
-  if (rinfo[script] == NULL)
-    {
-      log_error("Couldn't allocate rscript %d.", script);
-      return 0;
-    }
-  memset(rinfo[script], 0, sizeof(struct refinfo));
-  /* For clarity: */
-  rinfo[script]->current  = 0;
-  rinfo[script]->cur_line = 1;
-  rinfo[script]->cur_col  = 0;
-  rinfo[script]->debug_line = 1;
-
   
   if (comp)
     {
@@ -294,43 +329,16 @@ int load_script(char filename[15], int sprite, /*bool*/int set_sprite)
   if (rbuf[script] == NULL)
     {
       log_error("Couldn't allocate rbuff %d.", script);
-      free(rinfo[script]);
-      rinfo[script] = NULL;
+      kill_script(script);
       return 0;
     }
 
-  rinfo[script]->name = strdup(filename);
   rinfo[script]->sprite = sprite;
   
   if (set_sprite && sprite != 0 && sprite != 1000)
     spr[sprite].script = script;
 
   return script;
-}
-
-
-int dinkc_execute_one_liner(char* line)
-{
-  /* Find available script slot */
-  int k = 1;
-  for (k = 1; k < MAX_SCRIPTS; k++)
-    if (rbuf[k] == NULL)
-      break;
-
-  if (k < MAX_SCRIPTS)
-    {
-      rinfo[k] = XZALLOC(struct refinfo);
-      rinfo[k]->name = xmalloc(1);
-      rinfo[k]->name[0] = '\0';
-      rinfo[k]->sprite = 1000; /* survice screen change */
-      rinfo[k]->level = 1; /* skip 'void main(void) {' parsing */
-      rbuf[k] = (char*) malloc(255);
-      strcpy(rbuf[k], line);
-      process_line(k, rbuf[k], 0);
-      return returnint;
-    }
-  else
-    return -1;
 }
 
 
@@ -477,18 +485,33 @@ void strip_beginning_spaces(char *str)
 }
 
 /**
+ * Lookup variable with this precise scope
+ */
+int lookup_var(char* variable, int scope)
+{
+  int i;
+  for (i = 1; i < MAX_VARS; i++)
+    if (play.var[i].active
+	&& compare(play.var[i].name, variable)
+	&& scope == play.var[i].scope)
+      return i;
+  return 0;
+}
+
+/**
  * v1.07-style scope. This function is buggy: the first memory slot
  * has precedence (independently of local/global scope).
  * 
  * Return -1 if not found, slot index >1 if found. Slot 0 isn't
  * currently used by the engine.
  */
-int search_var_with_this_scope_107(char* variable, int var_scope)
+static int lookup_var_local_global_107(char* variable, int var_scope)
 {
   int i;
   for (i = 1; i < MAX_VARS; i ++)
     if (play.var[i].active == 1
-	&& ((play.var[i].scope == DINKC_GLOBAL_SCOPE) || (play.var[i].scope == var_scope))
+	&& ((play.var[i].scope == DINKC_GLOBAL_SCOPE)
+	    || (play.var[i].scope == var_scope))
 	&& (compare(play.var[i].name, variable)))
       return i;
   return -1; /* not found */
@@ -501,7 +524,7 @@ int search_var_with_this_scope_107(char* variable, int var_scope)
  * Return -1 if not found, slot index >1 if found. Slot 0 isn't
  * currently used by the engine.
  */
-int search_var_with_this_scope_108(char* variable, int var_scope)
+static int lookup_var_local_global_108(char* variable, int var_scope)
 {
   int search_scope[2];
   search_scope[0] = var_scope; /* first local scope */
@@ -527,14 +550,21 @@ int search_var_with_this_scope_108(char* variable, int var_scope)
 }
 
 /**
- * 
+ * Lookup variable with local->global nested scope
  */
-int search_var_with_this_scope(char* variable, int scope)
+static int lookup_var_local_global(char* variable, int scope)
 {
   if (dversion >= 108)
-    return search_var_with_this_scope_108(variable, scope);
-  return search_var_with_this_scope_107(variable, scope);      
+    return lookup_var_local_global_108(variable, scope);
+  else
+    return lookup_var_local_global_107(variable, scope);
 }
+
+/* Test suite proxy */
+int ts_lookup_var_local_global(char* variable, int scope) {
+  return lookup_var_local_global(variable, scope);
+}
+
 
 /**
  * Expand 'variable' in the scope of 'script' and return the integer
@@ -574,7 +604,7 @@ long decipher(char* variable, int script)
     }
 
   // Check in local and global variables
-  int i = search_var_with_this_scope(variable, script);
+  int i = lookup_var_local_global(variable, script);
   if (i != -1)
     return play.var[i].var;
   else
@@ -621,7 +651,7 @@ void var_replace_108(int i, int script, char** line_p, char *prevar)
       //Then, see if the variable name is in the line
       //Then, prevar is null, or if prevar isn't null, see if current variable starts with prevar
       if (play.var[i].active
-	  && i == search_var_with_this_scope_108(play.var[i].name, script)
+	  && i == lookup_var_local_global_108(play.var[i].name, script)
 	  && strstr (*line_p, play.var[i].name)
 	  && (prevar == NULL || (prevar != NULL && strstr (play.var[i].name, prevar))))
 	{
@@ -1019,23 +1049,16 @@ void init_scripts()
 }
 
 
-
+/**
+ * Kill all scripts attached to given sprite
+ */
 void kill_scripts_owned_by(int sprite)
 {
   int i;
-        for (i = 1; i < MAX_SCRIPTS; i++)
-        {
-                if (rinfo[i] != NULL)
-                {
-                        if (rinfo[i]->sprite == sprite)
-                        {
-                                kill_script(i);
-
-                        }
-
-                }
-        }
-
+  for (i = 1; i < MAX_SCRIPTS; i++)
+    if (rinfo[i] != NULL
+	&& rinfo[i]->sprite == sprite)
+      kill_script(i);
 }
 
 void kill_returning_stuff(int script)
@@ -1053,7 +1076,6 @@ void kill_returning_stuff(int script)
 	  log_debug("killed a returning callback, ha!");
 	  callback[i].active = /*false*/0;
 	}
-
     }
 
   // callbacks from say_*()
@@ -1152,35 +1174,10 @@ void run_script(int script)
     }
 }
 
-int var_exists(char name[20], int scope)
-{
-  int i;
-        for (i = 1; i < MAX_VARS; i++)
-        {
-                if (play.var[i].active)
-                {
-                        if (compare(play.var[i].name, name))
-                        {
-
-                                if (scope == play.var[i].scope)
-                                {
-                                        //Msg("Found match for %s.", name);
-                                        return(i);
-                                }
-                        }
-
-
-
-                }
-        }
-
-        return(0);
-}
-
 /**
  * Make new global functions (v1.08)
  */
-void make_function (char file[10], char func[20])
+void make_function(char file[10], char func[20])
 {
   //See if it already exists
 
@@ -1206,56 +1203,57 @@ void make_function (char file[10], char func[20])
 }
 
 
-void make_int(char name[80], int value, int scope, int script)
+/**
+ * Declare a new variable
+ * - script: used for debug messages
+ */
+void make_int(char* name, int value, int scope, int script)
 {
-        int dupe;
-       int i;
-        if (strlen(name) > 19)
-        {
+  int dupe;
+  if (strlen(name) > 19)
+    {
+      log_error("[DinkC] %s:%d: varname %s is too long",
+		rinfo[script]->name, rinfo[script]->debug_line, name);
+      return;
+    }
+  dupe = lookup_var(name, scope);
 
-                log_error("[DinkC] %s:%d: varname %s is too long",
-			  rinfo[script]->name, rinfo[script]->debug_line, name);
-                return;
-        }
-        dupe = var_exists(name, scope);
-
-        if (dupe > 0)
-	  {
-	    if (scope != DINKC_GLOBAL_SCOPE)
-	      {
-		log_warn("[DinkC] %s:%d: Local var %s already used in this procedure",
-			 rinfo[script]->name, rinfo[script]->debug_line,
-			 name, rinfo[script]->name);
-		
-		play.var[dupe].var = value;
-	      }
-	    else
-	      {
-		log_warn("[DinkC] %s:%d: var %s is already a global, not changing value",
-			  rinfo[script]->name, rinfo[script]->debug_line, name);
-	      }
-	    return;
-        }
+  if (dupe > 0)
+    {
+      if (scope != DINKC_GLOBAL_SCOPE)
+	{
+	  log_warn("[DinkC] %s:%d: Local var %s already used in this procedure",
+		   rinfo[script]->name, rinfo[script]->debug_line,
+		   name, rinfo[script]->name);
+	  
+	  play.var[dupe].var = value;
+	}
+      else
+	{
+	  log_warn("[DinkC] %s:%d: var %s is already a global, not changing value",
+		   rinfo[script]->name, rinfo[script]->debug_line, name);
+	}
+      return;
+    }
 
 
-        //make new var
-
-        for (i = 1; i < MAX_VARS; i++)
-        {
-                if (play.var[i].active == /*false*/0)
-                {
-
-                        play.var[i].active = /*true*/1;
-                        play.var[i].scope = scope;
-                        strcpy(play.var[i].name, name);
-                        //g("var %s created, used slot %d ", name,i);
-                        play.var[i].var = value;
-                        return;
-                }
-        }
-
-        log_error("[DinkC] %s:%d: out of var space, all %d used",
-		  rinfo[script]->name, rinfo[script]->debug_line, MAX_VARS);
+  //make new var
+  int i;
+  for (i = 1; i < MAX_VARS; i++)
+    {
+      if (play.var[i].active == /*false*/0)
+	{
+	  play.var[i].active = /*true*/1;
+	  play.var[i].scope = scope;
+	  strcpy(play.var[i].name, name);
+	  //g("var %s created, used slot %d ", name,i);
+	  play.var[i].var = value;
+	  return;
+	}
+    }
+  
+  log_error("[DinkC] %s:%d: out of var space, all %d used",
+	    rinfo[script]->name, rinfo[script]->debug_line, MAX_VARS);
 }
 
 /**
@@ -1281,7 +1279,7 @@ void var_equals(char* name, char* newname, char math, int script, char rest[200]
     }
   /* Find the variable slot */
   {
-    int k = search_var_with_this_scope(name, script);
+    int k = lookup_var_local_global(name, script);
     if (k != -1)
       lhs_var = &(play.var[k]);
     
@@ -1308,7 +1306,7 @@ void var_equals(char* name, char* newname, char math, int script, char rest[200]
     replace_norealloc(";", "", newname);
   /* look for existing variable */
   {
-    int k2 = search_var_with_this_scope(newname, script);
+    int k2 = lookup_var_local_global(newname, script);
     if (k2 != -1)
       {
 	newval = play.var[k2].var;

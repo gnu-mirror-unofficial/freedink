@@ -50,6 +50,8 @@
 #include "str_util.h"
 #include "dinkc_bindings.h"
 #include "dinkc.h"
+#include "game_engine.h"
+
 #include <string.h>
 #include <xalloc.h>
 int get_parms(char proc_name[20], int script, char *str_params, int* spec);
@@ -181,14 +183,14 @@ START_TEST(test_ioutil_ciconvert)
 END_TEST
 
 
+static int script_id = -1;
 void test_dinkc_setup() {
   dinkc_bindings_init();
-  rinfo[0] = XZALLOC(struct refinfo);
-  rinfo[0]->name = "";
+  script_id = script_init("unit test");
 }
 
 void test_dinkc_teardown() {
-  free(rinfo[0]);
+  kill_script(script_id);
   dinkc_bindings_quit();
 }
 
@@ -198,7 +200,7 @@ START_TEST(test_dinkc_getparms_bounds)
   {
     char* str_params = strdup("(\"");
     int spec[] = { 2, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    ck_assert_int_eq(get_parms("ignored", 0, str_params, spec), 0);
+    ck_assert_int_eq(get_parms("ignored", script_id, str_params, spec), 0);
     free(str_params);
   }
 }
@@ -209,7 +211,7 @@ START_TEST(test_dinkc_getparms_int)
   {
     char str_params[] = "(21,22050, 0,0,0);";
     int spec[] = { 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 };
-    ck_assert_int_eq(get_parms("ignored", 0, str_params, spec), 1);
+    ck_assert_int_eq(get_parms("ignored", script_id, str_params, spec), 1);
   }
 }
 END_TEST
@@ -219,31 +221,31 @@ START_TEST(test_dinkc_getparms_emptyint)
   {
     char str_params[] = "(,)";
     int spec[] = { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
-    ck_assert(get_parms("ignored", 0, str_params, spec));
+    ck_assert(get_parms("ignored", script_id, str_params, spec));
   }
   // e.g. it's OK to have empty arguments list when a single int is expected
   {
     char str_params[] = "()";
     int spec[] = { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    ck_assert(get_parms("ignored", 0, str_params, spec));
+    ck_assert(get_parms("ignored", script_id, str_params, spec));
   }
   // this doesn't apply to strings
   {
     char str_params[] = "()";
     int spec[] = { 2, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    ck_assert(!get_parms("ignored", 0, str_params, spec));
+    ck_assert(!get_parms("ignored", script_id, str_params, spec));
   }
   // nor does this make parameters optional
   {
     char str_params[] = "(1)";
     int spec[] = { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
-    ck_assert(!get_parms("ignored", 0, str_params, spec));
+    ck_assert(!get_parms("ignored", script_id, str_params, spec));
   }
   // Good test
   {
     char str_params[] = "(1,1)";
     int spec[] = { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
-    ck_assert(get_parms("ignored", 0, str_params, spec));
+    ck_assert(get_parms("ignored", script_id, str_params, spec));
   }
 }
 END_TEST
@@ -253,30 +255,69 @@ START_TEST(test_dinkc_getparms_parens)
   {
     char str_params[] = "sp_dir[1,2)";
     int spec[] = { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
-    ck_assert(!get_parms("ignored", 0, str_params, spec));
+    ck_assert(!get_parms("ignored", script_id, str_params, spec));
   }
   // Closing paren is mandatory
   {
     char str_params[] = "(1,1";
     int spec[] = { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
-    ck_assert(!get_parms("ignored", 0, str_params, spec));
+    ck_assert(!get_parms("ignored", script_id, str_params, spec));
   }
   {
     char str_params[] = "(1,1,)";
     int spec[] = { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
-    ck_assert(!get_parms("ignored", 0, str_params, spec));
+    ck_assert(!get_parms("ignored", script_id, str_params, spec));
   }
   {
     char str_params[] = "(1,1;";
     int spec[] = { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    ck_assert(!get_parms("ignored", 0, str_params, spec));
+    ck_assert(!get_parms("ignored", script_id, str_params, spec));
   }
   // Good test
   {
     char str_params[] = "(1,\"a\")";
     int spec[] = { 1, 2, 0, 0, 0, 0, 0, 0, 0, 0 };
-    ck_assert(get_parms("ignored", 0, str_params, spec));
+    ck_assert(get_parms("ignored", script_id, str_params, spec));
   }
+}
+END_TEST
+
+void test_dinkc_lookup_var_ext() {
+  ck_assert(!lookup_var("toto", DINKC_GLOBAL_SCOPE));
+  make_int("toto", 1, DINKC_GLOBAL_SCOPE, script_id);
+  ck_assert(lookup_var("toto", DINKC_GLOBAL_SCOPE));
+  make_int("tata", 1, script_id, script_id);
+  ck_assert(!lookup_var("tata", DINKC_GLOBAL_SCOPE));
+  ck_assert(lookup_var("tata", script_id));
+}
+START_TEST(test_dinkc_lookup_var_107)
+{
+  dversion = 107;
+  test_dinkc_lookup_var_ext();
+
+  // v107 has no scope priority
+  int var_id;
+  make_int("titi", 1, DINKC_GLOBAL_SCOPE, script_id);
+  make_int("titi", 2, script_id, script_id);
+  ck_assert_int_gt(var_id = lookup_var("titi", script_id), 0);
+  ck_assert_int_eq(play.var[var_id].var, 2);
+  ck_assert_int_gt(var_id = ts_lookup_var_local_global("titi", script_id), 0);
+  ck_assert_int_eq(play.var[var_id].var, 1);
+}
+END_TEST
+START_TEST(test_dinkc_lookup_var_108)
+{
+  dversion = 108;
+  test_dinkc_lookup_var_ext();
+
+  // v108 has scope priority
+  int var_id;
+  make_int("titi", 1, DINKC_GLOBAL_SCOPE, script_id);
+  make_int("titi", 2, script_id, script_id);
+  ck_assert_int_gt(var_id = lookup_var("titi", script_id), 0);
+  ck_assert_int_eq(play.var[var_id].var, 2);
+  ck_assert_int_gt(var_id = ts_lookup_var_local_global("titi", script_id), 0);
+  ck_assert_int_eq(play.var[var_id].var, 2);
 }
 END_TEST
 
@@ -302,6 +343,8 @@ Suite* freedink_suite()
   tcase_add_test(tc_dinkc, test_dinkc_getparms_int);
   tcase_add_test(tc_dinkc, test_dinkc_getparms_emptyint);
   tcase_add_test(tc_dinkc, test_dinkc_getparms_parens);
+  tcase_add_test(tc_dinkc, test_dinkc_lookup_var_107);
+  tcase_add_test(tc_dinkc, test_dinkc_lookup_var_108);
   suite_add_tcase(s, tc_dinkc);
 
   return s;
