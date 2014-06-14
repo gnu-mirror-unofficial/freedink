@@ -220,7 +220,6 @@ void check_midi(void)
     if (map.music[*pmap] > 1000)
       /* Try to play a CD track (unsupported) - fall back to MIDI */
       {
-	int cd_track = map.music[*pmap] - 1000;
 	sprintf(midi_filename, "%d.mid", map.music[*pmap] - 1000);
 	PlayMidi(midi_filename);
       }
