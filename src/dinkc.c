@@ -3,7 +3,7 @@
 
  * Copyright (C) 1997, 1998, 1999, 2002, 2003  Seth A. Robinson
  * Copyright (C) 2005, 2006  Dan Walma
- * Copyright (C) 2005, 2007, 2008, 2009, 2011  Sylvain Beucler
+ * Copyright (C) 2005, 2007, 2008, 2009, 2010, 2011, 2014  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -253,7 +253,7 @@ int dinkc_execute_one_liner(char* line)
   if (script <= 0)
     return -1;
 
-  rinfo[script]->sprite = 1000; /* survice screen change */
+  rinfo[script]->sprite = 1000; /* survive screen change */
   rinfo[script]->level = 1; /* skip 'void main(void) {' parsing */
   rbuf[script] = strdup(line);
   process_line(script, rbuf[script], 0);
