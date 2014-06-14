@@ -122,15 +122,15 @@ void updateFrame( void )
     }
   last_d = GetKeyboard('d');
 
-  static int last_c = 0;
-  if (GetKeyboard('c') && (GetKeyboard(SDLK_LALT) || GetKeyboard(SDLK_RALT)) && !last_c)
+  static int last_x = 0;
+  if (GetKeyboard('x') && (GetKeyboard(SDLK_LALT) || GetKeyboard(SDLK_RALT)) && !last_x)
     {
       if (!console_active)
 	dinkc_console_show();
       else
 	dinkc_console_hide();
     }
-  last_c = GetKeyboard('c');
+  last_x = GetKeyboard('x');
   // TODO SDL2: ignore keystroke
   // Maybe synthetize keyup event and refresh scancodestate?
   // Or switch to keyboard event processing loop

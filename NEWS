@@ -23,7 +23,7 @@
 - Debug mode is toggled once when Alt+D is pressed (no more fighting
   with continous toggling).
 
-- DinkC console is toggled when Alt-C is pressed (no more creating a
+- DinkC console is toggled when Alt-X is pressed (no more creating a
   key-xx.c with just "show_console()" inside).
 
 - load_palette() now searches for palette in the right place
