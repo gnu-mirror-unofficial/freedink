@@ -1327,7 +1327,7 @@ void dc_busy(int script, int* yield, int* preturnint,
 void dc_make_global_int(int script, int* yield, int* preturnint,
 			char* varname, int default_val)
 {
-  make_int(varname, default_val, 0, script);
+  make_int(varname, default_val, DINKC_GLOBAL_SCOPE, script);
 }
 
 void dc_inside_box(int script, int* yield, int* preturnint,
@@ -2248,8 +2248,8 @@ void attach(void)
   int n, i;
   for (n = 0; n < 22; n++)
     {
-      if (!var_exists(var_names[n], 0)) /* 0 = global scope */
-	make_int(var_names[n], 0, 0, -1);
+      if (!lookup_var(var_names[n], DINKC_GLOBAL_SCOPE))
+	make_int(var_names[n], 0, DINKC_GLOBAL_SCOPE, -1);
       /* TODO: setting script to -1 is asking for troubles... */
     }
 
