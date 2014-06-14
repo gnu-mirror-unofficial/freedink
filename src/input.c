@@ -115,14 +115,19 @@ void input_init(void)
 	{
 	  /* first tests if a joystick driver is present */
 	  /* if TRUE it makes certain that a joystick is plugged in */
+	  log_info("%i joystick(s) were found.", SDL_NumJoysticks());
 	  if (SDL_NumJoysticks() > 0)
 	    {
 	      int i;
-	      log_info("%i joysticks were found.", SDL_NumJoysticks());
 	      log_info("The names of the joysticks are:");
 	      for (i=0; i < SDL_NumJoysticks(); i++) {
 		SDL_Joystick* jinfo = SDL_JoystickOpen(i);
-		log_info("    %s", SDL_JoystickName(jinfo));
+		SDL_JoystickGUID jguid = SDL_JoystickGetGUID(jinfo);
+		char guid_str[200];
+		SDL_JoystickGetGUIDString(jguid, guid_str, 200);
+		log_info("    %s [guid=%s] [compat=%d]",
+			 SDL_JoystickName(jinfo), guid_str,
+			 SDL_IsGameController(i));
 	      }
 
 	      log_info("Picking the first one...");
