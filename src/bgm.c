@@ -233,12 +233,11 @@ void check_midi(void)
 }
 
 /**
- * Initialize BackGround Music (currently, only CD-ROM is concerned,
- * MIDI init is done with SDL_INIT_AUDIO in sfx.c).
+ * Initialize BackGround Music (currently nothing to do, MIDI init is
+ * done with SDL_INIT_AUDIO in sfx.c).
  */
 void bgm_init(void)
 {
-  log_info("No CDROM support (SDL2 dropped it)");
 }
 
 void bgm_quit(void)
