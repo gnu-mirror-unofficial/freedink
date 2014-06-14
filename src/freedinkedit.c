@@ -4391,13 +4391,7 @@ void updateFrame(void)
 		    dst.y = box_crap.top;
 		    /* Simplified blit, no scaling, the sprite is already 50x50 */
 		    /* We need to avoid transparency though */
-		    Uint32 colorkey;
-		    int has_colorkey = SDL_GetColorKey(sprite, &colorkey);
-		    if (has_colorkey)
-		      SDL_SetColorKey(sprite, SDL_FALSE, 0);
-		    SDL_BlitSurface(sprite, NULL, GFX_lpDDSBack, &dst);
-		    if (has_colorkey)
-		      SDL_SetColorKey(sprite, SDL_TRUE, colorkey);
+		    gfx_blit_nocolorkey(sprite, NULL, GFX_lpDDSBack, &dst);
 		  }
 
 		  char crap5[200];
