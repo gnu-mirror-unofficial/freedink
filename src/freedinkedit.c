@@ -47,7 +47,7 @@
 #include "SDL2_rotozoom.h"
 #include "SDL2_framerate.h"
 
-#include "init.h"
+#include "app.h"
 #include "dinkvar.h"
 #include "screen.h"
 #include "fastfile.h"
@@ -91,7 +91,7 @@
 #define MODE_TILE_HARDNESS 4
 #define MODE_SPRITE_HARDNESS 7
 
-#define MODE_DIALOG 0
+#define MODE_INIT 0
 
 
 #define INPUT_MINIMAP_LOAD  30
@@ -117,7 +117,6 @@ static int buf_map = 0;
 
 /* Save x and y coordinates for mode 4, 5 and 6 */
 static int m4x,m4y,m5x,m5y,m6x,m6y,m5ax,m5ay;
-/* LPDIRECTDRAWCLIPPER lpClipper; */
 
 static int sp_base_walk = -1;
 static int sp_base_idle = -1;
@@ -204,13 +203,6 @@ static int m1x,m1y;
 static int m2x,m2y;
 static int m3x,m3y;
 static int cur_tile;
-
-
-/* State of the keyboard, SDL-supported keys */
-/* current GetAsyncKeyState value, in cache */
-int scancodestate[SDL_NUM_SCANCODES];
-/* true if key was just pressed, false if kept pressed or released */
-int scancodejustpressed[SDL_NUM_SCANCODES];
 
 
 /**
@@ -604,43 +596,6 @@ int add_new_map(void)
 }
 
 
-
-
-/* Mark keys meant to be layout-dependent */
-/* Using SDL_Keycode should work, if not let's switch to TextInput */
-int getcharstate(SDL_Keycode ch)
-{
-  return scancodestate[SDL_GetScancodeFromKey(ch)];
-}
-int getcharjustpressed(SDL_Keycode ch)
-{
-  return scancodejustpressed[SDL_GetScancodeFromKey(ch)];
-}
-
-/* Set the keyboard state in sjoy */
-void check_keyboard()
-{
-  /* Keys state */
-  /* Check if the key was just pressed, or only maintained pressed */
-  int scancodestate_size;
-  const Uint8 *new_scancodestate;
-  new_scancodestate = SDL_GetKeyboardState(&scancodestate_size);
-  int x = 0;
-  for (x = 0; x < scancodestate_size; x++)
-    {
-      /* Put the current keyboard state in cache */
-      /* getkey() then can check scancodestate - that is, from the cache */
-      int last_state = scancodestate[x];
-      scancodestate[x] = new_scancodestate[x];
-
-      if (last_state == 0 && scancodestate[x] == 1)
-	/* We just changed from "released" to "pressed" */
-	scancodejustpressed[x] = 1;
-      else
-	scancodejustpressed[x] = 0;
-    }
-}
-
 void show_text_box(int enabled) {
   if (enabled) {
     in_enabled = 1;
@@ -652,7 +607,21 @@ void show_text_box(int enabled) {
 }
 
 
-void check_joystick(void)
+/* Update mouse position with relative motion coordinates */
+void freedinkedit_update_cursor_position(SDL_Event* ev)
+{
+  if (ev->type != SDL_MOUSEMOTION)
+    return;
+
+  int dx = ev->motion.xrel;
+  int dy = ev->motion.yrel;
+
+  sp_cycle = 0;
+  spr[1].x += dx;
+  spr[1].y += dy;
+}
+
+void check_joystick()
 {
   /* Clean-up */
   /* Actions */
@@ -703,18 +672,15 @@ void check_joystick(void)
       }
     }
 
-  /* Refresh keyboard state */
-  check_keyboard();
-
-  if (scancodestate[SDL_SCANCODE_ESCAPE]) sjoy.joybit[EDITOR_ACTION_ESCAPE] = 1;
-  if (scancodestate[SDL_SCANCODE_RETURN]) sjoy.joybit[EDITOR_ACTION_RETURN] = 1;
-  if (getcharstate(SDLK_x)) sjoy.joybit[EDITOR_ACTION_X] = 1;
-  if (getcharstate(SDLK_z)) sjoy.joybit[EDITOR_ACTION_Z] = 1;
-  if (scancodestate[SDL_SCANCODE_TAB]) sjoy.joybit[EDITOR_ACTION_TAB] = 1;
-  if (scancodestate[SDL_SCANCODE_RIGHT]) sjoy.right = 1;
-  if (scancodestate[SDL_SCANCODE_LEFT]) sjoy.left = 1;
-  if (scancodestate[SDL_SCANCODE_DOWN]) sjoy.down = 1;
-  if (scancodestate[SDL_SCANCODE_UP]) sjoy.up = 1;
+  if (input_getscancodestate(SDL_SCANCODE_ESCAPE)) sjoy.joybit[EDITOR_ACTION_ESCAPE] = 1;
+  if (input_getscancodestate(SDL_SCANCODE_RETURN)) sjoy.joybit[EDITOR_ACTION_RETURN] = 1;
+  if (input_getcharstate(SDLK_x)) sjoy.joybit[EDITOR_ACTION_X] = 1;
+  if (input_getcharstate(SDLK_z)) sjoy.joybit[EDITOR_ACTION_Z] = 1;
+  if (input_getscancodestate(SDL_SCANCODE_TAB)) sjoy.joybit[EDITOR_ACTION_TAB] = 1;
+  if (input_getscancodestate(SDL_SCANCODE_RIGHT)) sjoy.right = 1;
+  if (input_getscancodestate(SDL_SCANCODE_LEFT)) sjoy.left = 1;
+  if (input_getscancodestate(SDL_SCANCODE_DOWN)) sjoy.down = 1;
+  if (input_getscancodestate(SDL_SCANCODE_UP)) sjoy.up = 1;
   
   {
     int a = EDITOR_ACTION_FIRST;
@@ -1646,40 +1612,6 @@ void shrink_screen_to_these_cords(int x1, int y1)
 }
 
 
-/* Update mouse position with relative motion coordinates */
-void UpdateCursorPosition(int dx, int dy)
-{
-    sp_cycle = 0;
-    spr[1].x += dx;
-    spr[1].y += dy;
-}
-
-
-// TODO: merge me with freedink.c's
-void Scrawl_OnMouseInput()
-{
-  mouse1 = /*false*/0;
-  if (mode != 6) return;
-
-  SDL_Event ev;
-  /* Process stacked motion events */
-  while (SDL_PeepEvents(&ev, 1, SDL_GETEVENT,
-			SDL_MOUSEMOTION, SDL_MOUSEMOTION) > 0)
-    {
-      UpdateCursorPosition(ev.motion.xrel, ev.motion.yrel);
-    }
-
-  /* Process stacked clicks */
-  while (SDL_PeepEvents(&ev, 1, SDL_GETEVENT,
-			SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONDOWN) > 0)
-    {
-      if (ev.button.button == SDL_BUTTON_LEFT)
-	mouse1 = /*true*/1;
-    }
-  return;
-}
-
-
 /**
  * So-called "Movie2000 sprite movie maker" feature. It will dump a
  * series of DinkC moves that you specify using the mouse
@@ -1697,62 +1629,62 @@ void write_moves(void)
     strcpy(fname, "CRAP");
 
 
-  if (scancodejustpressed[SDL_SCANCODE_KP_8])
+  if (input_getscancodejustpressed(SDL_SCANCODE_KP_8))
     {
       EditorSoundPlayEffect( SOUND_JUMP );
       sprintf(crap, "story/%s.c",fname);
       sprintf(move, "move_stop(&current_sprite, 8, %d, 1)\n", spr[1].y);
       add_text(move, crap);
     }
-  if (scancodejustpressed[SDL_SCANCODE_KP_4])
+  if (input_getscancodejustpressed(SDL_SCANCODE_KP_4))
     {
       EditorSoundPlayEffect( SOUND_JUMP );
       sprintf(crap, "story/%s.c",fname);
       sprintf(move, "move_stop(&current_sprite, 4, %d, 1)\n", spr[1].x);
       add_text(move, crap);
     }
-  if (scancodejustpressed[SDL_SCANCODE_KP_5])
+  if (input_getscancodejustpressed(SDL_SCANCODE_KP_5))
     {
       EditorSoundPlayEffect(SOUND_JUMP);
       sprintf(crap, "story/%s.c",fname);
       add_text("//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n", crap);
     }
-  if (scancodejustpressed[SDL_SCANCODE_KP_2])
+  if (input_getscancodejustpressed(SDL_SCANCODE_KP_2))
     {
       EditorSoundPlayEffect(SOUND_JUMP);
       sprintf(crap, "story/%s.c", fname);
       sprintf(move, "move_stop(&current_sprite, 2, %d, 1)\n", spr[1].y);
       add_text(move, crap);
     }
-  if (scancodejustpressed[SDL_SCANCODE_KP_6])
+  if (input_getscancodejustpressed(SDL_SCANCODE_KP_6))
     {
       EditorSoundPlayEffect( SOUND_JUMP );
       sprintf(crap, "story/%s.c",fname);
       sprintf(move, "move_stop(&current_sprite, 6, %d, 1)\n", spr[1].x);
       add_text(move, crap);
     }
-  if (scancodejustpressed[SDL_SCANCODE_KP_7])
+  if (input_getscancodejustpressed(SDL_SCANCODE_KP_7))
     {
       EditorSoundPlayEffect( SOUND_JUMP );
       sprintf(crap, "story/%s.c",fname);
       sprintf(move, "move_stop(&current_sprite, 7, %d, 1)\n", spr[1].x);
       add_text(move, crap);
     }
-  if (scancodejustpressed[SDL_SCANCODE_KP_1])
+  if (input_getscancodejustpressed(SDL_SCANCODE_KP_1))
     {
       EditorSoundPlayEffect( SOUND_JUMP );
       sprintf(crap, "story/%s.c",fname);
       sprintf(move, "move_stop(&current_sprite, 1, %d, 1)\n", spr[1].x);
       add_text(move, crap);
     }
-  if (scancodejustpressed[SDL_SCANCODE_KP_9])
+  if (input_getscancodejustpressed(SDL_SCANCODE_KP_9))
     {
       EditorSoundPlayEffect( SOUND_JUMP );
       sprintf(crap, "story/%s.c",fname);
       sprintf(move, "move_stop(&current_sprite, 9, %d, 1)\n", spr[1].x);
       add_text(move, crap);
     }
-  if (scancodejustpressed[SDL_SCANCODE_KP_3])
+  if (input_getscancodejustpressed(SDL_SCANCODE_KP_3))
     {
       EditorSoundPlayEffect( SOUND_JUMP );
       sprintf(crap, "story/%s.c",fname);
@@ -1835,7 +1767,7 @@ void updateFrame(void)
   thisTickCount = SDL_GetTicks();
   strcpy(buff,"Nothing");
   check_joystick();
-  Scrawl_OnMouseInput();
+  //Scrawl_OnMouseInput();
   rcRect.left = 0;
   rcRect.top = 0;
   rcRect.right = x;
@@ -2002,7 +1934,7 @@ void updateFrame(void)
 
 			  }
 
-			if (scancodejustpressed[SDL_SCANCODE_TAB])
+			if (input_getscancodejustpressed(SDL_SCANCODE_TAB))
 			  {
 
 			    //they hit tab, lets toggle what mode they are in
@@ -2010,7 +1942,7 @@ void updateFrame(void)
 
 
 			  }
-			if (getcharjustpressed(SDLK_s))
+			if (input_getcharjustpressed(SDLK_s))
 			  {
 
 			    //they hit tab, lets toggle what mode they are in
@@ -2041,25 +1973,25 @@ void updateFrame(void)
 
 			    if (SDL_GetModState()&KMOD_CTRL)
 			      {
-				if (scancodejustpressed[SDL_SCANCODE_RIGHT])
+				if (input_getscancodejustpressed(SDL_SCANCODE_RIGHT))
 				  {
 				    k[seq[sp_seq].frame[sp_frame]].xoffset += modif;
 				    EditorSoundPlayEffect( SOUND_STOP );
 				  }
 
-				if (scancodejustpressed[SDL_SCANCODE_LEFT])
+				if (input_getscancodejustpressed(SDL_SCANCODE_LEFT))
 				  {
 
 				    k[seq[sp_seq].frame[sp_frame]].xoffset -= modif;
 				    EditorSoundPlayEffect( SOUND_STOP );
 				  }
-				if (scancodejustpressed[SDL_SCANCODE_UP])
+				if (input_getscancodejustpressed(SDL_SCANCODE_UP))
 				  {
 				    k[seq[sp_seq].frame[sp_frame]].yoffset -= modif;
 				    EditorSoundPlayEffect( SOUND_STOP );
 				  }
 
-				if (scancodejustpressed[SDL_SCANCODE_DOWN])
+				if (input_getscancodejustpressed(SDL_SCANCODE_DOWN))
 				  {
 				    k[seq[sp_seq].frame[sp_frame]].yoffset += modif;
 				    EditorSoundPlayEffect( SOUND_STOP );
@@ -2105,25 +2037,25 @@ void updateFrame(void)
 
 			    if (SDL_GetModState()&KMOD_CTRL)
 			      {
-				if (scancodejustpressed[SDL_SCANCODE_RIGHT])
+				if (input_getscancodejustpressed(SDL_SCANCODE_RIGHT))
 				  {
 				    k[seq[sp_seq].frame[sp_frame]].hardbox.right += modif;
 				    EditorSoundPlayEffect( SOUND_STOP );
 				  }
 
-				if (scancodejustpressed[SDL_SCANCODE_LEFT])
+				if (input_getscancodejustpressed(SDL_SCANCODE_LEFT))
 				  {
 
 				    k[seq[sp_seq].frame[sp_frame]].hardbox.right -= modif;
 				    EditorSoundPlayEffect( SOUND_STOP );
 				  }
-				if (scancodejustpressed[SDL_SCANCODE_UP])
+				if (input_getscancodejustpressed(SDL_SCANCODE_UP))
 				  {
 				    k[seq[sp_seq].frame[sp_frame]].hardbox.bottom -= modif;
 				    EditorSoundPlayEffect( SOUND_STOP );
 				  }
 
-				if (scancodejustpressed[SDL_SCANCODE_DOWN])
+				if (input_getscancodejustpressed(SDL_SCANCODE_DOWN))
 				  {
 				    k[seq[sp_seq].frame[sp_frame]].hardbox.bottom += modif;
 				    EditorSoundPlayEffect( SOUND_STOP );
@@ -2177,25 +2109,25 @@ void updateFrame(void)
 
 			    if (SDL_GetModState()&KMOD_CTRL)
 			      {
-				if (scancodejustpressed[SDL_SCANCODE_RIGHT])
+				if (input_getscancodejustpressed(SDL_SCANCODE_RIGHT))
 				  {
 				    k[seq[sp_seq].frame[sp_frame]].hardbox.left += modif;
 				    EditorSoundPlayEffect( SOUND_STOP );
 				  }
 
-				if (scancodejustpressed[SDL_SCANCODE_LEFT])
+				if (input_getscancodejustpressed(SDL_SCANCODE_LEFT))
 				  {
 
 				    k[seq[sp_seq].frame[sp_frame]].hardbox.left -= modif;
 				    EditorSoundPlayEffect( SOUND_STOP );
 				  }
-				if (scancodejustpressed[SDL_SCANCODE_UP])
+				if (input_getscancodejustpressed(SDL_SCANCODE_UP))
 				  {
 				    k[seq[sp_seq].frame[sp_frame]].hardbox.top -= modif;
 				    EditorSoundPlayEffect( SOUND_STOP );
 				  }
 
-				if (scancodejustpressed[SDL_SCANCODE_DOWN])
+				if (input_getscancodejustpressed(SDL_SCANCODE_DOWN))
 				  {
 				    k[seq[sp_seq].frame[sp_frame]].hardbox.top += modif;
 				    EditorSoundPlayEffect( SOUND_STOP );
@@ -2269,7 +2201,7 @@ void updateFrame(void)
 		    if (mode == MODE_SCREEN_SPRITES)
 		      {
 			// place sprite
-			if ( (getcharjustpressed(SDLK_v)) )
+			if ( (input_getcharjustpressed(SDLK_v)) )
 			  {
 			    in_master = INPUT_SCREEN_VISION; // Set screen vision?
 			  }
@@ -2278,7 +2210,7 @@ void updateFrame(void)
 			if (SDL_GetModState()&KMOD_SHIFT)
 			  modif = 9;
 
-			if (getcharjustpressed(SDLK_m))
+			if (input_getcharjustpressed(SDLK_m))
 			  {
 			    if (sp_screenmatch)
 			      sp_screenmatch = /*false*/0;
@@ -2290,7 +2222,7 @@ void updateFrame(void)
 			if (SDL_GetModState()&KMOD_ALT) // alt
 			  {
 			    //alt is held down 87
-			    if (getcharjustpressed(SDLK_w))
+			    if (input_getcharjustpressed(SDLK_w))
 			      {
 				//pressed W
 				if (((spr[1].pseq == 10) && (spr[1].pframe == 8)))
@@ -2323,26 +2255,26 @@ void updateFrame(void)
 			    if (spr[1].size > 1500) spr[1].size = 1500;
 
 			    /* if (GetKeyboard(VK_OEM_4 /\* 219 *\/)) // '[' for US */
-			    if (scancodestate[SDL_SCANCODE_LEFTBRACKET])
+			    if (input_getscancodestate(SDL_SCANCODE_LEFTBRACKET))
 			      spr[1].size -= 1+modif;
 			    /* if (GetKeyboard(VK_OEM_6 /\* 221 *\/)) // ']' for US */
-			    if (scancodestate[SDL_SCANCODE_RIGHTBRACKET])
+			    if (input_getscancodestate(SDL_SCANCODE_RIGHTBRACKET))
 			      spr[1].size += 1+modif;
 
 
 			    if (SDL_GetModState()&KMOD_SHIFT)
 			      {
 				//shift is being held down
-				if (scancodestate[SDL_SCANCODE_1] || scancodestate[SDL_SCANCODE_KP_1] || scancodestate[SDL_SCANCODE_F1])  in_master = 11;
-				if (scancodestate[SDL_SCANCODE_2] || scancodestate[SDL_SCANCODE_KP_2] || scancodestate[SDL_SCANCODE_F2])  in_master = 12;
-				if (scancodestate[SDL_SCANCODE_3] || scancodestate[SDL_SCANCODE_KP_3] || scancodestate[SDL_SCANCODE_F3])  in_master = 13;
-				if (scancodestate[SDL_SCANCODE_4] || scancodestate[SDL_SCANCODE_KP_4] || scancodestate[SDL_SCANCODE_F4])  in_master = 14;
-				if (scancodestate[SDL_SCANCODE_5] || scancodestate[SDL_SCANCODE_KP_5] || scancodestate[SDL_SCANCODE_F5])  in_master = 15;
+				if (input_getscancodestate(SDL_SCANCODE_1) || input_getscancodestate(SDL_SCANCODE_KP_1) || input_getscancodestate(SDL_SCANCODE_F1))  in_master = 11;
+				if (input_getscancodestate(SDL_SCANCODE_2) || input_getscancodestate(SDL_SCANCODE_KP_2) || input_getscancodestate(SDL_SCANCODE_F2))  in_master = 12;
+				if (input_getscancodestate(SDL_SCANCODE_3) || input_getscancodestate(SDL_SCANCODE_KP_3) || input_getscancodestate(SDL_SCANCODE_F3))  in_master = 13;
+				if (input_getscancodestate(SDL_SCANCODE_4) || input_getscancodestate(SDL_SCANCODE_KP_4) || input_getscancodestate(SDL_SCANCODE_F4))  in_master = 14;
+				if (input_getscancodestate(SDL_SCANCODE_5) || input_getscancodestate(SDL_SCANCODE_KP_5) || input_getscancodestate(SDL_SCANCODE_F5))  in_master = 15;
 
-				if (scancodestate[SDL_SCANCODE_6] || scancodestate[SDL_SCANCODE_KP_6] || scancodestate[SDL_SCANCODE_F6])  in_master = 16;
-				if (scancodestate[SDL_SCANCODE_7] || scancodestate[SDL_SCANCODE_KP_7] || scancodestate[SDL_SCANCODE_F7])  in_master = 17;
-				if (scancodestate[SDL_SCANCODE_8] || scancodestate[SDL_SCANCODE_KP_8] || scancodestate[SDL_SCANCODE_F8])  in_master = 18;
-				if (scancodestate[SDL_SCANCODE_9] || scancodestate[SDL_SCANCODE_KP_9] || scancodestate[SDL_SCANCODE_F9])  in_master = 19;
+				if (input_getscancodestate(SDL_SCANCODE_6) || input_getscancodestate(SDL_SCANCODE_KP_6) || input_getscancodestate(SDL_SCANCODE_F6))  in_master = 16;
+				if (input_getscancodestate(SDL_SCANCODE_7) || input_getscancodestate(SDL_SCANCODE_KP_7) || input_getscancodestate(SDL_SCANCODE_F7))  in_master = 17;
+				if (input_getscancodestate(SDL_SCANCODE_8) || input_getscancodestate(SDL_SCANCODE_KP_8) || input_getscancodestate(SDL_SCANCODE_F8))  in_master = 18;
+				if (input_getscancodestate(SDL_SCANCODE_9) || input_getscancodestate(SDL_SCANCODE_KP_9) || input_getscancodestate(SDL_SCANCODE_F9))  in_master = 19;
 
 
 
@@ -2350,9 +2282,9 @@ void updateFrame(void)
 			    else if (SDL_GetModState()&KMOD_ALT)
 			      {
 				  //alt is being held down
-				  if (scancodestate[SDL_SCANCODE_1] || scancodestate[SDL_SCANCODE_KP_1] || scancodestate[SDL_SCANCODE_F1])  in_master = 20;
-				  if (scancodestate[SDL_SCANCODE_2] || scancodestate[SDL_SCANCODE_KP_2] || scancodestate[SDL_SCANCODE_F2])  in_master = 21;
-				  if (scancodestate[SDL_SCANCODE_3] || scancodestate[SDL_SCANCODE_KP_3] || scancodestate[SDL_SCANCODE_F3])  in_master = 22;
+				  if (input_getscancodestate(SDL_SCANCODE_1) || input_getscancodestate(SDL_SCANCODE_KP_1) || input_getscancodestate(SDL_SCANCODE_F1))  in_master = 20;
+				  if (input_getscancodestate(SDL_SCANCODE_2) || input_getscancodestate(SDL_SCANCODE_KP_2) || input_getscancodestate(SDL_SCANCODE_F2))  in_master = 21;
+				  if (input_getscancodestate(SDL_SCANCODE_3) || input_getscancodestate(SDL_SCANCODE_KP_3) || input_getscancodestate(SDL_SCANCODE_F3))  in_master = 22;
 				  /*(getkeystate('4' /\* 52 *\/))  in_master = 14;
 				    if (getkeystate(53))  in_master = 15;
 
@@ -2366,20 +2298,20 @@ void updateFrame(void)
 			    else
 			      {
 				  //shift is not being held down
-				  if (scancodestate[SDL_SCANCODE_1] || scancodestate[SDL_SCANCODE_KP_1] || scancodestate[SDL_SCANCODE_F1]) in_master = 1;
-				  if (scancodestate[SDL_SCANCODE_2] || scancodestate[SDL_SCANCODE_KP_2] || scancodestate[SDL_SCANCODE_F2]) in_master = 2;
-				  if (scancodestate[SDL_SCANCODE_3] || scancodestate[SDL_SCANCODE_KP_3] || scancodestate[SDL_SCANCODE_F3]) in_master = 3;
-				  if (scancodestate[SDL_SCANCODE_4] || scancodestate[SDL_SCANCODE_KP_4] || scancodestate[SDL_SCANCODE_F4]) in_master = 4;
-				  if (scancodestate[SDL_SCANCODE_5] || scancodestate[SDL_SCANCODE_KP_5] || scancodestate[SDL_SCANCODE_F5]) in_master = 5;
-				  if (scancodestate[SDL_SCANCODE_6] || scancodestate[SDL_SCANCODE_KP_6] || scancodestate[SDL_SCANCODE_F6]) in_master = 6;
-				  if (scancodestate[SDL_SCANCODE_7] || scancodestate[SDL_SCANCODE_KP_7] || scancodestate[SDL_SCANCODE_F7]) in_master = 7;
-				  if (scancodestate[SDL_SCANCODE_8] || scancodestate[SDL_SCANCODE_KP_8] || scancodestate[SDL_SCANCODE_F8]) in_master = 8;
-				  if (scancodestate[SDL_SCANCODE_9] || scancodestate[SDL_SCANCODE_KP_9] || scancodestate[SDL_SCANCODE_F9]) in_master = 9;
-				  if (scancodestate[SDL_SCANCODE_0] || scancodestate[SDL_SCANCODE_KP_0] || scancodestate[SDL_SCANCODE_F10]) in_master = 10;
+				  if (input_getscancodestate(SDL_SCANCODE_1) || input_getscancodestate(SDL_SCANCODE_KP_1) || input_getscancodestate(SDL_SCANCODE_F1)) in_master = 1;
+				  if (input_getscancodestate(SDL_SCANCODE_2) || input_getscancodestate(SDL_SCANCODE_KP_2) || input_getscancodestate(SDL_SCANCODE_F2)) in_master = 2;
+				  if (input_getscancodestate(SDL_SCANCODE_3) || input_getscancodestate(SDL_SCANCODE_KP_3) || input_getscancodestate(SDL_SCANCODE_F3)) in_master = 3;
+				  if (input_getscancodestate(SDL_SCANCODE_4) || input_getscancodestate(SDL_SCANCODE_KP_4) || input_getscancodestate(SDL_SCANCODE_F4)) in_master = 4;
+				  if (input_getscancodestate(SDL_SCANCODE_5) || input_getscancodestate(SDL_SCANCODE_KP_5) || input_getscancodestate(SDL_SCANCODE_F5)) in_master = 5;
+				  if (input_getscancodestate(SDL_SCANCODE_6) || input_getscancodestate(SDL_SCANCODE_KP_6) || input_getscancodestate(SDL_SCANCODE_F6)) in_master = 6;
+				  if (input_getscancodestate(SDL_SCANCODE_7) || input_getscancodestate(SDL_SCANCODE_KP_7) || input_getscancodestate(SDL_SCANCODE_F7)) in_master = 7;
+				  if (input_getscancodestate(SDL_SCANCODE_8) || input_getscancodestate(SDL_SCANCODE_KP_8) || input_getscancodestate(SDL_SCANCODE_F8)) in_master = 8;
+				  if (input_getscancodestate(SDL_SCANCODE_9) || input_getscancodestate(SDL_SCANCODE_KP_9) || input_getscancodestate(SDL_SCANCODE_F9)) in_master = 9;
+				  if (input_getscancodestate(SDL_SCANCODE_0) || input_getscancodestate(SDL_SCANCODE_KP_0) || input_getscancodestate(SDL_SCANCODE_F10)) in_master = 10;
 			      }
 
 
-			    if (getcharjustpressed(SDLK_s))
+			    if (input_getcharjustpressed(SDLK_s))
 			      {
 				smart_add();
 
@@ -2397,7 +2329,7 @@ void updateFrame(void)
 
 			      }
 
-			    if (scancodejustpressed[SDL_SCANCODE_DELETE])
+			    if (input_getscancodejustpressed(SDL_SCANCODE_DELETE))
 			      {
 
 				spr[1].pseq = 10;
@@ -2429,14 +2361,14 @@ void updateFrame(void)
 			      {
 
 				/* if (sjoy.keyjustpressed[VK_OEM_4 /\* 219 *\/]) // '[' for US */
-				if (scancodejustpressed[SDL_SCANCODE_LEFTBRACKET])
+				if (input_getscancodejustpressed(SDL_SCANCODE_LEFTBRACKET))
 				  {
 				    sp_cycle--;
 				    if (sp_cycle < 1)
 				      sp_cycle = max_spr;
 				  }
 
-				if (scancodejustpressed[SDL_SCANCODE_RIGHTBRACKET])
+				if (input_getscancodejustpressed(SDL_SCANCODE_RIGHTBRACKET))
 				  {
 				    sp_cycle++;
 				    if (sp_cycle > max_spr)
@@ -2629,7 +2561,7 @@ void updateFrame(void)
 			      }
 
 
-			    if ((SDL_GetModState()&KMOD_ALT) && (scancodestate[SDL_SCANCODE_DELETE]))
+			    if ((SDL_GetModState()&KMOD_ALT) && (input_getscancodestate(SDL_SCANCODE_DELETE)))
 			      {
 				int ll;
 				for (ll = 1; ll < 100; ll++)
@@ -2642,34 +2574,34 @@ void updateFrame(void)
 			  }
 
 			/** Trim a sprite **/
-			if (getcharstate(SDLK_z) || (getcharstate(SDLK_x)))
+			if (input_getcharstate(SDLK_z) || (input_getcharstate(SDLK_x)))
 			  {
 			    if ((spr[h].alt.right == 0) && (spr[h].alt.left == 0)
 				&& (spr[h].alt.top == 0) && (spr[h].alt.bottom == 0))
 			      rect_copy(&spr[h].alt, &k[getpic(h)].box);
 			  }
 
-                        if (getcharstate(SDLK_z))
+                        if (input_getcharstate(SDLK_z))
 			  {
 
-			    if (scancodejustpressed[SDL_SCANCODE_RIGHT])
+			    if (input_getscancodejustpressed(SDL_SCANCODE_RIGHT))
 			      {
 				spr[h].alt.left += spr[h].speed + modif;
 				EditorSoundPlayEffect( SOUND_STOP );
 			      }
 
-			    if (scancodejustpressed[SDL_SCANCODE_LEFT])
+			    if (input_getscancodejustpressed(SDL_SCANCODE_LEFT))
 			      {
 				spr[h].alt.left -= spr[h].speed +modif;
 				EditorSoundPlayEffect( SOUND_STOP );
 			      }
-			    if (scancodejustpressed[SDL_SCANCODE_DOWN])
+			    if (input_getscancodejustpressed(SDL_SCANCODE_DOWN))
 			      {
 				spr[h].alt.top += spr[h].speed + modif;
 				EditorSoundPlayEffect( SOUND_STOP );
 			      }
 
-			    if (scancodejustpressed[SDL_SCANCODE_UP])
+			    if (input_getscancodejustpressed(SDL_SCANCODE_UP))
 			      {
 				spr[h].alt.top -= spr[h].speed + modif;
 				EditorSoundPlayEffect( SOUND_STOP );
@@ -2683,25 +2615,25 @@ void updateFrame(void)
 
 
 
-			if (getcharstate(SDLK_x))
+			if (input_getcharstate(SDLK_x))
 			  {
-			    if (scancodejustpressed[SDL_SCANCODE_RIGHT])
+			    if (input_getscancodejustpressed(SDL_SCANCODE_RIGHT))
 			      {
 				spr[h].alt.right += spr[h].speed + modif;
 				EditorSoundPlayEffect( SOUND_STOP );
 			      }
 
-			    if (scancodejustpressed[SDL_SCANCODE_LEFT])
+			    if (input_getscancodejustpressed(SDL_SCANCODE_LEFT))
 			      {
 				spr[h].alt.right -= spr[h].speed +modif;
 				EditorSoundPlayEffect( SOUND_STOP );
 			      }
-			    if (scancodejustpressed[SDL_SCANCODE_DOWN])
+			    if (input_getscancodejustpressed(SDL_SCANCODE_DOWN))
 			      {
 				spr[h].alt.bottom += spr[h].speed + modif;
 				EditorSoundPlayEffect( SOUND_STOP );
 			      }
-			    if (scancodejustpressed[SDL_SCANCODE_UP])
+			    if (input_getscancodejustpressed(SDL_SCANCODE_UP))
 			      {
 				spr[h].alt.bottom -= spr[h].speed + modif;
 				EditorSoundPlayEffect( SOUND_STOP );
@@ -2726,7 +2658,7 @@ void updateFrame(void)
 			   pressed again. */
 			if (SDL_GetModState()&KMOD_CTRL)
 			  {
-			    if (scancodejustpressed[SDL_SCANCODE_RIGHT])
+			    if (input_getscancodejustpressed(SDL_SCANCODE_RIGHT))
 			      {
 				
 				sp_cycle = 0;
@@ -2735,20 +2667,20 @@ void updateFrame(void)
 				EditorSoundPlayEffect( SOUND_STOP );
 			      }
 			    
-			    if (scancodejustpressed[SDL_SCANCODE_LEFT])
+			    if (input_getscancodejustpressed(SDL_SCANCODE_LEFT))
 			      {
 				spr[h].x -= spr[h].speed +modif;
 				EditorSoundPlayEffect( SOUND_STOP );
 				sp_cycle = 0;
 			      }
-			    if (scancodejustpressed[SDL_SCANCODE_UP])
+			    if (input_getscancodejustpressed(SDL_SCANCODE_UP))
 			      {
 				spr[h].y -= spr[h].speed + modif;
 				EditorSoundPlayEffect( SOUND_STOP );
 				sp_cycle = 0;
 			      }
 			    
-			    if (scancodejustpressed[SDL_SCANCODE_DOWN])
+			    if (input_getscancodejustpressed(SDL_SCANCODE_DOWN))
 			      {
 				spr[h].y += spr[h].speed + modif;
 				EditorSoundPlayEffect( SOUND_STOP );
@@ -2822,7 +2754,7 @@ void updateFrame(void)
 			  }
 
 
-			if (getcharjustpressed(SDLK_e))
+			if (input_getcharjustpressed(SDLK_e))
 			  {
 			    //they hit E, go to sprite picker
 			    rect_set(&spr[1].alt,0,0,0,0);
@@ -2908,7 +2840,7 @@ void updateFrame(void)
 			    {
 			      //they are in select sprite phase 2
 
-			      if (getcharjustpressed(SDLK_e))
+			      if (input_getcharjustpressed(SDLK_e))
 				{
 				  //they want to 'edit' the sprite
 				  mode = MODE_SPRITE_HARDNESS;
@@ -3032,7 +2964,7 @@ void updateFrame(void)
 			    }
 
 			  /* if (sjoy.keyjustpressed[VK_OEM_4 /\* 219 *\/]) // '[' for US */
-			  if (scancodejustpressed[SDL_SCANCODE_LEFTBRACKET])
+			  if (input_getscancodejustpressed(SDL_SCANCODE_LEFTBRACKET))
 			    {
 			      if (sp_picker > 95) sp_picker -= 96; else
 				{
@@ -3041,7 +2973,7 @@ void updateFrame(void)
 			      draw15(sp_picker);
 			    }
 			    /* if (sjoy.keyjustpressed[VK_OEM_6 /\* 221 *\/]) // ']' for US */
-			  if (scancodejustpressed[SDL_SCANCODE_RIGHTBRACKET])
+			  if (input_getscancodejustpressed(SDL_SCANCODE_RIGHTBRACKET))
 			    {
 			      if (sp_picker < 400) sp_picker += 96;
 			      draw15(sp_picker);
@@ -3074,7 +3006,7 @@ void updateFrame(void)
 		    if (mode == MODE_SCREEN_TILES) draw_current();
 
 
-		    if (mode == MODE_DIALOG)
+		    if (mode == MODE_INIT)
 		      {
 
 			spr[h].seq = 2;
@@ -3087,7 +3019,7 @@ void updateFrame(void)
 			spr[4].active = /*FALSE*/0;
 		      }
 
-		    if (mode == MODE_DIALOG) goto b1end;
+		    if (mode == MODE_INIT) goto b1end;
 
 
 
@@ -3098,7 +3030,7 @@ void updateFrame(void)
 		      {
 			if (spr[h].seq == 0)
 			  {
-			    if ((SDL_GetModState()&KMOD_SHIFT) && (scancodestate[SDL_SCANCODE_RIGHT]))
+			    if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_RIGHT)))
 			      {
 				spr[h].seq = 4;
 				spr[h].frame = 1;
@@ -3106,7 +3038,7 @@ void updateFrame(void)
 				goto b1fun;
 			      }
 
-			    if ((SDL_GetModState()&KMOD_SHIFT) && (scancodestate[SDL_SCANCODE_LEFT]))
+			    if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_LEFT)))
 			      {
 				spr[h].seq = 4;
 				spr[h].frame = 1;
@@ -3114,7 +3046,7 @@ void updateFrame(void)
 				goto b1fun;
 			      }
 
-			    if ((SDL_GetModState()&KMOD_SHIFT) && (scancodestate[SDL_SCANCODE_UP]))
+			    if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_UP)))
 			      {
 				spr[h].seq = 4;
 				spr[h].frame = 1;
@@ -3122,7 +3054,7 @@ void updateFrame(void)
 				goto b1fun;
 			      }
 
-			    if ((SDL_GetModState()&KMOD_SHIFT) && (scancodestate[SDL_SCANCODE_DOWN]))
+			    if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_DOWN)))
 			      {
 				spr[h].seq = 4;
 				spr[h].frame = 1;
@@ -3175,7 +3107,7 @@ void updateFrame(void)
 			  }
 
 			//change a piece to hard
-			if (getcharstate(SDLK_z))
+			if (input_getcharstate(SDLK_z))
 			  {
 			    int y;
 			    for (y = 0; y < sely; y++)
@@ -3191,7 +3123,7 @@ void updateFrame(void)
 
 
 			//change a piece to soft
-			if (getcharstate(SDLK_x))
+			if (input_getcharstate(SDLK_x))
 			  {
 			    int y;
 			    for (y = 0; y < sely; y++)
@@ -3206,7 +3138,7 @@ void updateFrame(void)
 			  }
 
 
-			if ( (getcharstate(SDLK_a)) && (SDL_GetModState()&KMOD_ALT ) )
+			if ( (input_getcharstate(SDLK_a)) && (SDL_GetModState()&KMOD_ALT ) )
 			  {
 			    //change ALL to 'low hard'
 			    change_tile(hard_tile, 2);
@@ -3215,7 +3147,7 @@ void updateFrame(void)
 			    return;
 			  }
 
-			if ( (getcharstate(SDLK_s)) && (SDL_GetModState()&KMOD_ALT ) )
+			if ( (input_getcharstate(SDLK_s)) && (SDL_GetModState()&KMOD_ALT ) )
 			  {
 			    //change ALL to 'low hard'
 			    change_tile(hard_tile, 3);
@@ -3223,7 +3155,7 @@ void updateFrame(void)
 
 			    return;
 			  }
-			if ( (getcharstate(SDLK_x)) && (SDL_GetModState()&KMOD_ALT ) )
+			if ( (input_getcharstate(SDLK_x)) && (SDL_GetModState()&KMOD_ALT ) )
 			  {
 			    //change ALL to 'low hard'
 			    change_tile(hard_tile, 1);
@@ -3233,7 +3165,7 @@ void updateFrame(void)
 			  }
 
 
-                        if (getcharstate(SDLK_a))
+                        if (input_getcharstate(SDLK_a))
 			  {
 			    int y;
 			    for (y = 0; y < sely; y++)
@@ -3247,7 +3179,7 @@ void updateFrame(void)
 			      }
 
 			  }
-                        if (getcharstate(SDLK_s))
+                        if (input_getcharstate(SDLK_s))
 			  {
 			    int y;
 			    for (y = 0; y < sely; y++)
@@ -3314,14 +3246,14 @@ void updateFrame(void)
 
 		    //THEY WANT TO EDIT HARDNESS
 
-		    if ( (getcharjustpressed(SDLK_b)) )
+		    if ( (input_getcharjustpressed(SDLK_b)) )
 		      {
 			in_master = 31;
 
 
 		      }
 
-		    if ( (getcharjustpressed(SDLK_v)) )
+		    if ( (input_getcharjustpressed(SDLK_v)) )
 		      {
 			in_master = INPUT_SCREEN_VISION;
 		      }
@@ -3329,7 +3261,7 @@ void updateFrame(void)
 
 
 		    if (((mode == MODE_SCREEN_TILES) && (sjoy.button[EDITOR_ACTION_RETURN]))
-			|| ((mode == MODE_TILE_PICKER) && (scancodestate[SDL_SCANCODE_SPACE])))
+			|| ((mode == MODE_TILE_PICKER) && (input_getscancodestate(SDL_SCANCODE_SPACE))))
 
 		      {
 
@@ -3426,7 +3358,7 @@ void updateFrame(void)
 		      {
 			//resizing the box
 
-			if ((SDL_GetModState()&KMOD_SHIFT) && (scancodestate[SDL_SCANCODE_RIGHT]) )
+			if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_RIGHT)) )
 			  {
 			    spr[h].seq = 3;
 			    spr[h].seq_orig = 3;
@@ -3434,7 +3366,7 @@ void updateFrame(void)
 			    goto b1end;
 			  }
 
-			if ((SDL_GetModState()&KMOD_SHIFT) && (scancodestate[SDL_SCANCODE_LEFT]) )
+			if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_LEFT)) )
 			  {
 			    spr[h].seq = 3;
 			    spr[h].seq_orig = 3;
@@ -3443,7 +3375,7 @@ void updateFrame(void)
 
 			  }
 
-			if ((SDL_GetModState()&KMOD_SHIFT) && (scancodestate[SDL_SCANCODE_UP]) )
+			if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_UP)) )
 			  {
 			    spr[h].seq = 3;
 			    spr[h].seq_orig = 3;
@@ -3451,7 +3383,7 @@ void updateFrame(void)
 			    goto b1end;
 			  }
 
-			if ((SDL_GetModState()&KMOD_SHIFT) && (scancodestate[SDL_SCANCODE_DOWN]) )
+			if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_DOWN)) )
 			  {
 			    spr[h].seq = 3;
 			    spr[h].seq_orig = 3;
@@ -3462,7 +3394,7 @@ void updateFrame(void)
 		      }
 
 
-		    if (scancodestate[SDL_SCANCODE_RIGHT])
+		    if (input_getscancodestate(SDL_SCANCODE_RIGHT))
 		      {
 			spr[h].x += spr[h].speed;
 			spr[h].seq = spr[h].seq_orig;
@@ -3470,7 +3402,7 @@ void updateFrame(void)
 		      }
 
 
-		    if ((getcharstate(SDLK_s)) && (mode == MODE_SCREEN_TILES))
+		    if ((input_getcharstate(SDLK_s)) && (mode == MODE_SCREEN_TILES))
 		      {
 			int y;
 			spr[h].seq = 3;
@@ -3498,7 +3430,7 @@ void updateFrame(void)
 
 
 
-		    if ((getcharstate(SDLK_c)) && (mode == MODE_SCREEN_TILES))
+		    if ((input_getcharstate(SDLK_c)) && (mode == MODE_SCREEN_TILES))
 		      {
 			spr[h].seq = 3;
 			spr[h].seq_orig = 3;
@@ -3511,16 +3443,16 @@ void updateFrame(void)
 		    if (mode == MODE_SCREEN_TILES || mode == MODE_TILE_PICKER)
 		      {
 			int unit = 0, tile_no = 0;
-			if (scancodestate[SDL_SCANCODE_1] || scancodestate[SDL_SCANCODE_KP_1] || scancodestate[SDL_SCANCODE_F1]) unit = 1;
-			if (scancodestate[SDL_SCANCODE_2] || scancodestate[SDL_SCANCODE_KP_2] || scancodestate[SDL_SCANCODE_F2]) unit = 2;
-			if (scancodestate[SDL_SCANCODE_3] || scancodestate[SDL_SCANCODE_KP_3] || scancodestate[SDL_SCANCODE_F3]) unit = 3;
-			if (scancodestate[SDL_SCANCODE_4] || scancodestate[SDL_SCANCODE_KP_4] || scancodestate[SDL_SCANCODE_F4]) unit = 4;
-			if (scancodestate[SDL_SCANCODE_5] || scancodestate[SDL_SCANCODE_KP_5] || scancodestate[SDL_SCANCODE_F5]) unit = 5;
-			if (scancodestate[SDL_SCANCODE_6] || scancodestate[SDL_SCANCODE_KP_6] || scancodestate[SDL_SCANCODE_F6]) unit = 6;
-			if (scancodestate[SDL_SCANCODE_7] || scancodestate[SDL_SCANCODE_KP_7] || scancodestate[SDL_SCANCODE_F7]) unit = 7;
-			if (scancodestate[SDL_SCANCODE_8] || scancodestate[SDL_SCANCODE_KP_8] || scancodestate[SDL_SCANCODE_F8]) unit = 8;
-			if (scancodestate[SDL_SCANCODE_9] || scancodestate[SDL_SCANCODE_KP_9] || scancodestate[SDL_SCANCODE_F9]) unit = 9;
-			if (scancodestate[SDL_SCANCODE_0] || scancodestate[SDL_SCANCODE_KP_0] || scancodestate[SDL_SCANCODE_F10]) unit = 10;
+			if (input_getscancodestate(SDL_SCANCODE_1) || input_getscancodestate(SDL_SCANCODE_KP_1) || input_getscancodestate(SDL_SCANCODE_F1)) unit = 1;
+			if (input_getscancodestate(SDL_SCANCODE_2) || input_getscancodestate(SDL_SCANCODE_KP_2) || input_getscancodestate(SDL_SCANCODE_F2)) unit = 2;
+			if (input_getscancodestate(SDL_SCANCODE_3) || input_getscancodestate(SDL_SCANCODE_KP_3) || input_getscancodestate(SDL_SCANCODE_F3)) unit = 3;
+			if (input_getscancodestate(SDL_SCANCODE_4) || input_getscancodestate(SDL_SCANCODE_KP_4) || input_getscancodestate(SDL_SCANCODE_F4)) unit = 4;
+			if (input_getscancodestate(SDL_SCANCODE_5) || input_getscancodestate(SDL_SCANCODE_KP_5) || input_getscancodestate(SDL_SCANCODE_F5)) unit = 5;
+			if (input_getscancodestate(SDL_SCANCODE_6) || input_getscancodestate(SDL_SCANCODE_KP_6) || input_getscancodestate(SDL_SCANCODE_F6)) unit = 6;
+			if (input_getscancodestate(SDL_SCANCODE_7) || input_getscancodestate(SDL_SCANCODE_KP_7) || input_getscancodestate(SDL_SCANCODE_F7)) unit = 7;
+			if (input_getscancodestate(SDL_SCANCODE_8) || input_getscancodestate(SDL_SCANCODE_KP_8) || input_getscancodestate(SDL_SCANCODE_F8)) unit = 8;
+			if (input_getscancodestate(SDL_SCANCODE_9) || input_getscancodestate(SDL_SCANCODE_KP_9) || input_getscancodestate(SDL_SCANCODE_F9)) unit = 9;
+			if (input_getscancodestate(SDL_SCANCODE_0) || input_getscancodestate(SDL_SCANCODE_KP_0) || input_getscancodestate(SDL_SCANCODE_F10)) unit = 10;
 
 			tile_no = unit;
 			if (SDL_GetModState()&KMOD_SHIFT)
@@ -3535,10 +3467,10 @@ void updateFrame(void)
 
 			/* Exception: tile #41 = Alt+[top-left key below escape] */
 			if (SDL_GetModState()&KMOD_ALT
-			    && scancodestate[SDL_SCANCODE_GRAVE])
+			    && input_getscancodestate(SDL_SCANCODE_GRAVE))
 			  loadtile(41);
 			/* alternatives */
-			if (scancodestate[SDL_SCANCODE_F11] || scancodestate[SDL_SCANCODE_KP_PERIOD])
+			if (input_getscancodestate(SDL_SCANCODE_F11) || input_getscancodestate(SDL_SCANCODE_KP_PERIOD))
 			  loadtile(41);
 		      }
 
@@ -3585,14 +3517,14 @@ void updateFrame(void)
 		      }
 
 
-		    if ( (scancodejustpressed[SDL_SCANCODE_SPACE])  && (mode == MODE_MINIMAP))
+		    if ( (input_getscancodejustpressed(SDL_SCANCODE_SPACE))  && (mode == MODE_MINIMAP))
 		      {
 			//make_map_tiny();
 			draw_map_tiny = 0;
 
 		      }
 
-		    if ( (getcharjustpressed(SDLK_l))  && (mode == MODE_MINIMAP))
+		    if ( (input_getcharjustpressed(SDLK_l))  && (mode == MODE_MINIMAP))
 		      {
 
 			//if (map.loc[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)] != 0)
@@ -3604,7 +3536,7 @@ void updateFrame(void)
 		      }
 
 
-		    if ( (scancodejustpressed[SDL_SCANCODE_ESCAPE]) && (mode == MODE_MINIMAP))
+		    if ( (input_getscancodejustpressed(SDL_SCANCODE_ESCAPE)) && (mode == MODE_MINIMAP))
 		      {
 			load_info();
 			draw_minimap();
@@ -3613,21 +3545,21 @@ void updateFrame(void)
 		      }
 
 
-		    if ( (getcharjustpressed(SDLK_m)) && (mode == MODE_MINIMAP))
+		    if ( (input_getcharjustpressed(SDLK_m)) && (mode == MODE_MINIMAP))
 		      {
 			//set music # for this block
 			in_int = &map.music[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)];
 			in_master = INPUT_SCREEN_MIDI;
 		      }
 
-		    if ( (getcharjustpressed(SDLK_s)) && (mode == MODE_MINIMAP))
+		    if ( (input_getcharjustpressed(SDLK_s)) && (mode == MODE_MINIMAP))
 		      {
 			//set music # for this block
 			in_int = &map.indoor[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)];
 			in_master = INPUT_SCREEN_TYPE;
 		      }
 
-		    if ( (getcharjustpressed(SDLK_q)) && (mode == MODE_MINIMAP))
+		    if ( (input_getcharjustpressed(SDLK_q)) && (mode == MODE_MINIMAP))
 		      {
 			save_hard();
 			log_info("Info saved.");
@@ -3714,14 +3646,14 @@ void updateFrame(void)
 
 
 		    /* Cycle the current tile square (displayed at the bottom-right) */
-		    if ((mode == MODE_SCREEN_TILES) && scancodestate[SDL_SCANCODE_MINUS])
+		    if ((mode == MODE_SCREEN_TILES) && input_getscancodestate(SDL_SCANCODE_MINUS))
 		      {
 			spr[h].seq = 3;
 			spr[h].seq_orig = 3;
 			cur_tile--;
 			if (cur_tile < 0) cur_tile = 0;
 		      }
-		    if ((mode == MODE_SCREEN_TILES) && scancodestate[SDL_SCANCODE_EQUALS])
+		    if ((mode == MODE_SCREEN_TILES) && input_getscancodestate(SDL_SCANCODE_EQUALS))
 		      {
 			spr[h].seq = 3;
 			spr[h].seq_orig = 3;
@@ -3731,7 +3663,7 @@ void updateFrame(void)
 		      }
 
 
-		    if ((mode == MODE_SCREEN_TILES) && (getcharjustpressed(SDLK_h)))
+		    if ((mode == MODE_SCREEN_TILES) && (input_getcharjustpressed(SDLK_h)))
 		      {
 			//start althard mode
 
@@ -3742,7 +3674,7 @@ void updateFrame(void)
 		    if (mode == MODE_SCREEN_HARDNESS)
 		      {
 			//mode for it
-			if (scancodejustpressed[SDL_SCANCODE_ESCAPE])
+			if (input_getscancodejustpressed(SDL_SCANCODE_ESCAPE))
 			  {
 			    //exit mode 8
 			    mode = MODE_SCREEN_TILES;
@@ -3753,25 +3685,25 @@ void updateFrame(void)
 			  }
 
 			/* if (sjoy.keyjustpressed[/\* VK_OEM_4 *\/ 219]) // '[' for US */
-			if (scancodejustpressed[SDL_SCANCODE_LEFTBRACKET])
+			if (input_getscancodejustpressed(SDL_SCANCODE_LEFTBRACKET))
 			  {
 			    hard_tile--;
 			    if (hard_tile < 0) hard_tile = 799;
 			  }
 			/* if (sjoy.keyjustpressed[/\* VK_OEM_6 *\/ 221]) // ']' for US */
-			if (scancodejustpressed[SDL_SCANCODE_RIGHTBRACKET])
+			if (input_getscancodejustpressed(SDL_SCANCODE_RIGHTBRACKET))
 			  {
 			    hard_tile++;
 			    if (hard_tile > 799) hard_tile = 0;
 			  }
 
-			if (getcharjustpressed(SDLK_c))
+			if (input_getcharjustpressed(SDLK_c))
 			  {
 			    //copy tile hardness from current block
 			    hard_tile = realhard(xy2screentile(spr[1].x, spr[1].y));
 			  }
 
-			if (getcharjustpressed(SDLK_s))
+			if (input_getcharjustpressed(SDLK_s))
 			  {
 			    //stamp tile hardness to selected
 			    pam.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].althard = hard_tile;
@@ -3781,7 +3713,7 @@ void updateFrame(void)
 			    return;
 			  }
 
-			if (scancodejustpressed[SDL_SCANCODE_DELETE])
+			if (input_getscancodejustpressed(SDL_SCANCODE_DELETE))
 			  {
 			    //stamp tile hardness to selected
 			    pam.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].althard = 0;
@@ -3798,7 +3730,7 @@ void updateFrame(void)
 
 			draw_hard_tile(spr[1].x,spr[1].y, hard_tile);
 
-			if (scancodejustpressed[SDL_SCANCODE_RETURN])
+			if (input_getscancodejustpressed(SDL_SCANCODE_RETURN))
 			  {
 			    //they want to edit this alt hardness, let's do it
 			    cur_tile = pam.t[xy2screentile(spr[1].x, spr[1].y)].square_full_idx0;
@@ -3858,7 +3790,7 @@ void updateFrame(void)
 
 		    if ((mode == MODE_SCREEN_TILES)
 			&& (SDL_GetModState()&KMOD_ALT)
-			&& getcharjustpressed(SDLK_x))
+			&& input_getcharjustpressed(SDLK_x))
 		      {
 			spr[h].seq = 2;
 			spr[h].seq_orig = 2;
@@ -3895,21 +3827,21 @@ void updateFrame(void)
 		      }
 
 
-		    if (scancodestate[SDL_SCANCODE_LEFT])
+		    if (input_getscancodestate(SDL_SCANCODE_LEFT))
 		      {
 			spr[h].x -= spr[h].speed;
 			spr[h].seq = spr[h].seq_orig;
 			EditorSoundPlayEffect(SOUND_STOP);
 		      }
 
-		    if (scancodestate[SDL_SCANCODE_DOWN])
+		    if (input_getscancodestate(SDL_SCANCODE_DOWN))
 		      {
 			spr[h].y += spr[h].speed;
 			spr[h].seq = spr[h].seq_orig;
 			EditorSoundPlayEffect(SOUND_STOP);
 		      }
 
-		    if (scancodestate[SDL_SCANCODE_UP])
+		    if (input_getscancodestate(SDL_SCANCODE_UP))
 		      {
 			spr[h].y -= spr[h].speed;
 			spr[h].seq = spr[h].seq_orig;
@@ -4175,7 +4107,7 @@ void updateFrame(void)
 
       //	TextOut(hdc,0,0, msg,lstrlen(msg));
       //	   if (mode == 0) strcpy(msg,"");
-      if (mode == MODE_DIALOG)
+      if (mode == MODE_INIT)
 	strcpy(msg,"");
 
       if (mode == MODE_MINIMAP)
@@ -4314,9 +4246,12 @@ void updateFrame(void)
        int x;
        for (x = 0; x < 256; x++)
          {
-           if (scancodestate[x])
+           if (input_getscancodestate(x))
              {
-               sprintf(msg + strlen(msg), " (Scancode %i)", x);
+               sprintf(msg + strlen(msg), " (Scancode %i '%s')",
+		       x,
+		       //SDL_GetScancodeName(x),
+		       SDL_GetKeyName(SDL_GetKeyFromScancode(x)));
              }
          }
       }
@@ -4341,7 +4276,7 @@ void updateFrame(void)
 
   if ((mode == MODE_MINIMAP))
     {
-      if (getcharjustpressed(SDLK_z))
+      if (input_getcharjustpressed(SDLK_z))
 	{
 	  if (show_display) show_display = /*false*/0;
 	  else show_display = /*true*/1;
@@ -4352,7 +4287,7 @@ void updateFrame(void)
   if ( (mode == MODE_SCREEN_SPRITES) | (mode == MODE_SCREEN_TILES) )
     {
       /* Show sprites info */
-      if (getcharstate(SDLK_i))
+      if (input_getcharstate(SDLK_i))
 	{
 	  int j;
 	  for (j = 1; j < 100; j++)
@@ -4500,7 +4435,7 @@ void updateFrame(void)
     {
       //text box is open, lets act accordingly
       //check_joystick();
-      if (scancodestate[SDL_SCANCODE_RETURN] || scancodestate[SDL_SCANCODE_KP_ENTER])
+      if (input_getscancodestate(SDL_SCANCODE_RETURN) || input_getscancodestate(SDL_SCANCODE_KP_ENTER))
 	{
 	  //exit text mode
 	  
@@ -4600,28 +4535,17 @@ void updateFrame(void)
 	  
 	  show_text_box(0);
 	}
-      else if (scancodejustpressed[SDL_SCANCODE_ESCAPE])
+      else if (input_getscancodejustpressed(SDL_SCANCODE_ESCAPE))
 	{
 	  show_text_box(0);
 	}
-      else if (scancodejustpressed[SDL_SCANCODE_BACKSPACE])
+      else if (input_getscancodejustpressed(SDL_SCANCODE_BACKSPACE))
 	//	if (getkey(8)) //this is a much faster backspace than the above
 	{
 	  if (strlen(in_temp) > 0)
 	    in_temp[strlen(in_temp)-1] = 0;
 
 	}
-      else {
-	SDL_Event ev;
-	if (SDL_PeepEvents(&ev, 1, SDL_GETEVENT,
-			   SDL_TEXTINPUT, SDL_TEXTINPUT) > 0) {
-	  if (strlen(in_temp) < in_max)
-	    {
-	      if (isprint(ev.text.text[0]))
-		sprintf(in_temp + strlen(in_temp), "%c", ev.text.text[0]);
-	    }
-	}
-      }
 
       if (in_enabled)
 	{
@@ -4678,7 +4602,7 @@ void updateFrame(void)
   //MAIN PAGE FLIP DONE HERE
 
 
-  if (scancodestate[SDL_SCANCODE_SPACE] && (mode != 1))
+  if (input_getscancodestate(SDL_SCANCODE_SPACE) && (mode != 1))
     {
       drawallhard();
 
@@ -4792,14 +4716,8 @@ int load_editor_sounds()
  * doInit - do work required for every instance of the application:
  *                create the window, initialize data
  */
-static int doInit(int argc, char *argv[])
+static void freedinkedit_init(int argc, char *argv[])
 {
-  dinkedit = 1;
-
-  /* New initialization */
-  if (init(argc, argv, "tiles/esplash.bmp") < 0)
-    return -1;
-
   /** SETUP **/
   /* Manually setup basic sequences */
   {
@@ -4877,68 +4795,36 @@ static int doInit(int argc, char *argv[])
   if (sound_on)
     load_editor_sounds();
 
-  mode = MODE_DIALOG;
+  mode = MODE_INIT;
   cur_tile = 1;
-  load_info();
   
   playl = 20;
   playx = 620;
   playy = 480;
   sp_seq = 0;
-
-  return 0;
 }
 
+static void freedinkedit_input(SDL_Event* ev) {
+  if (mode == MODE_SCREEN_SPRITES)
+    freedinkedit_update_cursor_position(ev);
 
+  if (ev->type == SDL_TEXTINPUT) {
+    if (strlen(in_temp) < in_max)
+      {
+	if (isprint(ev->text.text[0]))
+	  sprintf(in_temp + strlen(in_temp), "%c", ev->text.text[0]);
+      }
+  }
+}
+
+/**
+ * Bootstrap
+ */
 int main(int argc, char *argv[])
 {
   /* Initialize/setup */
-  int init_ret = doInit(argc, argv);
-
-  if (init_ret == 0)
-    {
-      /* Avoid toggling continuously while Return is pressed */
-      int block_toggle_fullscreen = 0;
-
-      /* Main loop */
-      while(1)
-	{
-	  SDL_Event event;
-	  SDL_PumpEvents();
-	  
-	  /* Check if we need to quit */
-	  if (SDL_PeepEvents(&event, 1, SDL_GETEVENT,
-			     SDL_QUIT, SDL_QUIT) > 0)
-	    break;
-	  
-	  /* Fullscreen <-> window */
-	  if ((SDL_GetModState()&KMOD_ALT) && GetKeyboard(SDLK_RETURN)
-	      && !block_toggle_fullscreen)
-	    {
-	      gfx_toggle_fullscreen();
-	      block_toggle_fullscreen = 1;
-	      // TODO SDL2: ignore keystroke
-	      // Maybe synthetize keyup event and refresh scancodestate?
-	      // Or switch to keyboard event processing loop
-	    }
-	  if (GetKeyboard(SDLK_RETURN) == 0)
-	    block_toggle_fullscreen = 0;
-
-	  /* Clean-up finished sounds: normally this is done by
-	     SDL_mixer but since we're using effects tricks to
-	     stream&resample sounds, we need to do this manually. */
-	  sfx_cleanup_finished_channels();
-
-	  /* Main editor logic */
-	  updateFrame();
-	}
-    }
-
-  /* Uninitialize/clean-up */
-  finiObjects();
-
-  if (init_ret < 0)
-    return EXIT_FAILURE;
-  else
-    return EXIT_SUCCESS;
+  dinkedit = 1;
+  return app_start(argc, argv,
+		   "tiles/esplash.bmp",		   
+		   freedinkedit_init, freedinkedit_input, updateFrame);
 }

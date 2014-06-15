@@ -46,7 +46,7 @@
 #include "bgm.h"
 #include "sfx.h"
 #include "update_frame.h"
-#include "init.h"
+#include "app.h"
 #include "io_util.h"
 #include "paths.h"
 #include "input.h"
@@ -74,140 +74,34 @@ static int item_pic;
 static int process_count = 0;
 
 
-/* Fills 'struct seth_joy sjoy' with the current keyboard and/or
-   joystick state */
-void check_joystick(void)
-{
-  /* Clean-up */
-  /* Actions */
-  {
-    int a = ACTION_FIRST;
-    for (a = ACTION_FIRST; a < ACTION_LAST; a++)
-      sjoy.joybit[a] = 0;
-  }
-  
-  /* Arrows */
-  sjoy.right = 0;
-  sjoy.left = 0;
-  sjoy.up = 0;
-  sjoy.down = 0;
-
-  /* Arrows triggered (not maintained pressed) */
-  sjoy.rightd = 0;
-  sjoy.leftd = 0;
-  sjoy.upd = 0;
-  sjoy.downd = 0;
-	
-  if (joystick)
-    {
-      SDL_JoystickUpdate(); // TODO: apparently done automatically already
-      Sint16 x_pos = 0, y_pos = 0;
-      /* SDL counts buttons from 0, not from 1 */
-      int i = 0;
-      for (i = 0; i < NB_BUTTONS; i++)
-	if (SDL_JoystickGetButton(jinfo, i))
-	  sjoy.joybit[input_get_button_action(i)] = 1;
-
-      x_pos = SDL_JoystickGetAxis(jinfo, 0);
-      y_pos = SDL_JoystickGetAxis(jinfo, 1);
-      /* Using thresold=10% (original game) is just enough to get rid
-	 of the noise. Let's use 30% instead, otherwise Dink will go
-	 diags too easily. */
-      {
-	Sint16 threshold = 32767 * 30/100;
-	if (x_pos < -threshold) sjoy.left  = 1;
-	if (x_pos > +threshold) sjoy.right = 1;
-	if (y_pos < -threshold) sjoy.up    = 1;
-	if (y_pos > +threshold) sjoy.down  = 1;
-      }
-    }
-  
-  /* Only accept keyboard input when console is not active. */
-  if (console_active == 0)
-    {
-      if (GetKeyboard(SDLK_LCTRL) || GetKeyboard(SDLK_RCTRL)) sjoy.joybit[ACTION_ATTACK] = 1;
-      if (GetKeyboard(SDLK_SPACE)) sjoy.joybit[ACTION_TALK] = 1;
-      if (GetKeyboard(SDLK_LSHIFT) || GetKeyboard(SDLK_RSHIFT)) sjoy.joybit[ACTION_MAGIC] = 1;
-      if (GetKeyboard(SDLK_RETURN)) sjoy.joybit[ACTION_INVENTORY] = 1;
-      if (GetKeyboard(SDLK_ESCAPE)) sjoy.joybit[ACTION_MENU] = 1;
-      if (GetKeyboard('6')) sjoy.joybit[ACTION_MAP] = 1;
-      if (GetKeyboard('m')) sjoy.joybit[ACTION_MAP] = 1;
-      if (GetKeyboard('7')) sjoy.joybit[ACTION_BUTTON7] = 1;
-    }
-  
-  {
-    int a = ACTION_FIRST;
-    for (a = ACTION_FIRST; a < ACTION_LAST; a++)
-      {
-	sjoy.button[a] = 0;
-	if (sjoy.joybit[a] && sjoy.joybitold[a] == 0)
-	  /* Button was just pressed */
-	  sjoy.button[a] = 1;
-	sjoy.joybitold[a] = sjoy.joybit[a];
-      }
-  }
-  
-  /* Only accept keyboard input when console is not active. */
-  if (console_active == 0)
-    {
-      if (GetKeyboard(SDLK_RIGHT) || sjoy.joybit[ACTION_RIGHT]) sjoy.right = 1;
-      if (GetKeyboard(SDLK_LEFT)  || sjoy.joybit[ACTION_LEFT])  sjoy.left  = 1;
-      if (GetKeyboard(SDLK_DOWN)  || sjoy.joybit[ACTION_DOWN])  sjoy.down  = 1;
-      if (GetKeyboard(SDLK_UP)    || sjoy.joybit[ACTION_UP])    sjoy.up    = 1;
-    }
-  
-  if (sjoy.right && sjoy.rightold == 0)
-    sjoy.rightd = 1;
-  sjoy.rightold = sjoy.right;
-	
-  if (sjoy.left && sjoy.leftold == 0)
-    sjoy.leftd = 1;
-  sjoy.leftold = sjoy.left;
-  
-  if (sjoy.up && sjoy.upold == 0)
-    sjoy.upd = 1;
-  sjoy.upold = sjoy.up;
-	
-  if (sjoy.down && sjoy.downold == 0)
-    sjoy.downd = 1;
-  sjoy.downold = sjoy.down;
-  
-  
-  if (wait4b.active)
-    {
-      //check for dirs
-      
-      if (sjoy.rightd) wait4b.button = 16;
-      if (sjoy.leftd)  wait4b.button = 14;
-      if (sjoy.upd)    wait4b.button = 18;
-      if (sjoy.downd)  wait4b.button = 12;
-      
-      sjoy.rightd = 0;
-      sjoy.downd = 0;
-      sjoy.upd = 0;
-      sjoy.leftd = 0;
-      
-      //check buttons
-      {
-	int a = ACTION_FIRST;
-	for (a = ACTION_FIRST; a < ACTION_LAST; a++)
-	  {
-	    if (sjoy.button[a])
-	      //button was pressed
-	      wait4b.button = a;
-	    sjoy.button[a] = /*false*/0;
-	  }
-      }
-      
-      if (wait4b.button != 0)
-	{
-	  *presult = wait4b.button;
-	  wait4b.active = /*false*/0;
-	  run_script(wait4b.script);
-	}
-    }
+/* Text choice selection (e.g. "Load game" in the title screen) */
+void freedink_update_mouse_text_choice(int dx, int dy) {
+  play.mouse += dy;
 }
+void freedink_update_mouse(SDL_Event* ev)
+{
+  if (ev->type != SDL_MOUSEMOTION)
+    return;
 
+  int dx = ev->motion.xrel;
+  int dy = ev->motion.yrel;
+
+  /* Players controls mouse */
+  if ((mode == 1 || keep_mouse)
+      && (spr[1].active == 1 && spr[1].brain == 13))
+    {
+      spr[1].x += dx;
+      spr[1].y += dy;
+
+      /* Clip the cursor to our client area */
+      if (spr[1].x > (640-1)) spr[1].x = 640-1;
+      if (spr[1].y > (480-1)) spr[1].y = 480-1;
+      if (spr[1].x < 0) spr[1].x = 0;
+      if (spr[1].y < 0) spr[1].y = 0;
+    }
+  
+  freedink_update_mouse_text_choice(dx, dy);
+}
 
 /* Get sprite #h, grab its text and display it */
 void text_draw(int h)
@@ -2469,7 +2363,7 @@ void mouse_brain(int h)
 		log_info("running through mouse list..");
 		run_through_mouse_list(h, /*true*/1);
 		sjoy.button[ACTION_ATTACK] = /*false*/0;
-							 mouse1 = /*false*/0;
+		mouse1 = /*false*/0;
 							 
 	}
 	
@@ -2546,7 +2440,7 @@ void process_bow( int h)
  */
 void human_brain(int h)
 {
-  int diag, x5;
+  int diag;
   int crap;
   /*BOOL*/int bad;
   
@@ -2697,6 +2591,7 @@ void human_brain(int h)
   //Let's check keys for getting hit
   if (thisTickCount > but_timer && console_active == 0)
     {
+      int x5;
       for (x5=29; x5<256; x5++)
 	{ 
 	  if (x5 == SDLK_SPACE) continue;
@@ -2712,7 +2607,7 @@ void human_brain(int h)
 	  if (x5 >= 'A' && x5 <= 'Z') continue;
 	  
 	  char msg[30];
-	  if (GetKeyboard(x5))
+	  if (input_getcharstate(x5))
 	    {
 	      int keycode = x5;
 	      /* Get the same keycodes than the original Dink engines
@@ -2837,9 +2732,9 @@ shootm:
   
   if (console_active == 0)
     {
-      if (GetKeyboard('b'))
+      if (input_getcharstate(SDLK_b))
 	ResumeMidi();
-      if (GetKeyboard('n'))
+      if (input_getcharstate(SDLK_n))
 	PauseMidi();
     }
   
@@ -4401,51 +4296,6 @@ void process_talk()
 }
 
 
-void UpdateCursorPosition(int dx, int dy)
-{
-  /* Players controls mouse */
-  if (spr[1].active && spr[1].brain == 13)
-    {
-      spr[1].x += dx;
-      spr[1].y += dy;
-
-      /* Clip the cursor to our client area */
-      if (spr[1].x > (640-1)) spr[1].x = 640-1;
-      if (spr[1].y > (480-1)) spr[1].y = 480-1;
-      if (spr[1].x < 0) spr[1].x = 0;
-      if (spr[1].y < 0) spr[1].y = 0;
-    }
-
-  /* Text choice selection (e.g. "Load game" in the title screen) */
-  if (mode == 1)
-    {
-      play.mouse += dy;
-    }
-}
-
-
-void Scrawl_OnMouseInput()
-{
-  mouse1 = /*false*/0;
-
-  SDL_Event ev;
-  /* Process stacked motion events */
-  while (SDL_PeepEvents(&ev, 1, SDL_GETEVENT,
-			SDL_MOUSEMOTION, SDL_MOUSEMOTION) > 0)
-    {
-      UpdateCursorPosition(ev.motion.xrel, ev.motion.yrel);
-    }
-
-  /* Process stacked clicks */
-  while (SDL_PeepEvents(&ev, 1, SDL_GETEVENT,
-			SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONDOWN) > 0)
-    {
-      if (ev.button.button == SDL_BUTTON_LEFT)
-	mouse1 = /*true*/1;
-    }
-  return;
-}
-
 void button_brain(int h )
 {
 	rect box;
@@ -4547,7 +4397,7 @@ void draw_item(int item_idx0, enum item_type type, int mseq, int mframe)
 }
 
 /**
- * Inventory screen
+ * Inventory screen mode
  */
 void process_item()
 {
@@ -4831,11 +4681,10 @@ void drawscreenlock( void )
  * doInit - do work required for every instance of the application:
  *                create the window, initialize data
  */
-static int doInit(int argc, char *argv[])
+static void freedink_init(int argc, char *argv[])
 {
-  /* New initialization */
-  if (init(argc, argv, "Tiles/Splash.bmp") < 0)
-    return -1;
+  /* Notify other apps that FreeDink is playing */
+  log_path(/*true*/1);
 
   /* Game-specific initialization */
   //Activate dink, but don't really turn him on
@@ -4845,10 +4694,7 @@ static int doInit(int argc, char *argv[])
   // ** SETUP **
   last_sprite_created = 1;
   mode = 0;
-    
-  /* TODO: move load_info() to 'init' */
-  load_info();
-  
+
   //lets run our init script
   int script = load_script("main", 0, /*true*/1);
   locate(script, "main");
@@ -4857,80 +4703,66 @@ static int doInit(int argc, char *argv[])
   /* lets attach our vars to the scripts, they must be declared in the
      main.c DinkC script */
   attach();
-	
-  return 0;
 }
 
+/* Global game shortcuts */
+static void freedink_input_global_shortcuts(SDL_Event* ev) {
+  if (ev->type != SDL_KEYDOWN)
+    return;
+  if (ev->key.repeat)
+    return;
+
+  if (ev->key.keysym.sym == SDLK_q)
+    {
+      //shutdown game
+      SDL_Event ev;
+      ev.type = SDL_QUIT;
+      SDL_PushEvent(&ev);
+    }
+  else if (ev->key.keysym.sym == SDLK_d)
+    {
+      /* Debug mode */
+      if (!debug_mode)
+	log_debug_on();
+      else
+	log_debug_off();
+    }
+  else if (ev->key.keysym.sym == SDLK_x)
+    {
+      if (!console_active)
+	dinkc_console_show();
+      else
+	dinkc_console_hide();
+    }
+  else if (ev->key.keysym.sym == SDLK_m)
+    {
+      //shutdown music
+      StopMidi();
+    }
+}
+
+static void freedink_input(SDL_Event* ev) {
+  if (SDL_GetModState()&KMOD_LALT) {
+    freedink_input_global_shortcuts(ev);
+  } else if (console_active) {
+    dinkc_console_process_key(ev);
+  } else {
+    ; // TODO: process keys by events (not by state)
+      // to avoid processing escape keys or shortcuts twice
+  }
+
+  // Process mouse even in console mode
+  freedink_update_mouse(ev);
+}
 
 /**
- * Initialization, message loop
+ * Bootstrap
  */
 int main(int argc, char* argv[])
 {
-  /* Initialize/setup */
-  int init_ret = doInit(argc, argv);
-
-  if (init_ret == 0)
-    {
-      /* Main loop */
-
-      /* Notify other apps that FreeDink is playing */
-      log_path(/*true*/1);
-
-      /* Avoid toggling continuously while Return is pressed */
-      int block_toggle_fullscreen = 0;
-      
-      /* Windows event loop */
-      while(!g_b_kill_app)
-	{
-	  SDL_Event event;
-	  SDL_PumpEvents();
-	  
-	  /* Check if we need to quit */
-	  if (SDL_PeepEvents(&event, 1, SDL_GETEVENT,
-			     SDL_QUIT, SDL_QUIT) > 0)
-	    break;
-	  
-	  /* Fullscreen <-> window */
-	  if ((SDL_GetModState()&KMOD_ALT) && GetKeyboard(SDLK_RETURN)
-	      && !block_toggle_fullscreen)
-	    {
-	      gfx_toggle_fullscreen();
-	      sjoy.joybitold[ACTION_INVENTORY] = 1; // don't show-up inventory
-	      block_toggle_fullscreen = 1;
-	    }
-	  if (GetKeyboard(SDLK_RETURN) == 0)
-	    block_toggle_fullscreen = 0;
-
-	  /* High speed */
-	  if (GetKeyboard(SDLK_TAB) == 1)
-	    {
-	      game_set_high_speed();
-	    }
-	  else if (GetKeyboard(SDLK_TAB) == 0)
-	    {
-	      game_set_normal_speed();
-	    }
-
-	  /* Clean-up finished sounds: normally this is done by
-	     SDL_mixer but since we're using effects tricks to
-	     stream&resample sounds, we need to do this manually. */
-	  sfx_cleanup_finished_channels();
-	  
-	  /* Game logic */
-	  /* TODO: maybe check for application active/background state and
-	     pause the game accordingly - but this may be an annoying
-	     behavior. */
-	  if (g_b_kill_app == /*false*/0)
-	    updateFrame();
-	}
-    }
-
-  /* Uninitialize/clean-up */
-  finiObjects();
-
-  if (init_ret < 0)
-    return EXIT_FAILURE;
-  else
-    return EXIT_SUCCESS;
+  return app_start(argc, argv,
+		   "Tiles/Splash.bmp",
+		   freedink_init,
+		   freedink_input,
+		   updateFrame);
 }

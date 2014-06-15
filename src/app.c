@@ -56,7 +56,7 @@
 #include "io_util.h"
 #include "paths.h"
 #include "log.h"
-#include "init.h"
+#include "app.h"
 #include "msgbox.h"
 
 #if defined _WIN32 || defined __WIN32__ || defined __CYGWIN__
@@ -142,34 +142,32 @@ print_help (int argc, char *argv[])
 
 
 /*
-* finiObjects
-*
-* finished with all objects we use; release them
+* Release all objects we use
 */
-void finiObjects()
+void app_quit()
 {
-  if (g_b_kill_app != 0)
-    return;
-  g_b_kill_app = 1;
-  
+  SDL_Event ev;
+  ev.type = SDL_QUIT;
+  SDL_PushEvent(&ev);
+
   if (last_saved_game > 0)
     {
       log_info("Modifying saved game.");
-      
+
       if (!add_time_to_saved_game(last_saved_game))
 	log_error("Error modifying saved game.");
       last_saved_game = 0;
     }
-	
+
   log_path(/*playing=*/0);
-  
+
   if (sound_on)
     {
       //lets kill the cdaudio too
       bgm_quit();
       QuitSound();
     }
-	
+
   kill_all_scripts_for_real();
   FastFileFini();
 
@@ -177,19 +175,19 @@ void finiObjects()
   dinkini_quit();
 
   game_quit();
-  
+
   input_quit();
-  
+
   gfx_quit();
-  
-  //SDL_QuitSubSystem(SDL_INIT_EVENTTHREAD);	
+
+  //SDL_QuitSubSystem(SDL_INIT_EVENTTHREAD);
   SDL_QuitSubSystem(SDL_INIT_TIMER);
-  
+
   SDL_Quit();
 
   if (init_error_msg != NULL)
     free(init_error_msg);
-  
+
   paths_quit();
 }
 
@@ -199,7 +197,7 @@ void finiObjects()
 int initFail(char *message)
 {
   msgbox(message);
-  return -1; /* used when "return initFail(...);" */
+  return EXIT_FAILURE; /* used when "return initFail(...);" */
 }
 
 
@@ -217,7 +215,7 @@ static int check_arg(int argc, char *argv[])
   /* Options '-debug', '-game', '-noini', '-nojoy', '-nosound' and
      '-window' (with one dash '-' only) are required to maintain
      backward compatibility with the original game */
-  struct option long_options[] = 
+  struct option long_options[] =
     {
       {"debug",     no_argument,       NULL, 'd'},
       {"refdir",    required_argument, NULL, 'r'},
@@ -233,7 +231,7 @@ static int check_arg(int argc, char *argv[])
       {"nomovie"  , no_argument,       NULL, ','},
       {0, 0, 0, 0}
     };
-  
+
   char short_options[] = "dr:g:hijsvw7t";
 
   /* Loop through each argument */
@@ -282,7 +280,7 @@ static int check_arg(int argc, char *argv[])
 	exit(EXIT_FAILURE);
       }
     }
-  
+
   if (optind < argc) {
     fprintf(stderr, "Invalid additional argument: ");
     while (optind < argc)
@@ -291,7 +289,7 @@ static int check_arg(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
-  
+
   paths_init(argv[0], refdir_opt, dmoddir_opt);
 
   free(refdir_opt);
@@ -317,15 +315,72 @@ static int check_arg(int argc, char *argv[])
  */
 void xalloc_die (void) {
   fprintf(stderr, "Memory exhausted!");
-  finiObjects();
+  app_quit();
   abort();
 }
 
+/**
+ * Process global shortcuts (full-screen toggling).  Use Gtk-style
+ * propagation: return true if ev is handled, false if it should be
+ * passed to app-specific handler.
+ */
+static int app_input_global_shortcuts(SDL_Event* ev) {
+  if (ev->type == SDL_KEYDOWN) {
+    if ((SDL_GetModState()&KMOD_LALT) &&
+	ev->key.keysym.scancode == SDL_SCANCODE_RETURN) {
+      gfx_toggle_fullscreen();
+      return 1;
+    }
+  }
+  return 0;
+}
 
-/* The goal is to replace freedink and freedinkedit's doInit() by a
-   common init procedure. This procedure will also initialize each
-   subsystem as needed (eg InitSound) */
-int init(int argc, char *argv[], char* splash_path)
+void app_loop(void (*input_hook)(SDL_Event* ev), void (*logic_hook)()) {
+  /* Main loop */
+  int run = 1;
+  while(run)
+    {
+      /* Controller: dispatch events */
+      SDL_Event event;
+      SDL_Event* ev = &event;
+      input_reset_justpressed();
+      input_reset_mouse();
+      while (SDL_PollEvent(ev))
+	{
+	  input_update(ev);
+	  switch(ev->type)
+	    {
+	    case SDL_QUIT:
+	      run = 0;
+	      break;
+	    default:
+	      if (!app_input_global_shortcuts(ev))
+		input_hook(ev);
+	      break;
+	    }
+	}
+
+      /* Main app logic */
+      logic_hook();
+
+      /* Clean-up finished sounds: normally this is done by
+	 SDL_mixer but since we're using effects tricks to
+	 stream&resample sounds, we need to do this manually. */
+      sfx_cleanup_finished_channels();
+    }
+
+  /* Uninitialize/clean-up */
+  app_quit();
+}
+
+
+/* freedink and freedinkedit's common init procedure. This procedure
+   will also initialize each subsystem as needed (eg InitSound) */
+int app_start(int argc, char *argv[],
+	      char* splash_path,
+	      void(*init_hook)(int argc, char *argv[]),
+	      void(*input_hook)(SDL_Event* ev),
+	      void(*logic_hook)())
 {
   /** i18n **/
   /* Only using LC_MESSAGES because LC_CTYPE (part of LC_ALL) may
@@ -342,7 +397,7 @@ int init(int argc, char *argv[], char* splash_path)
   bindtextdomain(PACKAGE, LOCALEDIR);
   bindtextdomain(PACKAGE "-gnulib", LOCALEDIR);
   textdomain(PACKAGE);
-  
+
   /* SDL can display messages in either ASCII or UTF-8. Thus we need
      gettext to output translations in UTF-8. */
   /* That's a problem for console messages in locales that are not
@@ -355,7 +410,7 @@ int init(int argc, char *argv[], char* splash_path)
 
 
   if (!check_arg(argc, argv))
-    return -1;
+    return EXIT_FAILURE;
 
   /* Same for this D-Mod's .mo (after options are parsed) */
   char* dmod_localedir = paths_dmodfile("l10n");
@@ -373,7 +428,7 @@ int init(int argc, char *argv[], char* splash_path)
 
   /* Quits in case we couldn't do it properly first (i.e. attempt to
      avoid stucking the user in 640x480 when crashing) */
-  atexit(finiObjects);
+  atexit(app_quit);
 
   /* GFX */
   if (gfx_init(windowed ? GFX_WINDOWED : GFX_FULLSCREEN,
@@ -392,7 +447,7 @@ int init(int argc, char *argv[], char* splash_path)
   dinkc_init();
 
   /* SFX & BGM */
-  if (sound_on) 
+  if (sound_on)
     {
       log_info("Initting sound");
       if (InitSound() < 0)
@@ -415,15 +470,21 @@ int init(int argc, char *argv[], char* splash_path)
   log_info("Loading batch...");
   load_batch();
   log_info(" done!");
-  
+
   log_info("Loading hard...");
   load_hard();
   log_info(" done!");
 
-  return 0;
+  log_info("World data....");
+  load_info();
+  log_info(" done!");
+
+  init_hook(argc, argv);
+
+  app_loop(input_hook, logic_hook);
+
+  return EXIT_SUCCESS;
 }
-
-
 
 /**
  * Save where Dink is installed in a .ini file, read by third-party

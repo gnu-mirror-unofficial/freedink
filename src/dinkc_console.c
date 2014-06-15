@@ -48,10 +48,10 @@ static int cur_line = 0;
 static int console_return_value = 0;
 
 
-void dinkc_console_process_key(SDL_Event ev)
+void dinkc_console_process_key(SDL_Event* ev)
 {
-  if (ev.type == SDL_KEYDOWN) {
-    SDL_KeyboardEvent kev = ev.key;
+  if (ev->type == SDL_KEYDOWN) {
+    SDL_KeyboardEvent kev = ev->key;
     if (kev.keysym.scancode == SDL_SCANCODE_UP)
       {
 	cur_line--;
@@ -72,9 +72,7 @@ void dinkc_console_process_key(SDL_Event ev)
       }
     else if (kev.keysym.scancode == SDL_SCANCODE_ESCAPE)
     {
-      //SDL_EventState(SDL_TEXTINPUT, SDL_IGNORE);
-      SDL_StopTextInput();
-      console_active = 0;
+      dinkc_console_hide();
     }
   else if (kev.keysym.scancode == SDL_SCANCODE_RETURN)
     {
@@ -88,11 +86,11 @@ void dinkc_console_process_key(SDL_Event ev)
       if (len > 0)
 	history[cur_line][0] = '\0';
     }
-  } else {
+  } else if (ev->type == SDL_TEXTINPUT) {
     /* Append character to the current line */
     if (strlen(history[cur_line] + 1) <= MAX_LINE_LEN)
-      if (isprint(ev.text.text[0]))
-	strchar(history[cur_line], ev.text.text[0]);
+      if (isprint(ev->text.text[0]))
+	strchar(history[cur_line], ev->text.text[0]);
   }
 }
 
@@ -109,13 +107,11 @@ int dinkc_console_get_last_retval()
 void dinkc_console_show()
 {
   SDL_StartTextInput();
-  SDL_EventState(SDL_KEYDOWN, SDL_ENABLE);
   console_active = 1;
 }
 
 void dinkc_console_hide()
 {
   SDL_StopTextInput();
-  SDL_EventState(SDL_KEYDOWN, SDL_IGNORE);
   console_active = 0;
 }

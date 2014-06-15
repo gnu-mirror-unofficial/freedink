@@ -81,9 +81,6 @@
 #include "paths.h"
 #include "log.h"
 
-//if true, will close app as soon as the message pump is empty
-int g_b_kill_app = 0;
-
 int dinkspeed = 3;
 int show_inventory = 0; // display inventory?
 
@@ -169,7 +166,6 @@ int playx = 620;
 /*bool*/int windowed = /*false*/0; /* TODO: move to gfx.c? */
 int playl = 20;
 
-/*bool*/int mouse1 = /*false*/0;
 int playy = 400;
 int cur_map;
 
@@ -182,7 +178,7 @@ unsigned long timecrap;
 rect math,box_crap,box_real;
 
 
-int mode;
+int mode = 0;
 
 struct small_map pam;
 
@@ -1780,8 +1776,6 @@ int load_info_to(char* path, struct map_info *mymap)
   if (!f)
     return -1;
 
-  log_info("World data loaded.");
-
   /* Portably load struct map_info from disk */
   int i = 0;
   fseek(f, 20, SEEK_CUR); // unused 'name' field
@@ -3317,8 +3311,6 @@ int change_sprite_noreturn(int h, int val, int* change)
 
 void draw_sprite_game(SDL_Surface *GFX_lpdest, int h)
 {
-  if (g_b_kill_app)
-    return; //don't try, we're quitting
   if (spr[h].brain == 8)
     return; // text
   if (spr[h].nodraw == 1)

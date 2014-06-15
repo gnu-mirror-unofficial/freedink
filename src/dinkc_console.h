@@ -29,7 +29,7 @@
 extern int console_active;
 extern char* dinkc_console_get_cur_line();
 extern int dinkc_console_get_last_retval();
-extern void dinkc_console_process_key(SDL_Event ev);
+extern void dinkc_console_process_key(SDL_Event* ev);
 void dinkc_console_show();
 void dinkc_console_hide();
 

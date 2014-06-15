@@ -29,6 +29,8 @@ extern "C"
 {
 #endif
 
+#include "SDL.h"
+
 #define NB_BUTTONS 12
 
   /* Actions that can be dynamically mapped on joystick buttons (and
@@ -73,13 +75,22 @@ extern "C"
     int rightold,leftold,upold,downold; // copy of previous state (used to compute *d)
   };
   extern struct seth_joy sjoy;
+  extern /*bool*/int mouse1;
 
-  extern int GetKeyboard(SDL_Keycode key);
-  extern void input_init(void);
-  extern void input_quit(void);
-  extern void input_set_default_buttons(void);
+  extern void input_update();
+  extern void input_init();
+  extern void input_quit();
+  extern void input_set_default_buttons();
   extern enum buttons_actions input_get_button_action(int button_index);
   extern void input_set_button_action(int button_index, enum buttons_actions action_index);
+
+  void input_reset_justpressed();
+  void input_reset_mouse();
+
+  Uint8 input_getscancodestate(SDL_Scancode scancode);
+  /*bool*/int input_getscancodejustpressed(SDL_Scancode scancode);
+  Uint8 input_getcharstate(SDL_Keycode ch);
+  /*bool*/int input_getcharjustpressed(SDL_Keycode ch);
 
 #ifdef __cplusplus
 }

@@ -36,7 +36,6 @@ extern void Scrawl_OnMouseInput(void);
 extern void button_brain(int h );
 extern void bounce_brain(int h);
 extern int check_if_move_is_legal(int u);
-extern void check_joystick(void);
 extern int did_player_cross_screen(int lock_sprite, int h);
 extern void dragon_brain(int h);
 extern void drawscreenlock( void );

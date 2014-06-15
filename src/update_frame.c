@@ -53,7 +53,6 @@
 
 #include "update_frame.h"
 
-enum speed_type { v107, v108 };
 static Uint32 fps_lasttick = 0;
 static int frames = 0;
 static int fps = 0;
@@ -61,8 +60,151 @@ static int drawthistime = /*true*/1;
 static /*bool*/int turn_on_plane = /*FALSE*/0;
 static /*bool*/int plane_process = /*TRUE*/1;
 
-void updateFrame( void )
+/* Fills 'struct seth_joy sjoy' with the current keyboard and/or
+   joystick state */
+/* TODO INPUT: group all input checks here, and switch to events processing
+   rather than keystate parsing (to avoid processing shortcuts or keys
+   from other modes) */
+void check_joystick()
 {
+  /* Clean-up */
+  /* Actions */
+  {
+    int a = ACTION_FIRST;
+    for (a = ACTION_FIRST; a < ACTION_LAST; a++)
+      sjoy.joybit[a] = 0;
+  }
+  
+  /* Arrows */
+  sjoy.right = 0;
+  sjoy.left = 0;
+  sjoy.up = 0;
+  sjoy.down = 0;
+
+  /* Arrows triggered (not maintained pressed) */
+  sjoy.rightd = 0;
+  sjoy.leftd = 0;
+  sjoy.upd = 0;
+  sjoy.downd = 0;
+	
+  if (joystick)
+    {
+      SDL_JoystickUpdate(); // required even with joystick events enabled
+      Sint16 x_pos = 0, y_pos = 0;
+      /* SDL counts buttons from 0, not from 1 */
+      int i = 0;
+      for (i = 0; i < NB_BUTTONS; i++)
+	if (SDL_JoystickGetButton(jinfo, i))
+	  sjoy.joybit[input_get_button_action(i)] = 1;
+
+      x_pos = SDL_JoystickGetAxis(jinfo, 0);
+      y_pos = SDL_JoystickGetAxis(jinfo, 1);
+      /* Using thresold=10% (original game) is just enough to get rid
+	 of the noise. Let's use 30% instead, otherwise Dink will go
+	 diags too easily. */
+      {
+	Sint16 threshold = 32767 * 30/100;
+	if (x_pos < -threshold) sjoy.left  = 1;
+	if (x_pos > +threshold) sjoy.right = 1;
+	if (y_pos < -threshold) sjoy.up    = 1;
+	if (y_pos > +threshold) sjoy.down  = 1;
+      }
+    }
+  
+  if (input_getscancodestate(SDL_SCANCODE_LCTRL) || input_getscancodestate(SDL_SCANCODE_RCTRL)) sjoy.joybit[ACTION_ATTACK] = 1;
+  if (input_getscancodestate(SDL_SCANCODE_SPACE)) sjoy.joybit[ACTION_TALK] = 1;
+  if (input_getscancodestate(SDL_SCANCODE_LSHIFT) || input_getscancodestate(SDL_SCANCODE_RSHIFT)) sjoy.joybit[ACTION_MAGIC] = 1;
+  if (input_getscancodestate(SDL_SCANCODE_RETURN)) sjoy.joybit[ACTION_INVENTORY] = 1;
+  if (input_getscancodestate(SDL_SCANCODE_ESCAPE)) sjoy.joybit[ACTION_MENU] = 1;
+  if (input_getscancodestate(SDL_SCANCODE_6)) sjoy.joybit[ACTION_MAP] = 1;
+  if (input_getcharstate(SDLK_m)) sjoy.joybit[ACTION_MAP] = 1;
+  if (input_getscancodestate(SDL_SCANCODE_7)) sjoy.joybit[ACTION_BUTTON7] = 1;
+  
+  {
+    int a = ACTION_FIRST;
+    for (a = ACTION_FIRST; a < ACTION_LAST; a++)
+      {
+	sjoy.button[a] = 0;
+	if (sjoy.joybit[a] && sjoy.joybitold[a] == 0)
+	  /* Button was just pressed */
+	  sjoy.button[a] = 1;
+	sjoy.joybitold[a] = sjoy.joybit[a];
+      }
+  }
+  
+  if (input_getscancodestate(SDL_SCANCODE_RIGHT) || sjoy.joybit[ACTION_RIGHT]) sjoy.right = 1;
+  if (input_getscancodestate(SDL_SCANCODE_LEFT)  || sjoy.joybit[ACTION_LEFT])  sjoy.left  = 1;
+  if (input_getscancodestate(SDL_SCANCODE_DOWN)  || sjoy.joybit[ACTION_DOWN])  sjoy.down  = 1;
+  if (input_getscancodestate(SDL_SCANCODE_UP)    || sjoy.joybit[ACTION_UP])    sjoy.up    = 1;
+  
+  if (sjoy.right && sjoy.rightold == 0)
+    sjoy.rightd = 1;
+  sjoy.rightold = sjoy.right;
+	
+  if (sjoy.left && sjoy.leftold == 0)
+    sjoy.leftd = 1;
+  sjoy.leftold = sjoy.left;
+  
+  if (sjoy.up && sjoy.upold == 0)
+    sjoy.upd = 1;
+  sjoy.upold = sjoy.up;
+	
+  if (sjoy.down && sjoy.downold == 0)
+    sjoy.downd = 1;
+  sjoy.downold = sjoy.down;
+
+  
+  /* High speed */
+  if (input_getscancodestate(SDL_SCANCODE_TAB) == 1)
+    {
+      game_set_high_speed();
+    }
+  else if (input_getscancodestate(SDL_SCANCODE_TAB) == 0)
+    {
+      game_set_normal_speed();
+    }
+  
+
+  if (wait4b.active)
+    {
+      //check for dirs
+      
+      if (sjoy.rightd) wait4b.button = 16;
+      if (sjoy.leftd)  wait4b.button = 14;
+      if (sjoy.upd)    wait4b.button = 18;
+      if (sjoy.downd)  wait4b.button = 12;
+      
+      sjoy.rightd = 0;
+      sjoy.downd = 0;
+      sjoy.upd = 0;
+      sjoy.leftd = 0;
+      
+      //check buttons
+      {
+	int a = ACTION_FIRST;
+	for (a = ACTION_FIRST; a < ACTION_LAST; a++)
+	  {
+	    if (sjoy.button[a])
+	      //button was pressed
+	      wait4b.button = a;
+	    sjoy.button[a] = /*false*/0;
+	  }
+      }
+      
+      if (wait4b.button != 0)
+	{
+	  *presult = wait4b.button;
+	  wait4b.active = /*false*/0;
+	  run_script(wait4b.script);
+	}
+    }
+}
+
+void updateFrame()
+{
+  if (!console_active)
+    check_joystick();
+
   /* Refresh frame counter twice per second */
   if ((SDL_GetTicks() - fps_lasttick) > 500)
     {
@@ -89,83 +231,8 @@ void updateFrame( void )
 
   /* Screen transition preparation start point */
  trigger_start:
-  
+    
 
-  /* Inputs */
-  check_joystick();
-  
-  if (GetKeyboard('m') && (GetKeyboard(SDLK_LALT) || GetKeyboard(SDLK_RALT)))
-    {
-      //shutdown music
-      StopMidi();
-      return;
-    }
-
-  if (GetKeyboard('q') && (GetKeyboard(SDLK_LALT) || GetKeyboard(SDLK_RALT)))
-    {
-      //shutdown game
-      //	PostMessage(hWndMain, WM_CLOSE, 0, 0);
-      SDL_Event ev;
-      ev.type = SDL_QUIT;
-      SDL_PushEvent(&ev);
-      return;
-    }
-
-  /* Debug mode */
-  static int last_d = 0;
-  if (GetKeyboard('d') && (GetKeyboard(SDLK_LALT) || GetKeyboard(SDLK_RALT)) && !last_d)
-    {	
-      if (!debug_mode)
-	log_debug_on();
-      else
-	log_debug_off();
-    }
-  last_d = GetKeyboard('d');
-
-  static int last_x = 0;
-  if (GetKeyboard('x') && (GetKeyboard(SDLK_LALT) || GetKeyboard(SDLK_RALT)) && !last_x)
-    {
-      if (!console_active)
-	dinkc_console_show();
-      else
-	dinkc_console_hide();
-    }
-  last_x = GetKeyboard('x');
-  // TODO SDL2: ignore keystroke
-  // Maybe synthetize keyup event and refresh scancodestate?
-  // Or switch to keyboard event processing loop
-
-  /* DinkC console */
-  if (console_active == 1) {
-      SDL_Event ev;
-      if (SDL_PeepEvents(&ev, 1, SDL_GETEVENT,
-			 SDL_TEXTINPUT, SDL_TEXTINPUT) > 0)
-	dinkc_console_process_key(ev);
-      if (SDL_PeepEvents(&ev, 1, SDL_GETEVENT,
-			 SDL_KEYDOWN, SDL_KEYDOWN) > 0)
-	dinkc_console_process_key(ev);
-  } else {
-    /* Get rid of keyboard events, otherwise they'll pile-up. Also
-       purge them just when console is turned on. We poll the
-       keyboard state directly in the rest of the game, so no
-       keystroke will be lost. */
-    SDL_Event ev;
-    while (SDL_PeepEvents(&ev, 1, SDL_GETEVENT,
-			  SDL_KEYDOWN, SDL_KEYDOWN) > 0);
-  }
-
-  
-
-  if (mode == 1)
-    {
-      Scrawl_OnMouseInput(); 
-    } else {
-    if (keep_mouse)
-      {
-	if ((talk.active) || (spr[1].brain == 13))
-	  Scrawl_OnMouseInput();
-      }  
-  }
   
   lastTickCount = thisTickCount;
   thisTickCount = game_GetTicks();
@@ -424,7 +491,7 @@ void updateFrame( void )
 				{
 					goto past;
 				}
-				if (g_b_kill_app) return;
+
 animate:
 				
 				move_result = check_if_move_is_legal(h);
@@ -868,7 +935,7 @@ past:
 		sprintf(msg,"X is %d y is %d  FPS: %d", spr[1].x, spr[1].y, fps);
 		//let's add the key info to it.
 		for (x = 0; x < 256; x++)
-		  if (GetKeyboard(x))
+		  if (input_getcharstate(x))
 		    sprintf(msg + strlen(msg), " (Key %i)", x);
 	      }
 	    if (mode == 3)
@@ -921,7 +988,7 @@ past:
 	process_callbacks();
 	
 flip:
-	if (g_b_kill_app) return;	
+
 	if (!abort_this_flip)
 		flip_it(); 
 	

@@ -43,7 +43,7 @@
 #include "gfx_fonts.h"
 #include "gfx_palette.h"
 #include "vgasys_fon.h"
-#include "init.h"
+#include "app.h"
 #include "log.h"
 
 

@@ -236,18 +236,12 @@ extern void load_hard(void);
 extern int load_info_to(char* path, struct map_info *mymap);
 extern void load_info(void);
 
-/* Dunno */
-extern /*bool*/int mouse1;
-
 /* Screen */
 extern void update_screen_time(void);
 
 /* OS */
 extern int bActive; // is application active?
 extern char *command_line; // command line params, used by doInit
-
-//if true, will close app as soon as the message pump is empty
-extern int g_b_kill_app;
 
 
 /* Startup */

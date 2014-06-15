@@ -40,15 +40,40 @@ struct seth_joy sjoy;
 static enum buttons_actions buttons_map[NB_BUTTONS];
 
 
-// returns 0 if the key has been depressed, else returns 1 and sets
-// key to code recd.
-int GetKeyboard(SDL_Keycode key)
+
+/* State of the keyboard, SDL-supported keys */
+/* current keyboard state */
+//Uint8 scancodestate[SDL_NUM_SCANCODES];
+/* true if key was just pressed, false if kept pressed or released */
+int scancodejustpressed[SDL_NUM_SCANCODES];
+
+/* Mouse left click */
+/*bool*/int mouse1 = 0;
+  
+
+/* Access keyboard cached state */
+Uint8 input_getscancodestate(SDL_Scancode scancode)
 {
-  const Uint8* keystate;
-  keystate = SDL_GetKeyboardState(NULL);
-  SDL_Scancode scancode = SDL_GetScancodeFromKey(key);
-  return keystate[scancode];
+  return SDL_GetKeyboardState(NULL)[scancode];
+  //return scancodestate[scancode];
 }
+/*bool*/int input_getscancodejustpressed(SDL_Scancode scancode)
+{
+  return scancodejustpressed[scancode];
+}
+
+/* Mark keys meant to be layout-dependent */
+/* Using SDL_Keycode should work, if not let's switch to TextInput */
+Uint8 input_getcharstate(SDL_Keycode ch)
+{
+  return SDL_GetKeyboardState(NULL)[SDL_GetScancodeFromKey(ch)];
+  //return scancodestate[SDL_GetScancodeFromKey(ch)];
+}
+/*bool*/int input_getcharjustpressed(SDL_Keycode ch)
+{
+  return scancodejustpressed[SDL_GetScancodeFromKey(ch)];
+}
+
 
 void input_init(void)
 {
@@ -68,8 +93,6 @@ void input_init(void)
   /* We'll handle those events manually */
   SDL_EventState(SDL_USEREVENT, SDL_IGNORE);
   SDL_EventState(SDL_SYSWMEVENT, SDL_IGNORE);
-  SDL_EventState(SDL_KEYUP, SDL_IGNORE);
-  SDL_EventState(SDL_KEYDOWN, SDL_IGNORE);
   /* Only track button down events */
   SDL_EventState(SDL_MOUSEBUTTONUP, SDL_IGNORE);
   /* We'll enable text inputs on demande (dinkc_console, editor textbox) */
@@ -78,16 +101,16 @@ void input_init(void)
   /* - SDL_QUIT: quit on window close and Ctrl+C */
   /* - SDL_MOUSEMOTION: easier for SDL_SetRelativeMouseMode() */
   /* - SDL_MOUSEBUTTONDOWN: don't miss quick clicks */
+  /* - SDL_KEYUP/SDL_KEYDOWN: process by event instead of querying the
+       full keyboard state, so we can easily ignore some events
+       (e.g. Ctrl+Enter when going fullscreen, Escape when exiting the
+       console, etc.) */
   /* - Joystick: apparently we need to keep them, otherwise joystick
        doesn't work at all */
 
   /* Clear keyboard/joystick buffer */
   memset(&sjoy,0,sizeof(sjoy));
   {
-    int k = 0;
-    for (k = 0; k < 256; k++)
-      GetKeyboard(k);
-    
     int a = ACTION_FIRST;
     for (a = ACTION_FIRST; a < ACTION_LAST; a++) 
       sjoy.joybitold[a] = 0;
@@ -254,4 +277,46 @@ void input_set_button_action(int button_index, enum buttons_actions action_index
       log_error("Attempted to set invalid button %d (internal index %d)",
 		button_index+1, button_index);
     }
+}
+
+
+void input_reset_justpressed() {
+  for (int i = 0; i < SDL_NUM_SCANCODES; i++) {
+    scancodejustpressed[i] = 0;
+  }
+}
+
+void input_update_justpressed(SDL_Event *ev) {
+  if (!(ev->type == SDL_KEYDOWN || ev->type == SDL_KEYUP))
+    return;
+  if (ev->key.repeat)
+    return;
+
+  int scancode = ev->key.keysym.scancode;
+  if (ev->key.state == SDL_PRESSED)
+    /* We just changed from "released" to "pressed" */
+    scancodejustpressed[scancode] = 1;
+  else
+    scancodejustpressed[scancode] = 0;
+}
+
+void input_reset_mouse() {
+  mouse1 = /*false*/0;
+}
+
+void input_update_mouse(SDL_Event *ev) {
+  if (ev->type != SDL_MOUSEBUTTONDOWN)
+    return;
+
+  if (ev->button.button == SDL_BUTTON_LEFT)
+    mouse1 = /*true*/1;
+}
+
+/**
+ * Generic for keyboard / mouse input handling.  Stores current state
+ * and triggered ("was just pressed") events.
+ */
+void input_update(SDL_Event *ev) {
+  input_update_justpressed(ev);
+  input_update_mouse(ev);
 }

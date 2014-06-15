@@ -41,7 +41,7 @@
 #include "gfx_palette.h"
 #include "gfx_sprites.h"
 #include "gfx_tiles.h"
-#include "init.h"
+#include "app.h"
 #include "paths.h"
 #include "log.h"
 

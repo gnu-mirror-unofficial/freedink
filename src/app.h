@@ -23,9 +23,13 @@
 #ifndef _INIT_H
 #define _INIT_H
 
-extern int init(int argc, char *argv[], char* splash_bmp);
+extern int app_start(int argc, char *argv[],
+		     char* splash_path,
+		     void(*init_hook)(int argc, char *argv[]),
+		     void(*input_hook)(SDL_Event* ev),
+		     void(*logic_hook)());
 extern void init_set_error_msg(const char *fmt, ...);
 extern void log_path(/*bool*/int playing);
-extern void finiObjects();
+extern void app_quit();
 
 #endif

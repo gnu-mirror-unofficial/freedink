@@ -23,17 +23,17 @@ AM_CPPFLAGS += -I$(top_srcdir)/intl -I$(top_builddir)/intl
 
 LIBS += -lm
 
-COMMON_OBJS=bgm.c bgm.h dinkini.c dinkini.h dinkc.c dinkc.h		\
-	dinkc_bindings.c dinkc_bindings.h dinkc_console.c		\
+COMMON_OBJS= app.c app.h bgm.c bgm.h dinkini.c dinkini.h dinkc.c	\
+	dinkc.h dinkc_bindings.c dinkc_bindings.h dinkc_console.c	\
 	dinkc_console.h dinkc_sp_custom.c dinkc_sp_custom.h dinkvar.c	\
 	dinkvar.h fastfile.c fastfile.h game_engine.c game_engine.h	\
 	str_util.c str_util.h io_util.c io_util.h sfx.c sfx.h gfx.c	\
 	gfx.h gfx_fade.c gfx_fade.h gfx_tiles.c gfx_tiles.h		\
-	gfx_palette.c gfx_palette.h gfx_fonts.c gfx_fonts.h init.c	\
-	init.h rect.c rect.h input.c input.h binreloc.c binreloc.h	\
-	freedink_xpm.c freedink_xpm.h paths.c paths.h log.c log.h	\
-	gfx_sprites.c gfx_sprites.h vgasys_fon.c vgasys_fon.h msgbox.c	\
-	msgbox.h i18n.c i18n.h meminfo.c meminfo.h screen.c screen.h
+	gfx_palette.c gfx_palette.h gfx_fonts.c gfx_fonts.h rect.c	\
+	rect.h input.c input.h binreloc.c binreloc.h freedink_xpm.c	\
+	freedink_xpm.h paths.c paths.h log.c log.h gfx_sprites.c	\
+	gfx_sprites.h vgasys_fon.c vgasys_fon.h msgbox.c msgbox.h	\
+	i18n.c i18n.h meminfo.c meminfo.h screen.c screen.h
 
 if HAVE_ZZIPLIB
 COMMON_OBJS+=SDL_rwops_zzip.c SDL_rwops_zzip.h
@@ -87,11 +87,11 @@ uninstall-hook:
 # help2man-generated manpages
 # Inspiration from (automake-1.10.info.gz)distcleancheck
 dist_man_MANS = freedink.6 freedinkedit.6 dink.6 dinkedit.6
-freedink.6: init.c $(top_srcdir)/configure.ac Makefile.am
+freedink.6: app.c $(top_srcdir)/configure.ac Makefile.am
 	$(MAKE) $(AM_MAKEFLAGS) freedink$(EXEEXT)
 	-$(HELP2MAN) -s6 -n "adventure and role-playing game (engine)"	\
 	  --no-info --output=freedink.6 ./freedink$(EXEEXT)
-freedinkedit.6: init.c $(top_srcdir)/configure.ac Makefile.am
+freedinkedit.6: app.c $(top_srcdir)/configure.ac Makefile.am
 	$(MAKE) $(AM_MAKEFLAGS) freedinkedit$(EXEEXT)
 	-$(HELP2MAN) -s6 -n "adventure and role-playing game (editor)"	\
 	  --no-info --output=freedinkedit.6 ./freedinkedit$(EXEEXT)
