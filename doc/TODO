@@ -99,3 +99,11 @@ As of 2014-06, what was done - and hence what needs testing ;)
 - Cleaned-up some 'abort_this_flip' due to not having
   SDL_SetPalette(PHYS) triggering a flip anymore (since we had to
   reimplement it..)
+
+
+Tests
+=====
+
+- Dink position is updated after a new screen is loaded:
+http://www.dinknetwork.com/forum.cgi?MID=186069#186263
+
