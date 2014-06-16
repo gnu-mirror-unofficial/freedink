@@ -26,10 +26,14 @@
 - DinkC console is toggled when Alt-X is pressed (no more creating a
   key-xx.c with just "show_console()" inside).
 
-- load_palette() now searches for palette in the right place
-
 - New translation for the engine strings in Russian
   (thanks Yuri Kozlov)
+
+- DinkC: load_palette() now searches for palette in the right place
+  (thanks scratcher for the report)
+
+- DinkC: Dink position is updated after a new screen is loaded
+  (thanks metatarasal for the report)
 
 
 108.2
