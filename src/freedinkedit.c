@@ -4803,18 +4803,35 @@ static void freedinkedit_init(int argc, char *argv[])
   playy = 480;
   sp_seq = 0;
 }
+/* Global game shortcuts - just full-screen toggle actually */
+static void freedinkedit_input_global_shortcuts(SDL_Event* ev) {
+  if (ev->type != SDL_KEYDOWN)
+    return;
+  if (ev->key.repeat)
+    return;
+
+  if (ev->key.keysym.scancode == SDL_SCANCODE_RETURN)
+    {
+      gfx_toggle_fullscreen();
+    }
+}
 
 static void freedinkedit_input(SDL_Event* ev) {
+  if (SDL_GetModState()&KMOD_LALT) {
+    freedinkedit_input_global_shortcuts(ev);
+  } else {
+    // update virtual keyboard
+    // doesn't take above events into account
+    input_update(ev);
+  }
+
+  if (ev->type == SDL_TEXTINPUT
+      && strlen(in_temp) < in_max
+      && isprint(ev->text.text[0]))
+    sprintf(in_temp + strlen(in_temp), "%c", ev->text.text[0]);
+
   if (mode == MODE_SCREEN_SPRITES)
     freedinkedit_update_cursor_position(ev);
-
-  if (ev->type == SDL_TEXTINPUT) {
-    if (strlen(in_temp) < in_max)
-      {
-	if (isprint(ev->text.text[0]))
-	  sprintf(in_temp + strlen(in_temp), "%c", ev->text.text[0]);
-      }
-  }
 }
 
 /**

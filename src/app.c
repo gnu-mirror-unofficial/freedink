@@ -319,22 +319,6 @@ void xalloc_die (void) {
   abort();
 }
 
-/**
- * Process global shortcuts (full-screen toggling).  Use Gtk-style
- * propagation: return true if ev is handled, false if it should be
- * passed to app-specific handler.
- */
-static int app_input_global_shortcuts(SDL_Event* ev) {
-  if (ev->type == SDL_KEYDOWN) {
-    if ((SDL_GetModState()&KMOD_LALT) &&
-	ev->key.keysym.scancode == SDL_SCANCODE_RETURN) {
-      gfx_toggle_fullscreen();
-      return 1;
-    }
-  }
-  return 0;
-}
-
 void app_loop(void (*input_hook)(SDL_Event* ev), void (*logic_hook)()) {
   /* Main loop */
   int run = 1;
@@ -343,19 +327,16 @@ void app_loop(void (*input_hook)(SDL_Event* ev), void (*logic_hook)()) {
       /* Controller: dispatch events */
       SDL_Event event;
       SDL_Event* ev = &event;
-      input_reset_justpressed();
-      input_reset_mouse();
+      input_reset();
       while (SDL_PollEvent(ev))
 	{
-	  input_update(ev);
 	  switch(ev->type)
 	    {
 	    case SDL_QUIT:
 	      run = 0;
 	      break;
 	    default:
-	      if (!app_input_global_shortcuts(ev))
-		input_hook(ev);
+	      input_hook(ev);
 	      break;
 	    }
 	}

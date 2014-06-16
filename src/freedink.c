@@ -4718,7 +4718,11 @@ static void freedink_input_global_shortcuts(SDL_Event* ev) {
   if (ev->key.repeat)
     return;
 
-  if (ev->key.keysym.sym == SDLK_q)
+  if (ev->key.keysym.scancode == SDL_SCANCODE_RETURN)
+    {
+      gfx_toggle_fullscreen();
+    }
+  else if (ev->key.keysym.sym == SDLK_q)
     {
       //shutdown game
       SDL_Event ev;
@@ -4753,8 +4757,9 @@ static void freedink_input(SDL_Event* ev) {
   } else if (console_active) {
     dinkc_console_process_key(ev);
   } else {
-    ; // TODO: process keys by events (not by state)
-      // to avoid processing escape keys or shortcuts twice
+    // update virtual keyboard
+    // doesn't take above events into account
+    input_update(ev);
   }
 
   // Process mouse even in console mode

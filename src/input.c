@@ -43,7 +43,7 @@ static enum buttons_actions buttons_map[NB_BUTTONS];
 
 /* State of the keyboard, SDL-supported keys */
 /* current keyboard state */
-//Uint8 scancodestate[SDL_NUM_SCANCODES];
+Uint8 scancodestate[SDL_NUM_SCANCODES];
 /* true if key was just pressed, false if kept pressed or released */
 int scancodejustpressed[SDL_NUM_SCANCODES];
 
@@ -54,8 +54,8 @@ int scancodejustpressed[SDL_NUM_SCANCODES];
 /* Access keyboard cached state */
 Uint8 input_getscancodestate(SDL_Scancode scancode)
 {
-  return SDL_GetKeyboardState(NULL)[scancode];
-  //return scancodestate[scancode];
+  //return SDL_GetKeyboardState(NULL)[scancode];
+  return scancodestate[scancode];
 }
 /*bool*/int input_getscancodejustpressed(SDL_Scancode scancode)
 {
@@ -66,8 +66,8 @@ Uint8 input_getscancodestate(SDL_Scancode scancode)
 /* Using SDL_Keycode should work, if not let's switch to TextInput */
 Uint8 input_getcharstate(SDL_Keycode ch)
 {
-  return SDL_GetKeyboardState(NULL)[SDL_GetScancodeFromKey(ch)];
-  //return scancodestate[SDL_GetScancodeFromKey(ch)];
+  //return SDL_GetKeyboardState(NULL)[SDL_GetScancodeFromKey(ch)];
+  return scancodestate[SDL_GetScancodeFromKey(ch)];
 }
 /*bool*/int input_getcharjustpressed(SDL_Keycode ch)
 {
@@ -286,13 +286,15 @@ void input_reset_justpressed() {
   }
 }
 
-void input_update_justpressed(SDL_Event *ev) {
+void input_update_keyboard(SDL_Event *ev) {
   if (!(ev->type == SDL_KEYDOWN || ev->type == SDL_KEYUP))
     return;
   if (ev->key.repeat)
     return;
 
   int scancode = ev->key.keysym.scancode;
+  scancodestate[scancode] = ev->key.state;
+
   if (ev->key.state == SDL_PRESSED)
     /* We just changed from "released" to "pressed" */
     scancodejustpressed[scancode] = 1;
@@ -313,10 +315,18 @@ void input_update_mouse(SDL_Event *ev) {
 }
 
 /**
+ * Reset input before a new game frame
+ */
+void input_reset() {
+  input_reset_justpressed();
+  input_reset_mouse();
+}
+
+/**
  * Generic for keyboard / mouse input handling.  Stores current state
  * and triggered ("was just pressed") events.
  */
 void input_update(SDL_Event *ev) {
-  input_update_justpressed(ev);
+  input_update_keyboard(ev);
   input_update_mouse(ev);
 }

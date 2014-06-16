@@ -62,9 +62,9 @@ static /*bool*/int plane_process = /*TRUE*/1;
 
 /* Fills 'struct seth_joy sjoy' with the current keyboard and/or
    joystick state */
-/* TODO INPUT: group all input checks here, and switch to events processing
-   rather than keystate parsing (to avoid processing shortcuts or keys
-   from other modes) */
+/* TODO INPUT: group all input checks here, and switch to events
+   processing rather than keystate parsing for 'justpressed' events
+   (to avoid having to maintain a fake keyboard state in input.c) */
 void check_joystick()
 {
   /* Clean-up */

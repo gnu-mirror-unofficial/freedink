@@ -84,8 +84,7 @@ extern "C"
   extern enum buttons_actions input_get_button_action(int button_index);
   extern void input_set_button_action(int button_index, enum buttons_actions action_index);
 
-  void input_reset_justpressed();
-  void input_reset_mouse();
+  void input_reset();
 
   Uint8 input_getscancodestate(SDL_Scancode scancode);
   /*bool*/int input_getscancodejustpressed(SDL_Scancode scancode);
