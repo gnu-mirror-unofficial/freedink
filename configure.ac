@@ -96,10 +96,44 @@ fi
 AM_CONDITIONAL(HAVE_UPX, test "$UPX" != "")
 
 
+# Dynamic and static builds
+AC_ARG_ENABLE([static],
+  AS_HELP_STRING([--enable-static],[embed SDL and dependencies in the executable (default is disabled)]),
+  [], [enable_static=no])
+if test x"$enable_static" = x"yes"; then
+    case "${host}" in
+    # (cf. (autoconf.info)Using System Type) (2002)
+    *-*-mingw32* | *-*-cygwin* | *-*-windows*)
+        # LIBS is handled by pkg-config and Libs.private/Requires.private
+        # We still need to force choosing 'libxxx.a' over 'libxxx.dll.a':
+        LDFLAGS="$LDFLAGS -static"
+        ;;
+    mipsallegrexel-psp-elf)
+        # (Only static builds are possible for this architecture AFAIK)
+        # Light version, if dependencies are compiled minimaly
+        #LIBS="$LIBS -lfreetype -lz"
+        # Full version, if planning to support more formats
+        LIBS="-lvorbisidec -lfreetype -lpng -ljpeg -lz $LIBS"
+        #LIBS="$LIBS -lfreetype -lpng -ltiff -ljpeg -lz -lvorbisfile -lvorbis -logg"
+        ;;
+    # *nix
+    *)
+        # The linker doesn't find dependent libs when using .a libs
+        AC_CHECK_LIBM()
+        LIBS="$LIBM -lm -ldl $LIBS"
+        # Strip secondary dependencies added by e.g. fontconfig->libfreetype
+        #LDFLAGS="$LDFLAGS -Wl,--as-needed"
+        # Actually having freetype is handy, no need to add it for SDL_ttf.
+        ;;
+    esac
+fi
+
+
 # SDL and core libs
 PKG_CHECK_MODULES([SDL2], [sdl2 >= 2.0  SDL2_image  SDL2_mixer  SDL2_ttf > 2.0.12],
   [CFLAGS="$CFLAGS $SDL2_CFLAGS"; LIBS="$SDL2_LIBS $LIBS"],
   AC_MSG_WARN($SDL2_PKG_ERRORS); LACK_SDL2=1)
+
 # No support for pkg-config in SDL2_gfx 1.0.0
 AC_CHECK_LIB(SDL2_gfx, pixelColor,
   LIBS="-lSDL2_gfx $LIBS",
@@ -146,29 +180,6 @@ else
 fi
 AM_CONDITIONAL(HAVE_LIBZIP, test "$LACK_LIBZIP" != "1")
 AM_CONDITIONAL(HAVE_ZZIPLIB, test "$LACK_ZZIPLIB" != "1")
-
-
-# Dynamic and static builds
-AC_ARG_ENABLE([static],
-  AS_HELP_STRING([--enable-static],[embed SDL and dependencies in the executable (default is disabled)]),
-  [], [enable_static=no])
-if test x"$enable_static" = x"yes"; then
-    case "${host}" in
-    # (cf. (autoconf.info)Using System Type) (2002)
-    *-*-mingw32* | *-*-cygwin* | *-*-windows*)
-        # LIBS is handled by pkg-config and Libs.private/Requires.private
-        # We still need to force choosing 'libxxx.a' over 'libxxx.dll.a':
-        LDFLAGS="$LDFLAGS -static"
-        ;;
-    mipsallegrexel-psp-elf)
-	# (Only static builds are possible for this architecture AFAIK)
-        # Light version, if dependencies are compiled minimaly
-        #LIBS="$LIBS -lfreetype -lz"
-        # Full version, if planning to support more formats
-	LIBS="-lvorbisidec -lfreetype -lpng -ljpeg -lz $LIBS"
-        #LIBS="$LIBS -lfreetype -lpng -ltiff -ljpeg -lz -lvorbisfile -lvorbis -logg"
-    esac
-fi
 
 
 # Lengthy Gnulib checks
