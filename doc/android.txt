@@ -1,6 +1,7 @@
 == SDL2 ==
 
 Official documentation is in SDL2/README-android.txt
+See also my http://wiki.libsdl.org/Android
 
 === Pre-requisites ===
 
@@ -19,13 +20,13 @@ Official documentation is in SDL2/README-android.txt
  ant debug install
 
 Notes:
-- triple armeabi/armeabi-v7a/x86 compilation!
+- triple target armeabi/armeabi-v7a/x86 compilation!
 - application doesn't quit
 
 
 === Test 2: SDL wrapper + SDL_image ===
 
-First, modify showimage.c to show an embedded image or something.
+First, modify showimage.c to show a simple embedded image (e.g. XPM).
 
 To compile:
 
@@ -51,10 +52,61 @@ Notes:
 /usr/src/android-ndk-r9d/build/tools/make-standalone-toolchain.sh \
   --platform=android-12 --install-dir=/usr/src/ndk-standalone-12
 PATH=/usr/src/ndk-standalone-12/bin:$PATH
-mkdir cross-android
-../configure --host=arm-linux-androideabi --prefix=/freedink
-# => issues with wchat even without -c99
+mkdir cross-android/
+cd cross-android/
+../configure --host=arm-linux-androideabi --prefix=/freedink \
+  --disable-embedded-resources
 
-Notes:
-- gnulib wasn't functional on Android as of 2012-01, progressed since?
-  https://lists.gnu.org/archive/html/bug-gnulib/2012-01/msg00295.html
+
+=== Guile ===
+
+/usr/src/android-ndk-r9d/build/tools/make-standalone-toolchain.sh \
+  --platform=android-12 --install-dir=/usr/src/ndk-standalone-12
+PATH=/usr/src/ndk-standalone-12/bin:$PATH
+
+aptitude install lzip
+WGET=wget
+
+VERSION=2.4.2
+$WGET http://ftp.igh.cnrs.fr/pub/gnu/libtool/libtool-$VERSION.tar.xz
+tar xf libtool-$VERSION.tar.xz
+cd libtool-$VERSION/
+mkdir cross-android/ && cd cross-android/
+../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12/sysroot/usr
+make -j$(nproc)
+make install
+
+VERSION=6.0.0a
+VERSIONDIR=6.0.0
+$WGET https://gmplib.org/download/gmp/gmp-$VERSION.tar.lz
+tar xf gmp-$VERSION.tar.lz
+cd gmp-$VERSIONDIR/
+mkdir cross-android/ && cd cross-android/
+../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12/sysroot/usr
+make -j$(nproc)
+make install
+
+VERSION=0.9.3
+$WGET http://ftp.gnu.org/gnu/libunistring/libunistring-0.9.3.tar.gz
+tar xf libunistring-$VERSION.tar.gz
+mkdir cross-android/ && cd cross-android/
+cp -a /usr/share/misc/config.{guess,sub} ../build-aux/
+../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12/sysroot/usr
+make -j$(nproc)
+make install
+
+VERSION=7.2f
+VERSIONDIR=7.2
+$WGET http://www.hboehm.info/gc/gc_source/gc-$VERSION.tar.gz
+tar xf gc-$VERSION.tar.gz
+cd gc-$VERSIONDIR/
+mkdir cross-android/ && cd cross-android/
+=> build failure due to Android's pthread
+
+
+cd guile/cross-android/
+git checkout stable-2.0
+mkdir cross-android/ && cd cross-android/
+../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12/sysroot/usr
+make -j$(nproc)
+=> depends on libgc

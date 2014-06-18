@@ -10,14 +10,20 @@ compile the latest, not-yet-packaged sources :)
 
 Required fixes for SDL2:
 - SDL2_gfx 1.0.0: proper pkg-config file - https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=750131
-- SDL2_ttf 2.0.12: vgasys.fon doesn't load - https://bugzilla.libsdl.org/show_bug.cgi?id=2574
+  => fixed in SDL2_gfx 1.0.1
+- SDL2_ttf 2.0.12: vgasys.fon doesn't load
+  - https://bugzilla.libsdl.org/show_bug.cgi?id=2574
+    Fixed in development version: https://hg.libsdl.org/SDL_ttf/raw-rev/86aa91bce20c
 - SDL2_mixer 2.0.0:
-  - speed issues with TiMIDity back-end
-    - https://bugzilla.libsdl.org/show_bug.cgi?id=2140
+  - speed issues with TiMidity back-end
     - https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=750706
+      https://bugzilla.libsdl.org/show_bug.cgi?id=2140
+      Fixed in development version: https://hg.libsdl.org/SDL_mixer/raw-rev/8ef083375857
   - Fluidsynth can't be enabled AFAICS
     - TODO: check and report me
-- SDL2_image 2.0.0: no transparency when loading XPM files - https://bugzilla.libsdl.org/show_bug.cgi?id=2578
+- SDL2_image 2.0.0: no transparency when loading XPM files
+  - https://bugzilla.libsdl.org/show_bug.cgi?id=2578
+    Fixed in development version: https://hg.libsdl.org/SDL_image/raw-rev/c0132bb6251a
 
 
 On a minimal Debian system

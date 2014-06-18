@@ -46,6 +46,7 @@ CFLAGS="$CFLAGS -Wall -std=c99"
 gl_EARLY
 
 AM_CONDITIONAL(PSP, test "$host" == "mipsallegrexel-psp-elf")
+AM_CONDITIONAL(ANDROID, test "$host" == "arm-unknown-linux-androideabi")
 
 PKG_CHECK_MODULES([CHECK], [check >= 0.9.4])
 
@@ -119,8 +120,8 @@ if test x"$enable_static" = x"yes"; then
     # *nix
     *)
         # The linker doesn't find dependent libs when using .a libs
-        AC_CHECK_LIBM()
-        LIBS="$LIBM -lm -ldl $LIBS"
+        LT_LIB_M()
+        LIBS="$LIBM -ldl $LIBS"
         # Strip secondary dependencies added by e.g. fontconfig->libfreetype
         #LDFLAGS="$LDFLAGS -Wl,--as-needed"
         # Actually having freetype is handy, no need to add it for SDL_ttf.
@@ -130,21 +131,19 @@ fi
 
 
 # SDL and core libs
-PKG_CHECK_MODULES([SDL2], [sdl2 >= 2.0  SDL2_image  SDL2_mixer  SDL2_ttf > 2.0.12],
+# See BUILD for version requirements
+PKG_CHECK_MODULES([SDL2], [sdl2 >= 2.0  SDL2_image > 2.0.0 SDL2_mixer > 2.0.0 SDL2_ttf > 2.0.12 SDL2_gfx >= 1.0.0],
   [CFLAGS="$CFLAGS $SDL2_CFLAGS"; LIBS="$SDL2_LIBS $LIBS"],
   AC_MSG_WARN($SDL2_PKG_ERRORS); LACK_SDL2=1)
-
-# No support for pkg-config in SDL2_gfx 1.0.0
-AC_CHECK_LIB(SDL2_gfx, pixelColor,
-  LIBS="-lSDL2_gfx $LIBS",
-  AC_MSG_WARN([You need to install SDL2_gfx]); LACK_SDL2_GFX=1)
 
 case "${host}" in
 # (cf. (autoconf.info)Using System Type) (2002)
 *-*-msdos* | *-*-go32* | *-*-mingw32* | *-*-cygwin* | *-*-windows* \
-| mipsallegrexel-psp-elf)
+| mipsallegrexel-psp-elf \
+| arm-unknown-linux-androideabi)
     # Can't search fonts using fontconfig under ms woe
     # Nor under a PSP
+    # Nor under Android
     use_fontconfig="no"
     ;;
 *)
@@ -216,10 +215,6 @@ warning=0
 if test "$LACK_SDL2" = 1; then
   echo "* You need to install the SDL libraries:"
   echo "$SDL2_PKG_ERRORS"
-  error=1
-fi
-if test "$LACK_SDL2_GFX" = 1; then
-  echo "* You need to install the SDL2_gfx library"
   error=1
 fi
 if test "$USE_NLS" = no; then

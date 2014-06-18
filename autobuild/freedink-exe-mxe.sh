@@ -23,7 +23,7 @@
 ## Disable MP3 support: src/sdl_mixer.mk: --enable-music-mp3 -> --disable-music-mp3
 ## Use MinGW-w64 in /usr/src/mxe/settings.mk: MXE_TARGETS := x86_64-w64-mingw32 i686-w64-mingw32
 ## Use SDL_gfx 2.0.25: git checkout origin/master src/sdl_gfx.mk
-# make -j2 JOBS=$(nproc) gcc sdl sdl_gfx sdl_image sdl_mixer sdl_ttf libzip gettext nsis
+# make -j2 JOBS=$(nproc) gcc sdl2 sdl2_gfx sdl2_image sdl2_mixer sdl2_ttf libzip gettext check nsis
 
 function copy_extra_files {
   mkdir zip/
@@ -85,7 +85,7 @@ PATH=/usr/src/mxe/usr/bin:$PATH
 # - specify --build or autoconf will not understand we cross-compile
 #   during some tests
 pushd woe/
-../configure --host=i686-w64-mingw32 \
+../configure --host=i686-w64-mingw32.static \
   --enable-static --enable-upx
 make -j $(nproc)
 make install-strip DESTDIR=$(pwd)/destdir
