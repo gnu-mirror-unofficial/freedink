@@ -64,7 +64,6 @@ struct call_back
   unsigned long timer;
 };
 static struct call_back callback[MAX_CALLBACKS];
-/* TODO: Used 1->100 in the game, should it be MAX_CALLBACKS+1 ? */
 
 /* DinkC script buffer */
 static char *rbuf[MAX_SCRIPTS]; //pointers to buffers we may need
@@ -779,7 +778,7 @@ int add_callback(char name[20], int n1, int n2, int script)
 
 void kill_callback(int cb)
 {
-  if (cb >= 0 && cb <= 99)
+  if (cb >= 0 && cb < MAX_CALLBACKS)
     callback[cb].active = /*false*/0;
 }
 
@@ -870,7 +869,7 @@ void kill_all_scripts_for_real(void)
 	kill_script(k);
     }
   
-  for (k = 1; k <= MAX_CALLBACKS; k++)
+  for (k = 1; k < MAX_CALLBACKS; k++)
     {
       callback[k].active = 0;
     }
