@@ -48,8 +48,6 @@ gl_EARLY
 AM_CONDITIONAL(PSP, test "$host" == "mipsallegrexel-psp-elf")
 AM_CONDITIONAL(ANDROID, test "$host" == "arm-unknown-linux-androideabi")
 
-PKG_CHECK_MODULES([CHECK], [check >= 0.9.4])
-
 # Check if we can fork&exec (for fallback xmessage errors)
 AC_CHECK_FUNCS(execlp)
 # Check if we've got malloc stats
@@ -86,6 +84,23 @@ if test -z "$HELP2MAN"; then
   HELP2MAN="help2man"
   LACK_HELP2MAN=1
 fi
+
+
+# pkg-config / pkgconf
+PKG_PROG_PKG_CONFIG()
+
+
+AC_ARG_VAR([tests], [run tests])
+AC_ARG_ENABLE([tests],
+  AS_HELP_STRING([--disable-tests], [run test suite (default is enabled)]),
+  [], [enable_tests=yes])
+if test x"$enable_tests" = x"yes"; then
+  PKG_CHECK_MODULES([CHECK], [check >= 0.9.4],
+    [true],  # continue on error
+    AC_MSG_WARN($CHECK_PKG_ERRORS); LACK_CHECK=1)
+fi
+AM_CONDITIONAL(HAVE_TESTS, test x"$enable_tests" = x"yes")
+
 
 AC_ARG_VAR([UPX], [Produce self-decompressing executables (if --enable-upx)])
 AC_ARG_ENABLE([upx],
@@ -202,7 +217,7 @@ fi
 # https://bugs.freedesktop.org/show_bug.cgi?id=47996
 old_CPPFLAGS="$CPPFLAGS"
 CPPFLAGS="$CPPFLAGS $SDL_CFLAGS -I${srcdir}/gnulib/lib -I./gnulib/lib"
-AC_CHECK_HEADERS(SDL.h SDL_rotozoom.h SDL_framerate.h SDL_image.h,
+AC_CHECK_HEADERS(SDL.h SDL2_rotozoom.h SDL_framerate.h SDL_image.h,
   [], AC_MSG_WARN([Could not find necessary SDL libs headers]); LACK_HEADERS=1)
 CPPFLAGS="$old_CPPFLAGS"
 
@@ -215,6 +230,11 @@ warning=0
 if test "$LACK_SDL2" = 1; then
   echo "* You need to install the SDL libraries:"
   echo "$SDL2_PKG_ERRORS"
+  error=1
+fi
+if test "$LACK_CHECK" = 1; then
+  echo "* You need to install the 'check' testing framework:"
+  echo "$CHECK_PKG_ERRORS"
   error=1
 fi
 if test "$USE_NLS" = no; then
@@ -281,5 +301,6 @@ echo "Options summary:"
 echo "* --enable-upx=$enable_upx"
 echo "* --enable-static=$enable_static"
 echo "* --enable-embedded-resources=$enable_embedded_resources"
+echo "* --enable-tests=$enable_tests"
 echo
 echo "Now you can type 'make' to compile $PACKAGE_STRING"
