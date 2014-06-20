@@ -152,7 +152,8 @@ START_TEST(test_ioutil_ciconvert)
   ck_assert( test_ioutil_ciconvert_ext(TESTDIR "/ToTo", TESTDIR "toto"));
 
   /* - absolute path */
-  char* dir = get_current_dir_name();
+  char* dir = malloc(PATH_MAX);
+  getcwd(dir, PATH_MAX);
   char* good_case  = calloc(1, strlen(dir) + 1 + strlen(TESTDIR) + 4 + 1);
   char* wrong_case = calloc(1, strlen(dir) + 1 + strlen(TESTDIR) + 4 + 1);
   strcat(good_case, dir);
@@ -164,6 +165,7 @@ START_TEST(test_ioutil_ciconvert)
   ck_assert( test_ioutil_ciconvert_ext(wrong_case, good_case));
   free(good_case);
   free(wrong_case);
+  free(dir);
 
   /* - access to subsubdirectories using '/' */
   ck_assert( test_ioutil_ciconvert_ext(TESTDIR "SubdIr/toto", TESTDIR "SubDir/toto"));
@@ -350,7 +352,7 @@ Suite* freedink_suite()
   return s;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
   int number_failed;
   Suite *s = freedink_suite();
