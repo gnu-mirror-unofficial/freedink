@@ -446,7 +446,7 @@ cd gettext-runtime/
 # --disable-shared because otherwise it because a real mess
 # (AM_GETTEXT* try to link from .dll.a even with -static, it can't
 # load static iconv from above requiring double compilation, etc.),
-# and I suppose nobody want an external libintl-8.dll.
+# and I suppose nobody wants an external libintl-8.dll.
 CPPFLAGS="-I$PREFIX/include" \
   LDFLAGS="-L$PREFIX/lib" \
   ./configure --build=$BUILD --host=$HOST \
