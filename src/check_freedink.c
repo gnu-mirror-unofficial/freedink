@@ -106,14 +106,17 @@ START_TEST(test_strutil_separate_string)
 END_TEST
 
 
-#define TESTDIR "check_freedink TestDir/"
+#define PREFIX "check_freedink privateprefix/"
+#define TESTDIR PREFIX "subdir1/"
 void test_ioutil_setup() {
+  mkdir(PREFIX, 0300);
   mkdir(TESTDIR, 0777);
-  mkdir(TESTDIR "SubDir", 0777);
+  mkdir(TESTDIR "SubDir2", 0777);
 }
 void test_ioutil_teardown() {
   rmdir(TESTDIR "SubDir");
   rmdir(TESTDIR);
+  rmdir(PREFIX);
 }
 int test_ioutil_ciconvert_ext(const char* wrong_case, const char* good_case)
 {
@@ -131,6 +134,7 @@ int test_ioutil_ciconvert_ext(const char* wrong_case, const char* good_case)
     FILE *f = NULL;
     char *fixed_case = strdup(wrong_case);
     ciconvert(fixed_case);
+    printf("fixed_case=%s\n", fixed_case);
     if ((f = fopen(fixed_case, "r")) != NULL)
       success = 1;
 
@@ -168,10 +172,10 @@ START_TEST(test_ioutil_ciconvert)
   free(dir);
 
   /* - access to subsubdirectories using '/' */
-  ck_assert( test_ioutil_ciconvert_ext(TESTDIR "SubdIr/toto", TESTDIR "SubDir/toto"));
+  ck_assert( test_ioutil_ciconvert_ext(TESTDIR "SubdIr2/toto", TESTDIR "SubDir2/toto"));
 
   /* - access to subsubdirectories using '\' */
-  ck_assert( test_ioutil_ciconvert_ext(TESTDIR "SubdIr\\toto", TESTDIR "SubDir/toto"));
+  ck_assert( test_ioutil_ciconvert_ext(TESTDIR "SubdIr2\\toto", TESTDIR "SubDir2/toto"));
 
   /* - files containing '\' ... works on GNU/Linux but not on Windows,
        not portable, not supported */

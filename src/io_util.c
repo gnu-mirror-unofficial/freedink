@@ -50,6 +50,8 @@
 
 #include "paths.h"
 
+#if defined _WIN32 || defined __WIN32__ || defined __CYGWIN__ || defined __EMX__ || defined __DJGPP__
+#else
 /* Returns a pointer to the end of the current path element (file or
    directory) */
 static char*
@@ -60,6 +62,7 @@ end_of_elt(char *str)
     p++;
   return p;
 }
+#endif
 
 /**
  * Look for filename case-insensitively, to mimic MS Woe's
@@ -138,8 +141,14 @@ ciconvert (char *filename)
 		  strcpy(pcur_elt, entry->d_name);
 		  found = 1;
 		}
-	    }
+		}
 	  closedir (list);
+	}
+      else if (errno == EACCES)
+	{
+	  /* Maybe attempting to read a private prefix dir such as
+	     /data/data on Android, try to use it as-is. */
+	  found = 1;
 	}
       if (!found)
 	error = 1;
