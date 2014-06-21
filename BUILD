@@ -41,13 +41,12 @@ cd freedink/
 #apt-get install gnulib
 
 # autoconf automake: base autotools
-# libtool: for LT_LIB_M autoconf macro
 # pkg-config: for PKG_CHECK_MODULES
 # libsdl1.2-dev: for sdl.m4
 # help2man: to rebuild manpages
 # gettext autopoint: for i18n
 # rsync: to fetch translationproject.org
-apt-get install autoconf automake libtool pkg-config libsdl1.2-dev help2man gettext autopoint rsync
+apt-get install autoconf automake pkg-config libsdl1.2-dev help2man gettext autopoint rsync
 sh bootstrap
 
 

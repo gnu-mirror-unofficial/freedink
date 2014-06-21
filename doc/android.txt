@@ -88,10 +88,11 @@ ln -s /usr/src/SDL2_ttf jni/
 #   System.loadLibrary("SDL2_image");
 # - Edit jni/Application.mk: remove x86 where jpeg-9 doesn't build
 ndk-build -j$(nproc)
-cp -a libs/armeabi/* /usr/src/ndk-standalone-12/sysroot/usr/lib/
+rm libs/armeabi/libmain.so
+for i in libs/armeabi/*; do ln -nfs $(pwd)/$i /usr/src/ndk-standalone-12/sysroot/usr/lib/; done
 mkdir /usr/src/ndk-standalone-12/sysroot/usr/include/SDL2/
-cp -a jni/SDL/include/* /usr/src/ndk-standalone-12/sysroot/usr/include/SDL2/
-cp -a jni/*/SDL*.h /usr/src/ndk-standalone-12/sysroot/usr/include/SDL2/
+cp jni/SDL/include/* /usr/src/ndk-standalone-12/sysroot/usr/include/SDL2/
+cp jni/*/SDL*.h /usr/src/ndk-standalone-12/sysroot/usr/include/SDL2/
 
 cat <<'EOF' > /usr/src/ndk-standalone-12/sysroot/usr/lib/pkgconfig/sdl2.pc
 prefix=/usr/src/ndk-standalone-12/sysroot/usr
@@ -231,6 +232,23 @@ make -j8
 
 # To see dynamic symbols:
 arm-linux-androideabi-objdump -R src/freedink
+# To simulate 'ldd':
+arm-linux-androideabi-objdump -x libs/armeabi/libnative-activity.so | grep NEEDED
+arm-linux-androideabi-readelf -d libs/armeabi/libnative-activity.so | grep NEEDED  # alternatively
+
+cp -a /usr/src/SDL2/android-project android
+
+ant clean
+rm -rf libs/ bin/ gen/
+mkdir -p libs/armeabi/
+cp -a /usr/src/SDL2/build/org.libsdl/libs/armeabi/* libs/armeabi/
+cp -a /usr/src/ndk-standalone-12/sysroot/usr/lib/libm.so libs/armeabi/
+cp -a ../cross-android/src/freedink libs/armeabi/libmain.so
+android update project --name freedink --path . --target "android-12"
+echo '<?xml version="1.0" encoding="utf-8"?><resources><string name="app_name">FreeDink</string></resources>' > res/values/strings.xml
+ant debug
+ant installd
+adb shell am start -a android.intenon.MAIN -n org.libsdl.app/org.libsdl.app.SDLActivity
 
 
 === Guile ===

@@ -11,15 +11,15 @@ LDADD = $(top_builddir)/gnulib/lib/libgnu.a
 
 # relocatable-prog
 AM_CPPFLAGS += -DINSTALLDIR=\"$(bindir)\"
+AM_LDFLAGS =
 if RELOCATABLE_VIA_LD
-AM_LDFLAGS = `$(RELOCATABLE_LDFLAGS) $(bindir)`
+AM_LDFLAGS += `$(RELOCATABLE_LDFLAGS) $(bindir)`
 endif
 
 # gettext:
 AM_CPPFLAGS += -DLOCALEDIR=\"$(localedir)\"
 LDADD += @LIBINTL@
 AM_CPPFLAGS += -I$(top_srcdir)/intl -I$(top_builddir)/intl
-
 
 LIBS += -lm
 
@@ -34,6 +34,14 @@ COMMON_OBJS= app.c app.h bgm.c bgm.h dinkini.c dinkini.h dinkc.c	\
 	freedink_xpm.h paths.c paths.h log.c log.h gfx_sprites.c	\
 	gfx_sprites.h vgasys_fon.c vgasys_fon.h msgbox.c msgbox.h	\
 	i18n.c i18n.h meminfo.c meminfo.h screen.c screen.h
+
+if ANDROID
+# Build .so JNI libs rather than executables
+# Define here rather than configure.ac, otherwise config.h gets confused
+AM_CFLAGS = -fPIC
+AM_LDFLAGS += -shared
+COMMON_OBJS += SDL_android_main.c
+endif
 
 if HAVE_ZZIPLIB
 COMMON_OBJS+=SDL_rwops_zzip.c SDL_rwops_zzip.h

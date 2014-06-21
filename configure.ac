@@ -26,6 +26,7 @@ AC_CONFIG_AUX_DIR(autotools)
 AC_CONFIG_MACRO_DIR(autotools/macros)
 AM_INIT_AUTOMAKE([gnits dist-zip])
 
+
 AC_CONFIG_HEADERS(config.h)
 # Define $host $host_os + distributes config.guess and config.sub
 AC_CANONICAL_HOST
@@ -111,7 +112,6 @@ if test x"$enable_upx" = x"yes"; then
 fi
 AM_CONDITIONAL(HAVE_UPX, test "$UPX" != "")
 
-
 # Dynamic and static builds
 AC_ARG_ENABLE([static],
   AS_HELP_STRING([--enable-static],[embed SDL and dependencies in the executable (default is disabled)]),
@@ -135,8 +135,8 @@ if test x"$enable_static" = x"yes"; then
     # *nix
     *)
         # The linker doesn't find dependent libs when using .a libs
-        LT_LIB_M()
-        LIBS="$LIBM -ldl $LIBS"
+        #LIBS="$LIBM -ldl $LIBS"
+        LIBS="-ldl $LIBS"
         # Strip secondary dependencies added by e.g. fontconfig->libfreetype
         #LDFLAGS="$LDFLAGS -Wl,--as-needed"
         # Actually having freetype is handy, no need to add it for SDL_ttf.
