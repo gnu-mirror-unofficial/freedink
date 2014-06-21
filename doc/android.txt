@@ -257,13 +257,10 @@ ant clean
 rm -rf libs/ bin/ gen/
 mkdir -p libs/armeabi/
 cp -a /usr/src/SDL2/build/org.libsdl/libs/armeabi/* libs/armeabi/
-cp -a /usr/src/ndk-standalone-12/sysroot/usr/lib/libm.so libs/armeabi/
 cp -a ../cross-android/src/freedink libs/armeabi/libmain.so
 android update project --name freedink --path . --target "android-12"
 echo '<?xml version="1.0" encoding="utf-8"?><resources><string name="app_name">FreeDink</string></resources>' > res/values/strings.xml
-ant debug
-ant installd
-adb shell am start -a android.intenon.MAIN -n org.libsdl.app/org.libsdl.app.SDLActivity
+./redeploy.sh
 
 adb push dink.tar.gz /data/data/org.freedink/files/share/dink/
 chown -R u0_aXX: files /data/data/org.freedink/files
