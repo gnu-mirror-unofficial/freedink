@@ -36,11 +36,12 @@ COMMON_OBJS= app.c app.h bgm.c bgm.h dinkini.c dinkini.h dinkc.c	\
 	i18n.c i18n.h meminfo.c meminfo.h screen.c screen.h
 
 if ANDROID
-# Build .so JNI libs rather than executables
-# Define here rather than configure.ac, otherwise config.h gets confused
-AM_CFLAGS = -fPIC
-AM_LDFLAGS += -shared
-COMMON_OBJS += SDL_android_main.c
+  # Build .so JNI libs rather than executables
+  # Define here rather than configure.ac, otherwise config.h gets confused
+  AM_CFLAGS = -fPIC
+  AM_LDFLAGS += -shared
+  LIBS += -llog
+  COMMON_OBJS += SDL_android_main.c
 endif
 
 if HAVE_ZZIPLIB

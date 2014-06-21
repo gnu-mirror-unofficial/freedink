@@ -110,6 +110,7 @@ void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
     /* BinReloc always return a newly allocated string, with either the
        built directory, or a copy of its argument */
     datadir = datadir_binreloc;
+    //datadir = strdup(DEFAULT_DATA_DIR); // disable binary-relocatable under Android
   }
   
   /** pkgdatadir (e.g. ".local/share/freedink") **/

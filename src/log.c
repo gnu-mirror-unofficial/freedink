@@ -40,6 +40,9 @@ char last_debug[200];
 int debug_mode = 0;
 static enum log_priority cur_priority  = LOG_PRIORITY_ERROR;
 static enum log_priority orig_priority = LOG_PRIORITY_ERROR;
+/* Uncomment if you're debugging a (very) early error in FreeDink */
+/* log_priority cur_priority  = LOG_PRIORITY_DEBUG; */
+/* log_priority orig_priority = LOG_PRIORITY_DEBUG; */
 FILE* out = NULL;
 
 char* priority_names[LOG_PRIORITY_OFF] = {
@@ -83,6 +86,9 @@ void log_set_priority(enum log_priority priority)
     cur_priority = priority;
 }
 
+#ifdef __ANDROID__
+#include <android/log.h>
+#endif
 void log_output(enum log_priority priority, char *fmt, ...)
 {
   if (priority < cur_priority
@@ -119,6 +125,10 @@ void log_output(enum log_priority priority, char *fmt, ...)
   fputs(priority_names[priority], stdout);
   fputs(buf, stdout);
   putchar('\n');
+
+#ifdef __ANDROID__
+  __android_log_print(ANDROID_LOG_INFO, "FreeDink", buf);
+#endif
 
   free(buf);
 }

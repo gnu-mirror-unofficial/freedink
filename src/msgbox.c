@@ -41,6 +41,7 @@
 #endif
 
 #include "SDL.h"
+#include "log.h"
 
 /**
  * Emergency message box for when even SDL_ShowSimpleMessageBox fails
@@ -106,6 +107,8 @@ void msgbox(char* fmt, ...)
   /* Display a SDL message box if possible, otherwise fall back to a
      system message box */
   fprintf(stderr, "%s\n", buf);
+  log_error(buf);
+
   SDL_Quit();
   if (SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, PACKAGE_STRING, buf, NULL) < 0)
     msgbox_os(buf);

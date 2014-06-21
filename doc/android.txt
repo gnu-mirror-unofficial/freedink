@@ -1,3 +1,17 @@
+== Paths ==
+
+The initial process is '/system/bin/app_process'.
+This means path detection doesn't work.
+
+The application is stored in /data/app/xxx.apk.
+AFAICT it's not extracted anywhere, so we need to open it with libzip to extract files.
+
+The application data is in /data/data/org.freedink/{lib,files,cache}/
+It can be used to stored additional files.
+
+Last we can use the external storage.
+
+
 == SDL2 ==
 
 Official documentation is in SDL2/README-android.txt
@@ -226,7 +240,8 @@ make -j($nproc)
 PATH=/usr/src/ndk-standalone-12/bin:$PATH
 mkdir cross-android/
 cd cross-android/
-../configure --host=arm-linux-androideabi --prefix=/freedink \
+../configure --host=arm-linux-androideabi \
+  --prefix=/data/data/org.freedink/files \
   --disable-embedded-resources --disable-tests
 make -j8
 
@@ -249,6 +264,9 @@ echo '<?xml version="1.0" encoding="utf-8"?><resources><string name="app_name">F
 ant debug
 ant installd
 adb shell am start -a android.intenon.MAIN -n org.libsdl.app/org.libsdl.app.SDLActivity
+
+adb push dink.tar.gz /data/data/org.freedink/files/share/dink/
+chown -R u0_aXX: files /data/data/org.freedink/files
 
 
 === Guile ===
