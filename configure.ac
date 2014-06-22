@@ -44,6 +44,7 @@ CFLAGS="$CFLAGS -Wall -std=c99"
 
 
 # Gnulib - configuration in gnulib/m4/gnulib-cache.m4
+# Gnulib prefix detected from Makefile.am:ACLOCAL_AMFLAGS
 gl_EARLY
 
 AM_CONDITIONAL(PSP, test "$host" == "mipsallegrexel-psp-elf")
