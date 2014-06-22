@@ -85,10 +85,18 @@ void input_init(void)
   // It also keeps the mouse within the window in software mode.
   SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_WARP, "1");
 
+#ifndef __ANDROID__
   int ret = SDL_SetRelativeMouseMode(SDL_TRUE);
   if (ret == -1)
     log_error("Relative mouse positionning not supported on this platform.");
   /* TODO SDL2: free mouse when the game is not using it */
+#else
+  /* Skip emulated mouse events from touchscreens which don't work
+     well in relative mode.  Filtering by ev->motion.which ==
+     SDL_TOUCH_MOUSEID would still break RelativeMouseMode. */
+  SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
+  /* SDL_EventState(SDL_MOUSEBUTTONDOWN, SDL_IGNORE); */
+#endif
 
   /* We'll handle those events manually */
   SDL_EventState(SDL_USEREVENT, SDL_IGNORE);
@@ -99,7 +107,7 @@ void input_init(void)
   SDL_EventState(SDL_TEXTINPUT, SDL_IGNORE);
   /* We still process through a SDL_PollEvent() loop: */
   /* - SDL_QUIT: quit on window close and Ctrl+C */
-  /* - SDL_MOUSEMOTION: easier for SDL_SetRelativeMouseMode() */
+  /* - SDL_MOUSEMOTION: required for SDL_SetRelativeMouseMode() */
   /* - SDL_MOUSEBUTTONDOWN: don't miss quick clicks */
   /* - SDL_KEYUP/SDL_KEYDOWN: process by event instead of querying the
        full keyboard state, so we can easily ignore some events
