@@ -65,9 +65,22 @@ static char* dmodname = NULL;
 static char* userappdir = NULL;
 static char* exefile = NULL;
 
+#ifdef __ANDROID__
+#include <unistd.h> /* chdir */
+#include <errno.h>
+#include "SDL.h"
+#endif
 
 void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
 {
+  /* Start in /data/data/org.freedink/files/ to ease locating resources */
+#ifdef __ANDROID__
+  if (chdir(SDL_AndroidGetInternalStoragePath()) < 0)
+    log_error("Could not chdir to '%s': %s'",
+	      SDL_AndroidGetInternalStoragePath(),
+	      strerror(errno));
+#endif
+
   char *datadir = NULL;
   char *refdir = NULL;
 
