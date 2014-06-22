@@ -734,8 +734,12 @@ int InitSound()
 
   /* Work-around to disable fluidsynth and fallback to TiMidity++: */
   /* TODO: allow user to set it at run-time */
-  /* SDL_putenv("SDL_SOUNDFONTS="); */
-  /* SDL_putenv("SDL_FORCE_SOUNDFONTS=1"); */
+  /* SDL_setenv("SDL_SOUNDFONTS="); */
+  /* SDL_setenv("SDL_FORCE_SOUNDFONTS=1"); */
+
+  /* To specify an alternate timidity.cfg */
+  /* Cf. SDL2_mixer/timidity/config.h for defaults */
+  /* SDL_setenv("TIMIDITY_CFG", "somewhere/timidity.cfg", 0); */
 
   /* MIX_DEFAULT_FREQUENCY is ~22kHz are considered a good default,
      44kHz is considered too CPU-intensive on older computers */
