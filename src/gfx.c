@@ -24,7 +24,6 @@
 #include <config.h>
 #endif
 
-#include <stdlib.h> /* putenv */
 #include <string.h>
 #include <math.h>
 
