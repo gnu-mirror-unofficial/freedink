@@ -41,8 +41,8 @@ int debug_mode = 0;
 static enum log_priority cur_priority  = LOG_PRIORITY_ERROR;
 static enum log_priority orig_priority = LOG_PRIORITY_ERROR;
 /* Uncomment if you're debugging a (very) early error in FreeDink */
-/* log_priority cur_priority  = LOG_PRIORITY_DEBUG; */
-/* log_priority orig_priority = LOG_PRIORITY_DEBUG; */
+/* static enum log_priority cur_priority  = LOG_PRIORITY_DEBUG; */
+/* static enum log_priority orig_priority = LOG_PRIORITY_DEBUG; */
 FILE* out = NULL;
 
 char* priority_names[LOG_PRIORITY_OFF] = {

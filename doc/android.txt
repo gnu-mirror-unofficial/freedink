@@ -82,34 +82,29 @@ cd /usr/src/SDL2/
 cd build-scripts/
 ./androidbuild.sh org.libsdl /dev/null
 cd ../build/org.libsdl/
-cp -a libs/armeabi-v7a/libSDL2.so /usr/src/ndk-standalone-12/sysroot/usr/lib
+cp -a libs/armeabi-v7a/libSDL2.so /usr/src/ndk-standalone-12-arm/sysroot/usr/lib
 
 # SDL + SDL_*
 cd /usr/src/SDL2/
 cd build-scripts/
 ./androidbuild.sh org.libsdl /dev/null
 cd ../build/org.libsdl/
+rm -rf jni/src/
 ln -s /usr/src/SDL2_image jni/
 ln -s /usr/src/SDL2_image/external/libwebp-0.3.0 jni/webp
 ln -s /usr/src/SDL2_mixer jni/
 ln -s /usr/src/SDL2_mixer/external/libmikmod-3.1.12 jni/libmikmod
-ln -s /usr/src/SDL2_mixer/external/smpeg2-2.0.0 jni/smpeg2
+#ln -s /usr/src/SDL2_mixer/external/smpeg2-2.0.0 jni/smpeg2
 ln -s /usr/src/SDL2_ttf jni/
-# - Edit jni/src/Android.mk
-#   LOCAL_SHARED_LIBRARIES := ... SDL2_image SDL2_mixer SDL2_ttf
-# - Optionnaly edit jni/SDL2_mixer/Android.mk to disable some formats
-# - Edit android-project/src/org/libsdl/app/SDLActivity.java:
-#   System.loadLibrary("SDL2_image");
-# - Edit jni/Application.mk: remove x86 where jpeg-9 doesn't build
+(echo "SUPPORT_MP3_SMPEG := false"; cat jni/Android.mk) | sponge jni/Android.mk
 ndk-build -j$(nproc)
-rm libs/armeabi/libmain.so
-for i in libs/armeabi/*; do ln -nfs $(pwd)/$i /usr/src/ndk-standalone-12/sysroot/usr/lib/; done
-mkdir /usr/src/ndk-standalone-12/sysroot/usr/include/SDL2/
-cp jni/SDL/include/* /usr/src/ndk-standalone-12/sysroot/usr/include/SDL2/
-cp jni/*/SDL*.h /usr/src/ndk-standalone-12/sysroot/usr/include/SDL2/
+for i in libs/armeabi/*; do ln -nfs $(pwd)/$i /usr/src/ndk-standalone-12-arm/sysroot/usr/lib/; done
+mkdir /usr/src/ndk-standalone-12-arm/sysroot/usr/include/SDL2/
+cp jni/SDL/include/* /usr/src/ndk-standalone-12-arm/sysroot/usr/include/SDL2/
+cp jni/*/SDL*.h /usr/src/ndk-standalone-12-arm/sysroot/usr/include/SDL2/
 
-cat <<'EOF' > /usr/src/ndk-standalone-12/sysroot/usr/lib/pkgconfig/sdl2.pc
-prefix=/usr/src/ndk-standalone-12/sysroot/usr
+cat <<'EOF' > /usr/src/ndk-standalone-12-arm/sysroot/usr/lib/pkgconfig/sdl2.pc
+prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
@@ -122,8 +117,8 @@ Libs: -lSDL2
 Cflags: -I${includedir}/SDL2   -D_REENTRANT
 EOF
 
-cat <<'EOF' > /usr/src/ndk-standalone-12/sysroot/usr/lib/pkgconfig/SDL2_image.pc
-prefix=/usr/src/ndk-standalone-12/sysroot/usr
+cat <<'EOF' > /usr/src/ndk-standalone-12-arm/sysroot/usr/lib/pkgconfig/SDL2_image.pc
+prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
@@ -135,8 +130,8 @@ Libs: -L${libdir} -lSDL2_image
 Cflags: -I${includedir}/SDL2
 EOF
 
-cat <<'EOF' > /usr/src/ndk-standalone-12/sysroot/usr/lib/pkgconfig/SDL2_mixer.pc
-prefix=/usr/src/ndk-standalone-12/sysroot/usr
+cat <<'EOF' > /usr/src/ndk-standalone-12-arm/sysroot/usr/lib/pkgconfig/SDL2_mixer.pc
+prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
@@ -148,8 +143,8 @@ Libs: -L${libdir} -lSDL2_mixer
 Cflags: -I${includedir}/SDL2
 EOF
 
-cat <<'EOF' > /usr/src/ndk-standalone-12/sysroot/usr/lib/pkgconfig/SDL2_ttf.pc
-prefix=/usr/src/ndk-standalone-12/sysroot/usr
+cat <<'EOF' > /usr/src/ndk-standalone-12-arm/sysroot/usr/lib/pkgconfig/SDL2_ttf.pc
+prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
@@ -168,7 +163,7 @@ tar xf SDL2_gfx-$VERSION.tar.gz
 mv SDL2_gfx-$VERSION/ SDL2_gfx/
 cd SDL2_gfx/
 mkdir cross-android/ && cd cross-android/
-../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12/sysroot/usr \
+../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
   --disable-shared --disable-mmx
 make -j$(nproc)
 make install
@@ -182,11 +177,11 @@ $WGET http://rabbit.dereferenced.org/~nenolod/distfiles/pkgconf-$VERSION.tar.gz
 tar xf pkgconf-$VERSION.tar.gz
 cd pkgconf-$VERSION
 mkdir cross-android/ && cd cross-android/
-../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12/sysroot/usr
+../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr
 make -j$(nproc)
 make install
-ln -s ../sysroot/usr/bin/pkgconf /usr/src/ndk-standalone-12/bin/arm-linux-androideabi-pkg-config
-mkdir /usr/src/ndk-standalone-12/sysroot/usr/lib/pkgconfig/
+ln -s ../sysroot/usr/bin/pkgconf /usr/src/ndk-standalone-12-arm/bin/arm-linux-androideabi-pkg-config
+mkdir /usr/src/ndk-standalone-12-arm/sysroot/usr/lib/pkgconfig/
 
 
 === iconv ===
@@ -196,9 +191,9 @@ $WGET http://ftp.gnu.org/pub/gnu/libiconv/libiconv-$VERSION.tar.gz
 tar xf libiconv-$VERSION.tar.gz
 cd libiconv-$VERSION/
 mkdir cross-android/ && cd cross-android/
-cp -a /usr/share/misc/config.{guess,sub} ../build-aux/
-cp -a /usr/share/misc/config.{guess,sub} ../libcharset/build-aux/
-../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12/sysroot/usr \
+\cp -a /usr/share/misc/config.{guess,sub} ../build-aux/
+\cp -a /usr/share/misc/config.{guess,sub} ../libcharset/build-aux/
+../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
   --disable-shared
 make -j$(nproc)
 make install
@@ -212,7 +207,7 @@ tar xf gettext-$VERSION.tar.gz
 cd gettext-$VERSION/
 cd gettext-runtime/
 mkdir cross-android/ && cd cross-android/
-../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12/sysroot/usr \
+../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
   --disable-shared
 make -j$(nproc)
 make install
@@ -225,7 +220,7 @@ $WGET http://downloads.sourceforge.net/project/check/check/0.9.13/check-0.9.13.t
 tar xf check-$VERSION.tar.gz
 cd check-$VERSION/
 mkdir cross-android/ && cd cross-android/
-../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12/sysroot/usr
+../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr
 make -j($nproc)
 =>
 ../../lib/snprintf.c:526:1: warning: function declaration isn't a prototype [-Wstrict-prototypes]
@@ -237,7 +232,7 @@ make -j($nproc)
 
 /usr/src/android-ndk-r9d/build/tools/make-standalone-toolchain.sh \
   --platform=android-12 --install-dir=/usr/src/ndk-standalone-12
-PATH=/usr/src/ndk-standalone-12/bin:$PATH
+PATH=/usr/src/ndk-standalone-12-arm/bin:$PATH
 mkdir cross-android/
 cd cross-android/
 ../configure --host=arm-linux-androideabi \
@@ -263,6 +258,14 @@ echo '<?xml version="1.0" encoding="utf-8"?><resources><string name="app_name">F
 ./redeploy.sh
 
 adb push dink.tar.gz /data/data/org.freedink/files/share/dink/
+
+cp -a /usr/share/midi/freepats .
+cp -a /etc/timidity/freepats.cfg timidity.cfg
+sed -i -e 's,/usr/share/midi/,,' timidity.cfg
+tar czf timidity.tar.gz freepats/ timidity.cfg
+rm -rf freepats/ timidity.cfg
+adb push timidity.tar.gz /data/data/org.freedink/files/
+
 chown -R u0_aXX: files /data/data/org.freedink/files
 
 
@@ -270,17 +273,18 @@ chown -R u0_aXX: files /data/data/org.freedink/files
 
 /usr/src/android-ndk-r9d/build/tools/make-standalone-toolchain.sh \
   --platform=android-12 --install-dir=/usr/src/ndk-standalone-12
-PATH=/usr/src/ndk-standalone-12/bin:$PATH
+PATH=/usr/src/ndk-standalone-12-arm/bin:$PATH
 
 aptitude install lzip
 WGET=wget
 
 VERSION=2.4.2
-$WGET http://ftp.igh.cnrs.fr/pub/gnu/libtool/libtool-$VERSION.tar.xz
+$WGET http://ftp.gnu.org/pub/gnu/libtool/libtool-$VERSION.tar.xz
 tar xf libtool-$VERSION.tar.xz
 cd libtool-$VERSION/
 mkdir cross-android/ && cd cross-android/
-../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12/sysroot/usr
+../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
+  --disable-shared
 make -j$(nproc)
 make install
 
@@ -290,7 +294,8 @@ $WGET https://gmplib.org/download/gmp/gmp-$VERSION.tar.lz
 tar xf gmp-$VERSION.tar.lz
 cd gmp-$VERSIONDIR/
 mkdir cross-android/ && cd cross-android/
-../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12/sysroot/usr
+../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
+  --disable-shared
 make -j$(nproc)
 make install
 
@@ -298,23 +303,47 @@ VERSION=0.9.3
 $WGET http://ftp.gnu.org/gnu/libunistring/libunistring-0.9.3.tar.gz
 tar xf libunistring-$VERSION.tar.gz
 mkdir cross-android/ && cd cross-android/
-cp -a /usr/share/misc/config.{guess,sub} ../build-aux/
-../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12/sysroot/usr
+\cp -a /usr/share/misc/config.{guess,sub} ../build-aux/
+../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
+  --disable-shared
 make -j$(nproc)
 make install
 
-VERSION=7.2f
-VERSIONDIR=7.2
+VERSION=3.1
+$WGET ftp://sourceware.org/pub/libffi/libffi-$VERSION.tar.gz
+tar xf libffi-$VERSION.tar.gz
+cd libffi-$VERSION/
+mkdir cross-android/ && cd cross-android/
+../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
+  --disable-shared
+make -j$(nproc)
+make install
+
+
+VERSION=7.4.2
+$WGET http://www.ivmaisoft.com/_bin/atomic_ops/libatomic_ops-$VERSION.tar.gz
+tar xf libatomic_ops-$VERSION.tar.gz
+cd libatomic_ops-$VERSION/
+mkdir cross-android/ && cd cross-android/
+../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
+  --disable-shared
+make -j$(nproc)
+make install
+cd ../..
 $WGET http://www.hboehm.info/gc/gc_source/gc-$VERSION.tar.gz
 tar xf gc-$VERSION.tar.gz
-cd gc-$VERSIONDIR/
+cd gc-$VERSION/
 mkdir cross-android/ && cd cross-android/
-=> build failure due to Android's pthread
+../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
+  --disable-shared
+make -j$(nproc)
+make install
 
 
 cd guile/cross-android/
 git checkout stable-2.0
 mkdir cross-android/ && cd cross-android/
-../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12/sysroot/usr
+../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
+  --disable-shared
 make -j$(nproc)
-=> depends on libgc
+=> build failure due to Android's pthread_cancel
