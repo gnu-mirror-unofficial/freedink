@@ -22,8 +22,7 @@
 AC_PREREQ(2.61)
 AC_INIT([GNU FreeDink],[109.0],[bug-freedink@gnu.org])
 AC_CONFIG_AUX_DIR(autotools)
-# For future version of aclocal:
-AC_CONFIG_MACRO_DIR(autotools/macros)
+AC_CONFIG_MACRO_DIR(autotools/m4)
 AM_INIT_AUTOMAKE([gnits dist-zip])
 
 

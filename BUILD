@@ -47,11 +47,10 @@ cd freedink/
 
 # autoconf automake: base autotools
 # pkg-config: for PKG_CHECK_MODULES
-# libsdl1.2-dev: for sdl.m4
 # help2man: to rebuild manpages
 # gettext autopoint: for i18n
 # rsync: to fetch translationproject.org
-apt-get install autoconf automake pkg-config libsdl1.2-dev help2man gettext autopoint rsync
+apt-get install autoconf automake pkg-config help2man gettext autopoint rsync
 sh bootstrap
 
 
@@ -104,11 +103,10 @@ cd freedink/
 
 # autoconf automake: base autotools
 # pkg-config: for PKG_CHECK_MODULES
-# SDL_devel: for sdl.m4
 # help2man: to rebuild manpages
 # gettext autpoint: for i18n
 # rsync: to fetch translationproject.org
-yum install autoconf automake pkg-config SDL_devel help2man gettext-devel rsync
+yum install autoconf automake pkg-config help2man gettext-devel rsync
 sh bootstrap
 
 
@@ -166,7 +164,6 @@ cd freedink
 
 # I assume you already have autoconf & al. ;)
 
-emerge libsdl # for sdl.m4
 emerge help2man # to rebuild manpages
 emerge pkgconfig # for PKG_CHECK_MODULES
 sh bootstrap
@@ -221,7 +218,6 @@ cd freedink
 # Install development tools (autoconf automake gcc m4 make pkgconfig)
 pacman -S base-devel 
 
-pacman -S sdl # for sdl.m4
 pacman -S help2man # to rebuild manpages
 pacman -S gettext # for i18n
 sh bootstrap
@@ -272,11 +268,10 @@ cd freedink/
 
 # autoconf automake: base autotools
 # pkgconf: for PKG_CHECK_MODULES
-# libsdl1.2-dev: for sdl.m4
 # help2man: to rebuild manpages
 # gettext autopoint: for i18n
 # rsync: to fetch translationproject.org
-pkg install -y autoconf automake pkgconf sdl help2man gettext rsync
+pkg install -y autoconf automake pkgconf help2man gettext rsync
 sh bootstrap
 
 

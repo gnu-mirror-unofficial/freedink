@@ -1,4 +1,4 @@
-autotools
+autotools/
 Makefile.in
 Makefile
 INSTALL
@@ -19,28 +19,17 @@ stamp-h1
 *.o
 *.a
 *~
-# Autopackage
-freedink.xml
-freedink.xml.old
-*.package
-*.package.meta
-# my build dirs:
-cross
-cross-psp
-cross-woe
+# build dirs:
+cross-*
 native
-# links to dinkdir for testing
-dink
 # NCC
 *.nccout
 .tmp.c
 # gettext
 ABOUT-NLS
-intl/
 # gnulib
 gnulib/po
-gnulib/lib/*.h
-gnulib/lib/sys/
+gnulib/lib
 # emacs
 TAGS
 # gprof

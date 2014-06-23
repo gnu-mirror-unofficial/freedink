@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = gnits
-# Gnulib:
-ACLOCAL_AMFLAGS = -I gnulib/m4
+# Gnulib + other macros (keep on a single line)
+ACLOCAL_AMFLAGS = -I gnulib/m4  -I autotools/m4
 
 SUBDIRS = gnulib/lib gnulib/po nsis po src share
 
