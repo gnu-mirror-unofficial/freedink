@@ -25,6 +25,7 @@
 #endif
 #include <stdlib.h>
 #include <string.h> /* strdup */
+#include <unistd.h> /* getcwd */
 #include <errno.h>
 #include "canonicalize.h" /* canonicalize_file_name */
 
