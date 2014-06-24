@@ -60,7 +60,7 @@ void log_debug_on()
   debug_mode = 1;
   orig_priority = cur_priority;
   log_set_priority(LOG_PRIORITY_DEBUG);
-  out = paths_dmodfile_fopen("DEBUG.TXT", "ab");
+  out = paths_dmodfile_fopen("DEBUG.TXT", "a");
   /* out might be NULL, e.g. permissions problem */
   if (out != NULL)
     {
