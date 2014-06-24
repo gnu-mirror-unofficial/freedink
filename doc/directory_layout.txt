@@ -57,6 +57,7 @@ FreeDink (all platforms)
 Layout:
 /usr/bin/freedink
 /usr/share/freedink/LiberationSans-Regular.ttf
+/usr/share/locale/fr/LC_MESSAGES/freedink.mo
 /usr/share/dink/dink/Map.dat
 /usr/share/dink/dink/Graphics/
 /usr/share/dink/dink/Story/
@@ -64,16 +65,22 @@ Layout:
 /usr/share/dink/dink/Tiles/
 /usr/share/dink/island/Story/
 /usr/share/dink/island/Tiles/
+/usr/share/dink/island/l10n/XX/LC_MESSAGES/island.mo
+/usr/share/dink/island/l10n/XX/Tiles/cave.bmp
+
+Woe: chdir to exedir (GetModuleFileName)
+Android: chdir to /storage/sdcard0/Android/data/org.freedink/files/
+
+Woe || Android: pkgdatadir = ./freedink
+else: pkgdatadir = /usr/share/freedink
 
 Determined once on startup:
-datadir = $exedir/../share/ # binreloc
-	|| $default_data_dir/freedink/ # binreloc failed
-pkgdatadir = $datadir/freedink
 refdir = -refdir # error if !-d
 	|| ./
-	|| $exedir
 	|| $datadir/dink
+	|| /usr/local/share/games/dink
 	|| /usr/local/share/dink
+	|| /usr/share/games/dink
 	|| /usr/share/dink
 	(test: -d $refdir/dink/Graphics -a -d $refdir/dink/Tiles)
 DMod = -game
@@ -85,12 +92,9 @@ Checked each time (search path):
 Resources (LiberationSans-Regular.ttf, vgasys.fon, stop.wav, jump.wav)
   =  embedded resource
   || $pkgdatadir
-  || $default_data_dir/freedink # in case /proc/cmdline is wrong (e.g. LiveCD with COW)
 Font = DMod
-     || C:\Windows\Fonts\ || (? /usr/share/fonts/truetype/**/*.ttf)
-.ini = ~/.dink/dinksmallwood.ini || Registry
-     || $binreloc/etc/dinksmallwood.ini
-     || /etc/dinksmallwood.ini .ini || C:\GetWindowsDirectory()\dinksmallwood.ini
+     || fontconfig
+.ini = C:\GetWindowsDirectory()\dinksmallwood.ini
 Write saved games => ~/.dink/basename($game)/savegame%d.dat # if -e
       	    	  || DMod/savegame%d.dat
       	    	  FALLBACK ~/.dink/basename($game)/save%d.dat
@@ -124,15 +128,7 @@ Icon => /usr/share/freedink/
 DMod => /mnt/woe/Program\ Files/Dink\ Smallwood/island/ # == ./island/
 DMod => /usr/share/dink/island/
 Dink => /mnt/woe/Program\ Files/Dink\ Smallwood/dink/ # == ./dink/
-Dink => /usr/share/freedink/
-Icon => <freedink>
-Icon => /usr/share/freedink/
-
-$ /mnt/woe/Program\ Files/Dink\ Smallwood/freedink -game island
-DMod => /mnt/woe/Program\ Files/Dink\ Smallwood/island/ # == $exedir/island/
-DMod => /usr/share/dink/island/
-Dink => /mnt/woe/Program\ Files/Dink\ Smallwood/dink/ # == $exedir/dink/
-Dink => /usr/share/freedink/
+Dink => /usr/share/dink/dink/
 Icon => <freedink>
 Icon => /usr/share/freedink/
 
@@ -146,11 +142,11 @@ Icon => /usr/share/freedink/
 ~/freedink$ ./configure && make
 ~/freedink$ src/freedink -game island
 DMod => ~/freedink/island
-DMod => ~/freedink/share/dink/island/
+DMod => /usr/share/dink/island/
 Dink => ~/freedink/dink/
-Dink => ~/freedink/share/dink/dink/
+Dink => /usr/share/dink/dink/
 Icon => <src/freedink>
-Icon => ~/freedink/share/freedink/island/
+Icon => /usr/share/freedink/
 
 ~/freedink$ mkdir native && cd native/
 ~/freedink/native$ ../configure && make

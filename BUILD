@@ -116,10 +116,8 @@ sh bootstrap
 yum groupinstall 'Development Tools'
 # or just:
 #yum install make gcc
-# Required: SDL, libzip | zziplib
-# No libzip package yet AFAIK
 yum install SDL-devel SDL_gfx-devel SDL_ttf-devel SDL_image-devel \
-  SDL_mixer-devel fontconfig-devel zziplib-devel zip
+  SDL_mixer-devel fontconfig-devel
 # Optional:
 # - upx compresses binary
 # - bzip is for .tar.bz2 release tarballs
@@ -171,11 +169,8 @@ sh bootstrap
 
 ## Dependencies
 # I also assume you already have GCC and Make ;)
-# Required: SDL, libzip | zziplib
-# Note: as of 2007-12-23 libzip's ebuild is in progress:
-# http://bugs.gentoo.org/show_bug.cgi?id=120244
 emerge libsdl # (if not already done in bootstrap step)
-emerge sdl-gfx sdl-ttf sdl-image sdl-mixer fontconfig zziplib zip
+emerge sdl-gfx sdl-ttf sdl-image sdl-mixer fontconfig
 # Optional:
 # - upx compresses binary
 # - bzip is for .tar.bz2 release tarballs (included in base Gentoo)
@@ -225,11 +220,8 @@ sh bootstrap
 
 ## Dependencies
 # I also assume you already have GCC and Make ;)
-# Required: SDL, libzip | zziplib
-# Note: as of 2007-12-23 libzip's ebuild is in progress:
-# http://bugs.gentoo.org/show_bug.cgi?id=120244
 pacman -S sdl # (if not already done in bootstrap step)
-pacman -S sdl_gfx sdl_ttf sdl_image sdl_mixer fontconfig libzip zip
+pacman -S sdl_gfx sdl_ttf sdl_image sdl_mixer fontconfig
 # Optional:
 # - upx compresses binary
 # - bzip is for .tar.bz2 release tarballs (included in base Gentoo)
@@ -277,8 +269,7 @@ sh bootstrap
 
 ## Dependencies
 # I assume you already have GCC and Make ;)
-# Required: SDL, libzip | zziplib
-pkg install -y sdl sdl_gfx sdl_ttf sdl_image sdl_mixer fontconfig libzip zip
+pkg install -y sdl sdl_gfx sdl_ttf sdl_image sdl_mixer fontconfig
 # Optional:
 # - upx compresses binary
 # - bzip is for .tar.bz2 release tarballs (included in base FreeBSD)

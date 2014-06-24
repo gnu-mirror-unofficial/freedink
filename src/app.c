@@ -39,8 +39,6 @@
 #include "SDL_image.h"
 #include "SDL_ttf.h"
 #include "SDL2_framerate.h"
-#include "binreloc.h"
-#include "progname.h"
 #include "game_engine.h"
 #include "dinkini.h"
 #include "dinkvar.h"

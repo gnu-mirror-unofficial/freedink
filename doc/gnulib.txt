@@ -17,9 +17,6 @@ Initial import:
 Then follow the manual and instructions from gnulib-tool (changes are
 scattered among the autotools build system files).
 
-We use the getopt module (for getopt_long()) and the relocatable-prog
-(get_full_program_name() and relocate()).
-
 
 To refresh Gnulib, just:
 /usr/src/gnulib/gnulib-tool --update

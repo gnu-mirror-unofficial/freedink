@@ -24,12 +24,14 @@
 #include <config.h>
 #endif
 #include <stdlib.h>
+#include <string.h> /* strdup */
+#include <errno.h>
+#include "canonicalize.h" /* canonicalize_file_name */
 
 #include "io_util.h"
 #include "paths.h"
 #include "msgbox.h"
 #include "log.h"
-
 
 #if defined _WIN32 || defined __WIN32__ || defined __CYGWIN__
 #define WIN32_LEAN_AND_MEAN
@@ -37,13 +39,6 @@
 #include <windows.h>
 #include <shlobj.h>
 #endif
-
-#include "relocatable.h"
-#include "progname.h"
-#include "binreloc.h"
-
-#include <string.h> /* strdup */
-#include "canonicalize.h" /* canonicalize_file_name */
 
 /* basename */
 #include <libgen.h>
@@ -55,126 +50,158 @@
 
 #include "str_util.h" /* asprintf_append */
 
-
-static char* defaultpkgdatadir = NULL;
-static char* pkgdatadir = NULL;
-static char* exedir = NULL;
-static char* fallbackdir = NULL;
-static char* dmoddir = NULL;
-static char* dmodname = NULL;
-static char* userappdir = NULL;
-static char* exefile = NULL;
-
 #ifdef __ANDROID__
 #include <unistd.h> /* chdir */
 #include <errno.h>
 #include "SDL.h"
 #endif
 
+/* Pleases gnulib's error module */
+char* program_name = PACKAGE;
+
+static char* pkgdatadir = NULL;
+static char* fallbackdir = NULL;
+static char* dmoddir = NULL;
+static char* dmodname = NULL;
+static char* userappdir = NULL;
+
+#if defined _WIN32 || defined __WIN32__ || defined __CYGWIN__
+const char *paths_getexedir(void)
+{
+  static char exe_path[MAX_PATH];
+  GetModuleFileName(NULL, exe_path, MAX_PATH);
+  return dirname(exe_path);
+}
+#endif
+
+/**
+ * getcwd without size restriction
+ * aka get_current_dir_name(3)
+ */
+char* paths_getcwd()
+{
+  char* cwd = NULL;
+  int cwd_size = PATH_MAX;
+  do {
+    cwd = realloc(cwd, cwd_size);
+    getcwd(cwd, cwd_size);
+    cwd_size *= 2;
+  } while (errno == ERANGE);
+  return cwd;
+}
+
+static char * br_strcat (const char *str1, const char *str2)
+{
+  char *result;
+  size_t len1, len2;
+  
+  if (str1 == NULL)
+    str1 = "";
+  if (str2 == NULL)
+    str2 = "";
+  
+  len1 = strlen (str1);
+  len2 = strlen (str2);
+  
+  result = (char *) malloc (len1 + len2 + 1);
+  memcpy (result, str1, len1);
+  memcpy (result + len1, str2, len2);
+  result[len1 + len2] = '\0';
+  
+  return result;
+}
+
+static char* br_build_path (const char *dir, const char *file)
+{
+  char *dir2, *result;
+  size_t len;
+  int must_free = 0;
+  
+  len = strlen (dir);
+  if (len > 0 && dir[len - 1] != '/') {
+    dir2 = br_strcat (dir, "/");
+    must_free = 1;
+  } else
+    dir2 = (char *) dir;
+  
+  result = br_strcat (dir2, file);
+  if (must_free)
+    free (dir2);
+  return result;
+}
+
+
 void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
 {
-  /* Start in /data/data/org.freedink/files/ to ease locating resources */
+  /* chdir to the main Dink dir to easily locate resources */
 #ifdef __ANDROID__
-  if (chdir(SDL_AndroidGetInternalStoragePath()) < 0)
+  /* SD Card */
+
+  /* SDL_AndroidGetExternalStoragePath() == /storage/sdcard0/Android/data/org.freedink/files */
+  log_info("Android external storage: %s\n", SDL_AndroidGetExternalStoragePath());
+  if (SDL_AndroidGetExternalStoragePath() == NULL)
+    log_error("Could not get external storage path: %s'",
+	      SDL_AndroidGetExternalStoragePath(),
+	      SDL_GetError());
+  int state = SDL_AndroidGetExternalStorageState();
+  log_info("- read : %s\n", (state&SDL_ANDROID_EXTERNAL_STORAGE_READ) ? "yes":"no");
+  log_info("- write: %s\n", (state&SDL_ANDROID_EXTERNAL_STORAGE_WRITE) ? "yes":"no");
+
+  /* SDL_AndroidGetInternalStoragePath() == /data/data/org.freedink/files/ */
+  log_info("Android internal storage: %s\n", SDL_AndroidGetInternalStoragePath());
+
+  if (chdir(SDL_AndroidGetExternalStoragePath()) < 0)
     log_error("Could not chdir to '%s': %s'",
-	      SDL_AndroidGetInternalStoragePath(),
+	      SDL_AndroidGetExternalStoragePath(),
+	      strerror(errno));
+#elif defined _WIN32 || defined __WIN32__ || defined __CYGWIN__
+  /* .exe's directory */
+  log_info("Woe exe dir: %s\n", paths_getexedir());
+  if (chdir(paths_getexedir()) < 0)
+    log_error("Could not chdir to '%s': %s'",
+	      paths_getexedir(),
 	      strerror(errno));
 #endif
 
-  char *datadir = NULL;
   char *refdir = NULL;
 
-  /* relocatable_prog */
-  set_program_name(argv0);
-
-  /** default pkgdatadir (e.g. "/usr/share/freedink") **/
+  /** pkgdatadir **/
   {
-    defaultpkgdatadir = br_build_path(DEFAULT_DATA_DIR, PACKAGE);
-  }
-
-  /** datadir (e.g. "/usr/share") **/
-  {
-    const char *datadir_relocatable;
-    char *datadir_binreloc, *default_data_dir;
-    
-    /* First, ask relocable-prog */
-    /* Put in a variable to avoid "comparison with string literal" */
-    default_data_dir = DEFAULT_DATA_DIR;
-    datadir_relocatable = relocate(default_data_dir);
-    
-    /* Then ask binreloc - it handles ../share even if CWD != "bin"
-       (e.g. "src"). However it's not as precise and portable ($PATH
-       lookup, etc.). */
-    BrInitError error;
-    if (br_init(&error) == 0 && error != BR_INIT_ERROR_DISABLED)
-      {
-	log_warn("BinReloc failed to initialize (error code %d)", error);
-	datadir_binreloc = strdup(datadir_relocatable);
-      }
-    else
-      {
-	datadir_binreloc = br_find_data_dir(datadir_relocatable);
-      }
-    
-    /* Free relocable-prog's path, if necessary */
-    if (datadir_relocatable != default_data_dir)
-      free((char *)datadir_relocatable);
-    
-    /* BinReloc always return a newly allocated string, with either the
-       built directory, or a copy of its argument */
-    datadir = datadir_binreloc;
-    //datadir = strdup(DEFAULT_DATA_DIR); // disable binary-relocatable under Android
-  }
-  
-  /** pkgdatadir (e.g. ".local/share/freedink") **/
-  {
-    pkgdatadir = br_build_path(datadir, PACKAGE);
-  }
-
-  /** exedir (e.g. "C:/Program Files/Dink Smallwood") **/
-  {
-    char* fullprogname = get_full_program_name();
-    if (fullprogname != NULL)
-      exefile = strdup(fullprogname);
-    else
-      exefile = strdup(argv0);
-    log_info("Hi, I'm '%s'", exefile);
-    /* gnulib's dir_name always returns a newly xalloc'd string */
-    exedir = dir_name(exefile);
+#if defined __ANDROID__ || defined _WIN32 || defined __WIN32__ || defined __CYGWIN__
+    /* "./freedink" */
+    pkgdatadir = strdup("./" PACKAGE);
+#else
+    /* (e.g. "/usr/share/freedink") */
+    pkgdatadir = br_build_path(BUILD_DATA_DIR, PACKAGE);
+#endif
   }
 
   /** refdir  (e.g. "/usr/share/dink") **/
   {
     /** => refdir **/
     char* match = NULL;
-    int nb_dirs = 8;
-    char** lookup = malloc(sizeof(char*) * nb_dirs);
+    int nb_dirs = 7;
+    char* lookup[nb_dirs];
     int i = 0;
     if (refdir_opt == NULL)
       lookup[0] = NULL;
     else
       lookup[0] = refdir_opt;
-    lookup[1] = ".";
-    lookup[2] = exedir;
 
-    char *default3 = NULL, *default4 = NULL, *default5 = NULL,
-      *default6 = NULL, *default7 = NULL;
+    /* Use absolute filename, otherwise SDL_rwops fails on Android (java.io.FileNotFoundException) */
+    lookup[1] = paths_getcwd();
+
     /* FHS mentions optional 'share/games' which some Debian packagers
        seem to be found of */
-    /* Packagers: don't alter these paths. FreeDink must run in a
+    /* PACKAGERS: don't alter these paths. FreeDink must run in a
        _consistent_ way across platforms. If you need an alternate
        path, consider using ./configure --prefix=..., or contact
        bug-freedink@gnu.org to discuss it. */
-    default3 = br_build_path(datadir, "dink");
-    default4 = "/usr/local/share/games/dink";
-    default5 = "/usr/local/share/dink";
-    default6 = "/usr/share/games/dink";
-    default7 = "/usr/share/dink";
-    lookup[3] = default3;
-    lookup[4] = default4;
-    lookup[5] = default5;
-    lookup[6] = default6;
-    lookup[7] = default7;
+    lookup[2] = br_build_path(BUILD_DATA_DIR, "dink");
+    lookup[3] = "/usr/local/share/games/dink";
+    lookup[4] = "/usr/local/share/dink";
+    lookup[5] = "/usr/share/games/dink";
+    lookup[6] = "/usr/share/dink";
 
     for (; i < nb_dirs; i++)
       {
@@ -213,12 +240,11 @@ void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
 	asprintf_append(&msg, "Error: cannot find reference directory (--refdir). I looked in:\n");
 	// lookup[0] already treated above
 	asprintf_append(&msg, "- %s [current dir]\n", lookup[1]);
-	asprintf_append(&msg, "- %s [exedir]\n", lookup[2]);
-	asprintf_append(&msg, "- %s [detected prefix]\n", lookup[3]);
-	asprintf_append(&msg, "- %s [/usr/local/share/games prefix]\n", lookup[4]);
-	asprintf_append(&msg, "- %s [/usr/local/share prefix]\n", lookup[5]);
-	asprintf_append(&msg, "- %s [/usr/share/games prefix]\n", lookup[6]);
-	asprintf_append(&msg, "- %s [/usr/share prefix]\n", lookup[7]);
+	asprintf_append(&msg, "- %s [build prefix]\n", lookup[2]);
+	asprintf_append(&msg, "- %s [hard-coded /usr/local/share/games prefix]\n", lookup[3]);
+	asprintf_append(&msg, "- %s [hard-coded /usr/local/share prefix]\n", lookup[4]);
+	asprintf_append(&msg, "- %s [hard-coded /usr/share/games prefix]\n", lookup[5]);
+	asprintf_append(&msg, "- %s [hard-coded /usr/share prefix]\n", lookup[6]);
 	asprintf_append(&msg, "The reference directory contains among others the "
 		"'dink/graphics/' and 'dink/tiles/' directories (as well as "
 		"D-Mods).");
@@ -227,8 +253,8 @@ void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
 	exit(1);
       }
 
-    free(default3); // br_build_path()
-    free(lookup);
+    free(lookup[1]); // paths_getcwd
+    free(lookup[2]); // br_build_path
   }
 
   /** fallbackdir (e.g. "/usr/share/dink/dink") **/
@@ -287,6 +313,11 @@ void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
 	dmodname = base_name(canonical_dmoddir);
 	free(canonical_dmoddir);
       }
+    if (strcmp(dmodname, "/") == 0)
+      {
+	msgbox("Error: not loading a nameless D-Mod at '/'");
+	exit(1);
+      }
   }
 
   /** userappdir (e.g. "~/.dink") **/
@@ -318,23 +349,15 @@ void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
       }
   }
 
-  log_info("exedir = %s", exedir);
-  log_info("datadir = %s", datadir);
+  log_info("datadir = %s", BUILD_DATA_DIR);
   log_info("pkgdatadir = %s", pkgdatadir);
-  log_info("defaultpkgdatadir = %s", defaultpkgdatadir);
   log_info("refdir = %s", refdir);
+  log_info("fallbackdir = %s", fallbackdir);
   log_info("dmoddir = %s", dmoddir);
   log_info("dmodname = %s", dmodname);
   log_info("userappdir = %s", userappdir);
 
-  free(datadir);
   free(refdir);
-}
-
-
-const char *paths_getdefaultpkgdatadir(void)
-{
-  return defaultpkgdatadir;
 }
 
 
@@ -355,17 +378,6 @@ const char *paths_getfallbackdir(void)
 {
   return fallbackdir;
 }
-
-const char *paths_getexedir(void)
-{
-  return exedir;
-}
-
-const char *paths_getexefile(void)
-{
-  return exefile;
-}
-
 
 char* paths_dmodfile(char *file)
 {
@@ -397,21 +409,6 @@ FILE* paths_fallbackfile_fopen(char *file, char *mode)
   return result;
 }
 
-char* paths_defaultpkgdatafile(char *file)
-{
-  char *fullpath = br_build_path(defaultpkgdatadir, file);
-  ciconvert(fullpath);
-  return fullpath;
-}
-
-FILE* paths_defaultpkgdatafile_fopen(char *file, char *mode)
-{
-  char *fullpath = paths_defaultpkgdatafile(file);
-  FILE *result = fopen(fullpath, mode);
-  free(fullpath);
-  return result;
-}
-
 char* paths_pkgdatafile(char *file)
 {
   char *fullpath = br_build_path(pkgdatadir, file);
@@ -422,21 +419,6 @@ char* paths_pkgdatafile(char *file)
 FILE* paths_pkgdatafile_fopen(char *file, char *mode)
 {
   char *fullpath = paths_pkgdatafile(file);
-  FILE *result = fopen(fullpath, mode);
-  free(fullpath);
-  return result;
-}
-
-char* paths_exedirfile(char *file)
-{
-  char *fullpath = br_build_path(exedir, file);
-  ciconvert(fullpath);
-  return fullpath;
-}
-
-FILE* paths_exedirfile_fopen(char *file, char *mode)
-{
-  char *fullpath = paths_exedirfile(file);
   FILE *result = fopen(fullpath, mode);
   free(fullpath);
   return result;
@@ -498,21 +480,15 @@ FILE *paths_savegame_fopen(int num, char *mode)
 
 void paths_quit(void)
 {
-  free(defaultpkgdatadir);
   free(pkgdatadir);
-  free(exedir);
   free(fallbackdir);
   free(dmoddir);
   free(dmodname);
   free(userappdir);
-  free(exefile);
 
-  defaultpkgdatadir = NULL;
   pkgdatadir        = NULL;
-  exedir            = NULL;
   fallbackdir       = NULL;
   dmoddir           = NULL;
   dmodname          = NULL;
   userappdir        = NULL;
-  exefile           = NULL;
 }

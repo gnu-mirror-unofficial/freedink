@@ -79,9 +79,7 @@ EOF
 %endif
 
 %build
-# Using '--disable-embedded-resources' because 'rpmbuild' will remove
-# them anyway (so it can make the -debuginfo package -- too bad :/)
-%configure --disable-embedded-resources 
+%configure
 make %{?_smp_mflags}
 
 %install

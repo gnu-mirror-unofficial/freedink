@@ -2,19 +2,12 @@
 #AM_CFLAGS = -Wall -std=c99
 # Cf. (autoconf.info)Installation Directory Variables:
 # Don't use DATADIR, it conflicts with something in MinGW
-AM_CPPFLAGS = -DDEFAULT_DATA_DIR=\"$(datadir)\"
+AM_CPPFLAGS = -DBUILD_DATA_DIR=\"$(datadir)\"
 
 # Gnulib:
 # includes generated files from top_builddir (not only top_srcdir)
 AM_CPPFLAGS += -I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib
 LDADD = $(top_builddir)/gnulib/lib/libgnu.a
-
-# relocatable-prog
-AM_CPPFLAGS += -DINSTALLDIR=\"$(bindir)\"
-AM_LDFLAGS =
-if RELOCATABLE_VIA_LD
-AM_LDFLAGS += `$(RELOCATABLE_LDFLAGS) $(bindir)`
-endif
 
 # gettext:
 AM_CPPFLAGS += -DLOCALEDIR=\"$(localedir)\"
@@ -30,25 +23,18 @@ COMMON_OBJS= app.c app.h bgm.c bgm.h dinkini.c dinkini.h dinkc.c	\
 	str_util.c str_util.h io_util.c io_util.h sfx.c sfx.h gfx.c	\
 	gfx.h gfx_fade.c gfx_fade.h gfx_tiles.c gfx_tiles.h		\
 	gfx_palette.c gfx_palette.h gfx_fonts.c gfx_fonts.h rect.c	\
-	rect.h input.c input.h binreloc.c binreloc.h freedink_xpm.c	\
-	freedink_xpm.h paths.c paths.h log.c log.h gfx_sprites.c	\
-	gfx_sprites.h vgasys_fon.c vgasys_fon.h msgbox.c msgbox.h	\
-	i18n.c i18n.h meminfo.c meminfo.h screen.c screen.h
+	rect.h input.c input.h freedink_xpm.c freedink_xpm.h paths.c	\
+	paths.h log.c log.h gfx_sprites.c gfx_sprites.h vgasys_fon.c	\
+	vgasys_fon.h msgbox.c msgbox.h i18n.c i18n.h meminfo.c		\
+	meminfo.h screen.c screen.h
 
 if ANDROID
   # Build .so JNI libs rather than executables
   # Define here rather than configure.ac, otherwise config.h gets confused
   AM_CFLAGS = -fPIC
-  AM_LDFLAGS += -shared
+  AM_LDFLAGS = -shared
   LIBS += -llog
   COMMON_OBJS += SDL_android_main.c
-endif
-
-if HAVE_ZZIPLIB
-COMMON_OBJS+=SDL_rwops_zzip.c SDL_rwops_zzip.h
-endif
-if HAVE_LIBZIP
-COMMON_OBJS+=SDL_rwops_libzip.c SDL_rwops_libzip.h
 endif
 
 bin_PROGRAMS = freedink freedinkedit
@@ -70,19 +56,6 @@ if HAVE_UPX
 # Needs to be done before bundling resources
 	-$(UPX) "$(DESTDIR)$(bindir)/freedink$(EXEEXT)"
 	-$(UPX) "$(DESTDIR)$(bindir)/freedinkedit$(EXEEXT)"
-endif
-if HAVE_ZIP
-# Bundle resources
-	zip -j res.zip $(resdir)/LiberationSans-Regular.ttf
-	cat res.zip >> "$(DESTDIR)$(bindir)/freedink$(EXEEXT)"
-	rm -f res.zip
-	zip -A "$(DESTDIR)$(bindir)/freedink$(EXEEXT)"
-
-	zip -j res.zip $(resdir)/LiberationSans-Regular.ttf	\
-		$(resdir)/stop.wav $(resdir)/jump.wav
-	cat res.zip >> "$(DESTDIR)$(bindir)/freedinkedit$(EXEEXT)"
-	rm -f res.zip
-	zip -A "$(DESTDIR)$(bindir)/freedinkedit$(EXEEXT)"
 endif
 # Add 'dink' and 'dinkedit' aliases, to please 3rd-party tools
 	$(LN_S) -f "freedink$(EXEEXT)" "$(DESTDIR)$(bindir)/dink$(EXEEXT)"

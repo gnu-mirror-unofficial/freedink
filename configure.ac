@@ -33,9 +33,6 @@ AC_CANONICAL_HOST
 AC_PROG_CC
 AC_PROG_LN_S
 
-# Force binary relocatability by default
-enable_relocatable=1
-
 # We use std=c99 which enables some macros, supports '//' comments,
 # and does not warn about mixed declarations and code.  Let's do tests
 # (namely Gnulib tests) with it too.
@@ -66,16 +63,6 @@ dnl AM_GNU_GETTEXT_NEED(need-ngettext)
 AC_ARG_VAR([WINDRES], [Resource compiler for woe executables])
 AC_CHECK_TOOL(WINDRES, windres)
 AM_CONDITIONAL(HAVE_WINDRES, test "$WINDRES" != "")
-
-AC_ARG_ENABLE([embedded-resources],
-  AS_HELP_STRING([--disable-embedded-resources],
-    [don't embed base fonts in the executable -
-     disable this for distros that strip executables and break resources (default is enabled)]),
-  [], [enable_embedded_resources=yes])
-if test x"$enable_embedded_resources" = x"yes"; then
-AC_CHECK_PROG(ZIP, zip, zip)
-fi
-AM_CONDITIONAL(HAVE_ZIP, test "$ZIP" != "")
 
 AC_ARG_VAR([HELP2MAN], [Manpage generator from '--help' output])
 AC_PATH_PROG(HELP2MAN, help2man)
@@ -173,38 +160,9 @@ if test x"$use_fontconfig" = x"yes"; then
   LIBS="$FONTCONFIG_LIBS $LIBS"
 fi
 
-if test x"$enable_embedded_resources" = x"yes"; then
-  # libzip - cross-compiles well
-  PKG_CHECK_MODULES([LIBZIP], [libzip >= 0.8],
-    AC_DEFINE([HAVE_LIBZIP], [], [libzip library (-lzip)]),
-    AC_MSG_WARN($LIBZIP_PKG_ERRORS [(non-fatal if there's zziplib)]); LACK_LIBZIP=1)
-  CFLAGS="$CFLAGS $LIBZIP_CFLAGS"
-  LIBS="$LIBZIP_LIBS $LIBS"
-  # ZZipLib - doesn't cross-compile well and unstable under woe, but
-  #   functional and initially more widespread under GNU/Linux
-  #AC_CHECK_LIB(zzip,zzip_open_ext_io,,AC_MSG_WARN([You need to install zzip]);LACK_LIBZZIP=1)
-  PKG_CHECK_MODULES([ZZIPLIB], [zziplib >= 0.12.83],
-    AC_DEFINE([HAVE_ZZIPLIB], [], [zziplib library (-lzzip)]),
-    AC_MSG_WARN($ZZIPLIB_PKG_ERRORS [(non-fatal if there's libzip)]); LACK_ZZIPLIB=1)
-  CFLAGS="$CFLAGS $ZZIPLIB_CFLAGS"
-  LIBS="$ZZIPLIB_LIBS $LIBS"
-else
-   LACK_LIBZIP=1
-   LACK_ZZIPLIB=1
-fi
-AM_CONDITIONAL(HAVE_LIBZIP, test "$LACK_LIBZIP" != "1")
-AM_CONDITIONAL(HAVE_ZZIPLIB, test "$LACK_ZZIPLIB" != "1")
-
 
 # Lengthy Gnulib checks
 gl_INIT
-
-
-# BinReloc, if not cross-compiling (tests do not check for cross-compilation)
-if test "$cross_compiling" = "no"; then
-AP_BINRELOC
-fi
-
 
 
 # Somewhat optional. Defines matching contants in config.h
@@ -251,17 +209,6 @@ if test "$error" = 0 -a "$LACK_HEADERS" = 1; then
   echo "* Warning: You lack some library headers (.h) - see warnings above."
   #error=1
   warning=1
-fi
-
-if test x"$enable_embedded_resources" = x"yes"; then
-  if test "$LACK_LIBZIP" = 1 -a "$LACK_ZZIPLIB" = 1; then
-    echo "* You need to install libzip or ZZipLib (or --disable-embedded-resources)."
-    error=1
-  fi
-  if test -z "$ZIP"; then
-    echo "* The 'zip' utility cannot be found. Please install it (or --disable-embedded-resources)."
-    error=1
-  fi
 fi
 
 if test "$error" = 0 -a "$LACK_HELP2MAN" = 1; then

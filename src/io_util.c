@@ -36,9 +36,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "binreloc.h"
-#include "progname.h"
-#include "relocatable.h"
 #include "SDL.h"
 #ifdef HAVE_LIBZIP
 #  include "SDL_rwops_libzip.h"
@@ -237,48 +234,17 @@ SDL_RWops* find_resource_as_rwops(char *name)
 {
   SDL_RWops* rwops = NULL;
 
-  /** pkgdatadir, pkgdefaultdatadir, exedir **/
+  /** curdir, pkgdatadir **/
   FILE *in = NULL;
   if (in == NULL)
     in = paths_pkgdatafile_fopen(name, "rb");
-  if (in == NULL)
-    /* When the relocatable datadir fails, it may be worth trying the
-       compile-time datadir nonetheless; in the gNewSense LiveCD, the
-       path is mistakenly detected as /cow/usr/bin/freedink, and hence
-       the datadir becomes /cow/usr/share/freedink, which doesn't
-       exist. */
-    in = paths_defaultpkgdatafile_fopen(name, "rb");
-  if (in == NULL)
-    in = paths_exedirfile_fopen(name, "rb");
+
+#ifdef __ANDROID__
+  /* Get from .apk */
+#endif
+
   if (in != NULL)
     rwops = SDL_RWFromFP(in, /*autoclose=*/1);
-
-  if (rwops != NULL)  
-    return rwops;
-
-
-  /** Bundled resources **/
-  /* Look in appended ZIP archive */
-  /* Looked at last, to avoid confusing the user with invisible
-     files **/
-  /* paths_getexefile() checks /proc (Linux), then argv[0] +
-     PATH. Under Woe it uses GetModuleFileName(). The only way to make
-     it fail is to execl("./freedink", "idontexist", 0); */
-#ifdef HAVE_LIBZIP
-  char *myself = strdup(paths_getexefile());
-  rwops = SDL_RWFromZIP(myself, name);
-  free(myself);
-#else
-#  ifdef HAVE_ZZIPLIB
-  const char *myself = paths_getexefile();
-  char *zippath = malloc(strlen(myself) + 1 + strlen(name) + 1);
-  sprintf(zippath, "%s/%s", myself, name);
-  /* sample zippath: "/usr/bin/freedink/LiberationSans-Regular.ttf" */
-  rwops = SDL_RWFromZZIP(zippath, "rb");
-  /* Retrieve error (if any) with: printf("%s\n", strerror(errno)); */
-  free(zippath);
-#  endif
-#endif
 
   if (rwops != NULL)
      return rwops;

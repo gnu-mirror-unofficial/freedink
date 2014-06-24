@@ -6,7 +6,9 @@ This means path detection doesn't work.
 The application is stored in /data/app/xxx.apk.
 AFAICT it's not extracted anywhere, so we need to open it with libzip to extract files.
 
-The application data is in /data/data/org.freedink/{lib,files,cache}/
+The application data is in:
+- /data/data/org.freedink/{lib,files,cache}/ (internal storage)
+- /storage/sdcard0/Android/data/org.freedink/files/ (external storage)
 It can be used to stored additional files.
 
 Last we can use the external storage.
@@ -236,7 +238,7 @@ PATH=/usr/src/ndk-standalone-12-arm/bin:$PATH
 mkdir cross-android/
 cd cross-android/
 ../configure --host=arm-linux-androideabi \
-  --prefix=/data/data/org.freedink/files \
+  --prefix=/android-aint-posix \
   --disable-embedded-resources --disable-tests
 make -j8
 
@@ -255,21 +257,21 @@ cp -a /usr/src/SDL2/build/org.libsdl/libs/armeabi/* libs/armeabi/
 cp -a ../cross-android/src/freedink libs/armeabi/libmain.so
 android update project --name freedink --path . --target "android-12"
 echo '<?xml version="1.0" encoding="utf-8"?><resources><string name="app_name">FreeDink</string></resources>' > res/values/strings.xml
-./redeploy.sh
+make
 
-adb push dink.tar.gz /data/data/org.freedink/files/share/dink/
+adb push dink.tar.gz /storage/sdcard0/Android/data/org.freedink/files/
 
 cp -a /usr/share/midi/freepats .
 cp -a /etc/timidity/freepats.cfg timidity.cfg
 sed -i -e 's,/usr/share/midi/,,' timidity.cfg
 tar czf timidity.tar.gz freepats/ timidity.cfg
 rm -rf freepats/ timidity.cfg
-adb push timidity.tar.gz /data/data/org.freedink/files/
-
-chown -R u0_aXX: files /data/data/org.freedink/files
+adb push timidity.tar.gz /storage/sdcard0/Android/data/org.freedink/files/
 
 
 === Guile ===
+
+# https://lists.gnu.org/archive/html/guile-user/2014-06/msg00011.html
 
 /usr/src/android-ndk-r9d/build/tools/make-standalone-toolchain.sh \
   --platform=android-12 --install-dir=/usr/src/ndk-standalone-12
