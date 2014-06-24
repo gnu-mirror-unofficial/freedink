@@ -105,6 +105,8 @@ void input_init(void)
   SDL_EventState(SDL_MOUSEBUTTONUP, SDL_IGNORE);
   /* We'll enable text inputs on demande (dinkc_console, editor textbox) */
   SDL_EventState(SDL_TEXTINPUT, SDL_IGNORE);
+  /* No joystick events unless one is detected */
+  SDL_JoystickEventState(SDL_IGNORE);
   /* We still process through a SDL_PollEvent() loop: */
   /* - SDL_QUIT: quit on window close and Ctrl+C */
   /* - SDL_MOUSEMOTION: required for SDL_SetRelativeMouseMode() */
@@ -131,65 +133,74 @@ void input_init(void)
   /* Define default button->action mapping */
   input_set_default_buttons();
 
+
   /* JOY */
   /* Joystick initialization never makes Dink fail for now. */
   /* Note: joystick is originaly only used by the game, not the
      editor. */
-  if (joystick == 1)
+  if (joystick == 0)
+    return;
+
+  joystick = 0;
+  if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) == -1)
     {
-      if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) == -1)
-	{
-	  log_error("Error initializing joystick, skipping: %s", SDL_GetError());
-	  joystick = 0;
-	}
-      else
-	{
-	  /* first tests if a joystick driver is present */
-	  /* if TRUE it makes certain that a joystick is plugged in */
-	  log_info("%i joystick(s) were found.", SDL_NumJoysticks());
-	  if (SDL_NumJoysticks() > 0)
-	    {
-	      int i;
-	      log_info("The names of the joysticks are:");
-	      for (i=0; i < SDL_NumJoysticks(); i++) {
-		SDL_Joystick* jinfo = SDL_JoystickOpen(i);
-		SDL_JoystickGUID jguid = SDL_JoystickGetGUID(jinfo);
-		char guid_str[200];
-		SDL_JoystickGetGUIDString(jguid, guid_str, 200);
-		log_info("    %s [guid=%s] [compat=%d]",
-			 SDL_JoystickName(jinfo), guid_str,
-			 SDL_IsGameController(i));
-	      }
-
-	      log_info("Picking the first one...");
-	      // TODO: make joystick # configurable
-
-	      jinfo = SDL_JoystickOpen(0);
-	      /* Don't activate joystick events, Dink polls joystick
-		 manually.  Plus events would pile up in the queue. */
-	      SDL_JoystickEventState(SDL_IGNORE);
-	      
-	      if (jinfo) {
-		log_info("Name: %s", SDL_JoystickName(jinfo));
-		log_info("Number of axes: %d", SDL_JoystickNumAxes(jinfo));
-		log_info("Number of buttons: %d", SDL_JoystickNumButtons(jinfo));
-		log_info("Number of balls: %d", SDL_JoystickNumBalls(jinfo));
-		log_info("Number of hats: %d", SDL_JoystickNumHats(jinfo));
-		
-		/* Flush stacked joystick events */
-		{
-		  SDL_Event event;
-		  while (SDL_PollEvent(&event));
-		}
-		
-		joystick = 1;
-	      } else {
-		log_error("Couldn't open Joystick #0");
-		joystick = 0;
-	      }
-	    }
-	}
+      log_error("Error initializing joystick, skipping: %s", SDL_GetError());
+      return;
     }
+
+  /* first tests if a joystick driver is present */
+  /* if TRUE it makes certain that a joystick is plugged in */
+  log_info("%i joystick(s) were found.", SDL_NumJoysticks());
+  if (SDL_NumJoysticks() <= 0)
+    return;
+
+  int i;
+  log_info("The names of the joysticks are:");
+  for (i = 0; i < SDL_NumJoysticks(); i++) {
+    SDL_Joystick* jinfo = SDL_JoystickOpen(i);
+    if (!jinfo) {
+      log_warn("Couln't open joystick %i", i, SDL_GetError());
+      continue;
+    }
+    SDL_JoystickGUID jguid = SDL_JoystickGetGUID(jinfo);
+    char guid_str[200];
+    SDL_JoystickGetGUIDString(jguid, guid_str, 200);
+    log_info("  #%d %s [guid=%s] [compat=%d]",
+	     i, SDL_JoystickName(jinfo), guid_str,
+	     SDL_IsGameController(i));
+    SDL_JoystickClose(jinfo);
+  }
+  
+  log_info("Picking the first available one...");
+  // TODO: make joystick # configurable
+  for (i = 0; i < SDL_NumJoysticks(); i++) {
+    jinfo = SDL_JoystickOpen(i);
+    if (!jinfo) {
+      log_error("Couldn't open joystick #%d", i);
+      continue;
+    }
+    if (strcasestr(SDL_JoystickName(jinfo), "accelerometer")) {
+      log_info("Ignoring accelerometer #%d", i);
+      SDL_JoystickClose(jinfo);
+      jinfo = NULL;
+      continue;
+    }
+  }
+  if (!jinfo) {
+    return;
+  }
+
+  /* Don't activate joystick events, Dink polls joystick
+     manually.  Plus events would pile up in the queue. */
+  /* SDL_JoystickEventState(SDL_ENABLE); */
+  
+  log_info("Name: %s", SDL_JoystickName(jinfo));
+  log_info("Number of axes: %d", SDL_JoystickNumAxes(jinfo));
+  log_info("Number of buttons: %d", SDL_JoystickNumButtons(jinfo));
+  log_info("Number of balls: %d", SDL_JoystickNumBalls(jinfo));
+  log_info("Number of hats: %d", SDL_JoystickNumHats(jinfo));
+  
+  joystick = 1;
 }
 
 void input_quit(void)
