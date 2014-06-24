@@ -25,110 +25,63 @@
 #include <config.h>
 #endif
 
-#include "io_util.h"
-#include "paths.h"
+#include <string.h> /* strerror */
+#include <errno.h>
 #include "log.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
-
-// TODO SDL2: use SDL_Log*
+#include "paths.h"
 
 char last_debug[200];
 int debug_mode = 0;
-static enum log_priority cur_priority  = LOG_PRIORITY_ERROR;
-static enum log_priority orig_priority = LOG_PRIORITY_ERROR;
-/* Uncomment if you're debugging a (very) early error in FreeDink */
-/* static enum log_priority cur_priority  = LOG_PRIORITY_DEBUG; */
-/* static enum log_priority orig_priority = LOG_PRIORITY_DEBUG; */
-FILE* out = NULL;
+static SDL_LogOutputFunction sdl_logger;
+static FILE* out = NULL;
 
-char* priority_names[LOG_PRIORITY_OFF] = {
-  "", /* ALL */
-  "[trace] ",
-  "[debug] ",
-  "[info ] ",
-  "[warn ] ",
-  "[ERROR] ",
-  "[FATAL] ",
-};
+void log_output(void *userdata,
+		int category, SDL_LogPriority priority,
+		const char *message) {
+  sdl_logger(userdata, category, priority, message);
+  
+  if (debug_mode)
+    {
+      // display message on screen in debug mode
+      strncpy(last_debug, message, sizeof(last_debug) - 1);
+      
+      // also write to DEBUG.TXT
+      if (out != NULL)
+	{
+	  fputs(message, out);
+	  fputc('\n', out);
+	}
+    }
+}
+
+void log_init() {
+  SDL_LogGetOutputFunction(&sdl_logger, NULL);
+  SDL_LogSetOutputFunction(log_output, NULL);
+}
 
 void log_debug_on()
 {
   debug_mode = 1;
-  orig_priority = cur_priority;
-  log_set_priority(LOG_PRIORITY_DEBUG);
+  SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
+
   out = paths_dmodfile_fopen("DEBUG.TXT", "a");
-  /* out might be NULL, e.g. permissions problem */
-  if (out != NULL)
-    {
-      /* setlinebuf(stdout); */
-      /* This one is equivalent and works with mingw: */
-      setvbuf(stdout, NULL, _IOLBF, 0);
-    }
+  if (out == NULL) {
+    log_error("Cannot open DEBUG.TXT: %s", strerror(errno));
+    return;
+  }
 }
 
 void log_debug_off()
 {
   strcpy(last_debug, "");
-  cur_priority = orig_priority;
   if (out != NULL)
     fclose(out);
   out = NULL;
   debug_mode = 0;
-}
-
-void log_set_priority(enum log_priority priority)
-{
-  if (cur_priority >= LOG_PRIORITY_ALL && cur_priority <= LOG_PRIORITY_OFF)
-    cur_priority = priority;
-}
-
-#ifdef __ANDROID__
-#include <android/log.h>
-#endif
-void log_output(enum log_priority priority, char *fmt, ...)
-{
-  if (priority < cur_priority
-      || priority <= LOG_PRIORITY_ALL
-      || priority >= LOG_PRIORITY_OFF)
-    return;
-
-  char* buf = NULL;
-
-  // format message
-  va_list ap;
-  va_start(ap, fmt);
-  int res = vasprintf(&buf, fmt, ap);
-  va_end(ap);
-  if (res < 0)
-    return;
-
-  // displayed on screen if user switches to debug mode
-  if (debug_mode)
-    {
-      strcpy(last_debug, priority_names[priority]);
-      strncat(last_debug, buf, sizeof(last_debug) - strlen(priority_names[priority]) - 1);
-    }
-
-  // write to DEBUG.TXT
-  if (out != NULL)
-    {
-      fputs(priority_names[priority], out);
-      fputs(buf, out);
-      fputc('\n', out);
-    }
-
-  // write to standard output
-  fputs(priority_names[priority], stdout);
-  fputs(buf, stdout);
-  putchar('\n');
-
-#ifdef __ANDROID__
-  __android_log_print(ANDROID_LOG_INFO, "FreeDink", buf);
-#endif
-
-  free(buf);
+  SDL_LogResetPriorities();
+  SDL_LogSetAllPriority(SDL_LOG_PRIORITY_ERROR);
+  /* Avoid startup error about X11 missing symbols */
+  SDL_LogSetPriority(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL);
+  /* If you need to debug early: */
+  /* SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG); */
 }

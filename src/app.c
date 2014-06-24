@@ -239,7 +239,7 @@ static int check_arg(int argc, char *argv[])
       case 'd':
 	debug_p = 1;
         /* Enable early debugging, before we can locate DEBUG.txt */
-        log_set_priority(LOG_PRIORITY_DEBUG);
+        SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
 	break;
       case 'r':
 	refdir_opt = strdup(optarg);
@@ -287,6 +287,7 @@ static int check_arg(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
+  log_init();
 
   paths_init(argv[0], refdir_opt, dmoddir_opt);
 
@@ -361,6 +362,9 @@ int app_start(int argc, char *argv[],
 	      void(*input_hook)(SDL_Event* ev),
 	      void(*logic_hook)())
 {
+  /* Reset debug levels */
+  log_debug_off();
+
   /** i18n **/
   /* Only using LC_MESSAGES because LC_CTYPE (part of LC_ALL) may
      bring locale-specific behavior in the DinkC parsers. If that's a
