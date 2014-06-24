@@ -153,7 +153,8 @@ gfx_palette_set_from_bmp(char *filename)
       free(fullpath);
       if (bmp == NULL)
 	{
-	  log_error("load_palette_from_bmp: couldn't open: %s", filename);
+	  log_error("load_palette_from_bmp: couldn't open '%s': %s",
+		    filename, SDL_GetError());
 	  return -1;
 	}
     }
