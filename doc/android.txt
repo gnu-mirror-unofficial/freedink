@@ -167,8 +167,7 @@ cd SDL2_gfx/
 mkdir cross-android/ && cd cross-android/
 ../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
   --disable-shared --disable-mmx
-make -j$(nproc)
-make install
+make -j$(nproc) && make install
 
 
 
@@ -178,10 +177,9 @@ VERSION=0.9.6
 $WGET http://rabbit.dereferenced.org/~nenolod/distfiles/pkgconf-$VERSION.tar.gz
 tar xf pkgconf-$VERSION.tar.gz
 cd pkgconf-$VERSION
-mkdir native/ && cd native/
+mkdir native-android/ && cd native-android/
 ../configure --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr
-make -j$(nproc)
-make install
+make -j$(nproc) && make install
 ln -s ../sysroot/usr/bin/pkgconf /usr/src/ndk-standalone-12-arm/bin/arm-linux-androideabi-pkg-config
 mkdir /usr/src/ndk-standalone-12-arm/sysroot/usr/lib/pkgconfig/
 
@@ -197,8 +195,7 @@ mkdir cross-android/ && cd cross-android/
 \cp -a /usr/share/misc/config.{guess,sub} ../libcharset/build-aux/
 ../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
   --disable-shared
-make -j$(nproc)
-make install
+make -j$(nproc) && make install
 
 
 === gettext ===
@@ -211,8 +208,7 @@ cd gettext-runtime/
 mkdir cross-android/ && cd cross-android/
 ../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
   --disable-shared
-make -j$(nproc)
-make install
+make -j$(nproc) && make install
 
 
 === Check ===
@@ -274,7 +270,7 @@ adb push timidity.tar.gz /storage/sdcard0/Android/data/org.freedink/files/
 # https://lists.gnu.org/archive/html/guile-user/2014-06/msg00011.html
 
 /usr/src/android-ndk-r9d/build/tools/make-standalone-toolchain.sh \
-  --platform=android-12 --install-dir=/usr/src/ndk-standalone-12
+  --platform=android-12 --install-dir=/usr/src/ndk-standalone-12-arm
 PATH=/usr/src/ndk-standalone-12-arm/bin:$PATH
 
 aptitude install lzip
@@ -290,8 +286,7 @@ cd libtool-$VERSION/
 mkdir cross-android/ && cd cross-android/
 ../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
   --disable-shared
-make -j$(nproc)
-make install
+make -j$(nproc) && make install
 
 # GMP
 VERSION=6.0.0a
@@ -302,8 +297,7 @@ cd gmp-$VERSIONDIR/
 mkdir cross-android/ && cd cross-android/
 ../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
   --disable-shared
-make -j$(nproc)
-make install
+make -j$(nproc) && make install
 
 # - iconv (see above)
 
@@ -315,8 +309,7 @@ mkdir cross-android/ && cd cross-android/
 \cp -a /usr/share/misc/config.{guess,sub} ../build-aux/
 ../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
   --disable-shared
-make -j$(nproc)
-make install
+make -j$(nproc) && make install
 
 # libFFI
 VERSION=3.1
@@ -326,8 +319,7 @@ cd libffi-$VERSION/
 mkdir cross-android/ && cd cross-android/
 ../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
   --disable-shared
-make -j$(nproc)
-make install
+make -j$(nproc) && make install
 
 # GC
 VERSION=7.4.2
@@ -337,8 +329,7 @@ cd libatomic_ops-$VERSION/
 mkdir cross-android/ && cd cross-android/
 ../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
   --disable-shared
-make -j$(nproc)
-make install
+make -j$(nproc) && make install
 cd ../..
 $WGET http://www.hboehm.info/gc/gc_source/gc-$VERSION.tar.gz
 tar xf gc-$VERSION.tar.gz
@@ -346,8 +337,7 @@ cd gc-$VERSION/
 mkdir cross-android/ && cd cross-android/
 ../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
   --disable-shared
-make -j$(nproc)
-make install
+make -j$(nproc) && make install
 
 # Guile 2!
 cd guile/cross-android/
