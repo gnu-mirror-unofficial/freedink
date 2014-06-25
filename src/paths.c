@@ -141,7 +141,7 @@ void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
   /* SDL_AndroidGetExternalStoragePath() == /storage/sdcard0/Android/data/org.freedink/files */
   log_info("Android external storage: %s\n", SDL_AndroidGetExternalStoragePath());
   if (SDL_AndroidGetExternalStoragePath() == NULL)
-    log_error("Could not get external storage path: %s'",
+    log_error("Could not get external storage path '%s': %s'",
 	      SDL_AndroidGetExternalStoragePath(),
 	      SDL_GetError());
   int state = SDL_AndroidGetExternalStorageState();
