@@ -23,8 +23,9 @@ AC_PREREQ(2.61)
 AC_INIT([GNU FreeDink],[109.0],[bug-freedink@gnu.org])
 AC_CONFIG_AUX_DIR(autotools)
 AC_CONFIG_MACRO_DIR(autotools/m4)
-AM_INIT_AUTOMAKE([gnits dist-zip])
-
+AM_INIT_AUTOMAKE([gnits dist-zip silent-rules])
+# Terse output - use V=1 for verbose output
+AM_SILENT_RULES(yes)
 
 AC_CONFIG_HEADERS(config.h)
 # Define $host $host_os + distributes config.guess and config.sub
