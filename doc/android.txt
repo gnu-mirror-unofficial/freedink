@@ -236,7 +236,7 @@ cd cross-android/
 ../configure --host=arm-linux-androideabi \
   --prefix=/android-aint-posix \
   --disable-embedded-resources --disable-tests
-make -j8
+make -j$(nproc)
 
 # To see dynamic symbols:
 arm-linux-androideabi-objdump -R src/freedink

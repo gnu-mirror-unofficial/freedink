@@ -159,7 +159,7 @@ void input_init(void)
   for (i = 0; i < SDL_NumJoysticks(); i++) {
     SDL_Joystick* jinfo = SDL_JoystickOpen(i);
     if (!jinfo) {
-      log_warn("Couln't open joystick %i", i, SDL_GetError());
+      log_warn("Couln't open joystick %i: %s", i, SDL_GetError());
       continue;
     }
     SDL_JoystickGUID jguid = SDL_JoystickGetGUID(jinfo);
@@ -179,7 +179,17 @@ void input_init(void)
       log_error("Couldn't open joystick #%d", i);
       continue;
     }
-    if (strcasestr(SDL_JoystickName(jinfo), "accelerometer")) {
+
+    /* if (strcasestr(strdup(SDL_JoystickName(jinfo)), "accelerometer")) { */
+    char* joyname = strdup(SDL_JoystickName(jinfo));
+    char* pc = joyname;
+    while (*pc != '\0') {
+      *pc = tolower(*pc);
+      pc++;
+    }
+    int is_accelerometer = strstr(joyname, "accelerometer") != NULL;
+    free(joyname);
+    if (is_accelerometer) {
       log_info("Ignoring accelerometer #%d", i);
       SDL_JoystickClose(jinfo);
       jinfo = NULL;

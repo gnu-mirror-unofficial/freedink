@@ -1223,7 +1223,7 @@ void make_int(char* name, int value, int scope, int script)
 	{
 	  log_warn("[DinkC] %s:%d: Local var %s already used in this procedure",
 		   rinfo[script]->name, rinfo[script]->debug_line,
-		   name, rinfo[script]->name);
+		   name);
 	  
 	  play.var[dupe].var = value;
 	}

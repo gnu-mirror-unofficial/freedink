@@ -27,7 +27,6 @@
 #include <string.h> /* strdup */
 #include <unistd.h> /* getcwd */
 #include <errno.h>
-#include "canonicalize.h" /* canonicalize_file_name */
 
 #include "io_util.h"
 #include "paths.h"
@@ -41,13 +40,13 @@
 #include <shlobj.h>
 #endif
 
-/* basename */
-#include <libgen.h>
-#include "dirname.h"
-
 /* mkdir */
 #include <sys/stat.h>
 #include <sys/types.h>
+#if defined _WIN32 || defined __WIN32__ || defined __CYGWIN__
+#include <direct.h>
+#define mkdir(name,mode) mkdir(name)
+#endif
 
 #include "str_util.h" /* asprintf_append */
 
@@ -69,9 +68,7 @@ static char* userappdir = NULL;
 #if defined _WIN32 || defined __WIN32__ || defined __CYGWIN__
 const char *paths_getexedir(void)
 {
-  static char exe_path[MAX_PATH];
-  GetModuleFileName(NULL, exe_path, MAX_PATH);
-  return dirname(exe_path);
+  return SDL_GetBasePath();
 }
 #endif
 
@@ -306,17 +303,27 @@ void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
   /** dmodname (e.g. "island") **/
   /* Used to save games in ~/.dink/<dmod>/... */
   {
-    dmodname = base_name(dmoddir);
-    if (strcmp(dmodname, ".") == 0)
+    int len = strlen(dmoddir);
+    int i;
+    for (i = len-1; i > 0; i--) {
+        if (dmoddir[i] == '\\' || dmoddir[i] == '/') {
+            break;
+        }
+    }
+    if (i == 0)
       {
-	free(dmodname);
-	char *canonical_dmoddir = canonicalize_file_name(dmoddir);
-	dmodname = base_name(canonical_dmoddir);
-	free(canonical_dmoddir);
+	msgbox("Error: not loading empty-named D-Mod");
+	exit(1);
       }
-    if (strcmp(dmodname, "/") == 0)
+    int dmodname_len = strlen(dmoddir) - i + 1;
+    dmodname = malloc(dmodname_len+1);
+    strncpy(dmodname, dmoddir+i+1, dmodname_len);
+    dmodname[dmodname_len] = '\0';
+    printf("dmoddir=%s\n", dmoddir);
+    printf("dmodname=%s\n", dmodname);
+    if (strcmp(dmodname, ".") == 0 || strcmp(dmodname, "..") == 0)
       {
-	msgbox("Error: not loading a nameless D-Mod at '/'");
+	msgbox("Error: not loading nameless D-Mod '%s'", dmodname);
 	exit(1);
       }
   }
