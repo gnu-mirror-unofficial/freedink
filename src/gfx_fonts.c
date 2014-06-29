@@ -595,6 +595,9 @@ print_text_wrap (char *str, rect* box,
 void
 print_text_wrap_debug(char *text, int x, int y)
 {
+  if (text == NULL || text[0] == '\0')
+    return;
+
   char *tmp, *pline, *pc;
   int this_is_last_line = 0;
   int res_height = 0;
