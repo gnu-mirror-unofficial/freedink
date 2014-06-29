@@ -124,10 +124,14 @@ void game_init()
     dversion_string = "v1.07 FreeDink";
 
   srand((unsigned)time(NULL));
+
+  dinkc_init();
 }
 
 void game_quit()
 {
+  kill_all_scripts_for_real();
+
   int i = 0;
   for (i = 1; i < MAX_SPRITES_AT_ONCE; i++)
     {
@@ -135,6 +139,8 @@ void game_quit()
 	dinkc_sp_custom_free(spr[i].custom);
       spr[i].custom = NULL;
     }
+
+  dinkc_quit();
 }
 
 /**

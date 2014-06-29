@@ -166,10 +166,8 @@ void app_quit()
       QuitSound();
     }
 
-  kill_all_scripts_for_real();
   FastFileFini();
 
-  dinkc_quit();
   dinkini_quit();
 
   game_quit();
@@ -427,7 +425,6 @@ int app_start(int argc, char *argv[],
   game_init();
 
   dinkini_init();
-  dinkc_init();
 
   /* SFX & BGM */
   if (sound_on)
