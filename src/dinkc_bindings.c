@@ -507,7 +507,7 @@ void dc_reset_timer(int script, int* yield, int* preturnint)
 
 void dc_set_keep_mouse(int script, int* yield, int* preturnint, int keep_mouse_p)
 {
-  keep_mouse = keep_mouse_p;
+  set_keep_mouse(keep_mouse_p);
 }
 
 void dc_add_item(int script, int* yield, int* preturnint, char* dcscript, int sequence, int frame)
@@ -809,7 +809,7 @@ void dc_restart_game(int script, int* yield, int* preturnint)
   while (kill_last_sprite());
   kill_repeat_sounds_all();
   kill_all_scripts_for_real();
-  mode = 0;
+  set_mode(0);
   screenlock = 0;
   kill_all_vars();
   memset(&hm, 0, sizeof(hm));
@@ -1353,9 +1353,9 @@ void dc_initfont(int script, int* yield, int* preturnint,
 }
 
 void dc_set_mode(int script, int* yield, int* preturnint,
-		 int newmode)
+		 int new_mode)
 {
-  mode = newmode;
+  set_mode(new_mode);
   *preturnint = mode;
 }
 
@@ -2289,7 +2289,7 @@ void attach(void)
   char* line = NULL;
   int cur = 1;
   int retnum = 0;
-  clear_talk();
+  talk_clear();
   talk.newy = -5000;
   while(1)
     {
@@ -2387,15 +2387,7 @@ morestuff:
 	      free(line);
 	      return /*false*/0;
 	    }
-	  //all done, lets jam
-	  //Msg("found choice_end, leaving!");
-	  talk.last = cur-1;
-	  talk.cur = 1;
-	  talk.active = /*true*/1;
-	  talk.page = 1;
-	  talk.cur_view = 1;
-	  talk.script = script;
-	  
+	  talk_start(script, cur-1);
 	  free(directive);
 	  free(line);
 	  return /*true*/1;

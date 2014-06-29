@@ -81,27 +81,6 @@ struct small_map
 
 
 
-#define TALK_TITLE_BUFSIZ 3000
-#define TALK_LINE_BUFSIZ 101
-struct talk_struct
-{
-  char line[21][TALK_LINE_BUFSIZ];  /* dialog choices */
-  int line_return[21]; /* return this number if chosen */
-  char buffer[TALK_TITLE_BUFSIZ];   /* title */
-  int cur;
-  int last;
-  /*bool*/int active;
-  int cur_view;
-  int cur_view_end;
-  int page;
-  int script;
-  int offset;
-  int newy;
-  int color;
-  int curf;
-  int timer;
-};
-
 //sub struct for tile hardness
 
 struct block_y
@@ -169,10 +148,8 @@ struct show_bmp
 extern struct show_bmp showb;
 
 
-extern int keep_mouse;
 extern int last_sprite_created;
 extern int mbase_count;
-extern int mode;
 extern unsigned long mold;
 
 extern int *pupdate_status;
@@ -183,7 +160,6 @@ extern int playy;
 extern int *pmap;
 extern int screenlock;
 extern int show_dot;
-extern struct talk_struct talk;
 extern Uint32 thisTickCount;
 extern Uint32 lastTickCount;
 extern FPSmanager framerate_manager;
@@ -284,7 +260,6 @@ extern void fill_screen(int num);
 
 /* Used by dinkc_bindings.c only */
 enum item_type { ITEM_REGULAR, ITEM_MAGIC };
-extern void clear_talk(void);
 extern void add_item(char name[10], int mseq, int mframe, enum item_type type);
 extern void kill_item_script(char* name);
 extern void kill_mitem_script(char* name);
@@ -307,4 +282,38 @@ extern int hurt_thing(int h, int damage, int special);
 extern void random_blood(int mx, int my, int h);
 extern void check_sprite_status_full(int sprite_no);
 
+
+/* Game modes */
+extern int mode;
+extern int keep_mouse;
+// + talk.active
+
+/* Talk choices */
+#define TALK_TITLE_BUFSIZ 3000
+#define TALK_LINE_BUFSIZ 101
+struct talk_struct
+{
+  char line[21][TALK_LINE_BUFSIZ];  /* dialog choices */
+  int line_return[21]; /* return this number if chosen */
+  char buffer[TALK_TITLE_BUFSIZ];   /* title */
+  int cur;
+  int last;
+  /*bool*/int active;
+  int cur_view;
+  int cur_view_end;
+  int page;
+  int script;
+  int offset;
+  int newy;
+  int color;
+  int curf;
+  int timer;
+};
+extern struct talk_struct talk;
+extern void talk_start(int script, int nb_choices);
+extern void talk_clear();
+extern void talk_process();
+
+extern void set_mode(int new_mode);
+extern void set_keep_mouse(int on);
 #endif

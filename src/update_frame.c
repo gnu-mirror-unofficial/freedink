@@ -372,7 +372,7 @@ void updateFrame()
 	
 	if (stop_entire_game == 1)
 	{
-		if (talk.active) process_talk(); 
+		if (talk.active) talk_process();
 		
 		else
 		{
@@ -821,6 +821,8 @@ past:
 		spr[1].size = 100;		 
 		spr[1].base_hit = 100;
 		spr[1].active = /*TRUE*/1;
+
+		SDL_WarpMouseInWindow(window, spr[1].x, spr[1].y);
 		
 		int crap2 = add_sprite(0,450,8,0,0);
 		
@@ -839,8 +841,9 @@ past:
 		{
 			log_error("Can't locate MAIN in script START!");
 		}
+
 		run_script(scr);
-		mode = 1;
+		set_mode(1);
 		
 	}
 	
@@ -848,40 +851,10 @@ past:
 	
 	if (mode == 2)
 	{
-		
-		//	 if (  (keypressed()) | (jinfo.dwButtons) | (sjoy.right) | (sjoy.left) 
-		//		 | (sjoy.up)   | (sjoy.down))
-		{
-			mode = 3;
-			load_map(map.loc[*pmap]);
-			draw_map_game();
-			flife = *plife;
-			
-			if (keep_mouse == 0)
-			{
-				
-				
-/* 				if (g_pMouse)  */
-/* 				{  */
-/* 					g_pMouse->Release(); */
-/* 					g_pMouse = NULL; */
-/* 				} */
-				
-/* 				if (g_hevtMouse) */
-/* 				{ */
-/* 					CloseHandle(g_hevtMouse); */
-/* 					g_hevtMouse = NULL; */
-/* 				} */
-/* 				if (g_pdi)      */
-/* 				{ */
-/* 					g_pdi->Release(); */
-/* 					g_pdi    = NULL; */
-/* 				} */
-				
-			}
-			
-			// draw_status_all();
-		}
+	  set_mode(3);
+	  load_map(map.loc[*pmap]);
+	  draw_map_game();
+	  flife = *plife;
 	}
 	
 	
@@ -982,7 +955,7 @@ past:
 	  }
     
     
-	if (talk.active) process_talk();
+	if (talk.active) talk_process();
 	
 	
 	process_callbacks();

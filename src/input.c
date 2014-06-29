@@ -31,6 +31,7 @@
 #include "game_engine.h"
 #include "log.h"
 #include "input.h"
+#include "gfx.h"
 
 /* Input state */
 struct seth_joy sjoy;
@@ -85,18 +86,20 @@ void input_init(void)
   // It also keeps the mouse within the window in software mode.
   SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_WARP, "1");
 
-#ifndef __ANDROID__
-  int ret = SDL_SetRelativeMouseMode(SDL_TRUE);
-  if (ret == -1)
-    log_error("Relative mouse positionning not supported on this platform.");
-  /* TODO SDL2: free mouse when the game is not using it */
-#else
-  /* Skip emulated mouse events from touchscreens which don't work
-     well in relative mode.  Filtering by ev->motion.which ==
-     SDL_TOUCH_MOUSEID would still break RelativeMouseMode. */
-  SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
-  /* SDL_EventState(SDL_MOUSEBUTTONDOWN, SDL_IGNORE); */
-#endif
+  /* Touch devices */
+  {
+    int i;
+    log_info("Touch devices: %d", SDL_GetNumTouchDevices());
+    for (i = 0; i < SDL_GetNumTouchDevices(); i++) {
+      SDL_TouchID touchId = SDL_GetTouchDevice(i);
+      /* Always '0' on startup I guess: */
+      log_info("  Active fingers: %d\n", SDL_GetNumTouchFingers(touchId));
+    }
+  }
+
+  /* Jail window cursor (Alt+Tab still works) */
+  SDL_SetWindowGrab(window, SDL_TRUE);
+  SDL_ShowCursor(SDL_FALSE);
 
   /* We'll handle those events manually */
   SDL_EventState(SDL_USEREVENT, SDL_IGNORE);
@@ -107,6 +110,8 @@ void input_init(void)
   SDL_EventState(SDL_TEXTINPUT, SDL_IGNORE);
   /* No joystick events unless one is detected */
   SDL_JoystickEventState(SDL_IGNORE);
+  /* We use SDL mouse emulation, no touchscreen-specific events */
+  SDL_EventState(SDL_FINGERMOTION, SDL_IGNORE);
   /* We still process through a SDL_PollEvent() loop: */
   /* - SDL_QUIT: quit on window close and Ctrl+C */
   /* - SDL_MOUSEMOTION: required for SDL_SetRelativeMouseMode() */
@@ -341,6 +346,7 @@ void input_update_mouse(SDL_Event *ev) {
 
   if (ev->button.button == SDL_BUTTON_LEFT)
     mouse1 = /*true*/1;
+  // TODO INPUT: if talk.active, react on MOUSEUP to allow drag & choose
 }
 
 /**

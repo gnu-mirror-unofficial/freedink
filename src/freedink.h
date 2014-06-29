@@ -32,7 +32,6 @@
 #include "SDL.h"
 
 extern void CyclePalette();
-extern void Scrawl_OnMouseInput(void);
 extern void button_brain(int h );
 extern void bounce_brain(int h);
 extern int check_if_move_is_legal(int u);
@@ -49,7 +48,6 @@ extern void missile_brain_expire(int h);
 extern void mouse_brain(int h);
 extern void process_item( void );
 extern void process_show_bmp( void );
-extern void process_talk();
 extern void process_warp_man(void);
 extern void no_brain(int h);
 extern void one_time_brain(int h);
@@ -69,5 +67,4 @@ extern void text_brain(int h);
 extern void text_draw(int h);
 extern /*bool*/int transition(void);
 extern void up_cycle(void);
-
 #endif
