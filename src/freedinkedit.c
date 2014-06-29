@@ -2253,10 +2253,10 @@ void updateFrame(void)
 			    if (spr[1].size > 1500) spr[1].size = 1500;
 
 			    /* if (GetKeyboard(VK_OEM_4 /\* 219 *\/)) // '[' for US */
-			    if (input_getscancodestate(SDL_SCANCODE_LEFTBRACKET))
+			    if (input_getscancodestate(SDL_SCANCODE_PAGEDOWN) || input_getscancodestate(SDL_SCANCODE_LEFTBRACKET))
 			      spr[1].size -= 1+modif;
 			    /* if (GetKeyboard(VK_OEM_6 /\* 221 *\/)) // ']' for US */
-			    if (input_getscancodestate(SDL_SCANCODE_RIGHTBRACKET))
+			    if (input_getscancodestate(SDL_SCANCODE_PAGEUP) || input_getscancodestate(SDL_SCANCODE_RIGHTBRACKET))
 			      spr[1].size += 1+modif;
 
 
@@ -2359,14 +2359,14 @@ void updateFrame(void)
 			      {
 
 				/* if (sjoy.keyjustpressed[VK_OEM_4 /\* 219 *\/]) // '[' for US */
-				if (input_getscancodejustpressed(SDL_SCANCODE_LEFTBRACKET))
+				if (input_getscancodejustpressed(SDL_SCANCODE_PAGEUP) || input_getscancodejustpressed(SDL_SCANCODE_LEFTBRACKET))
 				  {
 				    sp_cycle--;
 				    if (sp_cycle < 1)
 				      sp_cycle = max_spr;
 				  }
 
-				if (input_getscancodejustpressed(SDL_SCANCODE_RIGHTBRACKET))
+				if (input_getscancodejustpressed(SDL_SCANCODE_PAGEDOWN) || input_getscancodejustpressed(SDL_SCANCODE_RIGHTBRACKET))
 				  {
 				    sp_cycle++;
 				    if (sp_cycle > max_spr)
@@ -2962,7 +2962,7 @@ void updateFrame(void)
 			    }
 
 			  /* if (sjoy.keyjustpressed[VK_OEM_4 /\* 219 *\/]) // '[' for US */
-			  if (input_getscancodejustpressed(SDL_SCANCODE_LEFTBRACKET))
+			  if (input_getscancodejustpressed(SDL_SCANCODE_PAGEUP) || input_getscancodejustpressed(SDL_SCANCODE_LEFTBRACKET))
 			    {
 			      if (sp_picker > 95) sp_picker -= 96; else
 				{
@@ -2971,7 +2971,7 @@ void updateFrame(void)
 			      draw15(sp_picker);
 			    }
 			    /* if (sjoy.keyjustpressed[VK_OEM_6 /\* 221 *\/]) // ']' for US */
-			  if (input_getscancodejustpressed(SDL_SCANCODE_RIGHTBRACKET))
+			  if (input_getscancodejustpressed(SDL_SCANCODE_PAGEDOWN) || input_getscancodejustpressed(SDL_SCANCODE_RIGHTBRACKET))
 			    {
 			      if (sp_picker < 400) sp_picker += 96;
 			      draw15(sp_picker);
@@ -3644,14 +3644,16 @@ void updateFrame(void)
 
 
 		    /* Cycle the current tile square (displayed at the bottom-right) */
-		    if ((mode == MODE_SCREEN_TILES) && input_getscancodestate(SDL_SCANCODE_MINUS))
+		    if ((mode == MODE_SCREEN_TILES)
+			&& (input_getscancodestate(SDL_SCANCODE_PAGEUP) || input_getscancodestate(SDL_SCANCODE_MINUS)))
 		      {
 			spr[h].seq = 3;
 			spr[h].seq_orig = 3;
 			cur_tile--;
 			if (cur_tile < 0) cur_tile = 0;
 		      }
-		    if ((mode == MODE_SCREEN_TILES) && input_getscancodestate(SDL_SCANCODE_EQUALS))
+		    if ((mode == MODE_SCREEN_TILES)
+			&& (input_getscancodestate(SDL_SCANCODE_PAGEDOWN) || input_getscancodestate(SDL_SCANCODE_EQUALS)))
 		      {
 			spr[h].seq = 3;
 			spr[h].seq_orig = 3;
@@ -3683,13 +3685,13 @@ void updateFrame(void)
 			  }
 
 			/* if (sjoy.keyjustpressed[/\* VK_OEM_4 *\/ 219]) // '[' for US */
-			if (input_getscancodejustpressed(SDL_SCANCODE_LEFTBRACKET))
+			if (input_getscancodejustpressed(SDL_SCANCODE_PAGEUP) || input_getscancodejustpressed(SDL_SCANCODE_LEFTBRACKET))
 			  {
 			    hard_tile--;
 			    if (hard_tile < 0) hard_tile = 799;
 			  }
 			/* if (sjoy.keyjustpressed[/\* VK_OEM_6 *\/ 221]) // ']' for US */
-			if (input_getscancodejustpressed(SDL_SCANCODE_RIGHTBRACKET))
+			if (input_getscancodejustpressed(SDL_SCANCODE_PAGEDOWN) || input_getscancodejustpressed(SDL_SCANCODE_RIGHTBRACKET))
 			  {
 			    hard_tile++;
 			    if (hard_tile > 799) hard_tile = 0;
@@ -4126,7 +4128,7 @@ void updateFrame(void)
 	  //((x-1) - (x / 12))*50, (x / 12) * 50,
 	  sprintf(msg,
 		  "Map # %d, (C)opy or (S)tamp tile. ESC to exit to map picker. ENTER to edit hardness. TAB for sprite edit mode. 1-10 for tilescreens. (hold alt, crtl or shift for more) SPACE to show hardness of screen. (I)nfo on sprites."
-		  " V to change vision, B to change maps base .C file.",
+		  " V to change vision, B to change maps base .C file, H to edit tile hardness.",
 		  mode);
 /* 		  cur_map, */
 /* 		  cur_tile, */
@@ -4150,7 +4152,7 @@ void updateFrame(void)
 
 	  if (sp_seq == 0)
 	    {
-	      sprintf(msg, "Choose sequence and press ENTER.  ] for next page, [ for previous. ESC or TAB to exit. (now on page %d)",
+	      sprintf(msg, "Choose sequence and press ENTER.  PageDown for next page, PageUp for previous. ESC or TAB to exit. (now on page %d)",
 		      1+(sp_picker / 96));
 	    } else
 	    {
@@ -4167,8 +4169,8 @@ void updateFrame(void)
 	  char crap7[80];
 	  if (sp_screenmatch) strcpy(crap7, "ScreenMatch is ON."); else strcpy(crap7, "ScreenMatch is OFF");
 
-	  sprintf(msg, "Press ENTER to pickup/putdown sprite. Space to show hardness.  E to edit/pick new sprite. SHIFT to move fast. (S)tamp sprite. ] &"
-		  "[ to scale (now at %d). DEL to erase sprite.  Press 1 through 9 to change sprite attributes. (hold alt or shift for more)  Last sprite touched: %d  %s (M to toggle)"
+	  sprintf(msg, "Press ENTER to pickup/putdown sprite. Space to show hardness.  E to edit/pick new sprite. SHIFT to move fast. (S)tamp sprite. PageUp&"
+		  "PageDown to scale (now at %d). DEL to erase sprite.  Press 1 through 9 to change sprite attributes. (hold alt or shift for more)  Last sprite touched: %d  %s (M to toggle)"
 		  "Hold Z or X + arrow keys to trim a sprite. V to change Vision mode. X: %d Y: %d",
 		  spr[1].size,last_sprite_added,crap7, spr[1].x, spr[1].y);
 
@@ -4235,7 +4237,7 @@ void updateFrame(void)
 	  sprintf(msg, "Alternative Tile Hardness Selector: Press S to stamp this tiles hardness."
 		  "  DEL to remove alternate hardness."
 		  "  C to copy from current block."
-		  "  [ & ] to cycle."
+		  "  PageUp&PageDown to cycle."
 		  "  ESCAPE to exit.\n"
 		  "%s", str);
 	}
