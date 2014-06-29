@@ -4387,7 +4387,7 @@ static void freedink_input_global_shortcuts(SDL_Event* ev) {
       else
 	log_debug_off();
     }
-  else if (ev->key.keysym.sym == SDLK_x)
+  else if (ev->key.keysym.sym == SDLK_c)
     {
       if (!console_active)
 	dinkc_console_show();
