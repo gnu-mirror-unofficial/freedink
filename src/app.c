@@ -72,6 +72,9 @@ PSP_HEAP_SIZE_MAX();
 static int g_b_no_write_ini = 0; // -noini passed to command line?
 static char* init_error_msg = NULL;
 
+// TODO: move me to game_engine.c
+int dversion = 108;
+
 void init_set_error_msg(const char *fmt, ...)
 {
   va_list ap;
@@ -148,29 +151,13 @@ void app_quit()
   ev.type = SDL_QUIT;
   SDL_PushEvent(&ev);
 
-  if (last_saved_game > 0)
-    {
-      log_info("Modifying saved game.");
-
-      if (!add_time_to_saved_game(last_saved_game))
-	log_error("Error modifying saved game.");
-      last_saved_game = 0;
-    }
-
   log_path(/*playing=*/0);
 
-  if (sound_on)
-    {
-      //lets kill the cdaudio too
-      bgm_quit();
-      QuitSound();
-    }
+  sfx_quit();
 
   FastFileFini();
 
   dinkini_quit();
-
-  game_quit();
 
   input_quit();
 
@@ -346,9 +333,6 @@ void app_loop(void (*input_hook)(SDL_Event* ev), void (*logic_hook)()) {
 	 stream&resample sounds, we need to do this manually. */
       sfx_cleanup_finished_channels();
     }
-
-  /* Uninitialize/clean-up */
-  app_quit();
 }
 
 
@@ -356,9 +340,10 @@ void app_loop(void (*input_hook)(SDL_Event* ev), void (*logic_hook)()) {
    will also initialize each subsystem as needed (eg InitSound) */
 int app_start(int argc, char *argv[],
 	      char* splash_path,
-	      void(*init_hook)(int argc, char *argv[]),
+	      void(*init_hook)(),
 	      void(*input_hook)(SDL_Event* ev),
-	      void(*logic_hook)())
+	      void(*logic_hook)(),
+	      void(*quit_hook)())
 {
   /* Reset debug levels */
   log_debug_off();
@@ -419,32 +404,18 @@ int app_start(int argc, char *argv[],
   /* Joystick */
   input_init();
 
-  /* Engine */
-  /* Start with this initialization as it resets structures that are
-     filled in other subsystems initialization */
-  game_init();
-
-  dinkini_init();
-
   /* SFX & BGM */
-  if (sound_on)
-    {
-      log_info("Initting sound");
-      if (InitSound() < 0)
-	sound_on = 0;
-      else
-	sound_on = 1;
-
-      if (sound_on)
-	bgm_init();
-    }
-
+  sfx_init();
 
   SDL_initFramerate(&framerate_manager);
   /* The official v1.08 .exe runs 50-60 FPS in practice, despite the
      documented intent of running 83 FPS (or 12ms delay). */
   /* SDL_setFramerate(manager, 83); */
   SDL_setFramerate(&framerate_manager, FPS);
+
+  dinkini_init();
+
+  screen_init();
 
   //dinks normal walk
   log_info("Loading batch...");
@@ -459,9 +430,13 @@ int app_start(int argc, char *argv[],
   load_info();
   log_info(" done!");
 
-  init_hook(argc, argv);
+  init_hook();
 
   app_loop(input_hook, logic_hook);
+
+  quit_hook();
+
+  app_quit();
 
   return EXIT_SUCCESS;
 }

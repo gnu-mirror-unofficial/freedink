@@ -34,17 +34,19 @@
 #include <string.h>
 #include <strings.h> /* strcasecmp */
 
-#include "game_engine.h"
+#include "dinkvar.h"
 #include "bgm.h"
 #include "io_util.h"
 #include "str_util.h"
 #include "paths.h"
 #include "log.h"
+#include "sfx.h"
 
 /* Current background music (not cd) */
 static Mix_Music *music_data = NULL;
 static char* last_midi = NULL;
 static int loop_midi = 0;
+int midi_active = 1;
 
 /*
  * MIDI functions

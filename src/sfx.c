@@ -32,14 +32,16 @@
 
 #include "SDL.h"
 #include "SDL_mixer.h"
-#include "game_engine.h"
 #include "io_util.h"
 #include "paths.h"
 #include "log.h"
 #include "math.h"
 #include "sfx.h"
 #include "log.h"
+#include "screen.h"
 
+/* Sound - BGM */
+int sound_on = 1;
 
 /* Channel metadata */
 #define NUM_CHANNELS 20
@@ -80,6 +82,9 @@ static int SetPan(int channel, int dx_panning);
 static void CleanupChannel(int channel);
 static void FreeRegisteredSound(int index);
 
+int get_pan(int h);
+int get_vol(int h);
+
 
 /**
  * Display a SDL audio-format in human-readable form
@@ -97,7 +102,6 @@ static const char *format2string(Uint16 format) {
     }
   return format_str;
 }
-
 
 
 /**
@@ -722,14 +726,19 @@ int SoundStopEffect(int sound)
  * Sets up the DirectSound object and loads all sounds into secondary
  * DirectSound buffers.  Returns -1 on error, or 0 if successful
  */
-int InitSound()
+void sfx_init()
 {
-  log_info("initting sound");
+  if (!sound_on)
+    return;
+
+  sound_on = 0;
+
+  log_info("Initting sound");
 
   if (SDL_Init(SDL_INIT_AUDIO) == -1)
     {
       log_error("SDL_Init(SDL_INIT_AUDIO): %s", SDL_GetError());
-      return -1;
+      return;
     }
 
   /* Work-around to disable fluidsynth and fallback to TiMidity++: */
@@ -752,7 +761,7 @@ int InitSound()
   if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, buf_samples) == -1)
     {
       log_error("Mix_OpenAudio: %s", Mix_GetError());
-      return -1;
+      return;
     }
 
   /* Allocate channels (not mono/stereo, but the simultaneous sounds
@@ -842,15 +851,18 @@ int InitSound()
   /* Make sure they won't be used: */
   for (i = 0; i < MAX_SOUNDS; i++)
     registered_sounds[i].cvt.buf = NULL;
-  
-  return 0;
+
+  sound_on = 1;
 }
 
 /**
- * Undoes everything that was done in a InitSound call
+ * Undoes everything that was done in a sfx_init call
  */
-void QuitSound(void)
+void sfx_quit(void)
 {
+  if (!sound_on)
+    return;
+
   if (SDL_WasInit(SDL_INIT_AUDIO) == 0)
     return;
 
@@ -982,4 +994,48 @@ void sound_set_vol(int soundbank, int volume)
 {
   int channel = soundbank - 1;
   SetVolume(channel, volume);
+}
+
+
+/* Sound - SFX */
+int get_pan(int h)
+{
+  int pan = 0;
+  int x1 = 320;
+  
+  //uncomment to allow math to be done from Dink's current location
+  //x1 = spr[1].x;
+  
+  if (spr[h].active)
+    {
+      if (spr[h].x > x1) pan += (spr[h].x - x1) * 6;
+      if (x1 > spr[h].x) pan -= (x1 - spr[h].x) * 6;
+    }
+
+  if (pan > 10000) pan = 10000;
+  if (pan < -10000) pan = -10000;
+  
+  return(pan);
+}
+
+int get_vol(int h)
+{
+  int pan = 0;
+  int pan2 = 0;
+  
+  if (spr[h].active)
+    {
+      if (spr[h].x > spr[1].x) pan -= (spr[h].x - spr[1].x) * 4;
+      if (spr[1].x > spr[h].x) pan -= (spr[1].x - spr[h].x) * 4;
+      if (spr[h].y > spr[1].y) pan2 -= (spr[h].y - spr[1].y) * 4;
+      if (spr[1].y > spr[h].y) pan2 -= (spr[1].y - spr[h].y) * 4;
+      
+      //Msg("pan %d, pan2 %d", pan, pan2);
+      if (pan2 < pan) pan = pan2;
+    }
+  
+  if (pan > -100) pan = 0;
+  if (pan < -10000) pan = -10000;
+  
+  return(pan);
 }

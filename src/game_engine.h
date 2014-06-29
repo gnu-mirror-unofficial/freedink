@@ -1,5 +1,5 @@
 /**
- * Header for code common to FreeDink and FreeDinkedit
+ * Game-specific processing
 
  * Copyright (C) 1997, 1998, 1999, 2002, 2003  Seth A. Robinson
  * Copyright (C) 2008, 2009, 2012  Sylvain Beucler
@@ -27,101 +27,12 @@
 #include <time.h>
 
 #include "SDL.h"
-#include "rect.h"
 #include "io_util.h"
 #include "dinkc.h"
 #include "gfx_tiles.h"
 #include "dinkc_sp_custom.h"
 
 #define FPS 60
-#define MAX_SPRITES_AT_ONCE 300
-
-
-struct sp
-{
-  int x,moveman;
-  int y; 
-  int mx,my;
-  int lpx[51],lpy[51];
-  int speed;
-  int brain;
-  int seq_orig,dir;
-  int seq;
-  int frame;
-  unsigned long delay;
-  int pseq;
-  int pframe;
-  
-  /*BOOL*/int active;
-  int attrib;
-  unsigned long wait;
-  int timer;
-  int skip;
-  int skiptimer;
-  int size;
-  int que;
-  int base_walk;
-  int base_idle;
-  int base_attack;
-  
-  int base_hit;
-  int last_sound;
-  int hard;
-  rect alt;
-  int althard;
-  int sp_index;  /* editor_sprite */
-  /*BOOL*/int nocontrol;
-  int idle;
-  int strength;
-  int damage;
-  int defense;
-  int hitpoints;
-  int exp;
-  int gold;
-  int base_die;
-  int kill;
-  Uint32 kill_timer;
-  int script_num;
-  char text[200];
-  int owner;
-  int script;
-  int sound;
-  int callback;
-  int freeze;
-  /*bool*/int move_active;
-  int move_script;
-  int move_dir;
-  int move_num;
-  /*BOOL*/int move_nohard;
-  int follow;
-  int nohit;
-  /*BOOL*/int notouch;
-  unsigned long notouch_timer;
-  /*BOOL*/int flying;
-  int touch_damage;
-  int brain_parm;
-  int brain_parm2;
-  /*BOOL*/int noclip;
-  /*BOOL*/int reverse;
-  /*BOOL*/int disabled;
-  int target;
-  int attack_wait;
-  int move_wait;
-  int distance;
-  int last_hit;
-  /*BOOL*/int live;
-  int range;
-  int attack_hit_sound;
-  int attack_hit_sound_speed;
-  int action;
-  int nodraw;
-  int frame_delay;
-  int picfreeze;
-  /* v1.08 */
-  int bloodseq;
-  int bloodnum;
-  dinkc_sp_custom custom;
-};
 
 struct item_struct
 {
@@ -181,13 +92,12 @@ struct player_info
   struct global_function func[100];
 };
 
-extern struct sp spr[];
 extern struct player_info play;
 extern int last_sprite_created;
 
 /* Engine variables directly mapped with DinkC variables */
 extern int *pvision, *plife, *presult, *pspeed, *ptiming, *plifemax,
-  *pexper, *pmap, *pstrength, *pcur_weapon,*pcur_magic, *pdefense,
+  *pexper, *pstrength, *pcur_weapon,*pcur_magic, *pdefense,
   *pgold, *pmagic, *plevel, *plast_text, *pmagic_level;
 extern int *pupdate_status, *pmissile_target, *penemy_sprite,
   *pmagic_cost, *pmissle_source;
@@ -197,27 +107,6 @@ extern int flife, fexp, fstrength, fdefense, fgold, fmagic,
   fmagic_level, flifemax, fraise, last_magic_draw;
 
 
-
-/* Sound - BGM */
-extern /*bool*/int midi_active;
-extern /*bool*/int sound_on;
-
-
-/* dink.dat */
-struct map_info
-{
-  int loc[769];
-  int music[769];
-  int indoor[769];
-};
-extern struct map_info map;
-
-
-
-/* Joystick */
-extern /*BOOL*/int joystick;
-/* extern JOYINFOEX jinfo; */
-extern SDL_Joystick *jinfo;
 struct wait_for_button
 {
 	int script;
@@ -233,15 +122,10 @@ extern char *dversion_string;
 extern int dversion;
 #define LEN_SAVE_GAME_INFO 200
 extern char save_game_info[LEN_SAVE_GAME_INFO];
-extern char current_map[50];
-extern char current_dat[50];
 
 extern time_t time_start;
 
 extern int smooth_follow;
-
-extern int get_pan(int h);
-extern int get_vol(int h);
 
 
 /* Editor sprite containing the current warp (teleporter), 0 if no active warp: */
@@ -253,11 +137,23 @@ extern int cycle_script;
 
 extern unsigned int dink_base_push;
 
-extern void game_init(void);
-extern void game_quit(void);
+extern void game_init();
+extern void game_quit();
 
 extern Uint32 game_GetTicks(void);
 extern void game_set_high_speed(void);
 extern void game_set_normal_speed(void);
 
+extern int next_raise();
+extern void add_exp_force(int num, int source_sprite);
+extern void add_exp(int num, int killed_sprite);
+
+extern void fix_dead_sprites();
+
+extern int game_load_map(int num);
+extern void update_screen_time(void);
+extern void update_play_changes( void );
+extern void game_place_sprites(void);
+extern void game_place_sprites_background(void);
+extern void fill_back_sprites(void);
 #endif

@@ -1,8 +1,7 @@
 /**
- * DinkC script engine
+ * Dialog choices
 
- * Copyright (C) 1997, 1998, 1999, 2002, 2003  Seth A. Robinson
- * Copyright (C) 2005, 2007, 2008, 2014  Sylvain Beucler
+ * Copyright (C) 2014  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -21,20 +20,33 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _BGM_H
-#define _BGM_H
+#ifndef _TALK_H
+#define _TALK_H
 
-extern /*bool*/int midi_active;
-
-extern int something_playing(void);
-extern int PlayMidi(char *sFileName);
-extern int PauseMidi();
-extern int ResumeMidi();
-extern int StopMidi();
-extern int ReplayMidi();
-extern void check_midi();
-extern void bgm_init(void);
-extern void bgm_quit(void);
-extern void loopmidi(int loop_midi);
+/* Talk choices */
+#define TALK_TITLE_BUFSIZ 3000
+#define TALK_LINE_BUFSIZ 101
+struct talk_struct
+{
+  char line[21][TALK_LINE_BUFSIZ];  /* dialog choices */
+  int line_return[21]; /* return this number if chosen */
+  char buffer[TALK_TITLE_BUFSIZ];   /* title */
+  int cur;
+  int last;
+  /*bool*/int active;
+  int cur_view;
+  int cur_view_end;
+  int page;
+  int script;
+  int offset;
+  int newy;
+  int color;
+  int curf;
+  int timer;
+};
+extern struct talk_struct talk;
+extern void talk_start(int script, int nb_choices);
+extern void talk_clear();
+extern void talk_process();
 
 #endif

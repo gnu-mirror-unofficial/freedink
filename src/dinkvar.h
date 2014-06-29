@@ -1,7 +1,7 @@
 /**
  * Header for code common to FreeDink and FreeDinkedit
 
- * Copyright (C) 2005, 2007, 2008, 2009, 2010, 2012  Sylvain Beucler
+ * Copyright (C) 2005, 2007, 2008, 2009, 2010, 2012, 2014  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -37,6 +37,7 @@
 #include "game_engine.h"
 #include "rect.h"
 #include "dinkc.h"
+#include "screen.h"
 
 struct attackinfo_struct
 {
@@ -81,43 +82,16 @@ struct small_map
 
 
 
-//sub struct for tile hardness
-
-struct block_y
-{
-  unsigned char y[51];
-};
-
-struct ts_block
-{
-  struct block_y x[51];
-  BOOL_1BYTE used;
-};
-
-//struct for hardness info, INDEX controls which hardness each block has.  800 max
-//types available.
-#define HARDNESS_NB_TILES 800
-struct hardness
-{
-  struct ts_block htile[HARDNESS_NB_TILES];
-  /* default hardness for each background tile square, 12*8=96 tiles
-     per screen but indexed % 128 in the code (so 128*(41-1)+12*8=5216
-     used indexes instead of 12*8*41=3936). */
-  short btile_default[GFX_TILES_NB_SQUARES];
-};
-
 extern int GetKeyboard(int key);
 extern int add_sprite(int x1, int y, int brain,int pseq, int pframe );
+extern int add_sprite_dumb(int x1, int y, int brain,int pseq, int pframe,int size);
 extern void check_seq_status(int h);
 /* extern void dderror(HRESULT hErr); */
 //extern void draw_sprite_game(LPDIRECTDRAWSURFACE lpdest,int h);
 extern void draw_sprite_game(SDL_Surface *GFX_lpdest, int h);
-extern void draw_status_all(void);
-extern void drawallhard( void);
 extern void duck_brain(int h);
 extern /*BOOL*/int init_mouse();
 extern int load_map_to(char* path, const int num, struct small_map* screen);
-extern int load_map(const int num);
 extern int load_script(char filename[15], int sprite, /*bool*/int set_sprite);
 extern /*bool*/int locate(int script, char proc[20]);
 extern void process_callbacks(void);
@@ -148,7 +122,6 @@ struct show_bmp
 extern struct show_bmp showb;
 
 
-extern int last_sprite_created;
 extern int mbase_count;
 extern unsigned long mold;
 
@@ -171,26 +144,19 @@ extern /*bool*/int transition_in_progress;
 
 
 /* Game state */
-extern /*bool*/int add_time_to_saved_game(int num);
 extern void attach(void);
 extern /*bool*/int windowed;
 extern int fcur_weapon, fcur_magic;
 extern int push_active;
 extern int move_screen;
 extern int move_counter;
-extern int weapon_script;
-extern int magic_script;
 
 /* Player */
 extern /*bool*/int inside_box(int x1, int y1, rect box);
 extern int walk_off_screen;
 
 /* Sprites - state */
-extern void add_exp_force(int num, int source_sprite);
-extern void add_exp(int num, int killed_sprite);
 extern void changedir( int dir1, int k,int base);
-extern int get_pan(int h);
-extern int get_vol(int h);
 
 /* Sprites - action */
 extern void kill_text_owned_by(int sprite);
@@ -200,10 +166,8 @@ extern void kill_sprite_all (int sprite);
 extern int find_sprite(int editor_sprite);
 
 /* Scripts */
-extern int say_text_xy(char text[200], int mx, int my, int script);
 extern void kill_all_scripts_for_real(void);
 extern void kill_returning_stuff(int script);
-extern int say_text(char text[200], int h, int script);
 
 /* Map */
 extern unsigned char get_hard(int x1, int y1);
@@ -211,9 +175,6 @@ extern unsigned char get_hard_play(int h, int x1, int y1);
 extern void load_hard(void);
 extern int load_info_to(char* path, struct map_info *mymap);
 extern void load_info(void);
-
-/* Screen */
-extern void update_screen_time(void);
 
 /* OS */
 extern int bActive; // is application active?
@@ -230,6 +191,29 @@ extern int burn_revision;
 /*
  * Game & editor
  */
+//sub struct for tile hardness
+struct block_y
+{
+  unsigned char y[51];
+};
+struct ts_block
+{
+  struct block_y x[51];
+  BOOL_1BYTE used;
+};
+
+//struct for hardness info, INDEX controls which hardness each block has.  800 max
+//types available.
+#define HARDNESS_NB_TILES 800
+struct hardness
+{
+  struct ts_block htile[HARDNESS_NB_TILES];
+  /* default hardness for each background tile square, 12*8=96 tiles
+     per screen but indexed % 128 in the code (so 128*(41-1)+12*8=5216
+     used indexes instead of 12*8*41=3936). */
+  short btile_default[GFX_TILES_NB_SQUARES];
+};
+
 /*bool*/int get_box (int h, rect * box_crap, rect * box_real);
 extern /*bool*/int dinkedit;
 extern int draw_map_tiny;
@@ -243,8 +227,6 @@ extern struct hardness hmap;
 
 extern void check_sprite_status(int h);
 extern void add_hardness(int sprite, int num);
-extern void fill_whole_hard(void);
-extern int add_sprite_dumb(int x1, int y, int brain,int pseq, int pframe,int size);
 extern /*bool*/int kill_last_sprite(void);
 extern void check_frame_status(int h, int frame);
 extern void flip_it_second(void);
@@ -258,21 +240,10 @@ extern /*bool*/int no_running_main;
 extern void fill_screen(int num);
 
 
-/* Used by dinkc_bindings.c only */
-enum item_type { ITEM_REGULAR, ITEM_MAGIC };
-extern void add_item(char name[10], int mseq, int mframe, enum item_type type);
-extern void kill_item_script(char* name);
-extern void kill_mitem_script(char* name);
 extern void show_bmp(char name[80], int showdot, int script);
 extern void copy_bmp( char name[80]);
-extern void kill_cur_item( void );
-extern void kill_cur_magic( void );
 extern /*bool*/int text_owned_by(int sprite);
-extern void kill_all_vars(void);
-extern void update_play_changes( void );
 extern void fill_hardxy(rect box);
-extern void save_game(int num);
-extern /*bool*/int load_game(int num);
 extern int does_sprite_have_text(int sprite);
 extern int change_sprite(int h,  int val, int * change);
 extern int change_sprite_noreturn(int h,  int val, int * change);
@@ -287,32 +258,6 @@ extern void check_sprite_status_full(int sprite_no);
 extern int mode;
 extern int keep_mouse;
 // + talk.active
-
-/* Talk choices */
-#define TALK_TITLE_BUFSIZ 3000
-#define TALK_LINE_BUFSIZ 101
-struct talk_struct
-{
-  char line[21][TALK_LINE_BUFSIZ];  /* dialog choices */
-  int line_return[21]; /* return this number if chosen */
-  char buffer[TALK_TITLE_BUFSIZ];   /* title */
-  int cur;
-  int last;
-  /*bool*/int active;
-  int cur_view;
-  int cur_view_end;
-  int page;
-  int script;
-  int offset;
-  int newy;
-  int color;
-  int curf;
-  int timer;
-};
-extern struct talk_struct talk;
-extern void talk_start(int script, int nb_choices);
-extern void talk_clear();
-extern void talk_process();
 
 extern void set_mode(int new_mode);
 extern void set_keep_mouse(int on);

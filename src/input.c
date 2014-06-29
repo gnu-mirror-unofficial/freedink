@@ -51,6 +51,9 @@ int scancodejustpressed[SDL_NUM_SCANCODES];
 /* Mouse left click */
 /*bool*/int mouse1 = 0;
   
+SDL_Joystick* jinfo;
+int joystick = /*true*/1;
+
 
 /* Access keyboard cached state */
 Uint8 input_getscancodestate(SDL_Scancode scancode)
@@ -97,8 +100,7 @@ void input_init(void)
     }
   }
 
-  /* Jail window cursor (Alt+Tab still works) */
-  SDL_SetWindowGrab(window, SDL_TRUE);
+  /* Never show system cursor in our window */
   SDL_ShowCursor(SDL_FALSE);
 
   /* We'll handle those events manually */

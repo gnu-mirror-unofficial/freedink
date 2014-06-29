@@ -1,7 +1,7 @@
 /**
  * Compute and store the search paths
 
- * Copyright (C) 2007, 2008, 2009  Sylvain Beucler
+ * Copyright (C) 2007, 2008, 2009, 2014  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -319,8 +319,6 @@ void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
     dmodname = malloc(dmodname_len+1);
     strncpy(dmodname, dmoddir+i+1, dmodname_len);
     dmodname[dmodname_len] = '\0';
-    printf("dmoddir=%s\n", dmoddir);
-    printf("dmodname=%s\n", dmodname);
     if (strcmp(dmodname, ".") == 0 || strcmp(dmodname, "..") == 0)
       {
 	msgbox("Error: not loading nameless D-Mod '%s'", dmodname);

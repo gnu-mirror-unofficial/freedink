@@ -52,8 +52,12 @@
 #include "log.h"
 
 #include "game_engine.h"
+#include "screen.h"
+#include "meminfo.h"
 #include "dinkvar.h"
 #include "dinkc_console.h"
+#include "talk.h"
+#include "text.h"
 
 void move(int u, int amount, char kind,  char kindy);
 void draw_box(rect box, int color);
@@ -64,10 +68,6 @@ int hurt_thing(int h, int damage, int special);
 
 
 static int but_timer = 0;
-
-/* Blinking selector in the inventory screen */
-static int item_timer;
-static int item_pic;
 
 /* Fadedown/fadeup counter */
 static int process_count = 0;
@@ -813,6 +813,15 @@ void process_move(int h)
 	}
 	
 	
+}
+
+void kill_sprite_all (int sprite)
+{
+        spr[sprite].active = /*false*/0;
+
+        kill_text_owned_by(sprite);
+        kill_scripts_owned_by(sprite);
+
 }
 
 void duck_brain(int h)
@@ -1857,7 +1866,7 @@ int did_player_cross_screen(int lock_sprite, int h)
 	  update_screen_time();
 	  grab_trick(4);
 	  *pmap -= 1;
-	  load_map(map.loc[*pmap]);
+	  game_load_map(map.loc[*pmap]);
 	  if (map.indoor[*pmap] == 0)
 	    play.last_map = *pmap;
 	  
@@ -1884,7 +1893,7 @@ int did_player_cross_screen(int lock_sprite, int h)
 	  update_screen_time();
 	  grab_trick(6);
 	  *pmap += 1;
-	  load_map(map.loc[*pmap]);
+	  game_load_map(map.loc[*pmap]);
 	  if (map.indoor[*pmap] == 0)
 	    play.last_map = *pmap;
 	  
@@ -1911,7 +1920,7 @@ int did_player_cross_screen(int lock_sprite, int h)
 	  update_screen_time();
 	  grab_trick(8);
 	  *pmap -= 32;
-	  load_map(map.loc[*pmap]);
+	  game_load_map(map.loc[*pmap]);
 	  if (map.indoor[*pmap] == 0)
 	    play.last_map = *pmap;
 	  
@@ -1941,7 +1950,7 @@ int did_player_cross_screen(int lock_sprite, int h)
 	  update_screen_time();
 	  grab_trick(2);
 	  *pmap += 32;
-	  load_map(map.loc[*pmap]);
+	  game_load_map(map.loc[*pmap]);
 	  if (map.indoor[*pmap] == 0)
 	    play.last_map = *pmap;
 	  
@@ -2596,14 +2605,24 @@ void human_brain(int h)
       int scancode;
       for (scancode = 0; scancode < SDL_NUM_SCANCODES; scancode++)
 	{ 
-	  if (scancode == SDL_SCANCODE_SPACE) continue;
-	  if (scancode == SDL_SCANCODE_6) continue;
-	  if (scancode == SDL_SCANCODE_7) continue;
-	  if (scancode == SDL_SCANCODE_LEFT) continue;
-	  if (scancode == SDL_SCANCODE_UP) continue;
-	  if (scancode == SDL_SCANCODE_RIGHT) continue;
-	  if (scancode == SDL_SCANCODE_DOWN) continue;
-	  if (SDL_GetKeyFromScancode(scancode) == SDLK_m) continue;
+	  if (scancode == SDL_SCANCODE_SPACE
+	      || scancode == SDL_SCANCODE_6
+	      || scancode == SDL_SCANCODE_7
+	      || scancode == SDL_SCANCODE_LEFT
+	      || scancode == SDL_SCANCODE_UP
+	      || scancode == SDL_SCANCODE_RIGHT
+	      || scancode == SDL_SCANCODE_DOWN
+	      || scancode == SDL_SCANCODE_RETURN
+	      || scancode == SDL_SCANCODE_TAB
+	      || scancode == SDL_SCANCODE_ESCAPE
+	      || scancode == SDL_SCANCODE_LCTRL
+	      || scancode == SDL_SCANCODE_RCTRL
+	      || scancode == SDL_SCANCODE_LSHIFT
+	      || scancode == SDL_SCANCODE_RSHIFT
+	      || scancode == SDL_SCANCODE_LALT
+	      || scancode == SDL_SCANCODE_RALT
+	      || SDL_GetKeyFromScancode(scancode) == SDLK_m)
+	    continue;
 	  
 	  char scriptname[30];
 	  if (input_getscancodestate(scancode))
@@ -2850,6 +2869,7 @@ shootm:
   crap = check_if_move_is_legal(h);
   if (crap != 0)
     {
+      // TODO: crap-100 may be negative...
       if (pam.sprite[crap-100].is_warp != 0)
 	flub_mode = crap;
 		  
@@ -3768,7 +3788,7 @@ void process_warp_man(void)
 	  if (map.indoor[pam.sprite[block].warp_map] == 0)
 	    play.last_map = pam.sprite[block].warp_map;
 	  
-	  load_map(map.loc[pam.sprite[block].warp_map]);
+	  game_load_map(map.loc[pam.sprite[block].warp_map]);
 	  draw_map_game();
 	  
 	  process_upcycle = 1;
@@ -4003,257 +4023,6 @@ void button_brain(int h )
 	
 }
 
-/**
- * Draw an item icon (or an item selection square) in the inventory
- * screen
- */
-void draw_item(int item_idx0, enum item_type type, int mseq, int mframe)
-{
-  int mx = 0;
-  int my = 0;
-
-  if (type == ITEM_REGULAR)
-    {
-      mx = 260;
-      my = 83;
-      
-      mx += (item_idx0 % 4) * (18 + 65);
-      my += (item_idx0 / 4) * (20 + 55);
-    }
-  else
-    {
-      mx = 45;
-      my = 83;
-      
-      mx += (item_idx0 % 2) * (18 + 65);
-      my += (item_idx0 / 2) * (20 + 55);
-    }
-	
-  check_seq_status(mseq);
-	
-  if (GFX_k[seq[mseq].frame[mframe]].k == NULL) 
-    {
-      if (type == ITEM_REGULAR)
-	{
-	  log_debug("Whups, item %d seq %d frame %d not loaded, killed it",
-		    item_idx0, mseq, mframe);
-	  play.item[item_idx0].active = 0;
-	}
-      else
-	{
-	  log_debug("Whups, magic %d seq %d frame %d not loaded, killed it",
-		    item_idx0, mseq, mframe);
-	  play.mitem[item_idx0].active = 0;
-	}
-      return;
-    }
-  SDL_Rect dst;
-  dst.x = mx; dst.y = my;
-  SDL_BlitSurface(GFX_k[seq[mseq].frame[mframe]].k, NULL, GFX_lpDDSBack, &dst);
-}
-
-/**
- * Inventory screen mode
- */
-void process_item()
-{
-  SDL_BlitSurface(GFX_lpDDSTwo, NULL, GFX_lpDDSBack, NULL);
-	
-  check_seq_status(423);
-  //lets blit the main screen over it
-  SDL_Rect dst = {20, 0};
-  SDL_BlitSurface(GFX_k[seq[423].frame[1]].k, NULL, GFX_lpDDSBack, &dst);
-
-  //draw all currently owned items; magic
-  {
-    int i = 0;
-    for (; i < NB_MITEMS; i++)
-      if (play.mitem[i].active)
-	draw_item(i, ITEM_MAGIC, play.mitem[i].seq, play.mitem[i].frame);
-  }
-  //draw selection box around armed magic
-  if (*pcur_magic >= 1 && *pcur_magic <= NB_MITEMS && play.item[*pcur_magic - 1].active)
-    draw_item(*pcur_magic - 1, ITEM_MAGIC, 423, 5);
-  
-
-  //draw all currently owned items; normal
-  {
-    int i = 0;
-    for (; i < NB_ITEMS; i++)
-      if (play.item[i].active)
-	draw_item(i, ITEM_REGULAR, play.item[i].seq, play.item[i].frame);
-  }
-  //draw selection box around armed weapon
-  if (*pcur_weapon >= 1 && *pcur_weapon <= NB_ITEMS && play.item[*pcur_weapon - 1].active)
-    draw_item(*pcur_weapon - 1, ITEM_REGULAR, 423, 4);
-  
-  
-  if (play.curitem < 0
-      || (!play.item_magic && play.curitem >= NB_ITEMS)
-      || (play.item_magic && play.curitem >= NB_MITEMS))
-    play.curitem = 0;
-
-  if (thisTickCount > item_timer)
-    {
-      //draw the selector around it, alternating from 2 to 3
-      if (item_pic == 2)
-	item_pic = 3;
-      else
-	item_pic = 2;
-      item_timer = thisTickCount + 400;
-    }
-  draw_item(play.curitem, play.item_magic, 423, item_pic);
-  
-  if (!play.item_magic)
-    {
-      int hor  = play.curitem % 4;
-      int vert = play.curitem / 4;
-			
-      //choosing weapon/item
-      if (sjoy.button[ACTION_ATTACK])
-	{
-	  if (play.item[play.curitem].active)
-	    {
-	      //arm weapon
-	      SoundPlayEffect(18, 42050,0,0,0);
-	      if (*pcur_weapon != 0)
-		{
-		  //disarm old weapon
-		  if (locate(weapon_script, "DISARM"))
-		    run_script(weapon_script);
-		}
-
-	      //load weapons script
-	      *pcur_weapon = play.curitem + 1;
-	      weapon_script = load_script(play.item[*pcur_weapon - 1].name, 1000, /*false*/0);
-	      if (locate(weapon_script, "ARM"))
-		run_script(weapon_script);
-	      if (locate(weapon_script, "ARMMOVIE"))
-		run_script(weapon_script);
-	      draw_status_all();
-	    }
-	}
-      else if (sjoy.rightd) 
-	{
-	  if (hor < 3)
-	    {
-	      play.curitem++;
-	      SoundPlayEffect(11, 22050,0,0,0);
-	    }
-	}
-      else if (sjoy.leftd) 
-	{
-	  if (hor > 0)
-	    {
-	      play.curitem--; 
-	      SoundPlayEffect(11, 22050,0,0,0);
-	    }
-	  else
-	    {
-	      SoundPlayEffect(11, 22050,0,0,0);
-	      //switch to magic mode
-	      play.item_magic = 1;
-	      play.curitem = vert * 2 + 1;
-	    }
-	}
-      else if (sjoy.downd)
-	{
-	  if (vert < 3)
-	    {
-	      play.curitem += 4;
-	      SoundPlayEffect(11, 22050,0,0,0);
-	    }
-	}
-      else if (sjoy.upd)
-	{
-	  if (vert > 0)
-	    {
-	      play.curitem -= 4;
-	      SoundPlayEffect(11, 22050,0,0,0);
-	    }
-	}
-    }
-  else		
-    {
-      int hor  = play.curitem % 2;
-      int vert = play.curitem / 2;
-      
-      if (sjoy.button[ACTION_ATTACK])
-	{
-	  if (play.mitem[play.curitem].active)
-	    {
-	      //arm magic
-	      SoundPlayEffect(18, 42050,0,0,0);
-	      if (*pcur_magic != 0)
-		{
-		  //disarm old weapon
-		  if (locate(magic_script, "DISARM"))
-		    run_script(magic_script);
-		}
-	      //load magics script
-	      *pcur_magic = play.curitem + 1;
-	      magic_script = load_script(play.mitem[*pcur_magic - 1].name, 1000, /*false*/0);
-	      if (locate(magic_script, "ARM"))
-		run_script(magic_script);
-	      if (locate(magic_script, "ARMMOVIE"))
-		run_script(magic_script);
-	      draw_status_all();
-	    }
-	}
-      else if (sjoy.rightd) 
-	{
-	  if (hor < 1)
-	    {
-	      play.curitem++;
-	      SoundPlayEffect(11, 22050,0,0,0);
-	    }
-	  else
-	    { 
-	      play.item_magic = 0;
-	      play.curitem = vert * 4;
-	      SoundPlayEffect(11, 22050,0,0,0);
-	    }
-	}
-      else if (sjoy.leftd) 
-	{
-	  if (hor > 0)
-	    {
-	      play.curitem--;
-	      SoundPlayEffect(11, 22050,0,0,0);
-	    }
-	}
-      else if (sjoy.downd)
-	{
-	  if (vert < 3)
-	    {
-	      play.curitem += 2;
-	      SoundPlayEffect(11, 22050,0,0,0);
-	    }
-	}
-      else if (sjoy.upd)
-	{
-	  if (vert > 0) 
-	    {
-	      play.curitem -= 2;
-	      SoundPlayEffect(11, 22050,0,0,0);
-	    }
-	}
-    }
-  if (talk.active)
-    talk_process();
-  
-  //a special process callbacks for just stuff that was created in this mode? 
-  // process_callbacks_special();
-  flip_it(); 
-  
-  if (sjoy.button[ACTION_INVENTORY])
-    {
-      SoundPlayEffect(17, 22050,0,0,0);
-      show_inventory = 0;
-    }
-}
-
-
 void process_show_bmp( void )
 {
   // We could disable this Blit (work is already done in show_bmp())
@@ -4333,16 +4102,530 @@ void drawscreenlock( void )
 }
 
 
+/* Draw the background from tiles */
+void draw_map_game(void)
+{
+  *pvision = 0;
+                
+  while (kill_last_sprite());
+  kill_repeat_sounds();
+  kill_all_scripts();
+
+  gfx_tiles_draw_screen();
+                
+  if (strlen(pam.script) > 1)
+    {
+      int ms = load_script(pam.script,0, /*true*/1);
+                        
+      if (ms > 0) 
+	{
+	  locate(ms, "main");
+	  no_running_main = /*true*/1;
+	  run_script(ms);
+	  no_running_main = /*false*/0;
+	}
+    }
+
+  // lets add the sprites hardness to the real hardness, adding it's
+  // own uniqueness to our collective.
+  game_place_sprites();
+  
+  thisTickCount = game_GetTicks();
+                
+  // Run active sprites' scripts
+  init_scripts();
+
+  // Display some memory stats after loading a screen
+  meminfo_log_mallinfo();
+  gfx_log_meminfo();
+  sfx_log_meminfo();
+}
+        
+/* It's used at: freedink.cpp:restoreAll(), DinkC's draw_background(),
+   stop_entire_game(). What's the difference with draw_map_game()?? */
+void draw_map_game_background(void)
+{
+  gfx_tiles_draw_screen();
+  game_place_sprites_background();
+}
+
+
+
+/*bool*/int load_game(int num)
+{
+  /* Instead of using 'fseek(...)' when we want to skip a little bit
+     of data, we read it to this buffer - this is much faster on PSP
+     (1000ms -> 60ms), probably related to cache validation. No
+     noticeable change on PC (<1ms). */
+  char skipbuf[10000]; // more than any fseek we do
+
+  FILE *f = NULL;
+  
+  //lets get rid of our magic and weapon scripts
+  if (weapon_script != 0)
+    {
+      if (locate(weapon_script, "DISARM"))
+	{
+	  run_script(weapon_script);
+	}
+    }
+
+  if (magic_script != 0 && locate(magic_script, "DISARM"))
+    run_script(magic_script);
+
+  bow.active = /*false*/0;
+  weapon_script = 0;
+  magic_script = 0;
+  midi_active = /*true*/1;
+  
+  if (last_saved_game > 0)
+    {
+      log_info("Modifying saved game.");
+      if (!add_time_to_saved_game(last_saved_game))
+	log_error("Error modifying saved game.");
+    }
+  StopMidi();
+  
+  f = paths_savegame_fopen(num, "rb");
+  if (!f)
+    {
+      log_error("Couldn't load save game %d", num);
+      return /*false*/0;
+    }
+
+
+  /* Portably load struct player_info play from disk */
+  int i = 0;
+  // TODO: check 'version' field and warn/upgrade/downgrade if
+  // savegame version != dversion
+  fread(skipbuf, 4, 1, f);
+  fread(skipbuf, 77+1, 1, f); // skip save_game_info, cf. save_game_small(...)
+  fread(skipbuf, 118, 1, f); // unused
+  // offset 200
+  play.minutes = read_lsb_int(f);
+  spr[1].x = read_lsb_int(f);
+  spr[1].y = read_lsb_int(f);
+  fread(skipbuf, 4, 1, f); // unused 'die' field
+  spr[1].size = read_lsb_int(f);
+  spr[1].defense = read_lsb_int(f);
+  spr[1].dir = read_lsb_int(f);
+  spr[1].pframe = read_lsb_int(f);
+  spr[1].pseq = read_lsb_int(f);
+  spr[1].seq = read_lsb_int(f);
+  spr[1].frame = read_lsb_int(f);
+  spr[1].strength = read_lsb_int(f);
+  spr[1].base_walk = read_lsb_int(f);
+  spr[1].base_idle = read_lsb_int(f);
+  spr[1].base_hit = read_lsb_int(f);
+  spr[1].que = read_lsb_int(f);
+  // offset 264
+
+  // skip first originally unused mitem entry
+  fread(skipbuf, 20, 1, f);
+  for (i = 0; i < NB_MITEMS; i++)
+    {
+      play.mitem[i].active = fgetc(f);
+      fread(play.mitem[i].name, 11, 1, f);
+      /* The item script could overflow, overwriting 'seq'; if */
+      play.mitem[i].name[11-1] = '\0'; // safety
+      play.mitem[i].seq = read_lsb_int(f);
+      play.mitem[i].frame = read_lsb_int(f);
+    }
+  // skip first originally unused item entry
+  fread(skipbuf, 20, 1, f);
+  for (i = 0; i < NB_ITEMS; i++)
+    {
+      play.item[i].active = fgetc(f);
+      fread(play.item[i].name, 11, 1, f);
+      play.item[i].name[11-1] = '\0'; // safety
+      play.item[i].seq = read_lsb_int(f);
+      play.item[i].frame = read_lsb_int(f);
+    }
+  // offset 784
+
+  play.curitem = read_lsb_int(f) - 1;
+  fread(skipbuf, 4, 1, f); // reproduce unused 'unused' field
+  fread(skipbuf, 4, 1, f); // reproduce unused 'counter' field
+  fread(skipbuf, 1, 1, f); // reproduce unused 'idle' field
+  fread(skipbuf, 3, 1, f); // reproduce memory alignment
+  // offset 796
+
+  for (i = 0; i < 769; i++)
+    {
+      /* Thoses are char arrays, not null-terminated strings */
+      int j = 0;
+      fread(play.spmap[i].type, 100, 1, f);
+      for (j = 0; j < 100; j++)
+	play.spmap[i].seq[j] = read_lsb_short(f);
+      fread(play.spmap[i].frame, 100, 1, f);
+      play.spmap[i].last_time = read_lsb_int(f);
+    }
+
+  /* Here's we'll perform a few tricks to respect a misconception in
+     the original savegame format */
+  // skip first originally unused play.button entry
+  fread(skipbuf, 4, 1, f);
+  // first play.var entry (cf. below) was overwritten by
+  // play.button[10], writing 10 play.button entries:
+  for (i = 0; i < 10; i++) // use fixed 10 rather than NB_BUTTONS
+    input_set_button_action(i, read_lsb_int(f));
+  // skip the rest of first unused play.var entry
+  fread(skipbuf, 32-4, 1, f);
+
+  // reading the rest of play.var
+  for (i = 1; i < MAX_VARS; i++)
+    {
+      play.var[i].var = read_lsb_int(f);
+      fread(play.var[i].name, 20, 1, f);
+      play.var[i].name[20-1] = '\0'; // safety
+      play.var[i].scope = read_lsb_int(f);
+      play.var[i].active = fgetc(f);
+      fread(skipbuf, 3, 1, f); // reproduce memory alignment
+    }
+
+  play.push_active = fgetc(f);
+  fread(skipbuf, 3, 1, f); // reproduce memory alignment
+  play.push_dir = read_lsb_int(f);
+
+  play.push_timer = read_lsb_int(f);
+
+  play.last_talk = read_lsb_int(f);
+  play.mouse = read_lsb_int(f);
+  play.item_magic = fgetc(f);
+  fread(skipbuf, 3, 1, f); // reproduce memory alignment
+  play.last_map = read_lsb_int(f);
+  fread(skipbuf, 4, 1, f); // reproduce unused 'crap' field
+  fread(skipbuf, 95 * 4, 1, f); // reproduce unused 'buff' field
+  fread(skipbuf, 20 * 4, 1, f); // reproduce unused 'dbuff' field
+  fread(skipbuf, 10 * 4, 1, f); // reproduce unused 'lbuff' field
+  
+  /* v1.08: use wasted space for storing file location of map.dat,
+     dink.dat, palette, and tiles */
+  /* char cbuff[6000]; */
+  /* Thoses are char arrays, not null-terminated strings */
+  fread(play.mapdat, 50, 1, f);
+  fread(play.dinkdat, 50, 1, f);
+  fread(play.palette, 50, 1, f);
+
+  for (i = 0; i < GFX_TILES_NB_SETS+1; i++)
+    {
+      fread(play.tile[i].file, 50, 1, f);
+      play.tile[i].file[50-1] = '\0'; // safety
+    }
+  for (i = 0; i < 100; i++)
+    {
+      fread(play.func[i].file, 10, 1, f);
+      play.func[i].file[10-1] = '\0'; // safety
+      fread(play.func[i].func, 20, 1, f);
+      play.func[i].func[20-1] = '\0'; // safety
+    }
+  /* Remains 750 unused chars at the end of the file. */
+  /* fread(play.cbuff, 750, 1, f); */
+
+  fclose(f);
+
+
+  if (dversion >= 108)
+    {
+      // new map, if exist
+      if (strlen (play.mapdat) > 0 && strlen (play.dinkdat) > 0)
+	{
+	  strcpy (current_map, play.mapdat);
+	  strcpy (current_dat, play.dinkdat);
+	  load_info();
+	}
+      
+      // load palette
+      if (strlen(play.palette) > 0)
+	{
+	  if (gfx_palette_set_from_bmp(play.palette) < 0)
+	    log_error("Couldn't load palette from '%s': %s", play.palette, SDL_GetError());
+	  gfx_palette_get_phys(GFX_real_pal);
+	}
+      
+      /* Reload tiles */
+      tiles_load_default();
+      
+      /* Replace with custom tiles if needed */
+      for (i = 1; i <= GFX_TILES_NB_SETS; i++)
+	if (strlen(play.tile[i].file) > 0)
+	  tiles_load_slot(play.tile[i].file, i);
+    }
+  
+  
+  spr[1].damage = 0;
+  walk_off_screen = 0;
+  spr[1].nodraw = 0;
+  push_active = 1;
+  
+  time(&time_start);
+  
+  int script = load_script("main", 0, /*true*/1);
+  locate(script, "main");
+  run_script(script);
+  //lets attach our vars to the scripts
+  
+  attach();
+  log_debug("Attached vars.");
+  dinkspeed = 3;
+  
+  if (*pcur_weapon >= 1 && *pcur_weapon <= NB_ITEMS)
+    {
+      if (play.item[*pcur_weapon - 1].active == 0)
+	{
+	  *pcur_weapon = 1;
+	  weapon_script = 0;
+	  log_error("Loadgame error: Player doesn't have armed weapon - changed to 1.");
+	}
+      else
+	{
+	  weapon_script = load_script(play.item[*pcur_weapon - 1].name, 1000, /*false*/0);
+	  if (locate(weapon_script, "DISARM"))
+	    run_script(weapon_script);
+	  weapon_script = load_script(play.item[*pcur_weapon - 1].name, 1000, /*false*/0);
+	  if (locate(weapon_script, "ARM"))
+	    run_script(weapon_script);
+	}
+    }
+  if (*pcur_magic >= 1 && *pcur_magic <= NB_MITEMS)
+    {
+      if (play.item[*pcur_magic - 1].active == /*false*/0)
+	{
+	  *pcur_magic = 0;
+	  magic_script = 0;
+	  log_error("Loadgame error: Player doesn't have armed magic - changed to 0.");
+	}
+      else
+	{
+	  
+	  magic_script = load_script(play.mitem[*pcur_magic - 1].name, 1000, /*false*/0);
+	  if (locate(magic_script, "DISARM"))
+	    run_script(magic_script);
+	  magic_script = load_script(play.mitem[*pcur_magic - 1].name, 1000, /*false*/0);
+	  if (locate(magic_script, "ARM"))
+	    run_script(magic_script);
+	}
+    }
+  kill_repeat_sounds_all();
+  game_load_map(map.loc[*pmap]);
+  log_info("Loaded map.");
+  draw_map_game();
+  log_info("Map drawn.");
+  
+  last_saved_game = num;
+  
+  return /*true*/1;
+}
+
+
+/*bool*/int add_time_to_saved_game(int num)
+{
+  FILE *f = NULL;
+
+  f = paths_savegame_fopen(num, "rb");
+  if (!f)
+    {
+      log_error("Couldn't load save game %d", num);
+      return /*false*/0;
+    }
+
+  int minutes = 0;
+  int minutes_offset = 200;
+  fseek(f, minutes_offset, SEEK_SET);
+  minutes = read_lsb_int(f);
+  fclose(f);
+  
+  //great, now let's resave it with added time
+  log_info("Ok, adding time.");
+  time_t ct;
+  
+  time(&ct);
+  minutes += (int) (difftime(ct,time_start) / 60);
+  
+  f = paths_savegame_fopen(num, "rb+");
+  if (f)
+    {
+      fseek(f, minutes_offset, SEEK_SET);
+      write_lsb_int(minutes, f);
+      fclose(f);
+    }
+  log_info("Wrote it.(%d of time)", minutes);
+  
+  return /*true*/1;
+}
+
+
+void save_game(int num)
+{
+  /* Instead of using 'fseek(...)' when we want to skip a little bit
+     of data, we read it to this buffer - this is much faster on PSP
+     (1000ms -> 60ms), probably related to cache validation. No
+     noticeable change on PC (<1ms). */
+  char skipbuf[10000]; // more than any fseek we do
+  memset(skipbuf, 0, 10000);
+
+  FILE *f;
+
+  //lets set some vars first
+  time_t ct;
+  time(&ct);
+  play.minutes += (int) (difftime(ct,time_start) / 60);
+        //reset timer
+  time(&time_start);
+  
+  // save game things for storing new map, palette, and tile
+  // information
+  strncpy (play.mapdat, current_map, 50);
+  strncpy (play.dinkdat, current_dat, 50);
+
+  last_saved_game = num;
+  f = paths_savegame_fopen(num, "wb");
+  if (f == NULL)
+    {
+      perror("Cannot save game");
+      return;
+    }
+
+  /* Portably dump struct player_info play to disk */
+  int i = 0;
+  write_lsb_int(dversion, f);
+  // set_save_game_info() support:
+  {
+    char* info_temp = strdup(save_game_info);
+    decipher_string(&info_temp, 0);
+    fwrite(info_temp, 77+1, 1, f);
+    free(info_temp);
+  }
+  fwrite(skipbuf, 118, 1, f); // unused
+  // offset 200
+  write_lsb_int(play.minutes, f);
+  write_lsb_int(spr[1].x, f);
+  write_lsb_int(spr[1].y, f);
+  fwrite(skipbuf, 4, 1, f); // unused 'die' field
+  write_lsb_int(spr[1].size, f);
+  write_lsb_int(spr[1].defense, f);
+  write_lsb_int(spr[1].dir, f);
+  write_lsb_int(spr[1].pframe, f);
+  write_lsb_int(spr[1].pseq, f);
+  write_lsb_int(spr[1].seq, f);
+  write_lsb_int(spr[1].frame, f);
+  write_lsb_int(spr[1].strength, f);
+  write_lsb_int(spr[1].base_walk, f);
+  write_lsb_int(spr[1].base_idle, f);
+  write_lsb_int(spr[1].base_hit, f);
+  write_lsb_int(spr[1].que, f);
+  // offset 264
+
+  // skip first originally unused mitem entry
+  fwrite(skipbuf, 20, 1, f);
+  for (i = 0; i < NB_MITEMS; i++)
+    {
+      fputc(play.mitem[i].active, f);
+      fwrite(play.mitem[i].name, 11, 1, f);
+      write_lsb_int(play.mitem[i].seq, f);
+      write_lsb_int(play.mitem[i].frame, f);
+    }
+  // skip first originally unused item entry
+  fwrite(skipbuf, 20, 1, f);
+  for (i = 0; i < NB_ITEMS; i++)
+    {
+      fputc(play.item[i].active, f);
+      fwrite(play.item[i].name, 11, 1, f);
+      write_lsb_int(play.item[i].seq, f);
+      write_lsb_int(play.item[i].frame, f);
+    }
+  // offset 784
+
+  write_lsb_int(play.curitem + 1, f);
+  fwrite(skipbuf, 4, 1, f); // reproduce unused 'unused' field
+  fwrite(skipbuf, 4, 1, f); // reproduce unused 'counter' field
+  fwrite(skipbuf, 1, 1, f); // reproduce unused 'idle' field
+  fwrite(skipbuf, 3, 1, f); // reproduce memory alignment
+  // offset 796
+
+  for (i = 0; i < 769; i++)
+    {
+      int j = 0;
+      fwrite(play.spmap[i].type, 100, 1, f);
+      for (j = 0; j < 100; j++)
+	write_lsb_short(play.spmap[i].seq[j], f);
+      fwrite(play.spmap[i].frame, 100, 1, f);
+      write_lsb_int(play.spmap[i].last_time, f);
+    }
+
+  /* Here's we'll perform a few tricks to respect a misconception in
+     the original savegame format */
+  // skip first originally unused play.button entry
+  fwrite(skipbuf, 4, 1, f);
+  // first play.var entry (cf. below) was overwritten by
+  // play.button[10], writing 10 play.button entries:
+  for (i = 0; i < 10; i++) // use fixed 10 rather than NB_BUTTONS
+    write_lsb_int(input_get_button_action(i), f);
+  // skip the rest of first unused play.var entry
+  fwrite(skipbuf, 32-4, 1, f);
+
+  // writing the rest of play.var
+  for (i = 1; i < MAX_VARS; i++)
+    {
+      write_lsb_int(play.var[i].var, f);
+      fwrite(play.var[i].name, 20, 1, f);
+      write_lsb_int(play.var[i].scope, f);
+      fputc(play.var[i].active, f);
+      fwrite(skipbuf, 3, 1, f); // reproduce memory alignment
+    }
+
+  fputc(play.push_active, f);
+  fwrite(skipbuf, 3, 1, f); // reproduce memory alignment
+  write_lsb_int(play.push_dir, f);
+
+  write_lsb_int(play.push_timer, f);
+
+  write_lsb_int(play.last_talk, f);
+  write_lsb_int(play.mouse, f);
+  fputc(play.item_magic, f);
+  fwrite(skipbuf, 3, 1, f); // reproduce memory alignment
+  write_lsb_int(play.last_map, f);
+  fwrite(skipbuf, 4, 1, f); // reproduce unused 'crap' field
+  fwrite(skipbuf, 95 * 4, 1, f); // reproduce unused 'buff' field
+  fwrite(skipbuf, 20 * 4, 1, f); // reproduce unused 'dbuff' field
+  fwrite(skipbuf, 10 * 4, 1, f); // reproduce unused 'lbuff' field
+  
+  /* v1.08: use wasted space for storing file location of map.dat,
+     dink.dat, palette, and tiles */
+  /* char cbuff[6000];*/
+  fwrite(play.mapdat, 50, 1, f);
+  fwrite(play.dinkdat, 50, 1, f);
+  fwrite(play.palette, 50, 1, f);
+
+  for (i = 0; i < GFX_TILES_NB_SETS+1; i++)
+    fwrite(play.tile[i].file, 50, 1, f);
+  for (i = 0; i < 100; i++)
+    {
+      fwrite(play.func[i].file, 10, 1, f);
+      fwrite(play.func[i].func, 20, 1, f);
+    }
+  fwrite(skipbuf, 750, 1, f);
+
+  fclose(f);
+}
+
 /**
  * doInit - do work required for every instance of the application:
  *                create the window, initialize data
  */
-static void freedink_init(int argc, char *argv[])
+static void freedink_init()
 {
   /* Notify other apps that FreeDink is playing */
   log_path(/*true*/1);
 
   /* Game-specific initialization */
+  /* Start with this initialization as it resets structures that are
+     filled in other subsystems initialization */
+  game_init();
+
+  if (sound_on)
+    bgm_init();
+
   //Activate dink, but don't really turn him on
   //spr[1].active = TRUE;
   spr[1].timer = 33;
@@ -4416,6 +4699,11 @@ static void freedink_input(SDL_Event* ev) {
   freedink_update_mouse(ev);
 }
 
+static void freedink_quit() {
+  game_quit();
+  bgm_quit();
+}
+
 /**
  * Bootstrap
  */
@@ -4425,5 +4713,6 @@ int main(int argc, char* argv[])
 		   "Tiles/Splash.bmp",
 		   freedink_init,
 		   freedink_input,
-		   updateFrame);
+		   updateFrame,
+		   freedink_quit);
 }

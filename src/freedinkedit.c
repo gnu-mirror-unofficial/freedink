@@ -284,8 +284,8 @@ void draw_sprite(SDL_Surface *GFX_lpdest, int h)
 /**
  * Draw all screen sprites, ordered by queue.
  * 
- * Also cf. game's place_sprites_game(...) and
- * place_sprites_game_background(...).
+ * Also cf. game's game_place_sprites(...) and
+ * game_place_sprites_background(...).
  */
 void place_sprites()
 {
@@ -352,7 +352,12 @@ void place_sprites()
     }
 }
 
-
+void editor_load_map(int num)
+{
+  if (load_map_to(current_map, num, &pam) < 0)
+    return;
+  fill_whole_hard();
+}
 
 /* Draw background from tiles */
 void draw_map(void)
@@ -388,6 +393,151 @@ void draw_current()
   
   SDL_Rect dst = {590, 430};
   SDL_BlitSurface(gfx_tiles[srctileset_idx0 + 1], &src, GFX_lpDDSTwo, &dst);
+}
+
+
+/* Draw harness. */
+void drawallhard( void)
+{
+/*   rect box_crap; */
+/*   int ddrval; */
+/*   DDBLTFX     ddbltfx; */
+  int x1, y1;
+
+  /* TODO: test me! Then factor the code */
+  for (x1=0; x1 < 600; x1++)
+    for (y1=0; y1 < 400; y1++)
+      {
+	if (hm.x[x1].y[y1] == 1)
+	  {
+/* 	    ddbltfx.dwFillColor = 1; */
+/* 	    ddbltfx.dwSize = sizeof(ddbltfx); */
+/* 	    box_crap.top = y1; */
+/* 	    box_crap.bottom = y1+1; */
+/* 	    box_crap.left = x1+playl; //20 is to compensate for the border */
+/* 	    box_crap.right = x1+1+playl; */
+/* 	    ddrval = lpDDSBack->Blt(&box_crap ,NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx); */
+/* 	    if (ddrval != DD_OK) Msg("There was an error!"); */
+	    // GFX
+	    {
+	      SDL_Rect GFX_box_crap;
+	      GFX_box_crap.x = x1 + playl;
+	      GFX_box_crap.y = y1;
+	      GFX_box_crap.w = 1;
+	      GFX_box_crap.h = 1;
+	      SDL_FillRect(GFX_lpDDSBack, &GFX_box_crap,
+			   SDL_MapRGB(GFX_lpDDSBack->format,
+				      GFX_real_pal[1].r,
+				      GFX_real_pal[1].g,
+				      GFX_real_pal[1].b));
+	    }
+	  }
+
+	if (hm.x[x1].y[y1] == 2)
+	  {
+/* 	    ddbltfx.dwFillColor = 128; */
+/* 	    ddbltfx.dwSize = sizeof(ddbltfx); */
+/* 	    box_crap.top = y1; */
+/* 	    box_crap.bottom = y1+1; */
+/* 	    box_crap.left = x1+playl; //20 is to compensate for the border */
+/* 	    box_crap.right = x1+1+playl; */
+/* 	    ddrval = lpDDSBack->Blt(&box_crap ,NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx); */
+/* 	    if (ddrval != DD_OK) Msg("There was an error!"); */
+	    // GFX
+	    {
+	      SDL_Rect GFX_box_crap;
+	      GFX_box_crap.x = x1 + playl;
+	      GFX_box_crap.y = y1;
+	      GFX_box_crap.w = 1;
+	      GFX_box_crap.h = 1;
+	      SDL_FillRect(GFX_lpDDSBack, &GFX_box_crap,
+			   SDL_MapRGB(GFX_lpDDSBack->format,
+				      GFX_real_pal[128].r,
+				      GFX_real_pal[128].g,
+				      GFX_real_pal[128].b));
+	    }
+	  }
+
+	if (hm.x[x1].y[y1] == 3)
+	  {
+/* 	    ddbltfx.dwFillColor = 45; */
+/* 	    ddbltfx.dwSize = sizeof(ddbltfx); */
+/* 	    box_crap.top = y1; */
+/* 	    box_crap.bottom = y1+1; */
+/* 	    box_crap.left = x1+playl; //20 is to compensate for the border */
+/* 	    box_crap.right = x1+1+playl; */
+/* 	    ddrval = lpDDSBack->Blt(&box_crap ,NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx); */
+/* 	    if (ddrval != DD_OK) Msg("There was an error!"); */
+	    // GFX
+	    {
+	      SDL_Rect GFX_box_crap;
+	      GFX_box_crap.x = x1 + playl;
+	      GFX_box_crap.y = y1;
+	      GFX_box_crap.w = 1;
+	      GFX_box_crap.h = 1;
+	      SDL_FillRect(GFX_lpDDSBack, &GFX_box_crap,
+			   SDL_MapRGB(GFX_lpDDSBack->format,
+				      GFX_real_pal[45].r,
+				      GFX_real_pal[45].g,
+				      GFX_real_pal[45].b));
+	    }
+	  }
+
+	if (hm.x[x1].y[y1] > 100)
+	  {
+
+	    if (pam.sprite[  (hm.x[x1].y[y1]) - 100].is_warp == 1)
+	      {
+		//draw a little pixel
+/* 		ddbltfx.dwFillColor = 20; */
+/* 		ddbltfx.dwSize = sizeof(ddbltfx); */
+/* 		box_crap.top = y1; */
+/* 		box_crap.bottom = y1+1; */
+/* 		box_crap.left = x1+playl; //20 is to compensate for the border */
+/* 		box_crap.right = x1+1+playl; */
+/* 		ddrval = lpDDSBack->Blt(&box_crap ,NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx); */
+/* 		if (ddrval != DD_OK) Msg("There was an error!"); */
+		// GFX
+		{
+		  SDL_Rect GFX_box_crap;
+		  GFX_box_crap.x = x1 + playl;
+		  GFX_box_crap.y = y1;
+		  GFX_box_crap.w = 1;
+		  GFX_box_crap.h = 1;
+		  SDL_FillRect(GFX_lpDDSBack, &GFX_box_crap,
+			       SDL_MapRGB(GFX_lpDDSBack->format,
+					  GFX_real_pal[20].r,
+					  GFX_real_pal[20].g,
+					  GFX_real_pal[20].b));
+		}
+	      }
+	    else
+	      {
+		//draw a little pixel
+/* 		ddbltfx.dwFillColor = 23; */
+/* 		ddbltfx.dwSize = sizeof(ddbltfx); */
+/* 		box_crap.top = y1; */
+/* 		box_crap.bottom = y1+1; */
+/* 		box_crap.left = x1+playl; //20 is to compensate for the border */
+/* 		box_crap.right = x1+1+playl; */
+/* 		ddrval = lpDDSBack->Blt(&box_crap ,NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx); */
+/* 		if (ddrval != DD_OK) Msg("There was an error!"); */
+		// GFX
+		{
+		  SDL_Rect GFX_box_crap;
+		  GFX_box_crap.x = x1 + playl;
+		  GFX_box_crap.y = y1;
+		  GFX_box_crap.w = 1;
+		  GFX_box_crap.h = 1;
+		  SDL_FillRect(GFX_lpDDSBack, &GFX_box_crap,
+			       SDL_MapRGB(GFX_lpDDSBack->format,
+					  GFX_real_pal[23].r,
+					  GFX_real_pal[23].g,
+					  GFX_real_pal[23].b));
+		}
+	      }
+	  }
+      }
 }
 
 /* Edit a tile hardness - show semi-transparent red/blue/orange
@@ -1045,13 +1195,13 @@ if (spr[1].size == 100)
 		{
         	save_map(map.loc[cur_map]);
           log_debug("loading right map");
-			load_map(map.loc[cur_map+1]);
+			editor_load_map(map.loc[cur_map+1]);
                int holdx = spr[1].x;
                int holdy = spr[1].y;
 			   spr[1].x -= 600;
 			sp_add();
 			save_map(map.loc[cur_map+1]);
-			load_map(map.loc[cur_map]);
+			editor_load_map(map.loc[cur_map]);
            spr[1].x = holdx;
 		   spr[1].y = holdy;
 		}
@@ -1067,13 +1217,13 @@ if (spr[1].size == 100)
 		{
         	save_map(map.loc[cur_map]);
           log_debug("loading right map");
-			load_map(map.loc[cur_map-1]);
+			editor_load_map(map.loc[cur_map-1]);
                int holdx = spr[1].x;
                int holdy = spr[1].y;
 			   spr[1].x += 600;
 			sp_add();
 			save_map(map.loc[cur_map-1]);
-			load_map(map.loc[cur_map]);
+			editor_load_map(map.loc[cur_map]);
            spr[1].x = holdx;
 		   spr[1].y = holdy;
 		}
@@ -1089,13 +1239,13 @@ if (spr[1].size == 100)
 		{
         	save_map(map.loc[cur_map]);
           log_debug("loading bottom ");
-			load_map(map.loc[cur_map+32]);
+			editor_load_map(map.loc[cur_map+32]);
                int holdx = spr[1].x;
                int holdy = spr[1].y;
 			   spr[1].y -= 400;
 			sp_add();
 			save_map(map.loc[cur_map+32]);
-			load_map(map.loc[cur_map]);
+			editor_load_map(map.loc[cur_map]);
            spr[1].x = holdx;
 		   spr[1].y = holdy;
 		}
@@ -1111,13 +1261,13 @@ if (spr[1].size == 100)
 		{
         	save_map(map.loc[cur_map]);
           log_debug("loading top map");
-			load_map(map.loc[cur_map-32]);
+			editor_load_map(map.loc[cur_map-32]);
                int holdx = spr[1].x;
                int holdy = spr[1].y;
 			   spr[1].y += 400;
 			sp_add();
 			save_map(map.loc[cur_map-32]);
-			load_map(map.loc[cur_map]);
+			editor_load_map(map.loc[cur_map]);
            spr[1].x = holdx;
 		   spr[1].y = holdy;
 		}
@@ -1792,7 +1942,7 @@ void updateFrame(void)
 	  if (map.loc[draw_map_tiny] != 0)
 	    {
 	      //a map exists here
-	      load_map(map.loc[draw_map_tiny]);
+	      editor_load_map(map.loc[draw_map_tiny]);
 	      //map loaded, lets display it
 	      draw_map();
 
@@ -3620,7 +3770,11 @@ void updateFrame(void)
 			    save_info();
 
 
-			  } else load_map(map.loc[cur_map]);
+			  }
+			else
+			  {
+			    editor_load_map(map.loc[cur_map]);
+			  }
 
 			spr[h].seq = 3;
 			spr[h].seq_orig = 3;
@@ -4237,8 +4391,8 @@ void updateFrame(void)
 	  sprintf(msg, "Alternative Tile Hardness Selector: Press S to stamp this tiles hardness."
 		  "  DEL to remove alternate hardness."
 		  "  C to copy from current block."
-		  "  PageUp&PageDown to cycle."
-		  "  ESCAPE to exit.\n"
+		  "  PageUp&PageDown to cycle.\n"
+		  "ESCAPE to exit.\n"
 		  "%s", str);
 	}
 
@@ -4688,9 +4842,6 @@ int load_editor_sounds()
 {
   int i;
 
-  if (InitSound() < 0)
-    return -1;
-
   /*
    * Load all sounds
    */
@@ -4716,7 +4867,7 @@ int load_editor_sounds()
  * doInit - do work required for every instance of the application:
  *                create the window, initialize data
  */
-static void freedinkedit_init(int argc, char *argv[])
+static void freedinkedit_init()
 {
   /** SETUP **/
   /* Manually setup basic sequences */
@@ -4802,6 +4953,9 @@ static void freedinkedit_init(int argc, char *argv[])
   playx = 620;
   playy = 480;
   sp_seq = 0;
+
+  /* Relative mode with infinite out-of-screen scrolling */
+  SDL_SetRelativeMouseMode(SDL_TRUE);
 }
 /* Global game shortcuts - just full-screen toggle actually */
 static void freedinkedit_input_global_shortcuts(SDL_Event* ev) {
@@ -4834,6 +4988,9 @@ static void freedinkedit_input(SDL_Event* ev) {
     freedinkedit_update_cursor_position(ev);
 }
 
+static void freedinkedit_quit() {
+}
+
 /**
  * Bootstrap
  */
@@ -4843,5 +5000,8 @@ int main(int argc, char *argv[])
   dinkedit = 1;
   return app_start(argc, argv,
 		   "tiles/esplash.bmp",		   
-		   freedinkedit_init, freedinkedit_input, updateFrame);
+		   freedinkedit_init,
+		   freedinkedit_input,
+		   updateFrame,
+		   freedinkedit_quit);
 }

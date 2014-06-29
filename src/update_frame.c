@@ -3,7 +3,7 @@
 
  * Copyright (C) 1997, 1998, 1999, 2002, 2003  Seth A. Robinson
  * Copyright (C) 2005, 2006  Dan Walma
- * Copyright (C) 2005, 2007, 2008, 2009, 2010, 2011, 2012  Sylvain Beucler
+ * Copyright (C) 2005, 2007, 2008, 2009, 2010, 2011, 2012, 2014  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -50,6 +50,8 @@
 #include "dinkc_console.h"
 #include "input.h"
 #include "sfx.h"
+#include "talk.h"
+#include "status.h"
 
 #include "update_frame.h"
 
@@ -852,7 +854,7 @@ past:
 	if (mode == 2)
 	{
 	  set_mode(3);
-	  load_map(map.loc[*pmap]);
+	  game_load_map(map.loc[*pmap]);
 	  draw_map_game();
 	  flife = *plife;
 	}

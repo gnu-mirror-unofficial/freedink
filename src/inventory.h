@@ -1,8 +1,7 @@
 /**
- * DinkC script engine
+ * Game inventory
 
- * Copyright (C) 1997, 1998, 1999, 2002, 2003  Seth A. Robinson
- * Copyright (C) 2005, 2007, 2008, 2014  Sylvain Beucler
+ * Copyright (C) 2014  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -21,20 +20,16 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _BGM_H
-#define _BGM_H
+#ifndef _INVENTORY_H
+#define _INVENTORY_H
 
-extern /*bool*/int midi_active;
-
-extern int something_playing(void);
-extern int PlayMidi(char *sFileName);
-extern int PauseMidi();
-extern int ResumeMidi();
-extern int StopMidi();
-extern int ReplayMidi();
-extern void check_midi();
-extern void bgm_init(void);
-extern void bgm_quit(void);
-extern void loopmidi(int loop_midi);
-
+/* Used by dinkc_bindings.c only */
+enum item_type { ITEM_REGULAR, ITEM_MAGIC };
+extern void add_item(char name[10], int mseq, int mframe, enum item_type type);
+extern void kill_item_script(char* name);
+extern void kill_mitem_script(char* name);
+extern void kill_cur_item( void );
+extern void kill_cur_magic( void );
+//extern void draw_item(int item_idx0, enum item_type type, int mseq, int mframe);
+extern void process_item();
 #endif

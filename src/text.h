@@ -1,8 +1,7 @@
 /**
- * DinkC script engine
+ * Display game texts
 
- * Copyright (C) 1997, 1998, 1999, 2002, 2003  Seth A. Robinson
- * Copyright (C) 2005, 2007, 2008, 2014  Sylvain Beucler
+ * Copyright (C) 2014  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -21,20 +20,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _BGM_H
-#define _BGM_H
+#ifndef _TEXT_H
+#define _TEXT_H
 
-extern /*bool*/int midi_active;
-
-extern int something_playing(void);
-extern int PlayMidi(char *sFileName);
-extern int PauseMidi();
-extern int ResumeMidi();
-extern int StopMidi();
-extern int ReplayMidi();
-extern void check_midi();
-extern void bgm_init(void);
-extern void bgm_quit(void);
-extern void loopmidi(int loop_midi);
+extern int say_text_xy(char text[200], int mx, int my, int script);
+extern int say_text(char text[200], int h, int script);
 
 #endif

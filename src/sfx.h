@@ -27,7 +27,10 @@
 
 #include "SDL_mixer.h"
 
-extern int InitSound();
+extern /*bool*/int sound_on;
+
+extern void sfx_init();
+extern void sfx_quit();
 extern int CreateBufferFromWaveFile(char* filename, int dwBuf);
 extern int CreateBufferFromWaveFile_RW(SDL_RWops* rwops, int rwfreesrc, int index);
 extern void EditorSoundPlayEffect(int sound);
@@ -36,7 +39,6 @@ extern int playing(int sound);
 extern int SoundStopEffect(int sound);
 extern void kill_repeat_sounds(void);
 extern void kill_repeat_sounds_all(void);
-extern void QuitSound(void);
 extern void sfx_log_meminfo(void);
 extern void sfx_cleanup_finished_channels(void);
 extern void update_sound(void);

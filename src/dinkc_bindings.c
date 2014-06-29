@@ -58,6 +58,11 @@
 #include "log.h"
 #include "dinkc_console.h"
 #include "i18n.h"
+#include "inventory.h" /* add_item, ITEM_*, kill_item_script,
+			  kill_mitem_script, kill_cur_magic */
+#include "talk.h" /* talk, talk_clear */
+#include "status.h"
+#include "text.h"
 
 /* store current procedure arguments expanded values of type 'int' (see get_parms) */
 static long nlist[10];
@@ -576,7 +581,7 @@ void dc_load_screen(int script, int* yield, int* preturnint)
 
   //Msg("Loading map %d..",*pmap);
   update_screen_time();
-  load_map(map.loc[*pmap]);
+  game_load_map(map.loc[*pmap]);
 
   // update indicator on mini-map
   if (map.indoor[*pmap] == 0)

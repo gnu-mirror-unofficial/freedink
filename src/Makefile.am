@@ -16,17 +16,15 @@ AM_CPPFLAGS += -I$(top_srcdir)/intl -I$(top_builddir)/intl
 
 LIBS += -lm
 
-COMMON_OBJS= app.c app.h bgm.c bgm.h dinkini.c dinkini.h dinkc.c	\
-	dinkc.h dinkc_bindings.c dinkc_bindings.h dinkc_console.c	\
-	dinkc_console.h dinkc_sp_custom.c dinkc_sp_custom.h dinkvar.c	\
-	dinkvar.h fastfile.c fastfile.h game_engine.c game_engine.h	\
-	str_util.c str_util.h io_util.c io_util.h sfx.c sfx.h gfx.c	\
-	gfx.h gfx_fade.c gfx_fade.h gfx_tiles.c gfx_tiles.h		\
-	gfx_palette.c gfx_palette.h gfx_fonts.c gfx_fonts.h rect.c	\
-	rect.h input.c input.h freedink_xpm.c freedink_xpm.h paths.c	\
-	paths.h log.c log.h gfx_sprites.c gfx_sprites.h vgasys_fon.c	\
-	vgasys_fon.h msgbox.c msgbox.h i18n.c i18n.h meminfo.c		\
-	meminfo.h screen.c screen.h
+COMMON_OBJS= app.c app.h bgm.c bgm.h dinkc_sp_custom.c			\
+	dinkc_sp_custom.h dinkini.c dinkini.h dinkvar.c dinkvar.h	\
+	fastfile.c fastfile.h str_util.c str_util.h io_util.c		\
+	io_util.h gfx.c gfx.h gfx_fade.c gfx_fade.h gfx_tiles.c		\
+	gfx_tiles.h gfx_palette.c gfx_palette.h gfx_fonts.c		\
+	gfx_fonts.h rect.c rect.h input.c input.h freedink_xpm.c	\
+	freedink_xpm.h paths.c paths.h log.c log.h gfx_sprites.c	\
+	gfx_sprites.h vgasys_fon.c vgasys_fon.h msgbox.c msgbox.h	\
+	screen.c screen.h sfx.c sfx.h
 
 if ANDROID
   # Build .so JNI libs rather than executables
@@ -38,8 +36,12 @@ if ANDROID
 endif
 
 bin_PROGRAMS = freedink freedinkedit
-freedink_SOURCES = $(COMMON_OBJS) freedink.c freedink.h update_frame.c	\
-update_frame.h
+freedink_SOURCES = $(COMMON_OBJS) freedink.c freedink.h			\
+	update_frame.c update_frame.h dinkc_bindings.c			\
+	dinkc_bindings.h dinkc.c dinkc.h dinkc_console.c		\
+	dinkc_console.h game_engine.c game_engine.h i18n.c i18n.h	\
+	inventory.c inventory.h meminfo.c meminfo.h status.c status.h	\
+	talk.c talk.h text.c text.h
 freedinkedit_SOURCES = $(COMMON_OBJS) freedinkedit.c
 nodist_freedink_SOURCES = $(WOERES)
 nodist_freedinkedit_SOURCES = $(WOERES)

@@ -42,6 +42,7 @@
 #include "paths.h"
 #include "str_util.h"
 #include "log.h"
+#include "screen.h"
 
 int returnint = 0;
 int bKeepReturnInt = 0;
@@ -73,6 +74,9 @@ static char *rbuf[MAX_SCRIPTS]; //pointers to buffers we may need
 
 
 struct refinfo *rinfo[MAX_SCRIPTS];
+
+int weapon_script = 0;
+int magic_script = 0;
 
 
 /**
@@ -873,6 +877,15 @@ void kill_all_scripts_for_real(void)
     {
       callback[k].active = 0;
     }
+}
+
+/**
+ * Reset all game state - not only vars.
+ * Used in dc_restart_game()
+ */
+void kill_all_vars()
+{
+  memset(&play, 0, sizeof(play));
 }
 
 

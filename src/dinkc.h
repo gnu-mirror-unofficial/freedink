@@ -74,6 +74,9 @@ struct refinfo
 };
 extern struct refinfo *rinfo[];
 
+extern int weapon_script;
+extern int magic_script;
+
 extern void dinkc_init();
 extern void dinkc_quit();
 extern int load_script(char* filename, int sprite, /*bool*/int set_sprite);
@@ -101,8 +104,9 @@ extern void run_script(int script);
 extern void attach(void);
 extern void int_prepare(char line[100], int script);
 extern void make_function(char file[10], char func[20]);
+extern void kill_all_vars();
 
-/* Used by gfx_tiles.c only */
+/* Used by draw_map_game only */
 extern void kill_all_scripts(void);
 extern void init_scripts(void);
 

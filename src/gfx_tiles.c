@@ -28,7 +28,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "game_engine.h"
-#include "screen.h"
 #include "dinkvar.h"
 #include "gfx.h"
 #include "gfx_tiles.h"
@@ -36,7 +35,6 @@
 #include "paths.h"
 #include "sfx.h"
 #include "log.h"
-#include "meminfo.h"
 
 /* Tiles */
 /* Game pieces */
@@ -148,54 +146,6 @@ void gfx_tiles_draw_screen()
       int srctile_square_idx0 = pam.t[x].square_full_idx0 % 128;
       gfx_tiles_draw(srctileset_idx0, srctile_square_idx0, x);
     }
-}
-
-/* Draw the background from tiles */
-void draw_map_game(void)
-{
-  *pvision = 0;
-                
-  while (kill_last_sprite());
-  kill_repeat_sounds();
-  kill_all_scripts();
-
-  gfx_tiles_draw_screen();
-                
-  if (strlen(pam.script) > 1)
-    {
-      int ms = load_script(pam.script,0, /*true*/1);
-                        
-      if (ms > 0) 
-	{
-	  locate(ms, "main");
-	  no_running_main = /*true*/1;
-	  run_script(ms);
-	  no_running_main = /*false*/0;
-	}
-    }
-
-  // lets add the sprites hardness to the real hardness, adding it's
-  // own uniqueness to our collective.
-  place_sprites_game();
-  
-  thisTickCount = game_GetTicks();
-                
-  // Run active sprites' scripts
-  init_scripts();
-
-  // Display some memory stats after loading a screen
-  meminfo_log_mallinfo();
-  gfx_log_meminfo();
-  sfx_log_meminfo();
-}
-        
-        
-/* It's used at: freedink.cpp:restoreAll(), DinkC's draw_background(),
-   stop_entire_game(). What's the difference with draw_map_game()?? */
-void draw_map_game_background(void)
-{
-  gfx_tiles_draw_screen();
-  place_sprites_game_background();
 }
         
 /* Game-specific: animate background (water, fire, ...) */        

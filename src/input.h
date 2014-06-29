@@ -77,6 +77,10 @@ extern "C"
   extern struct seth_joy sjoy;
   extern /*bool*/int mouse1;
 
+  /* Joystick */
+  extern /*BOOL*/int joystick;
+  extern SDL_Joystick* jinfo;
+
   extern void input_update();
   extern void input_init();
   extern void input_quit();
