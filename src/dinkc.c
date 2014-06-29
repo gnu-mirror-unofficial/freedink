@@ -1391,6 +1391,7 @@ next2:
   if (math == '-')
     lhs_var->var -= newval;
   if (math == '/')
+    // TODO: do something if newval == 0 (crashes in Dink v1.08)
     lhs_var->var = lhs_var->var / newval;
   if (math == '*')
     lhs_var->var = lhs_var->var * newval;
