@@ -2593,38 +2593,38 @@ void human_brain(int h)
   //Let's check keys for getting hit
   if (thisTickCount > but_timer && console_active == 0)
     {
-      int x5;
-      for (x5=29; x5<256; x5++)
+      int scancode;
+      for (scancode = 0; scancode < SDL_NUM_SCANCODES; scancode++)
 	{ 
-	  if (x5 == SDLK_SPACE) continue;
-	  if (x5 == '6') continue;
-	  if (x5 == '7') continue;
-	  if (x5 == SDLK_LEFT) continue;
-	  if (x5 == SDLK_UP) continue;
-	  if (x5 == SDLK_RIGHT) continue;
-	  if (x5 == SDLK_DOWN) continue;
-	  if (x5 == 'm') continue;
-	  /* Conflicts with remapped 'a'-'z' SDL
-	     keycodes: */
-	  if (x5 >= 'A' && x5 <= 'Z') continue;
+	  if (scancode == SDL_SCANCODE_SPACE) continue;
+	  if (scancode == SDL_SCANCODE_6) continue;
+	  if (scancode == SDL_SCANCODE_7) continue;
+	  if (scancode == SDL_SCANCODE_LEFT) continue;
+	  if (scancode == SDL_SCANCODE_UP) continue;
+	  if (scancode == SDL_SCANCODE_RIGHT) continue;
+	  if (scancode == SDL_SCANCODE_DOWN) continue;
+	  if (SDL_GetKeyFromScancode(scancode) == SDLK_m) continue;
 	  
-	  char msg[30];
-	  if (input_getcharstate(x5))
+	  char scriptname[30];
+	  if (input_getscancodestate(scancode))
 	    {
-	      int keycode = x5;
 	      /* Get the same keycodes than the original Dink engines
 		 for letters, that is, uppercase ascii rather than
 		 lowercase ascii */
-	      if (x5 >= 'a' && x5 <= 'z')
-		keycode = x5 - ('a' - 'A');
+	      int code;
+	      int keycode = SDL_GetKeyFromScancode(scancode);
+	      if (keycode >= SDLK_a && keycode <= SDLK_z)
+		code = 'A' + (keycode - SDLK_a);
+	      else
+		code = scancode;
 	      
-	      sprintf(msg, "key-%d", keycode);
+	      sprintf(scriptname, "key-%d", code);
 	      but_timer = thisTickCount+200;
 	      
-	      int mycrap = load_script(msg, 1, /*false*/0);
-	      if (locate(mycrap, "MAIN")) 
+	      int script = load_script(scriptname, 1, /*false*/0);
+	      if (locate(script, "MAIN"))
 		{
-		  run_script(mycrap);
+		  run_script(script);
 		  goto b1end;
 		}
 	    }
