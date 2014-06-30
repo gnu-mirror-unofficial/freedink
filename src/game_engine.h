@@ -139,6 +139,7 @@ extern unsigned int dink_base_push;
 
 extern void game_init();
 extern void game_quit();
+extern void game_restart();
 
 extern Uint32 game_GetTicks(void);
 extern void game_set_high_speed(void);

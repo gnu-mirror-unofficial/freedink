@@ -21,6 +21,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include <string.h>
+
 #include "dinkvar.h"
 #include "dinkc.h"
 #include "sfx.h"

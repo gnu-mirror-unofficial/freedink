@@ -811,22 +811,7 @@ void dc_arm_magic(int script, int* yield, int* preturnint)
 
 void dc_restart_game(int script, int* yield, int* preturnint)
 {
-  int mainscript;
-  while (kill_last_sprite());
-  kill_repeat_sounds_all();
-  kill_all_scripts_for_real();
-  set_mode(0);
-  screenlock = 0;
-  kill_all_vars();
-  memset(&hm, 0, sizeof(hm));
-  input_set_default_buttons();
-
-  mainscript = load_script("main", 0, /*true*/1);
-    
-  locate(mainscript, "main");
-  run_script(mainscript);
-  //lets attach our vars to the scripts
-  attach();
+  game_restart();
   *yield = 1;
 }
 

@@ -25,7 +25,6 @@
 #include <config.h>
 #endif
 
-
 #include <stdlib.h>  /* srand */
 #include <time.h>  /* time */
 #include <string.h>  /* memset */
@@ -132,6 +131,29 @@ void game_quit()
 	log_error("Error modifying saved game.");
       last_saved_game = 0;
     }
+}
+
+void game_restart()
+{
+  int mainscript;
+  while (kill_last_sprite());
+  kill_repeat_sounds_all();
+  kill_all_scripts_for_real();
+  set_mode(0);
+  screenlock = 0;
+
+  /* Reset all game state */
+  memset(&play, 0, sizeof(play));
+
+  memset(&hm, 0, sizeof(hm));
+  input_set_default_buttons();
+
+  mainscript = load_script("main", 0, /*true*/1);
+
+  locate(mainscript, "main");
+  run_script(mainscript);
+  //lets attach our vars to the scripts
+  attach();
 }
 
 /**

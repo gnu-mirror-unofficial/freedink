@@ -880,12 +880,12 @@ void kill_all_scripts_for_real(void)
 }
 
 /**
- * Reset all game state - not only vars.
- * Used in dc_restart_game()
+ * Reset all vars.
+ * Used in test suite.
  */
 void kill_all_vars()
 {
-  memset(&play, 0, sizeof(play));
+  memset(&play.var, 0, sizeof(play.var));
 }
 
 
@@ -1537,5 +1537,6 @@ void dinkc_init()
 
 void dinkc_quit()
 {
+  kill_all_vars();
   dinkc_bindings_quit();
 }

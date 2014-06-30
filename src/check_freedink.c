@@ -44,6 +44,10 @@
 /* mkdir */
 #include <sys/stat.h>
 #include <sys/types.h>
+#if defined _WIN32 || defined __WIN32__ || defined __CYGWIN__
+#include <direct.h>
+#define mkdir(name,mode) mkdir(name)
+#endif
 /* rmdir */
 #include <unistd.h>
 
@@ -134,7 +138,6 @@ int test_ioutil_ciconvert_ext(const char* wrong_case, const char* good_case)
     FILE *f = NULL;
     char *fixed_case = strdup(wrong_case);
     ciconvert(fixed_case);
-    printf("fixed_case=%s\n", fixed_case);
     if ((f = fopen(fixed_case, "r")) != NULL)
       success = 1;
 
@@ -191,13 +194,13 @@ END_TEST
 
 static int script_id = -1;
 void test_dinkc_setup() {
-  dinkc_bindings_init();
+  dinkc_init();
   script_id = script_init("unit test");
 }
 
 void test_dinkc_teardown() {
   kill_script(script_id);
-  dinkc_bindings_quit();
+  dinkc_quit();
 }
 
 START_TEST(test_dinkc_getparms_bounds)
@@ -309,6 +312,9 @@ START_TEST(test_dinkc_lookup_var_107)
   ck_assert_int_eq(play.var[var_id].var, 2);
   ck_assert_int_gt(var_id = ts_lookup_var_local_global("titi", script_id), 0);
   ck_assert_int_eq(play.var[var_id].var, 1);
+
+  // needed for CK_FORK=no (woe)
+  kill_all_vars();
 }
 END_TEST
 START_TEST(test_dinkc_lookup_var_108)
@@ -324,6 +330,9 @@ START_TEST(test_dinkc_lookup_var_108)
   ck_assert_int_eq(play.var[var_id].var, 2);
   ck_assert_int_gt(var_id = ts_lookup_var_local_global("titi", script_id), 0);
   ck_assert_int_eq(play.var[var_id].var, 2);
+
+  // needed for CK_FORK=no (woe)
+  kill_all_vars();
 }
 END_TEST
 
@@ -365,7 +374,7 @@ Suite* freedink_suite()
   suite_add_tcase(s, tc_ioutil);
 
   TCase *tc_dinkc = tcase_create("DinkC");
-  tcase_add_checked_fixture(tc_dinkc, test_dinkc_setup, test_dinkc_teardown);
+  tcase_add_unchecked_fixture(tc_dinkc, test_dinkc_setup, test_dinkc_teardown);
   tcase_add_test(tc_dinkc, test_dinkc_getparms_bounds);
   tcase_add_test(tc_dinkc, test_dinkc_getparms_int);
   tcase_add_test(tc_dinkc, test_dinkc_getparms_emptyint);
