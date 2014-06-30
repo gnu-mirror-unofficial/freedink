@@ -1,0 +1,212 @@
+# Hungarian translation of freedink.
+# Copyright (C) 2014 Contributor
+# This file is distributed under the same license as the freedink package.
+#
+# Balázs Úr <urbalazs@gmail.com>, 2014.
+msgid ""
+msgstr ""
+"Project-Id-Version: freedink 108.2\n"
+"Report-Msgid-Bugs-To: bug-freedink@gnu.org\n"
+"POT-Creation-Date: 2014-05-27 20:36+0000\n"
+"PO-Revision-Date: 2014-05-30 21:13+0200\n"
+"Last-Translator: Balázs Úr <urbalazs@gmail.com>\n"
+"Language-Team: Hungarian <translation-team-hu@lists.sourceforge.net>\n"
+"Language: hu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Lokalize 1.5\n"
+
+#: src/init.c:108
+#, c-format
+msgid "Usage: %s [OPTIONS]...\n"
+msgstr "Használat: %s [KAPCSOLÓK]…\n"
+
+#: src/init.c:110
+#, c-format
+msgid "Starts the Dink Smallwood game or one of its D-Mods."
+msgstr "Elindítja a Dink Smallwood játékot vagy a D-Modok egyikét."
+
+#: src/init.c:112
+#, c-format
+msgid "Edit the Dink Smallwood game or one of its D-Mods."
+msgstr "A Dink Smallwood játék vagy a D-Modok egyikének szerkesztése."
+
+#: src/init.c:115
+#, c-format
+msgid "  -h, --help            Display this help screen\n"
+msgstr "  -h, --help            Ezen súgóképernyő megjelenítése\n"
+
+#: src/init.c:116
+#, c-format
+msgid "  -v, --version         Display the version\n"
+msgstr "  -v, --version         A verzió megjelenítése\n"
+
+#: src/init.c:118
+#, c-format
+msgid "  -g, --game <dir>      Specify a DMod directory\n"
+msgstr "  -g, --game <dir>      Egy DMod könyvtár megadása\n"
+
+#: src/init.c:119
+#, c-format
+msgid "  -r, --refdir <dir>    Specify base directory for dink/graphics, D-Mods, etc.\n"
+msgstr "  -r, --refdir <dir>    Alapkönyvtár megadása a dinkhez/grafikákhoz, D-Modokhoz, stb.\n"
+
+#: src/init.c:121
+#, c-format
+msgid "  -d, --debug           Explain what is being done\n"
+msgstr "  -d, --debug           Annak magyarázata, hogy mi történik\n"
+
+#: src/init.c:122
+#, c-format
+msgid "  -i, --noini           Do not attempt to write dinksmallwood.ini\n"
+msgstr "  -i, --noini           Ne próbálja meg a dinksmallwood.ini fájlt írni\n"
+
+#: src/init.c:123
+#, c-format
+msgid "  -j, --nojoy           Do not attempt to use joystick\n"
+msgstr "  -j, --nojoy           Ne próbálja meg a joystick használatát\n"
+
+#: src/init.c:124
+#, c-format
+msgid "  -s, --nosound         Do not play sound\n"
+msgstr "  -s, --nosound         Ne játsszon le hangot\n"
+
+#: src/init.c:125
+#, c-format
+msgid "  -t, --truecolor       Allow more colours (for recent D-Mod graphics)\n"
+msgstr "  -t, --truecolor       Több szín engedélyezése (az újabb D-Mod grafikákhoz)\n"
+
+#: src/init.c:126
+#, c-format
+msgid "  -w, --window          Use windowed mode instead of screen mode\n"
+msgstr "  -w, --window          Ablakos mód használata a képernyőmód helyett\n"
+
+#: src/init.c:127
+#, c-format
+msgid "  -7, --v1.07           Enable v1.07 compatibility mode\n"
+msgstr "  -7, --v1.07           A v1.07 kompatibilitási mód engedélyezése\n"
+
+#. TRANSLATORS: The placeholder indicates the bug-reporting address
+#. for this package.  Please add _another line_ saying "Report
+#. translation bugs to <...>\n" with the address for translation
+#. bugs (typically your translation team's web or email
+#. address).
+#: src/init.c:137
+#, c-format
+msgid "Report bugs to %s.\n"
+msgstr ""
+"Hibák jelentése ide: %s.\n"
+"Fordítási hibák jelentése: Úr Balázs <urbalazs@gmail.com>\n"
+
+#: src/init.c:279
+#, c-format
+msgid "Note: -nomovie is accepted for compatiblity, but has no effect.\n"
+msgstr "Megjegyzés: a -nomovie elfogadott a kompatibilitáshoz, de nincs hatása.\n"
+
+#: src/freedink.c:2679
+msgid "`$I don't see anything here."
+msgstr "`$Semmit sem látok itt."
+
+#: src/freedink.c:2680
+msgid "`$Huh?"
+msgstr "`$Huh?"
+
+#: src/freedink.c:2681
+msgid "`$I'm fairly sure I can't talk to or use that."
+msgstr "`$Egészen biztos vagyok, hogy nem tudok beszélni vele, vagy használni azt."
+
+#: src/freedink.c:2682
+msgid "`$What?"
+msgstr "`$Tessék?"
+
+#: src/freedink.c:2683
+msgid "`$I'm bored."
+msgstr "`$Unatkozom."
+
+#: src/freedink.c:2684
+msgid "`$Not much happening here."
+msgstr "`$Nem sok minden történik itt."
+
+#: src/freedink.c:2792
+msgid "`$I don't know any magic."
+msgstr "`$Nem ismerek semmilyen varázslatot."
+
+#: src/freedink.c:2793
+msgid "`$I'm no wizard!"
+msgstr "`$Nem vagyok varázsló!"
+
+#: src/freedink.c:2794
+msgid "`$I need to learn magic before trying this."
+msgstr "`$Meg kell tanulnom varázsolni, mielőtt ezt megpróbálom."
+
+#: src/freedink.c:2795
+msgid "`$I'm gesturing wildly to no avail!"
+msgstr "`$Vadul integetek, de hiába!"
+
+#: src/freedink.c:2796
+msgid "`$Nothing happened."
+msgstr "`$Semmi sem történt."
+
+#: src/freedink.c:2797
+msgid "`$Hocus pocus!"
+msgstr "`$Hókusz-pókusz!"
+
+#: src/dinkc.c:687
+msgid "Attack"
+msgstr "Támadás"
+
+#: src/dinkc.c:688
+msgid "Talk/Examine"
+msgstr "Beszélgetés/Megvizsgálás"
+
+#: src/dinkc.c:689
+msgid "Magic"
+msgstr "Varázslat"
+
+#: src/dinkc.c:690
+msgid "Item Screen"
+msgstr "Elem képernyő"
+
+#: src/dinkc.c:691
+msgid "Main Menu"
+msgstr "Főmenü"
+
+#: src/dinkc.c:692
+msgid "Map"
+msgstr "Térkép"
+
+#: src/dinkc.c:693 src/dinkc.c:694 src/dinkc.c:695 src/dinkc.c:696
+msgid "Unused"
+msgstr "Nem használt"
+
+#: src/dinkc.c:697
+msgid "Down"
+msgstr "Le"
+
+#: src/dinkc.c:698
+msgid "Left"
+msgstr "Balra"
+
+#: src/dinkc.c:699
+msgid "Right"
+msgstr "Jobbra"
+
+#: src/dinkc.c:700
+msgid "Up"
+msgstr "Fel"
+
+#: src/dinkc.c:701
+msgid "Error: not mapped"
+msgstr "Hiba: nincs leképezve"
+
+#: src/dinkc.c:712
+#, c-format
+msgid "Slot %d - %d:%02d - %s"
+msgstr "%d. hely - %d:%02d - %s"
+
+#: src/dinkc.c:715
+#, c-format
+msgid "Slot %d - Empty"
+msgstr "%d. hely - Üres"

@@ -29,6 +29,9 @@
 - New translation for the engine strings in Russian
   (thanks Yuri Kozlov)
 
+- New translation for the engine strings in Hungarian
+  (thanks Balázs Úr)
+
 - DinkC: load_palette() now searches for palette in the right place
   (thanks scratcher for the report)
 
