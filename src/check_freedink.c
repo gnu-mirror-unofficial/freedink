@@ -327,6 +327,27 @@ START_TEST(test_dinkc_lookup_var_108)
 }
 END_TEST
 
+START_TEST(test_dinkc_sp_custom)
+{
+  dinkc_sp_custom myhash = dinkc_sp_custom_new();
+
+  dinkc_sp_custom_set(myhash, "foo", -1);
+  dinkc_sp_custom_set(myhash, "foo", 3);
+  dinkc_sp_custom_set(myhash, "foo", -1);
+  dinkc_sp_custom_set(myhash, "foo", 4);
+
+  dinkc_sp_custom_set(myhash, "bar", 34);
+
+  ck_assert_int_eq(dinkc_sp_custom_get(myhash, "foo"), 4);
+  ck_assert_int_eq(dinkc_sp_custom_get(myhash, "bar"), 34);
+
+  dinkc_sp_custom_clear(myhash);
+  ck_assert_int_eq(dinkc_sp_custom_get(myhash, "bar"), -1);
+
+  dinkc_sp_custom_free(myhash);
+}
+END_TEST
+
 
 Suite* freedink_suite()
 {
@@ -351,6 +372,7 @@ Suite* freedink_suite()
   tcase_add_test(tc_dinkc, test_dinkc_getparms_parens);
   tcase_add_test(tc_dinkc, test_dinkc_lookup_var_107);
   tcase_add_test(tc_dinkc, test_dinkc_lookup_var_108);
+  tcase_add_test(tc_dinkc, test_dinkc_sp_custom);
   suite_add_tcase(s, tc_dinkc);
 
   return s;

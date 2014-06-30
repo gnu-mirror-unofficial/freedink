@@ -116,29 +116,3 @@ int dinkc_sp_custom_get(dinkc_sp_custom hash, char key[200])
   else
     return -1;
 }
-
-
-#ifdef TEST
-
-int main(void)
-{
-  dinkc_sp_custom myhash = dinkc_sp_custom_new();
-
-  dinkc_sp_custom_set(myhash, "foo", -1);
-  dinkc_sp_custom_set(myhash, "foo", 3);
-  dinkc_sp_custom_set(myhash, "foo", -1);
-  dinkc_sp_custom_set(myhash, "foo", 4);
-
-  dinkc_sp_custom_set(myhash, "bar", 34);
-
-  printf("foo: %d\n", dinkc_sp_custom_get(myhash, "foo"));
-  printf("bar: %d\n", dinkc_sp_custom_get(myhash, "bar"));
-
-  dinkc_sp_custom_clear(myhash);
-  printf("foo (after clear): %d\n", dinkc_sp_custom_get(myhash, "foo"));
-
-  dinkc_sp_custom_free(myhash);
-  return 0;
-}
-
-#endif
