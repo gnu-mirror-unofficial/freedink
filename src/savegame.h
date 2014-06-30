@@ -1,7 +1,8 @@
 /**
- * Game status bar
+ * Load and save game progress
 
- * Copyright (C) 2014  Sylvain Beucler
+ * Copyright (C) 1997, 1998, 1999, 2002, 2003  Seth A. Robinson
+ * Copyright (C) 2003, 2004, 2005, 2007, 2008, 2009, 2010, 2012, 2014  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -20,10 +21,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _STATUS_H
-#define _STATUS_H
+#ifndef _SAVEGAME_H
+#define _SAVEGAME_H
 
-extern void draw_status_all();
-extern void update_status_all();
+extern void save_game(int num);
+extern /*bool*/int load_game(int num);
+extern /*bool*/int add_time_to_saved_game(int num);
 
 #endif

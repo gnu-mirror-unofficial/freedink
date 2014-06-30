@@ -67,12 +67,4 @@ extern void text_brain(int h);
 extern void text_draw(int h);
 extern /*bool*/int transition(void);
 extern void up_cycle(void);
-
-extern void draw_map_game(void);
-extern void draw_map_game_background(void);
-
-extern void save_game(int num);
-extern /*bool*/int load_game(int num);
-extern /*bool*/int add_time_to_saved_game(int num);
-extern void update_status_all();
 #endif

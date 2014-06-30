@@ -156,4 +156,7 @@ extern void update_play_changes( void );
 extern void game_place_sprites(void);
 extern void game_place_sprites_background(void);
 extern void fill_back_sprites(void);
+
+extern void draw_map_game(void);
+extern void draw_map_game_background(void);
 #endif

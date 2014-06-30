@@ -40,8 +40,8 @@ freedink_SOURCES = $(COMMON_OBJS) freedink.c freedink.h			\
 	update_frame.c update_frame.h dinkc_bindings.c			\
 	dinkc_bindings.h dinkc.c dinkc.h dinkc_console.c		\
 	dinkc_console.h game_engine.c game_engine.h i18n.c i18n.h	\
-	inventory.c inventory.h meminfo.c meminfo.h status.c status.h	\
-	talk.c talk.h text.c text.h
+	inventory.c inventory.h meminfo.c meminfo.h savegame.c		\
+	savegame.h status.c status.h talk.c talk.h text.c text.h
 freedinkedit_SOURCES = $(COMMON_OBJS) freedinkedit.c
 nodist_freedink_SOURCES = $(WOERES)
 nodist_freedinkedit_SOURCES = $(WOERES)
@@ -128,6 +128,11 @@ endif
 if HAVE_TESTS
 TESTS = check_freedink
 check_PROGRAMS = check_freedink
-check_freedink_SOURCES = $(COMMON_OBJS) check_freedink.c
+check_freedink_SOURCES = $(COMMON_OBJS) dinkc_bindings.c		\
+	dinkc_bindings.h dinkc.c dinkc.h dinkc_console.c		\
+	dinkc_console.h game_engine.c game_engine.h i18n.c i18n.h	\
+	inventory.c inventory.h meminfo.c meminfo.h savegame.c		\
+	savegame.h status.c status.h talk.c talk.h text.c text.h	\
+	check_freedink.c
 check_freedink_LDADD = $(LDADD) @CHECK_LIBS@
 endif

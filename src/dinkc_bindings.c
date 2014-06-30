@@ -63,6 +63,7 @@
 #include "talk.h" /* talk, talk_clear */
 #include "status.h"
 #include "text.h"
+#include "savegame.h"
 
 /* store current procedure arguments expanded values of type 'int' (see get_parms) */
 static long nlist[10];
