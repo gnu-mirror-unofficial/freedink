@@ -26,6 +26,8 @@
 - DinkC console is toggled when Alt-C is pressed (no more creating a
   key-xx.c with just "show_console()" inside).
 
+- Game engine translations are loaded under Windows.
+
 - New translation for the engine strings in Russian
   (thanks Yuri Kozlov)
 

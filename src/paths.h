@@ -35,9 +35,6 @@ extern "C"
   extern const char *paths_getdmodname(void);
   extern const char *paths_getfallbackdir(void);
   extern const char *paths_getpkgdatadir(void);
-#if defined _WIN32 || defined __WIN32__ || defined __CYGWIN__
-  extern const char *paths_getexedir(void);
-#endif
 
   extern char* paths_dmodfile(char* file);
   extern char* paths_fallbackfile(char* file);

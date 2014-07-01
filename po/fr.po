@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: freedink 1.08.20120427\n"
 "Report-Msgid-Bugs-To: bug-freedink@gnu.org\n"
 "POT-Creation-Date: 2012-04-27 15:45+0200\n"
-"PO-Revision-Date: 2012-11-04 14:47+0100\n"
+"PO-Revision-Date: 2014-07-01 22:40+0200\n"
 "Last-Translator: Sylvain Beucler <beuc@beuc.net>\n"
 "Language-Team: French <traduc@traduc.org>\n"
 "Language: fr\n"
@@ -147,7 +147,7 @@ msgstr "`$Je m'excite bêtement pour rien!"
 
 #: src/freedink.c:2792
 msgid "`$Nothing happened."
-msgstr "`$Rien n'est arrivé."
+msgstr "`$Rien ne se passe."
 
 #: src/freedink.c:2793
 msgid "`$Hocus pocus!"

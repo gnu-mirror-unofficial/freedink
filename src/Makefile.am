@@ -10,7 +10,16 @@ AM_CPPFLAGS += -I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib
 LDADD = $(top_builddir)/gnulib/lib/libgnu.a
 
 # gettext:
+# Relative locale dir for woe/android
+if WOE
+AM_CPPFLAGS += -DLOCALEDIR=\"freedink/locale\"
+else
+if ANDROID
+AM_CPPFLAGS += -DLOCALEDIR=\"freedink/locale\"
+else
 AM_CPPFLAGS += -DLOCALEDIR=\"$(localedir)\"
+endif
+endif
 LDADD += @LIBINTL@
 AM_CPPFLAGS += -I$(top_srcdir)/intl -I$(top_builddir)/intl
 

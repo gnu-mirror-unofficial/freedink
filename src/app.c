@@ -335,6 +335,38 @@ void app_loop(void (*input_hook)(SDL_Event* ev), void (*logic_hook)()) {
     }
 }
 
+/**
+ * chdir to ease locating resources
+ */
+static void app_chdir() {
+#ifdef __ANDROID__
+  /* SD Card - SDL_AndroidGetExternalStoragePath()
+     == /storage/sdcard0/Android/data/org.freedink/files */
+  log_info("Android external storage: %s\n", SDL_AndroidGetExternalStoragePath());
+  if (SDL_AndroidGetExternalStoragePath() == NULL)
+    log_error("Could not get external storage path '%s': %s'",
+	      SDL_AndroidGetExternalStoragePath(),
+	      SDL_GetError());
+  int state = SDL_AndroidGetExternalStorageState();
+  log_info("- read : %s\n", (state&SDL_ANDROID_EXTERNAL_STORAGE_READ) ? "yes":"no");
+  log_info("- write: %s\n", (state&SDL_ANDROID_EXTERNAL_STORAGE_WRITE) ? "yes":"no");
+
+  /* SDL_AndroidGetInternalStoragePath() == /data/data/org.freedink/files/ */
+  log_info("Android internal storage: %s\n", SDL_AndroidGetInternalStoragePath());
+
+  if (chdir(SDL_AndroidGetExternalStoragePath()) < 0)
+    log_error("Could not chdir to '%s': %s'",
+	      SDL_AndroidGetExternalStoragePath(),
+	      strerror(errno));
+#elif defined _WIN32 || defined __WIN32__ || defined __CYGWIN__
+  /* .exe's directory */
+  log_info("Woe exe dir: %s\n", SDL_GetBasePath());
+  if (chdir(SDL_GetBasePath()) < 0)
+    log_error("Could not chdir to '%s': %s'",
+	      SDL_GetBasePath(),
+	      strerror(errno));
+#endif
+}
 
 /* freedink and freedinkedit's common init procedure. This procedure
    will also initialize each subsystem as needed (eg InitSound) */
@@ -345,6 +377,9 @@ int app_start(int argc, char *argv[],
 	      void(*logic_hook)(),
 	      void(*quit_hook)())
 {
+  /* chdir to resource paths under woe&android */
+  app_chdir();
+
   /* Reset debug levels */
   log_debug_off();
 
@@ -467,7 +502,7 @@ void log_path(/*bool*/int playing)
     return;
   }
   fprintf(f, "[Dink Smallwood Directory Information for the CD to read]\n");
-  fprintf(f, "%s", paths_getexedir());
+  fprintf(f, "%s", SDL_GetBasePath());
   fprintf(f, "\n");
   if (playing)
     fprintf(f, "TRUE\n");

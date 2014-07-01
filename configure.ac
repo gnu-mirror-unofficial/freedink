@@ -46,6 +46,8 @@ gl_EARLY
 
 AM_CONDITIONAL(PSP, test "$host" == "mipsallegrexel-psp-elf")
 AM_CONDITIONAL(ANDROID, test "$host" == "arm-unknown-linux-androideabi")
+case "${host}" in *-*-mingw32* | *-*-cygwin* | *-*-windows*) woe=1;; esac
+AM_CONDITIONAL(WOE, test x"$woe" = x"1")
 
 # Check if we can fork&exec (for fallback xmessage errors)
 AC_CHECK_FUNCS(execlp)
@@ -248,7 +250,6 @@ echo
 echo "Options summary:"
 echo "* --enable-upx=$enable_upx"
 echo "* --enable-static=$enable_static"
-echo "* --enable-embedded-resources=$enable_embedded_resources"
 echo "* --enable-tests=$enable_tests"
 echo
 echo "Now you can type 'make' to compile $PACKAGE_STRING"

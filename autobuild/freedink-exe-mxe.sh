@@ -94,6 +94,9 @@ find destdir/usr/local/bin/ -type f -name "*.exe" | while read file; do
   cp -a $file $PUBDIR_WOE/$(basename ${file%.exe}-$VERSION.exe)
   mv $file zip/
 done
+# Resources
+cp -a destdir/usr/local/share/freedink zip/
+cp -a destdir/usr/share/locale zip/freedink/
 rm -f $PUBDIR_WOE/$PACKAGE-$VERSION-bin.zip
 (cd zip/ && zip -r $PUBDIR_WOE/$PACKAGE-$VERSION-bin.zip *)
 popd

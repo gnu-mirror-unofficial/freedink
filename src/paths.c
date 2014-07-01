@@ -65,13 +65,6 @@ static char* dmoddir = NULL;
 static char* dmodname = NULL;
 static char* userappdir = NULL;
 
-#if defined _WIN32 || defined __WIN32__ || defined __CYGWIN__
-const char *paths_getexedir(void)
-{
-  return SDL_GetBasePath();
-}
-#endif
-
 /**
  * getcwd without size restriction
  * aka get_current_dir_name(3)
@@ -131,36 +124,6 @@ static char* br_build_path (const char *dir, const char *file)
 
 void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
 {
-  /* chdir to the main Dink dir to easily locate resources */
-#ifdef __ANDROID__
-  /* SD Card */
-
-  /* SDL_AndroidGetExternalStoragePath() == /storage/sdcard0/Android/data/org.freedink/files */
-  log_info("Android external storage: %s\n", SDL_AndroidGetExternalStoragePath());
-  if (SDL_AndroidGetExternalStoragePath() == NULL)
-    log_error("Could not get external storage path '%s': %s'",
-	      SDL_AndroidGetExternalStoragePath(),
-	      SDL_GetError());
-  int state = SDL_AndroidGetExternalStorageState();
-  log_info("- read : %s\n", (state&SDL_ANDROID_EXTERNAL_STORAGE_READ) ? "yes":"no");
-  log_info("- write: %s\n", (state&SDL_ANDROID_EXTERNAL_STORAGE_WRITE) ? "yes":"no");
-
-  /* SDL_AndroidGetInternalStoragePath() == /data/data/org.freedink/files/ */
-  log_info("Android internal storage: %s\n", SDL_AndroidGetInternalStoragePath());
-
-  if (chdir(SDL_AndroidGetExternalStoragePath()) < 0)
-    log_error("Could not chdir to '%s': %s'",
-	      SDL_AndroidGetExternalStoragePath(),
-	      strerror(errno));
-#elif defined _WIN32 || defined __WIN32__ || defined __CYGWIN__
-  /* .exe's directory */
-  log_info("Woe exe dir: %s\n", paths_getexedir());
-  if (chdir(paths_getexedir()) < 0)
-    log_error("Could not chdir to '%s': %s'",
-	      paths_getexedir(),
-	      strerror(errno));
-#endif
-
   char *refdir = NULL;
 
   /** pkgdatadir **/
