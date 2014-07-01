@@ -454,19 +454,25 @@ void log_path(/*bool*/int playing)
      cleanly store additional DMods. */
 
 #if defined _WIN32 || defined __WIN32__ || defined __CYGWIN__
-  char windir[100];
-  char inifile[256];
-  GetWindowsDirectory(windir, 256);
+  char windir[MAX_PATH];
+  char inifile[MAX_PATH];
+  GetWindowsDirectory(windir, MAX_PATH);
   sprintf(inifile, "%s\\dinksmallwood.ini", windir);
 
   unlink(inifile);
 
-  add_text("[Dink Smallwood Directory Information for the CD to read]\r\n", inifile);
-  add_text((char *)paths_getexedir(), inifile);
-  add_text("\r\n", inifile);
+  FILE* f = fopen(inifile, "w");
+  if (f == NULL) {
+    log_error("Couldn't write dinksmallwood.ini: %s", strerror(errno));
+    return;
+  }
+  fprintf(f, "[Dink Smallwood Directory Information for the CD to read]\n");
+  fprintf(f, "%s", paths_getexedir());
+  fprintf(f, "\n");
   if (playing)
-    add_text("TRUE\r\n", inifile);
+    fprintf(f, "TRUE\n");
   else
-    add_text("FALSE\r\n", inifile);
+    fprintf(f, "FALSE\n");
+  fclose(f);
 #endif
 }
