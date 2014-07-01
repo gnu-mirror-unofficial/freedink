@@ -118,7 +118,7 @@ void test_ioutil_setup() {
   mkdir(TESTDIR "SubDir2", 0777);
 }
 void test_ioutil_teardown() {
-  rmdir(TESTDIR "SubDir");
+  rmdir(TESTDIR "SubDir2");
   rmdir(TESTDIR);
   rmdir(PREFIX);
 }
