@@ -69,6 +69,11 @@
 PSP_HEAP_SIZE_MAX();
 #endif
 
+#ifdef __ANDROID__
+#include <string.h> /* strerror */
+#include <errno.h>
+#endif
+
 static int g_b_no_write_ini = 0; // -noini passed to command line?
 static char* init_error_msg = NULL;
 

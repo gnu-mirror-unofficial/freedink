@@ -4179,6 +4179,14 @@ static void freedink_input_global_shortcuts(SDL_Event* ev) {
 }
 
 static void freedink_input(SDL_Event* ev) {
+  // Show IME (virtual keyboard) on Android
+  if (ev->type == SDL_KEYDOWN && ev->key.keysym.scancode == SDL_SCANCODE_MENU) {
+    if (!SDL_IsScreenKeyboardShown(window))
+      SDL_StartTextInput();
+    else
+      SDL_StopTextInput();
+  }
+
   if (SDL_GetModState()&KMOD_LALT) {
     freedink_input_global_shortcuts(ev);
   } else if (console_active) {
