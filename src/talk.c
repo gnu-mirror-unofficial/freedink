@@ -53,6 +53,10 @@ void talk_start(int script, int nb_choices) {
 void talk_stop() {
   talk.active = /*false*/0;
   SDL_SetRelativeMouseMode(SDL_FALSE);
+  // Avoid spurious mouse events in case when we set relative mouse
+  // mode back and forth in a single frame during talk_stop/talk_start
+  // (aka text submenu):
+  SDL_PumpEvents();
 }
 
 void talk_clear()
