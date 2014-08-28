@@ -44,8 +44,8 @@ CFLAGS="$CFLAGS -Wall -std=c99"
 # Gnulib prefix detected from Makefile.am:ACLOCAL_AMFLAGS
 gl_EARLY
 
-AM_CONDITIONAL(PSP, test "$host" == "mipsallegrexel-psp-elf")
-AM_CONDITIONAL(ANDROID, test "$host" == "arm-unknown-linux-androideabi")
+AM_CONDITIONAL(PSP, test "$host" = "mipsallegrexel-psp-elf")
+AM_CONDITIONAL(ANDROID, test "$host" = "arm-unknown-linux-androideabi")
 case "${host}" in *-*-mingw32* | *-*-cygwin* | *-*-windows*) woe=1;; esac
 AM_CONDITIONAL(WOE, test x"$woe" = x"1")
 
