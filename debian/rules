@@ -27,7 +27,8 @@ endif
 override_dh_auto_configure:
 	# Using '--bindir=/usr/games' by Debian policy
 	#   (e.g. not the case for Fedora)
-	dh_auto_configure -- --bindir=/usr/games --datadir=/usr/share/games
+	dh_auto_configure -- --bindir=/usr/games --datadir=/usr/share/games \
+		--disable-silent-rules
 
 override_dh_strip:
 	# Create -dbg package with debug symbols for gdb
