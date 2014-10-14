@@ -35,10 +35,6 @@
 /* #include <io.h> */
 /* #include <direct.h> */
 #include <unistd.h>
-#ifdef _WIN32
-/* GetModuleFileName */
-#include <windows.h>
-#endif
 #include <getopt.h>
 
 #include "SDL.h"
