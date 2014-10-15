@@ -238,7 +238,7 @@ void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
       {
 	/* Use path given on the command line, relative to $refdir */
 	char *subdir = dmoddir_opt;
-	if (subdir == NULL)
+	if (subdir == NULL || strlen(subdir) == 0)  /* no opt, or -g '' */
 	  subdir = "dink";
 	dmoddir = malloc(strlen(refdir) + 1 + strlen(subdir) + 1);
 	strcpy(dmoddir, refdir);
@@ -266,27 +266,23 @@ void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
   /** dmodname (e.g. "island") **/
   /* Used to save games in ~/.dink/<dmod>/... */
   {
+    /* Don't accept '.' or '' or '/..' (nameless) but accept 'island' (relative path) */
     int len = strlen(dmoddir);
-    int i;
-    for (i = len-1; i > 0; i--) {
-        if (dmoddir[i] == '\\' || dmoddir[i] == '/') {
-            break;
-        }
-    }
-    if (i == 0)
+    char* start = dmoddir + len;
+    for (; start >= dmoddir; start--)  /* basename(1) */
+      if (*start == '\\' || *start == '/')
+	break;
+    start++;  // we're either -1 or at the last slash, start is right after
+    if (strcmp(start, ".") == 0 || strcmp(start, "..") == 0
+	|| strcmp(start, "") == 0)
       {
-	msgbox("Error: not loading empty-named D-Mod");
+	msgbox("Error: not loading nameless D-Mod '%s'", start);
 	exit(1);
       }
-    int dmodname_len = strlen(dmoddir) - i + 1;
+    int dmodname_len = start - dmoddir;
     dmodname = malloc(dmodname_len+1);
-    strncpy(dmodname, dmoddir+i+1, dmodname_len);
+    strncpy(dmodname, start, dmodname_len);
     dmodname[dmodname_len] = '\0';
-    if (strcmp(dmodname, ".") == 0 || strcmp(dmodname, "..") == 0)
-      {
-	msgbox("Error: not loading nameless D-Mod '%s'", dmodname);
-	exit(1);
-      }
   }
 
   /** userappdir (e.g. "~/.dink") **/
