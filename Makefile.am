@@ -6,7 +6,7 @@ SUBDIRS = gnulib/lib gnulib/po nsis po src share
 
 # Copy those directly and recursively:
 # Build system
-EXTRA_DIST = acsite.m4 bootstrap gnulib/m4/gnulib-cache.m4
+EXTRA_DIST = bootstrap gnulib/m4/gnulib-cache.m4
 # Documentation
 EXTRA_DIST += doc
 EXTRA_DIST += BUILD TRANSLATIONS.txt TROUBLESHOOTING
@@ -25,3 +25,6 @@ dist-hook:
 #	At the end of each line (doubled $), add a \r, so we get \r\n
 	cd $(distdir) && sed 's/$$/\r/' README > README.txt
 	make -C $(distdir)/test/sdl clean
+
+version:
+	@echo $(VERSION)
