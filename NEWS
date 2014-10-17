@@ -40,6 +40,10 @@
 - DinkC: Dink position is updated after a new screen is loaded
   (thanks metatarasal for the report)
 
+- Never recreate an empty hard.dat in the game, even if there's a
+  problem opening it (avoids corruption when running both the game and
+  an editor at the same time).
+
 
 108.2
 =====
