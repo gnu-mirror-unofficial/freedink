@@ -442,7 +442,9 @@ void dc_sp_script(int script, int* yield, int* preturnint, int sprite, char* dcs
   // (sprite, direction, until, nohard);
   if (sprite <= 0 || (sprite >= MAX_SPRITES_AT_ONCE && sprite != 1000))
     {
-      log_error("[DinkC] sp_script cannot process sprite %d??", sprite);
+      log_error("[DinkC] %s:%d:%s: cannot process sprite %d??",
+                rinfo[script]->name, rinfo[script]->debug_line, cur_funcname,
+		sprite);
       return;
     }
   kill_scripts_owned_by(sprite);
