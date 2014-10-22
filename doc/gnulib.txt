@@ -32,5 +32,7 @@ cp -a /usr/share/aclocal/{intl,po}.m4 /usr/src/gnulib/m4/
 Version used for 1.08.20121209 :
   6f909c901db3ebf5ff66e87c035eff800ed5daef + patched install-reloc
 Version used for 108.2:
-  2056a330b7fe2506d1e0bff64da82b9f6ddec9f4
+  39cf9dff9bc7883e2a589b049fb11ee7beaadd4f
+Version used for 108.4:
+  39cf9dff9bc7883e2a589b049fb11ee7beaadd4f
 (update with $(git rev-parse HEAD))
