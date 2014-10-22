@@ -1,5 +1,5 @@
 Name:		freedink
-Version:	108.2
+Version:	108.4
 Release:	1%{?dist}
 Summary:	Humorous top-down adventure and role-playing game
 
@@ -7,6 +7,7 @@ Group:		Amusements/Games
 BuildRequires:	SDL-devel SDL_gfx-devel SDL_ttf-devel SDL_image-devel SDL_mixer-devel
 BuildRequires:	fontconfig-devel
 BuildRequires:	desktop-file-utils
+BuildRequires:	check-devel
 %if 0%{?suse_version}
 BuildRequires:	update-desktop-files
 %endif
@@ -87,7 +88,7 @@ rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT INSTALL="install -p"
 %find_lang %{name}
 %find_lang %{name}-gnulib
-# %files only support one '-f' argument (see below)
+# %%files only support one '-f' argument (see below)
 cat %{name}-gnulib.lang >> %{name}.lang
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}edit.desktop
@@ -131,6 +132,18 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Oct 22 2014 Sylvain Beucler <beuc@beuc.net> - 108.4-1
+- New upstream release
+
+* Sat Aug 16 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 108.2-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
+
+* Fri Jun 13 2014 Hans de Goede <hdegoede@redhat.com> - 108.2-3
+- Rebuild for new SDL_gfx
+
+* Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 108.2-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
+
 * Thu May 29 2014 Sylvain Beucler <beuc@beuc.net> - 108.2-1
 - New upstream release
 
