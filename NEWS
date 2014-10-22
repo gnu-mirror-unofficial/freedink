@@ -28,11 +28,14 @@
 
 - Game engine translations are loaded under Windows.
 
-- New translation for the engine strings in Russian
-  (thanks Yuri Kozlov)
 
-- New translation for the engine strings in Hungarian
-  (thanks Balázs Úr)
+108.4
+=====
+
+- Never recreate an empty hard.dat in the game, even if there's a
+  problem opening it (avoids corruption when running both the game and
+  an editor at the same time).
+  (thanks CocoMonkey for the report)
 
 - DinkC: load_palette() now searches for palette in the right place
   (thanks scratcher for the report)
@@ -40,9 +43,8 @@
 - DinkC: Dink position is updated after a new screen is loaded
   (thanks metatarasal for the report)
 
-- Never recreate an empty hard.dat in the game, even if there's a
-  problem opening it (avoids corruption when running both the game and
-  an editor at the same time).
+- New translations for the engine strings in Russian (thanks Yuri
+  Kozlov) and Hungarian (thanks Balázs Úr).
 
 
 108.2
