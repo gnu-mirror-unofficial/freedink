@@ -490,6 +490,9 @@ int gfx_blit_stretch(SDL_Surface *src_surf, SDL_Rect *src_rect,
       src_rect->h = src_surf->h;
     }
 
+  if (src_rect->w == 0 || src_rect->h == 0)
+    return 0;  // OK, ignore drawing, and don't mess sx/sy below
+
   double sx = 1.0 * dst_rect->w / src_rect->w;
   double sy = 1.0 * dst_rect->h / src_rect->h;
   /* In principle, double's are precise up to 15 decimal digits */
