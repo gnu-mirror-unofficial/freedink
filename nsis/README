@@ -12,7 +12,8 @@ It expects the 'freedink', 'dfarc' and 'dink' directory to be present:
 
   unzip -d freedink-data/ freedink-data-1.08.201XXXXX-nosrc.zip
 
-  i686-w64-mingw32.static-makensis freedink-all.nsi
+  # 64-bit overlay
+  mkdir x86_64/
+  mv freedink/*64.exe dfarc/*64.exe x86_64/
 
-# - NSIS universal installer should be possible:
-#   http://bojan-komazec.blogspot.fr/2011/10/nsis-installer-for-64-bit-windows.html
+  i686-w64-mingw32.static-makensis freedink-all.nsi

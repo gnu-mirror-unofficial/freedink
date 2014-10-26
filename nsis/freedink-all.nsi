@@ -36,7 +36,7 @@ SetCompressor /SOLID lzma
 !define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_KEY "Software\FreeDink"
 !define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_VALUENAME ""
 !define MULTIUSER_INSTALLMODE_INSTDIR "FreeDink"
-!include "MultiUser.nsh"
+!include "MultiUser64.nsh"
 
 ; Modern UI, with macro-based scripting
 !include "MUI2.nsh"
@@ -50,6 +50,9 @@ SetCompressor /SOLID lzma
 !define INSTDIR_REG_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\FreeDink"
 !include "AdvUninstLog.nsh"
 !insertmacro INTERACTIVE_UNINSTALL
+
+; 64-bit detection
+!include x64.nsh
 
 !include LogicLib.nsh
 ; Reg entry for Add/Remove Programs
@@ -99,6 +102,17 @@ Var StartMenuFolder
 ; archive - apparently MULTIUSER_INIT stores some resource here.
 ; Per-user|system-wide install support
 Function .onInit
+  ; 64-bit support
+  ; http://bojan-komazec.blogspot.fr/2011/10/nsis-installer-for-64-bit-windows.html
+  ${If} ${RunningX64}
+     DetailPrint "Installer running on 64-bit host"
+     ; disable registry redirection (enable access to 64-bit portion of registry)
+     SetRegView 64
+     ; change install dir
+     ;StrCpy $INSTDIR "$PROGRAMFILES64\FreeDink"
+     ; Cf. MultiUser64.nsh
+  ${EndIf}
+
   !insertmacro MULTIUSER_INIT
   !insertmacro UNINSTALL.LOG_PREPARE_INSTALL
 FunctionEnd
@@ -155,14 +169,23 @@ FunctionEnd
 ;---------------
 ; The languages
 ;---------------
+; http://nsis.sourceforge.net/Examples/Modern%20UI/MultiLanguage.nsi
 ; Add all languages that FreeDink is (partly) translated in:
 
 !insertmacro MUI_LANGUAGE "English" ; first is fallback
-!insertmacro MUI_LANGUAGE "French"
-!insertmacro MUI_LANGUAGE "Macedonian"
+!insertmacro MUI_LANGUAGE "Catalan"
+!insertmacro MUI_LANGUAGE "Croatian"
+!insertmacro MUI_LANGUAGE "Danish"
 !insertmacro MUI_LANGUAGE "Dutch"
+!insertmacro MUI_LANGUAGE "Esperanto"
+!insertmacro MUI_LANGUAGE "Finnish"
+!insertmacro MUI_LANGUAGE "French"
+!insertmacro MUI_LANGUAGE "German"
+!insertmacro MUI_LANGUAGE "Hungarian"
 !insertmacro MUI_LANGUAGE "Italian"
-!insertmacro MUI_LANGUAGE "Norwegian"
+!insertmacro MUI_LANGUAGE "Macedonian"
+!insertmacro MUI_LANGUAGE "Spanish"
+!insertmacro MUI_LANGUAGE "Swedish"
 
 ; Tell the installer to store the language files first (so the
 ; installer doesn't uncompress everything just to get them)
@@ -178,6 +201,12 @@ Section "freedink-engine" SecFreeDinkEngine
   !insertmacro UNINSTALL.LOG_OPEN_INSTALL
   File /r freedink/*.*
   !insertmacro UNINSTALL.LOG_CLOSE_INSTALL
+  ${If} ${RunningX64}
+  File "/oname=freedink.exe" "x86_64/freedink64.exe"
+  File "/oname=freedinkedit.exe" "x86_64/freedinkedit64.exe"
+  File "/oname=dink.exe" "x86_64/freedink64.exe"
+  File "/oname=dinkedit.exe" "x86_64/freedinkedit64.exe"
+  ${EndIf}
 
   ; Start menu
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
@@ -197,6 +226,9 @@ Section "freedink-dfarc" SecDFArc
   !insertmacro UNINSTALL.LOG_OPEN_INSTALL
   File /r dfarc/*.*
   !insertmacro UNINSTALL.LOG_CLOSE_INSTALL
+  ${If} ${RunningX64}
+  File "/oname=dfarc.exe" "x86_64/dfarc64.exe"
+  ${EndIf}
 
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
   CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
