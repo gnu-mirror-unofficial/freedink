@@ -82,8 +82,6 @@ popd
 # 64-bit support:
 # - upx-ucl >= 3.91 for w64 support (in Debian >= 8 "Jessie")
 # - use a recent mingw-w64, issues with wchar.h on mingw-w64 v2.0 (GCC 4.6)
-# - NSIS universal installer should be possible:
-#   http://bojan-komazec.blogspot.fr/2011/10/nsis-installer-for-64-bit-windows.html
 rm -rf cross-woe-64/
 mkdir cross-woe-64/
 pushd cross-woe-64/
@@ -97,6 +95,7 @@ done
 popd
 #rm -rf cross-woe-64/
 
+rm -f ../$PACKAGE-$VERSION-bin.zip
 (cd zip/ && zip -r ../../$PACKAGE-$VERSION-bin.zip .)
 
 

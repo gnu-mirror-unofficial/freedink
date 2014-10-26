@@ -3,26 +3,16 @@ generate an installer for ms woe, with support for cross-compilation.
 
 It expects the 'freedink', 'dfarc' and 'dink' directory to be present:
 
-  unzip -d freedink/ freedink-1.08.201XXXXX-bin.zip
+  unzip -d freedink/ freedink-108.X-bin.zip
 
   unzip -d dfarc/ dfarc-X.X-bin.zip
   # Follow DFArc naming conventions (TODO: change them!)
   ln -s freedink.exe freedink/dink.exe
   ln -s freedinkedit.exe freedink/dinkedit.exe
 
-  # TODO: fix freedink-data-XXX-nosrc, so it ships basic license
-  # info
-  tar xzf freedink-data-1.08.201XXXXX.tar.gz
-  mv freedink-data-1.08.201*/ freedink-data/
-  (cd freedink-data; rm -rf autobuild/ doc/ src/ ChangeLog DEB freedink-data.spec Makefile)
-  (cd freedink-data;
-    mv README.txt freedink-data-README.txt;
-    mv README-REPLACEMENTS.txt freedink-data-README-REPLACEMENTS.txt;
-    mv COPYING freedink-data-COPYING.txt;
-    mv NEWS freedink-data-NEWS.txt;
-    for i in freedink-data-COPYING.txt freedink-data-NEWS.txt licenses/*.txt licenses/URLS; do
-      sed -i -e 's/\(^\|[^\r]\)$/\1\r/' $i
-    done
-  )
+  unzip -d freedink-data/ freedink-data-1.08.201XXXXX-nosrc.zip
 
-  makensis freedink-all.nsi
+  i686-w64-mingw32.static-makensis freedink-all.nsi
+
+# - NSIS universal installer should be possible:
+#   http://bojan-komazec.blogspot.fr/2011/10/nsis-installer-for-64-bit-windows.html
