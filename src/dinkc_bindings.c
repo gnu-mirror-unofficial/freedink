@@ -902,30 +902,28 @@ void dc_enable_all_sprites(int script, int* yield, int* preturnint)
 
 void dc_fade_down(int script, int* yield, int* preturnint)
 {
-  // (sprite, direction, until, nohard);
-  if (process_upcycle)
+  if (!process_upcycle)
     {
-      log_error("[DinkC] %s:%d: fade_down() called during fade_up(), ignoring fade_down()",
-                rinfo[script]->name, rinfo[script]->debug_line);
+      process_downcycle = /*true*/1;
     }
   else
     {
-      process_downcycle = /*true*/1;
-      cycle_clock = thisTickCount+1000;
-      cycle_script = script;
+      log_warn("[DinkC] %s:%d: fade_down() called during fade_up(), ignoring fade_down()",
+                rinfo[script]->name, rinfo[script]->debug_line);
     }
+  cycle_clock = thisTickCount+1000;
+  cycle_script = script;
   *yield = 1;
 }
 
 void dc_fade_up(int script, int* yield, int* preturnint)
 {
-  // (sprite, direction, until, nohard);
   if (process_downcycle)
     {
-      log_error("[DinkC] %s:%d: fade_up() called during fade_down(), forcing fade_up()",
+      log_warn("[DinkC] %s:%d: fade_up() called during fade_down(), forcing fade_up()",
                 rinfo[script]->name, rinfo[script]->debug_line);
+      process_downcycle = 0;
     }
-  process_downcycle = 0; // priority over concurrent fade_down()
   process_upcycle = /*true*/1;
   cycle_script = script;
   *yield = 1;
