@@ -8,7 +8,9 @@ These instructions may sound redundant with the packaging specs (.deb,
 compile the latest, not-yet-packaged sources :)
 
 
-Required fixes for SDL2:
+Required fixes for SDL2, still needed as of 2015-07 because SDL2
+maintainers don't make releases often :/
+
 - SDL2_gfx 1.0.0: proper pkg-config file - https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=750131
   => fixed in SDL2_gfx 1.0.1
 - SDL2_ttf 2.0.12: vgasys.fon doesn't load
@@ -36,7 +38,7 @@ On a minimal Debian system
 
 ## Bootstrap
 # Source code:
-apt-get install git-core
+apt-get install git
 git clone git://git.sv.gnu.org/freedink
 cd freedink/
 
