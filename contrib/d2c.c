@@ -165,7 +165,7 @@ int main(int argc, char *argv[])
       FILE *in;
       if ((in = fopen(*argv, "rb")) == NULL)
 	{
-	  perror(argv);
+	  perror(*argv);
 	}
       else
 	{
