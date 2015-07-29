@@ -107,3 +107,12 @@ Tests
 - Dink position is updated after a new screen is loaded:
 http://www.dinknetwork.com/forum.cgi?MID=186069#186263
 
+- fade_up() is prioritary over fade_down(),
+  but post-fade callback script is still overwritten
+  a54fb13973e6b733e594766f981b724436218061
+  http://www.dinknetwork.com/forum.cgi?MID=189461#189461 "FreeDink-specific"
+  http://www.dinknetwork.com/forum.cgi?MID=107994
+  6b6bef615c4aae45206fa98bb8b4bfea96eb0f3b
+    "Give priority to fade_up() over fade_down() - fix SoB intro in truecolor mode"
+    -> in Pilgrim Quest, not Stone of Balance
+  http://lists.gnu.org/archive/html/bug-freedink/2009-08/msg00042.html
