@@ -226,7 +226,7 @@ int script_find_slot() {
  * Initialize script structure
  * TODO: initialize rbuf at the same time?
  */
-int script_init(const char* name) {
+static int script_init(const char* name) {
   int script = script_find_slot();
   if (script <= 0)
     return -1;
@@ -245,6 +245,9 @@ int script_init(const char* name) {
   rinfo[script]->debug_line = 1;
 
   return script;
+}
+int ts_script_init(const char* name) {
+  script_init(name);
 }
 
 /**

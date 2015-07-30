@@ -89,7 +89,6 @@ extern void decipher_string(char** line_p, int script);
 extern int add_callback(char name[20], int n1, int n2, int script);
 extern void kill_callback(int cb);
 extern void kill_callbacks_owned_by_script(int script);
-extern int script_init(const char* name);
 extern void kill_script(int k);
 extern void kill_all_scripts_for_real(void);
 extern char* read_next_line(int script);
@@ -117,4 +116,5 @@ extern unsigned short decipher_savegame;
 
 /* Test suite */
 extern int ts_lookup_var_local_global(char* variable, int scope);
+extern int ts_script_init(const char* name);
 #endif

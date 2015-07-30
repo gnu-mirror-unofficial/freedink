@@ -55,10 +55,13 @@
 #include "dinkc_bindings.h"
 #include "dinkc.h"
 #include "game_engine.h"
+#include "paths.h"
 
 #include <string.h>
 #include <xalloc.h>
 int get_parms(char proc_name[20], int script, char *str_params, int* spec);
+void dc_fade_down(int script, int* yield, int* preturnint);
+void dc_fade_up(int script, int* yield, int* preturnint);
 
 START_TEST(test_strutil_strtoupper)
 {
@@ -195,7 +198,7 @@ END_TEST
 static int script_id = -1;
 void test_dinkc_setup() {
   dinkc_init();
-  script_id = script_init("unit test");
+  script_id = ts_script_init("unit test");
 }
 
 void test_dinkc_teardown() {
@@ -357,6 +360,65 @@ START_TEST(test_dinkc_sp_custom)
 }
 END_TEST
 
+START_TEST(test_dinkc_dont_return_same_script_id_twice)
+{
+  paths_init("", NULL, NULL);  // TODO: break dependency on 'paths'
+  int script_id1 = load_script("start-1", 0, 0);
+  int script_id2 = load_script("start-1", 0, 0);
+  ck_assert_int_ne(script_id1, script_id2);
+}
+END_TEST
+
+/* fade_up() is prioritary over fade_down(),
+   post-fade callback script is still overwritten
+
+   - broken during 108 merge of truecolor fade
+
+   - half-fixed following:
+     http://lists.gnu.org/archive/html/bug-freedink/2009-08/msg00042.html
+     6b6bef615c4aae45206fa98bb8b4bfea96eb0f3b
+       "Give priority to fade_up() over fade_down() - fix SoB intro in truecolor mode"
+       -> in Pilgrim Quest, not Stone of Balance
+
+   - 2nd half-fixed following:
+     http://www.dinknetwork.com/forum.cgi?MID=189461#189461 "FreeDink-specific"
+     http://www.dinknetwork.com/forum.cgi?MID=107994
+     a54fb13973e6b733e594766f981b724436218061
+*/
+START_TEST(test_dinkc_concurrent_fades)
+{
+  int yield, returnint;
+  paths_init("", NULL, NULL);  // TODO: break dependency on 'paths'
+  int script_id1 = load_script("start-1", 0, 0);
+  int script_id2 = load_script("start-1", 0, 0);
+
+  process_upcycle = process_downcycle = 0;
+  dc_fade_down(script_id1, &yield, &returnint);
+  dc_fade_up(script_id2, &yield, &returnint);
+  // callback set to last script that fade_xxx()'d
+  ck_assert_int_eq(cycle_script, script_id2);
+  // on fade_up/fade_down conflict, cancel fade effect
+  ck_assert_int_eq(process_downcycle, 0);
+  // In 108, flip_it would basically cancel the fade effect
+  // FreeDink just forces up_cycle=1 and let it finish
+  //ck_assert_int_eq(process_upcycle, 0);
+
+  process_upcycle = process_downcycle = 0;
+  dc_fade_up(script_id1, &yield, &returnint);
+  dc_fade_down(script_id2, &yield, &returnint);
+  // callback set to last script that fade_xxx()'d
+  ck_assert_int_eq(cycle_script, script_id2);
+  // on fade_up/fade_down conflict, cancel fade effect
+  ck_assert_int_eq(process_downcycle, 0);
+  // In 108, flip_it would basically cancel the fade effect
+  // FreeDink just forces up_cycle=1 and let it finish
+  //ck_assert_int_eq(process_upcycle, 0);
+
+  kill_script(script_id1);
+  kill_script(script_id2);
+}
+END_TEST
+
 
 Suite* freedink_suite()
 {
@@ -382,6 +444,8 @@ Suite* freedink_suite()
   tcase_add_test(tc_dinkc, test_dinkc_lookup_var_107);
   tcase_add_test(tc_dinkc, test_dinkc_lookup_var_108);
   tcase_add_test(tc_dinkc, test_dinkc_sp_custom);
+  tcase_add_test(tc_dinkc, test_dinkc_dont_return_same_script_id_twice);
+  tcase_add_test(tc_dinkc, test_dinkc_concurrent_fades);
   suite_add_tcase(s, tc_dinkc);
 
   return s;
