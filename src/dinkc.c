@@ -66,14 +66,12 @@ struct call_back
 };
 static struct call_back callback[MAX_CALLBACKS];
 
-/* DinkC script buffer */
-static char *rbuf[MAX_SCRIPTS]; //pointers to buffers we may need
-
 /* Number of reserved ASCII indexes in .d BPE compression format */
 #define NB_PAIRS_MAX 128
 
 
 struct refinfo *rinfo[MAX_SCRIPTS];
+static char *rinfo_code[MAX_SCRIPTS];
 
 int weapon_script = 0;
 int magic_script = 0;
@@ -213,7 +211,7 @@ static /*bool*/int load_game_small(int num, char line[196], int *mytime)
 int script_find_slot() {
   int k = 1;
   for (k = 1; k < MAX_SCRIPTS; k++)
-    if (rbuf[k] == NULL)
+    if (rinfo_code[k] == NULL)
       break;
 
   if (k < MAX_SCRIPTS)
@@ -243,7 +241,7 @@ static int script_init(const char* name, char* code) {
   rinfo[script]->cur_col  = 0;
   rinfo[script]->debug_line = 1;
 
-  rbuf[script] = code;
+  rinfo_code[script] = code;
   rinfo[script]->end = strlen(code);
 
   return script;
@@ -267,7 +265,7 @@ int dinkc_execute_one_liner(char* line)
   rinfo[script]->sprite = 1000; /* survive screen change */
   rinfo[script]->level = 1; /* skip 'void main(void) {' parsing */
   
-  process_line(script, rbuf[script], 0);
+  process_line(script, rinfo_code[script], 0);
   return returnint;
 }
 
@@ -839,9 +837,9 @@ void kill_script(int k)
       if (rinfo[k] != NULL)
 	free(rinfo[k]);
       rinfo[k] = NULL;
-      if (rbuf[k] != NULL)
-	free(rbuf[k]);
-      rbuf[k] = NULL;
+      if (rinfo_code[k] != NULL)
+	free(rinfo_code[k]);
+      rinfo_code[k] = NULL;
     }
 }
 
@@ -907,12 +905,12 @@ void kill_all_vars()
 
 
 /**
- * Return the next single line from rbuf[script], starting at
+ * Return the next single line from rinfo_code[script], starting at
  * rinfo[script]->current. Update line/column counters.
  */
 char* read_next_line(int script)
 {
-  if (rinfo[script] == NULL || rbuf == NULL)
+  if (rinfo[script] == NULL)
     {
       log_error("Tried to read script %d, it doesn't exist.", script);
       return NULL;
@@ -935,12 +933,12 @@ char* read_next_line(int script)
       rinfo[script]->current++;
       rinfo[script]->cur_col++;
       
-      if (rbuf[script][k] == '\n')
+      if (rinfo_code[script][k] == '\n')
 	{
 	  rinfo[script]->cur_line++;
 	  rinfo[script]->cur_col = 0;
 	}
-      if (rbuf[script][k] == '\n' || rbuf[script][k] == '\r')
+      if (rinfo_code[script][k] == '\n' || rinfo_code[script][k] == '\r')
 	break;
     }
 
@@ -953,7 +951,7 @@ char* read_next_line(int script)
       int k = start;
 	for (; k < rinfo[script]->current; k++, pc++)
 	{
-	  *pc = rbuf[script][k];
+	  *pc = rinfo_code[script][k];
 
 	  /* Compatibility substitutions, important when parsing
 	     title_start/title_end, namely */
