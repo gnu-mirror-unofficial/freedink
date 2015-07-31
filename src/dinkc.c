@@ -211,7 +211,7 @@ static /*bool*/int load_game_small(int num, char line[196], int *mytime)
 int script_find_slot() {
   int k = 1;
   for (k = 1; k < MAX_SCRIPTS; k++)
-    if (rinfo_code[k] == NULL)
+    if (rinfo[k] == NULL)
       break;
 
   if (k < MAX_SCRIPTS)
