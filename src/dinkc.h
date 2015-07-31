@@ -116,5 +116,5 @@ extern unsigned short decipher_savegame;
 
 /* Test suite */
 extern int ts_lookup_var_local_global(char* variable, int scope);
-extern int ts_script_init(const char* name);
+extern int ts_script_init(const char* name, char* code);
 #endif

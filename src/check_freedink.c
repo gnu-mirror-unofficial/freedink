@@ -1,7 +1,7 @@
 /**
  * FreeDink test suite
 
- * Copyright (C) 2005, 2014  Sylvain Beucler
+ * Copyright (C) 2005, 2014, 2015  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -55,7 +55,6 @@
 #include "dinkc_bindings.h"
 #include "dinkc.h"
 #include "game_engine.h"
-#include "paths.h"
 
 #include <string.h>
 #include <xalloc.h>
@@ -198,7 +197,7 @@ END_TEST
 static int script_id = -1;
 void test_dinkc_setup() {
   dinkc_init();
-  script_id = ts_script_init("unit test");
+  script_id = ts_script_init("unit test", strdup(""));
 }
 
 void test_dinkc_teardown() {
@@ -362,10 +361,11 @@ END_TEST
 
 START_TEST(test_dinkc_dont_return_same_script_id_twice)
 {
-  paths_init("", NULL, NULL);  // TODO: break dependency on 'paths'
-  int script_id1 = load_script("start-1", 0, 0);
-  int script_id2 = load_script("start-1", 0, 0);
+  int script_id1 = ts_script_init("script1", strdup(""));
+  int script_id2 = ts_script_init("script2", strdup(""));
   ck_assert_int_ne(script_id1, script_id2);
+  kill_script(script_id1);
+  kill_script(script_id2);
 }
 END_TEST
 
@@ -388,9 +388,8 @@ END_TEST
 START_TEST(test_dinkc_concurrent_fades)
 {
   int yield, returnint;
-  paths_init("", NULL, NULL);  // TODO: break dependency on 'paths'
-  int script_id1 = load_script("start-1", 0, 0);
-  int script_id2 = load_script("start-1", 0, 0);
+  int script_id1 = ts_script_init("fade1", strdup(""));
+  int script_id2 = ts_script_init("fade2", strdup(""));
 
   process_upcycle = process_downcycle = 0;
   dc_fade_down(script_id1, &yield, &returnint);

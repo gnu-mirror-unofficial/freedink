@@ -3,7 +3,7 @@
 
  * Copyright (C) 1997, 1998, 1999, 2002, 2003  Seth A. Robinson
  * Copyright (C) 2005, 2006  Dan Walma
- * Copyright (C) 2005, 2007, 2008, 2009, 2010, 2011, 2014  Sylvain Beucler
+ * Copyright (C) 2005, 2007, 2008, 2009, 2010, 2011, 2014, 2015  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -83,12 +83,12 @@ int magic_script = 0;
  * Decompress a .d DinkC script; also clean newlines. Check
  * contrib/d2c.c for more explanation about the decompression process.
  */
-static void decompress(FILE *in, int script)
+static char* byte_pair_decompress_stream(FILE* in)
 {
   int step = 512;
   int nb_read = 0;
-  rbuf[script] = xmalloc(step);
-  rbuf[script][0] = '\0';
+  char* ret = xmalloc(step);
+  ret[0] = '\0';
 
   unsigned char stack[NB_PAIRS_MAX+1], pairs[NB_PAIRS_MAX][2];
   short c, top = -1;
@@ -108,16 +108,14 @@ static void decompress(FILE *in, int script)
 	      if (c == EOF)
 		{
 		  log_error("decompress: invalid header: truncated pair table");
-		  free(rbuf[script]);
-		  rbuf[script] = NULL;
-		  return;
+		  free(ret);
+		  return NULL;
 		}
 	      if (c > i+128)
 		{
 		  log_error("decompress: invalid header: reference to a pair that is not registered yet");
-		  free(rbuf[script]);
-		  rbuf[script] = NULL;
-		  return;
+		  free(ret);
+		  return NULL;
 		}
 	      pairs[i][j] = c;
 	    }
@@ -150,35 +148,37 @@ static void decompress(FILE *in, int script)
 	}
       else
 	{
-	  rbuf[script][nb_read] = c;
+	  ret[nb_read] = c;
 	  nb_read++;
 	  if ((nb_read % step) == 0)
-	    rbuf[script] = xrealloc(rbuf[script], nb_read + step);
+	    ret = xrealloc(ret, nb_read + step);
 	}
     }
-  rinfo[script]->end = nb_read;
-  rbuf[script][nb_read] = '\0'; /* safety */
-  rbuf[script] = xrealloc(rbuf[script], nb_read+1);
+  ret[nb_read] = '\0'; /* safety */
+  ret = xrealloc(ret, nb_read+1);
+  
+  return ret;
 }
 
-static void decompress_nocomp(FILE *in, int script)
+static char* read_stream(FILE *in)
 {
   int step = 512;
   int nb_read = 0;
-  rbuf[script] = xmalloc(step);
-  rbuf[script][0] = '\0';
+  char* ret = xmalloc(step);
+  ret[0] = '\0';
 
   int c;
   while ((c = getc(in)) != EOF)
     {
-      rbuf[script][nb_read] = c;
+      ret[nb_read] = c;
       nb_read++;
       if ((nb_read % step) == 0)
-	rbuf[script] = xrealloc(rbuf[script], nb_read + step);
+	ret = xrealloc(ret, nb_read + step);
     }
-  rinfo[script]->end = nb_read;
-  rbuf[script][nb_read] = '\0'; /* safety */
-  rbuf[script] = xrealloc(rbuf[script], nb_read+1);
+  ret[nb_read] = '\0'; /* safety */
+  ret = xrealloc(ret, nb_read+1);
+
+  return ret;
 }
 
 
@@ -224,9 +224,8 @@ int script_find_slot() {
 
 /**
  * Initialize script structure
- * TODO: initialize rbuf at the same time?
  */
-static int script_init(const char* name) {
+static int script_init(const char* name, char* code) {
   int script = script_find_slot();
   if (script <= 0)
     return -1;
@@ -244,10 +243,13 @@ static int script_init(const char* name) {
   rinfo[script]->cur_col  = 0;
   rinfo[script]->debug_line = 1;
 
+  rbuf[script] = code;
+  rinfo[script]->end = strlen(code);
+
   return script;
 }
-int ts_script_init(const char* name) {
-  return script_init(name);
+int ts_script_init(const char* name, char* code) {
+  return script_init(name, code);
 }
 
 /**
@@ -255,87 +257,100 @@ int ts_script_init(const char* name) {
  */
 int dinkc_execute_one_liner(char* line)
 {
-  int script = script_init("one-liner");
-  if (script <= 0)
+  char* code = strdup(line);
+  int script = script_init("one-liner", code);
+  if (script <= 0) {
+    free(code);
     return -1;
+  }
 
   rinfo[script]->sprite = 1000; /* survive screen change */
   rinfo[script]->level = 1; /* skip 'void main(void) {' parsing */
-  rbuf[script] = strdup(line);
+  
   process_line(script, rbuf[script], 0);
   return returnint;
 }
 
-
-/**
- * Load script from 'filename', save it in the first available script
- * slot, attach to game sprite #'sprite' if 'set_sprite' is 1.
- **/
-int load_script(char* filename, int sprite, /*bool*/int set_sprite)
-{
+static FILE* locate_script(char* script_name, int* compressed) {
   char temp[100];
-  int script = 0;
   FILE *in = NULL;
-  /*bool*/int comp = /*false*/0;
   
-  log_info("LOADING %s", filename);
+  log_info("LOADING %s", script_name);
   
-  sprintf(temp, "story/%s.d", filename);
+  sprintf(temp, "story/%s.d", script_name);
   in = paths_dmodfile_fopen(temp, "rb");
   if (in == NULL)
     {
-      sprintf(temp, "story/%s.c", filename);
+      sprintf(temp, "story/%s.c", script_name);
       in = paths_dmodfile_fopen(temp, "rb");
       if (in == NULL)
 	{
-	  sprintf(temp, "story/%s.d", filename);
+	  sprintf(temp, "story/%s.d", script_name);
 	  in = paths_fallbackfile_fopen(temp, "rb");
 	  if (in == NULL)
 	    {
-	      sprintf(temp, "story/%s.c", filename);
+	      sprintf(temp, "story/%s.c", script_name);
 	      in = paths_fallbackfile_fopen(temp, "rb");
 	      if (in == NULL)
 		{
-		  log_warn("Script %s not found. (checked for .C and .D) (requested by %d?)", temp, sprite);
-		  return 0;
+		  return NULL;
 		}
 	    }
 	}
     }
   
   strtoupper(temp);
-  log_debug("Temp thingie is %c", temp[strlen(temp)-1]);
+  log_debug("Located %s", temp);
   if (temp[strlen(temp)-1] == 'D')
-    comp = 1;
+    *compressed = 1;
   else
-    comp = 0;
+    *compressed = 0;
 
-  // Create script
-  log_info("Loading script %s.. (slot %d)", temp, script);
-  script = script_init(filename);
-  if (script < 0)
-    {
-      log_error("Couldn't find unused buffer for script.");
-      fclose(in);
-      return 0;
-    }
-  
-  if (comp)
+  return in;
+}
+
+/**
+ * Load script from 'filename', save it in the first available script
+ * slot, attach to game sprite #'sprite' if 'set_sprite' is 1.
+ **/
+int load_script(char* script_name, int sprite, /*bool*/int set_sprite)
+{
+  // Locate script
+  int compressed = 0;
+  FILE* in = locate_script(script_name, &compressed);
+  if (in == NULL) {
+    log_warn("Script %s not found. (checked for .C and .D) (requested by %d?)",
+	     script_name, sprite);
+    return 0;
+  }
+
+  // Read script
+  char* script_code = NULL;
+  if (compressed)
     {
       log_debug("Decompressing...");
-      decompress(in, script);
+      script_code = byte_pair_decompress_stream(in);
     }
   else
     {
       log_debug("Reading from disk...");
-      decompress_nocomp(in, script);
+      script_code = read_stream(in);
     }
   fclose(in);
-  
-  if (rbuf[script] == NULL)
+
+  if (script_code == NULL)
     {
-      log_error("Couldn't allocate rbuff %d.", script);
-      kill_script(script);
+      log_error("Error reading %s", script_name);
+      return 0;
+    }
+
+  // Create script
+  int script = script_init(script_name, script_code);
+  log_info("Loading script %s.. (slot %d)", script_name, script);
+  if (script < 0)
+    {
+      log_error("Couldn't find unused buffer for script.");
+      free(script_code);
       return 0;
     }
 
@@ -356,7 +371,6 @@ void strip_beginning_spaces(char *str)
 {
   char *pc = str;
   int diff = 0;
-/*   int i; */
 
   /* Find first non-space character (pos) */
   while (*pc == ' ')
