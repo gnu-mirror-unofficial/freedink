@@ -247,7 +247,7 @@ static int script_init(const char* name) {
   return script;
 }
 int ts_script_init(const char* name) {
-  script_init(name);
+  return script_init(name);
 }
 
 /**
@@ -991,7 +991,7 @@ void process_callbacks(void)
 	  if (callback[k].owner > 0 && rinfo[callback[k].owner] == NULL)
 	    {
 	      //kill this process, it's owner sprite is 'effin dead.
-	      log_debug("Killed callback %s because script %d is dead.",
+	      log_debug("Killed callback %d because script %d is dead.",
 			k, callback[k].owner);
 	      callback[k].active = /*false*/0;
 	    }
@@ -1131,7 +1131,7 @@ void run_script(int script)
 
   if (rinfo[script] != NULL)
     {
-      log_debug("Script %s is entered at %d:%d (offset %d).",
+      log_debug("Script %s is entered at %d:%d (offset %ld).",
 		rinfo[script]->name,
 		rinfo[script]->cur_line, rinfo[script]->cur_col,
 		rinfo[script]->current);
