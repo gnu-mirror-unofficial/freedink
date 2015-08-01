@@ -28,6 +28,9 @@
 
 - Game engine translations are loaded under Windows.
 
+- Fix game freeze in The Scourger (in DinkC: cancel concurrent
+  fade_up() and fade_down())
+
 
 108.4
 =====

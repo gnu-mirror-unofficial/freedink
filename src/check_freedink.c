@@ -398,7 +398,7 @@ START_TEST(test_dinkc_concurrent_fades)
   ck_assert_int_eq(cycle_script, script_id2);
   // on fade_up/fade_down conflict, cancel fade effect
   ck_assert_int_eq(process_downcycle, 0);
-  // In 108, flip_it would basically cancel the fade effect
+  // TODO: in 108, flip_it would basically cancel the fade effect
   // FreeDink just forces up_cycle=1 and let it finish
   //ck_assert_int_eq(process_upcycle, 0);
 
@@ -409,7 +409,7 @@ START_TEST(test_dinkc_concurrent_fades)
   ck_assert_int_eq(cycle_script, script_id2);
   // on fade_up/fade_down conflict, cancel fade effect
   ck_assert_int_eq(process_downcycle, 0);
-  // In 108, flip_it would basically cancel the fade effect
+  // TODO: in 108, flip_it would basically cancel the fade effect
   // FreeDink just forces up_cycle=1 and let it finish
   //ck_assert_int_eq(process_upcycle, 0);
 
