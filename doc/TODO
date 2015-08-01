@@ -113,13 +113,6 @@ Bug reports
   GOKUSSJ6 reports 64-bit-specific incompatibility with MIDI
   soundfonts, but yeoldetoast seems to disagree.
 
-- http://www.dinknetwork.com/forum.cgi?MID=190073#190073
-  http://www.dinknetwork.com/forum.cgi?MID=189999#190093
-
-  Paul experiences FreeDink crashes with "Cast Awakening Part 5:
-  Revolution"; it reports savegames being broken, which sounds
-  unlikely, but maybe Revolution is doing weird autosaves?
-
 - http://www.dinknetwork.com/forum.cgi?MID=191266#191266
   http://www.dinknetwork.com/forum.cgi?MID=189801#189801
 
@@ -129,5 +122,5 @@ Bug reports
 Tests
 =====
 
-- Dink position is updated after a new screen is loaded:
+- Dink position is updated *after* a new screen is loaded:
 http://www.dinknetwork.com/forum.cgi?MID=186069#186263
