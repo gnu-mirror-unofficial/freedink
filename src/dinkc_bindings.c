@@ -3,7 +3,7 @@
 
  * Copyright (C) 1997, 1998, 1999, 2002, 2003  Seth A. Robinson
  * Copyright (C) 2005, 2006  Dan Walma
- * Copyright (C) 2005, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014  Sylvain Beucler
+ * Copyright (C) 2005, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -84,7 +84,7 @@ static char* cur_funcname;
 #define STOP_IF_BAD_SPRITE(sprite)                                             \
   if (sprite <= 0 || sprite >= MAX_SPRITES_AT_ONCE)                            \
     {                                                                          \
-      log_error("[DinkC] %s:%d:%s: invalid sprite %d (offset %d)",             \
+      log_error("[DinkC] %s:%d:%s: invalid sprite %d (offset %ld)",             \
                 rinfo[script]->name, rinfo[script]->debug_line,                \
                 cur_funcname, sprite, rinfo[script]->current);                 \
       return;                                                                  \
@@ -99,7 +99,7 @@ static char* cur_funcname;
 #define RETURN_NEG_IF_BAD_SPRITE(sprite)                                       \
   if (sprite <= 0 || sprite >= MAX_SPRITES_AT_ONCE)                            \
     {                                                                          \
-      log_error("[DinkC] %s:%d:%s: invalid sprite %d (offset %d)",             \
+      log_error("[DinkC] %s:%d:%s: invalid sprite %d (offset %ld)",             \
                 rinfo[script]->name, rinfo[script]->debug_line,                \
                 cur_funcname, sprite, rinfo[script]->current);                 \
       *preturnint = -1;                                                        \
@@ -344,7 +344,7 @@ void dc_sp_seq(int script, int* yield, int* preturnint, int sprite, int sparg)
   RETURN_NEG_IF_BAD_SPRITE(sprite);
   if ((sparg < 0 || sparg >= MAX_SEQUENCES) && sparg != -1)
     {
-      log_error("[DinkC] %s:%d:%s: invalid sequence %d, ignoring (offset %d)",
+      log_error("[DinkC] %s:%d:%s: invalid sequence %d, ignoring (offset %ld)",
                 rinfo[script]->name, rinfo[script]->debug_line,
                 cur_funcname, sparg, rinfo[script]->current);
       *preturnint = -1;
@@ -2371,7 +2371,7 @@ morestuff:
 	{
 	  if (cur-1 == 0)
 	    {
-	      log_debug("Error: choice() has 0 options in script %s, offset %d.",
+	      log_debug("Error: choice() has 0 options in script %s, offset %ld.",
 			rinfo[script]->name, rinfo[script]->current);
 	      
 	      free(directive);
@@ -2393,7 +2393,8 @@ morestuff:
 	  //found conditional statement
 	  if (strchr(condition, '(') == NULL)
 	    {
-	      log_error("[DinkC] Error with choice() statement in script %s, offset %d. (%s?)",
+	      log_error("[DinkC] Error with choice() statement in script %s,"
+			" offset %ld. (%s?)",
 			rinfo[script]->name, rinfo[script]->current, condition);
 	      
 	      free(condition);
@@ -2498,7 +2499,8 @@ int get_parms(char proc_name[20], int script, char *str_params, int* spec)
     }
   else
     {
-      log_error("[DinkC] Missing '(' in %s, offset %d.", rinfo[script]->name, rinfo[script]->current);
+      log_error("[DinkC] Missing '(' in %s, offset %ld.",
+		rinfo[script]->name, rinfo[script]->current);
       return 0;
     }
 
@@ -2893,7 +2895,8 @@ process_line(int script, char *s, /*bool*/int doelse)
 
   if (compare(ev[0], "void"))
     {
-      log_error("[DinkC] Missing } in %s, offset %d.", rinfo[script]->name,rinfo[script]->current);
+      log_error("[DinkC] Missing } in %s, offset %ld.",
+		rinfo[script]->name,rinfo[script]->current);
       strcpy_nooverlap(s, h);
       PL_RETURN(DCPS_YIELD);
     }
@@ -3412,7 +3415,8 @@ process_line(int script, char *s, /*bool*/int doelse)
 	    }
 	  else
 	    {
-	      log_error("[DinkC] %s: procedure 'external' takes 2 parameters (offset %d)",
+	      log_error("[DinkC] %s: procedure 'external' takes 2 parameters"
+			" (offset %ld)",
 			rinfo[script]->name, rinfo[script]->current);
 	    }
 	  strcpy_nooverlap(s, h);
@@ -3442,7 +3446,7 @@ process_line(int script, char *s, /*bool*/int doelse)
 	  PL_RETURN(0);
 	}
 	
-      log_error("[DinkC] \"%s\" unknown in %s, offset %d.",
+      log_error("[DinkC] \"%s\" unknown in %s, offset %ld.",
 		ev[0], rinfo[script]->name,rinfo[script]->current);
       //in a thingie, ready to go
     }
