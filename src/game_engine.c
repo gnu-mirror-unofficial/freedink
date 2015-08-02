@@ -614,9 +614,11 @@ void draw_map_game(void)
   init_scripts();
 
   // Display some memory stats after loading a screen
-  meminfo_log_mallinfo();
-  gfx_log_meminfo();
-  sfx_log_meminfo();
+  if (debug_mode) {
+    meminfo_log_mallinfo();
+    gfx_log_meminfo();
+    sfx_log_meminfo();
+  }
 }
         
 /* It's used at: freedink.cpp:restoreAll(), DinkC's draw_background(),

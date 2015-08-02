@@ -55,6 +55,10 @@
 #include "dinkc_bindings.h"
 #include "dinkc.h"
 #include "game_engine.h"
+#include "screen.h"
+#include "dinkvar.h"
+#include "freedink.h"
+#include "paths.h"
 
 #include <string.h>
 #include <xalloc.h>
@@ -419,6 +423,34 @@ START_TEST(test_dinkc_concurrent_fades)
 END_TEST
 
 
+// See also http://www.dinknetwork.com/forum.cgi?MID=186069#186263
+START_TEST(test_integration_player_position_is_updated_after_screen_is_loaded)
+{
+  ts_paths_init();
+  
+  int player_map = 33;
+  pplayer_map = &player_map;
+  int vision = 0;
+  pvision = &vision;
+
+  // Create 5 connected screens
+  map.loc[33] = 1;
+  map.loc[32] = 1;
+  map.loc[34] = 1;
+  map.loc[1]  = 1;
+  map.loc[65] = 1;
+
+  *pplayer_map = 33;
+  spr[1].x = -1;
+  did_player_cross_screen();
+  // TODO: assert x=-1 during screen's main()
+  ck_assert_int_eq(spr[1].x, 619);
+
+  paths_quit();
+}
+END_TEST
+
+
 Suite* freedink_suite()
 {
   Suite *s = suite_create("FreeDink");
@@ -445,7 +477,10 @@ Suite* freedink_suite()
   tcase_add_test(tc_dinkc, test_dinkc_sp_custom);
   tcase_add_test(tc_dinkc, test_dinkc_dont_return_same_script_id_twice);
   tcase_add_test(tc_dinkc, test_dinkc_concurrent_fades);
-  suite_add_tcase(s, tc_dinkc);
+
+  TCase *tc_integration = tcase_create("Integration");
+  tcase_add_test(tc_integration, test_integration_player_position_is_updated_after_screen_is_loaded);
+  suite_add_tcase(s, tc_integration);
 
   return s;
 }

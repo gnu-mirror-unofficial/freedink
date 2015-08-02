@@ -122,6 +122,14 @@ static char* br_build_path (const char *dir, const char *file)
 }
 
 
+void ts_paths_init() {
+  pkgdatadir = strdup("");
+  fallbackdir = strdup("");
+  dmoddir = strdup("");
+  dmodname = strdup("");
+  userappdir = strdup("");
+}
+
 void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
 {
   char *refdir = NULL;

@@ -47,6 +47,8 @@ extern "C"
   extern FILE* paths_savegame_fopen(int num, char* mode);
   extern void paths_quit(void);
 
+  extern void ts_paths_init();
+
 #ifdef __cplusplus
 }
 #endif
