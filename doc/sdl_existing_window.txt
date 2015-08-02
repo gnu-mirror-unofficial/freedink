@@ -1,5 +1,0 @@
-The goal is to embed the SDL window in an existing application. Think
-Windinkedit...
-
-I moved this doc at the SDL Wiki:
-http://www.libsdl.org/cgi/docwiki.cgi/FAQ_20GUI
