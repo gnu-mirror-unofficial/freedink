@@ -19,6 +19,7 @@
 # along with this program.  If not, see
 # <http://www.gnu.org/licenses/>.
 
+# apt-get install upx
 # cd /usr/src/mxe/  # master branch
 ## Disable MP3 support: src/sdl_mixer.mk: --enable-music-mp3 -> --disable-music-mp3
 ## Use MinGW-w64 in /usr/src/mxe/settings.mk: MXE_TARGETS := x86_64-w64-mingw32.static i686-w64-mingw32.static

@@ -32,6 +32,9 @@ maintainers don't make releases often :/
   - https://bugzilla.libsdl.org/show_bug.cgi?id=2578
     Fixed in development version: https://hg.libsdl.org/SDL_image/raw-rev/c0132bb6251a
 
+This can help:
+sed -i -e 's/^Version: 2.0.[0-9]\+$/&.1/' /usr/src/mxe/usr/i686-w64-mingw32.static/lib/pkgconfig/SDL2_*
+
 
 On a minimal Debian system
 ==========================
