@@ -46,11 +46,12 @@ endif
 
 bin_PROGRAMS = freedink freedinkedit
 freedink_SOURCES = $(COMMON_OBJS) freedink.c freedink.h			\
-	update_frame.c update_frame.h dinkc_bindings.c			\
-	dinkc_bindings.h dinkc.c dinkc.h dinkc_console.c		\
-	dinkc_console.h game_engine.c game_engine.h i18n.c i18n.h	\
-	inventory.c inventory.h meminfo.c meminfo.h savegame.c		\
-	savegame.h status.c status.h talk.c talk.h text.c text.h
+	freedink_main.c update_frame.c update_frame.h			\
+	dinkc_bindings.c dinkc_bindings.h dinkc.c dinkc.h		\
+	dinkc_console.c dinkc_console.h game_engine.c game_engine.h	\
+	i18n.c i18n.h inventory.c inventory.h meminfo.c meminfo.h	\
+	savegame.c savegame.h status.c status.h talk.c talk.h text.c	\
+	text.h
 freedinkedit_SOURCES = $(COMMON_OBJS) freedinkedit.c
 nodist_freedink_SOURCES = $(WOERES)
 nodist_freedinkedit_SOURCES = $(WOERES)
@@ -113,6 +114,6 @@ check_freedink_SOURCES = $(COMMON_OBJS) dinkc_bindings.c		\
 	dinkc_console.h game_engine.c game_engine.h i18n.c i18n.h	\
 	inventory.c inventory.h meminfo.c meminfo.h savegame.c		\
 	savegame.h status.c status.h talk.c talk.h text.c text.h	\
-	check_freedink.c
+	check_freedink.c freedink.c
 check_freedink_LDADD = $(LDADD) @CHECK_LIBS@
 endif

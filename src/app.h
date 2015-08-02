@@ -23,6 +23,8 @@
 #ifndef _INIT_H
 #define _INIT_H
 
+#include "SDL.h"
+
 extern int dversion;
 
 extern int app_start(int argc, char *argv[],
