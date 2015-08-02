@@ -88,12 +88,12 @@ extern "C"
   extern enum buttons_actions input_get_button_action(int button_index);
   extern void input_set_button_action(int button_index, enum buttons_actions action_index);
 
-  void input_reset();
+  extern void input_reset();
 
-  Uint8 input_getscancodestate(SDL_Scancode scancode);
-  /*bool*/int input_getscancodejustpressed(SDL_Scancode scancode);
-  Uint8 input_getcharstate(SDL_Keycode ch);
-  /*bool*/int input_getcharjustpressed(SDL_Keycode ch);
+  extern Uint8 input_getscancodestate(SDL_Scancode scancode);
+  extern /*bool*/int input_getscancodejustpressed(SDL_Scancode scancode);
+  extern Uint8 input_getcharstate(SDL_Keycode ch);
+  extern /*bool*/int input_getcharjustpressed(SDL_Keycode ch);
 
 #ifdef __cplusplus
 }
