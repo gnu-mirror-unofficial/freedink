@@ -682,12 +682,8 @@ animate:
 					
 					
 				}
-				
-				
-				if (spr[h].active && spr[h].brain == 1)
-				  did_player_cross_screen(/*true*/1, h);
-				
-past: 
+
+past:
 				check_seq_status(spr[h].seq);
 				
 
@@ -861,9 +857,9 @@ past:
 	
 	/* Screen transition? */
 	if (spr[1].active && spr[1].brain == 1) {
-	  if (did_player_cross_screen(/*false*/0, 1)) {
+	  if (did_player_cross_screen()) {
 	    /* let's restart and draw the next screen,
-	       did_player_cross_screen->grab_trick captured the current one */
+	       did_player_cross_screen->grab_trick() screenshot'd the current one */
 	    get_frame = 1;
 	    goto trigger_start;
 	  }

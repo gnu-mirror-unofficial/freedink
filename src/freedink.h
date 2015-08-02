@@ -35,7 +35,7 @@ extern void CyclePalette();
 extern void button_brain(int h );
 extern void bounce_brain(int h);
 extern int check_if_move_is_legal(int u);
-extern int did_player_cross_screen(int lock_sprite, int h);
+extern int did_player_cross_screen();
 extern void dragon_brain(int h);
 extern void drawscreenlock( void );
 extern void flip_it(void);
