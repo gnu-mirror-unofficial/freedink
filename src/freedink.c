@@ -4187,14 +4187,17 @@ static void freedink_input(SDL_Event* ev) {
       SDL_StopTextInput();
   }
 
-  if ((ev->type == SDL_KEYDOWN || ev->type == SDL_KEYUP)
+  if (ev->type == SDL_KEYUP
+      && input_getscancodestate(ev->key.keysym.scancode) == SDL_PRESSED) {
+    // always tell the game when the player releases a key
+    input_update(ev);
+  } else if ((ev->type == SDL_KEYDOWN || ev->type == SDL_KEYUP)
       && ev->key.keysym.mod & KMOD_ALT) {
     freedink_input_global_shortcuts(ev);
   } else if (console_active) {
     dinkc_console_process_key(ev);
   } else {
-    // update virtual keyboard
-    // doesn't take above events into account
+    // forward all events to the game
     input_update(ev);
   }
 

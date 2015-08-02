@@ -4967,11 +4967,15 @@ static void freedinkedit_input_global_shortcuts(SDL_Event* ev) {
 }
 
 static void freedinkedit_input(SDL_Event* ev) {
-  if (SDL_GetModState()&KMOD_LALT) {
+  if (ev->type == SDL_KEYUP
+      && input_getscancodestate(ev->key.keysym.scancode) == SDL_PRESSED) {
+    // always tell the game when the player releases a key
+    input_update(ev);
+  } else if ((ev->type == SDL_KEYDOWN || ev->type == SDL_KEYUP)
+      && ev->key.keysym.mod & KMOD_ALT) {
     freedinkedit_input_global_shortcuts(ev);
   } else {
-    // update virtual keyboard
-    // doesn't take above events into account
+    // forward all events to the editor
     input_update(ev);
   }
 

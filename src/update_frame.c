@@ -204,8 +204,7 @@ void check_joystick()
 
 void updateFrame()
 {
-  if (!console_active)
-    check_joystick();
+  check_joystick();
 
   /* Refresh frame counter twice per second */
   if ((SDL_GetTicks() - fps_lasttick) > 500)
