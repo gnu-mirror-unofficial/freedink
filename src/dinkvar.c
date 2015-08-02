@@ -110,14 +110,6 @@ const int max_game = 20;
 char *in_string;
 
 
-
-
-/* If true, and if the engine is executing a screen's attached script,
-   and if main() loads new graphics (preload_seq()...), then
-   load_sprites and load_sprite_pak will display a "Please Wait"
-   animation. */
-/*bool*/int no_running_main = /*false*/0;
-
 char dir[80];
 
 

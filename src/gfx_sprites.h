@@ -91,6 +91,8 @@ extern "C"
 			   rect hardbox, int flags);
   extern void seq_set_ini(int seq_no, char *line);
 
+  extern void(*gfx_sprites_loading_listener)();
+  
 #ifdef __cplusplus
 }
 #endif

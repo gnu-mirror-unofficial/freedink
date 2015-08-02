@@ -137,6 +137,8 @@ extern int cycle_script;
 
 extern unsigned int dink_base_push;
 
+extern /*bool*/int screen_main_is_running;
+
 extern void game_init();
 extern void game_quit();
 extern void game_restart();

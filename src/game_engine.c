@@ -87,51 +87,14 @@ int cycle_script = 0;
 /* Base for Dink's push sequences */
 unsigned int dink_base_push = 310;
 
+/* Engine is currently executing a screen's main() - display "Please
+   Wait" when loading graphics and postpone other scripts */
+/*bool*/int screen_main_is_running = /*false*/0;
+static int please_wait_toggle_frame = 7;
+
 
 static int high_speed = 0;
 struct player_info play;
-
-
-void game_init()
-{
-  /* Clean the game state structure - done by C++ but not
-     automatically done by C, and this causes errors. TODO: fix the
-     errors properly instead of using this dirty trick. */
-  memset(&play, 0, sizeof(play));
-
-  if (dversion >= 108)
-    dversion_string = "v1.08 FreeDink";
-  else
-    dversion_string = "v1.07 FreeDink";
-
-  srand((unsigned)time(NULL));
-
-  dinkc_init();
-}
-
-void game_quit()
-{
-  kill_all_scripts_for_real();
-
-  int i = 0;
-  for (i = 1; i < MAX_SPRITES_AT_ONCE; i++)
-    {
-      if (spr[i].custom != NULL)
-	dinkc_sp_custom_free(spr[i].custom);
-      spr[i].custom = NULL;
-    }
-
-  dinkc_quit();
-
-  if (last_saved_game > 0)
-    {
-      log_info("Modifying saved game.");
-
-      if (!add_time_to_saved_game(last_saved_game))
-	log_error("Error modifying saved game.");
-      last_saved_game = 0;
-    }
-}
 
 void game_restart()
 {
@@ -630,14 +593,14 @@ void draw_map_game(void)
                 
   if (strlen(pam.script) > 1)
     {
-      int ms = load_script(pam.script,0, /*true*/1);
+      int script_id = load_script(pam.script,0, /*true*/1);
                         
-      if (ms > 0) 
+      if (script_id > 0) 
 	{
-	  locate(ms, "main");
-	  no_running_main = /*true*/1;
-	  run_script(ms);
-	  no_running_main = /*false*/0;
+	  locate(script_id, "main");
+	  screen_main_is_running = /*true*/1;
+	  run_script(script_id);
+	  screen_main_is_running = /*false*/0;
 	}
     }
 
@@ -662,4 +625,72 @@ void draw_map_game_background(void)
 {
   gfx_tiles_draw_screen();
   game_place_sprites_background();
+}
+
+
+
+/**
+ * Display a flashing "Please Wait" anim directly on the screen, just
+ * before switching to a screen that requires loading new graphics
+ * from the disk.
+ */
+static void draw_wait()
+{
+  if (screen_main_is_running) {
+    if (seq[423].frame[please_wait_toggle_frame] != 0)
+      {
+	SDL_Rect dst = { 232, 0, -1, -1 };
+	SDL_BlitSurface(GFX_k[seq[423].frame[please_wait_toggle_frame]].k, NULL,
+			GFX_lpDDSBack, &dst);
+	flip_it();
+      }
+    if (please_wait_toggle_frame == 7)
+      please_wait_toggle_frame = 8;
+    else
+      please_wait_toggle_frame = 7;
+  }
+}
+
+
+void game_init()
+{
+  /* Clean the game state structure - done by C++ but not
+     automatically done by C, and this causes errors. TODO: fix the
+     errors properly instead of using this dirty trick. */
+  memset(&play, 0, sizeof(play));
+
+  gfx_sprites_loading_listener = draw_wait;
+  
+  if (dversion >= 108)
+    dversion_string = "v1.08 FreeDink";
+  else
+    dversion_string = "v1.07 FreeDink";
+
+  srand((unsigned)time(NULL));
+
+  dinkc_init();
+}
+
+void game_quit()
+{
+  kill_all_scripts_for_real();
+
+  int i = 0;
+  for (i = 1; i < MAX_SPRITES_AT_ONCE; i++)
+    {
+      if (spr[i].custom != NULL)
+	dinkc_sp_custom_free(spr[i].custom);
+      spr[i].custom = NULL;
+    }
+
+  dinkc_quit();
+
+  if (last_saved_game > 0)
+    {
+      log_info("Modifying saved game.");
+
+      if (!add_time_to_saved_game(last_saved_game))
+	log_error("Error modifying saved game.");
+      last_saved_game = 0;
+    }
 }

@@ -42,7 +42,7 @@
 
 /*
   External global variables in use:
-  seq[], GFX_k[], k[], no_running_main
+  seq[], GFX_k[], k[]
 */
 
 /* TODO: get rid of either k or GFX_k */
@@ -52,7 +52,7 @@ struct GFX_pic_info GFX_k[MAX_SPRITES];   // Sprite data (SDL)
 struct sequence seq[MAX_SEQUENCES];
 
 
-static int please_wait = 0;
+void(*gfx_sprites_loading_listener)() = NULL;
 
 /**
  * Free memory used by sprites. It's not much useful in itself, since
@@ -75,34 +75,6 @@ void sprites_unload(void)
       if (seq[i].ini != NULL)
 	free(seq[i].ini);
       seq[i].ini = NULL;
-    }
-}
-
-
-/**
- * Display a flashing "Please Wait" anim directly on the screen, just
- * before switching to a screen that requires loading new graphics
- * from the disk.
- */
-static void draw_wait()
-{
-  if (seq[423].frame[8] != 0)
-    {
-
-      if (please_wait)
-	{
-	  SDL_Rect dst = {232, 0, GFX_k[seq[423].frame[7]].k->w, GFX_k[seq[423].frame[7]].k->h};
-	  SDL_BlitSurface(GFX_k[seq[423].frame[7]].k, NULL, GFX_lpDDSBack, &dst);
-	  flip_it();
-	  please_wait = 0;
-	}
-      else
-	{
-	  SDL_Rect dst = {232, 0, GFX_k[seq[423].frame[8]].k->w, GFX_k[seq[423].frame[8]].k->h};
-	  SDL_BlitSurface(GFX_k[seq[423].frame[8]].k, NULL, GFX_lpDDSBack, &dst);
-	  flip_it();
-	  please_wait = 1;
-	}
     }
 }
 
@@ -162,8 +134,8 @@ void load_sprite_pak(char seq_path_prefix[100], int seq_no, int delay, int xoffs
   /* If the sequence already exists, free it first */
   free_seq(seq_no);
 
-  if (no_running_main)
-    draw_wait();
+  if (gfx_sprites_loading_listener)
+    gfx_sprites_loading_listener();
 
   char *seq_dirname = pdirname(seq_path_prefix);
   int n = strlen(seq_path_prefix) - strlen(seq_dirname)-1;
@@ -429,8 +401,8 @@ void load_sprites(char seq_path_prefix[100], int seq_no, int delay, int xoffset,
   if ((flags & DINKINI_BLACK) == DINKINI_BLACK)
     black = 1;
 
-  if (no_running_main)
-    draw_wait();
+  if (gfx_sprites_loading_listener)
+    gfx_sprites_loading_listener();
 
 
   /* Order: */

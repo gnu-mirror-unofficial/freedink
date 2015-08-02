@@ -235,8 +235,6 @@ extern void save_info(void);
 extern int realhard(int tile);
 extern void save_hard(void);
 
-extern /*bool*/int no_running_main;
-
 extern void fill_screen(int num);
 
 

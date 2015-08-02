@@ -439,7 +439,6 @@ void dc_sp_kill_wait(int script, int* yield, int* preturnint, int sprite)
 
 void dc_sp_script(int script, int* yield, int* preturnint, int sprite, char* dcscript)
 {
-  // (sprite, direction, until, nohard);
   if (sprite <= 0 || (sprite >= MAX_SPRITES_AT_ONCE && sprite != 1000))
     {
       log_error("[DinkC] %s:%d:%s: cannot process sprite %d??",
@@ -457,15 +456,14 @@ void dc_sp_script(int script, int* yield, int* preturnint, int sprite, char* dcs
   int tempreturn = 0;
   if (sprite != 1000)
     {
-      if (no_running_main == /*true*/1)
-	log_info("Not running %s until later..", rinfo[spr[sprite].script]->name);
-      if (no_running_main == /*false*/0 && sprite != 1000)
-	locate(spr[sprite].script, "MAIN");
-    
       tempreturn = spr[sprite].script;
-    
-      if (no_running_main == /*false*/0)
+
+      if (screen_main_is_running) {
+	log_info("Not running %s until later..", rinfo[spr[sprite].script]->name);
+      } else {
+	locate(spr[sprite].script, "MAIN");
 	run_script(spr[sprite].script);
+      }
     }
     
   *preturnint = tempreturn;
