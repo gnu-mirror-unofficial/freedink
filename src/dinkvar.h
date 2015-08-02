@@ -231,7 +231,6 @@ extern /*bool*/int kill_last_sprite(void);
 extern void check_frame_status(int h, int frame);
 extern void flip_it_second(void);
 extern void save_map(const int num);
-extern void save_info(void);
 extern int realhard(int tile);
 extern void save_hard(void);
 

@@ -348,6 +348,33 @@ void place_sprites()
     }
 }
 
+/**
+ * Save dink.dat (index of map offsets + midi# + indoor/outdoor)
+ */
+static void save_info(void)
+{
+  FILE *f = paths_dmodfile_fopen(current_dat, "wb");
+  if (f == NULL)
+    {
+      perror("Cannot save dink.dat");
+      return;
+    }
+  
+  /* Portably dump struct map_info to disk */
+  int i = 0;
+  char name[20] = "Smallwood";
+  fwrite(name, 20, 1, f);
+  for (i = 0; i < 769; i++)
+    write_lsb_int(map.loc[i],    f);
+  for (i = 0; i < 769; i++)
+    write_lsb_int(map.music[i],  f);
+  for (i = 0; i < 769; i++)
+    write_lsb_int(map.indoor[i], f);
+  fseek(f, 2240, SEEK_CUR); // unused field
+
+  fclose(f);
+}
+
 void editor_load_map(int num)
 {
   if (load_map_to(current_map, num, &pam) < 0)

@@ -601,34 +601,6 @@ void save_map(const int num)
 
 
 /**
- * Save dink.dat (index of map offsets + midi# + indoor/outdoor)
- */
-void save_info(void)
-{
-  FILE *f = paths_dmodfile_fopen(current_dat, "wb");
-  if (f == NULL)
-    {
-      perror("Cannot save dink.dat");
-      return;
-    }
-  
-  /* Portably dump struct map_info to disk */
-  int i = 0;
-  char name[20] = "Smallwood";
-  fwrite(name, 20, 1, f);
-  for (i = 0; i < 769; i++)
-    write_lsb_int(map.loc[i],    f);
-  for (i = 0; i < 769; i++)
-    write_lsb_int(map.music[i],  f);
-  for (i = 0; i < 769; i++)
-    write_lsb_int(map.indoor[i], f);
-  fseek(f, 2240, SEEK_CUR); // unused field
-
-  fclose(f);
-}
-
-
-/**
  * Load dink.dat to specified memory buffer
  */
 int load_info_to(char* path, struct map_info *mymap)
@@ -661,13 +633,7 @@ int load_info_to(char* path, struct map_info *mymap)
  */
 void load_info(void)
 {
-  int result = load_info_to(current_dat, &map);
-  if (result < 0)
-    {
-      //make new data file
-      save_info();
-      return;
-    }
+  load_info_to(current_dat, &map);
 }
 
 /***

@@ -31,6 +31,10 @@
 - Fix game freeze in The Scourger (in DinkC: cancel concurrent
   fade_up() and fade_down())
 
+- Never recreate an empty dink.dat in the game, even if there's a
+  problem opening it (avoids potential corruption when running both
+  the game and an editor at the same time).
+
 
 108.4
 =====
