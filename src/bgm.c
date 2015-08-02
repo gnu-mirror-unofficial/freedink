@@ -214,21 +214,21 @@ void check_midi(void)
   // TODO: use a better constant (like max_file_path)
   char midi_filename[20];
 	
-  if ((!midi_active) || (map.music[*pmap] == 0))
+  if ((!midi_active) || (map.music[*pplayer_map] == 0))
     return;
 
   /* There is music information associated with this screen */
-  if (map.music[*pmap] != -1) {
-    if (map.music[*pmap] > 1000)
+  if (map.music[*pplayer_map] != -1) {
+    if (map.music[*pplayer_map] > 1000)
       /* Try to play a CD track (unsupported) - fall back to MIDI */
       {
-	sprintf(midi_filename, "%d.mid", map.music[*pmap] - 1000);
+	sprintf(midi_filename, "%d.mid", map.music[*pplayer_map] - 1000);
 	PlayMidi(midi_filename);
       }
     else
       {
 	/* Just play the specified MIDI */
-	sprintf(midi_filename, "%d.mid", map.music[*pmap]);
+	sprintf(midi_filename, "%d.mid", map.music[*pplayer_map]);
 	PlayMidi(midi_filename);
       }
   }

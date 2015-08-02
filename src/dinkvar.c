@@ -135,7 +135,7 @@ int playl = 20;
 
 int playy = 400;
 int cur_map;
-int* pmap;
+int* pplayer_map;
 
 /* Number of ms since an arbitrarily fixed point */
 Uint32 thisTickCount,lastTickCount;
@@ -1122,7 +1122,7 @@ int add_sprite_dumb(int x1, int y, int brain,int pseq, int pframe,int size )
 		 h, cur_map, spr[h].pseq, spr[h].pframe);
       else
 	log_warn("Yo, sprite %d has a bad pic. (Map %d) Seq %d, Frame %d",
-		 h, *pmap, spr[h].pseq, spr[h].pframe);
+		 h, *pplayer_map, spr[h].pseq, spr[h].pframe);
       goto nodraw;
     }
 

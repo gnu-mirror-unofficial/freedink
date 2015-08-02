@@ -1857,15 +1857,15 @@ int did_player_cross_screen()
   // DO MATH TO SEE IF THEY HAVE CROSSED THE SCREEN, IF SO LOAD NEW ONE
   if ((spr[1].x) < playl)
     {
-      if ((*pmap-1) >= 1 && map.loc[*pmap-1] > 0 && screenlock == 0)
+      if ((*pplayer_map-1) >= 1 && map.loc[*pplayer_map-1] > 0 && screenlock == 0)
 	{
 	  //move one map to the left
 	  update_screen_time();
 	  grab_trick(4);
-	  *pmap -= 1;
-	  game_load_map(map.loc[*pmap]);
-	  if (map.indoor[*pmap] == 0)
-	    play.last_map = *pmap;
+	  *pplayer_map -= 1;
+	  game_load_map(map.loc[*pplayer_map]);
+	  if (map.indoor[*pplayer_map] == 0)
+	    play.last_map = *pplayer_map;
 	  
 	  draw_map_game();
 	  // compatibility: update Dink position *after* screen change
@@ -1881,15 +1881,15 @@ int did_player_cross_screen()
   
   else if (spr[1].x > 619)
     {
-      if ((*pmap+1) <= 24*32 && map.loc[*pmap+1] > 0 && screenlock == 0)
+      if ((*pplayer_map+1) <= 24*32 && map.loc[*pplayer_map+1] > 0 && screenlock == 0)
 	{
 	  //move one map to the right
 	  update_screen_time();
 	  grab_trick(6);
-	  *pmap += 1;
-	  game_load_map(map.loc[*pmap]);
-	  if (map.indoor[*pmap] == 0)
-	    play.last_map = *pmap;
+	  *pplayer_map += 1;
+	  game_load_map(map.loc[*pplayer_map]);
+	  if (map.indoor[*pplayer_map] == 0)
+	    play.last_map = *pplayer_map;
 	  
 	  draw_map_game();
 	  // compatibility: update Dink position *after* screen change
@@ -1905,15 +1905,15 @@ int did_player_cross_screen()
   
   else if (spr[1].y < 0)
     {
-      if ((*pmap-32) >= 1 && map.loc[*pmap-32] > 0 && screenlock == 0)
+      if ((*pplayer_map-32) >= 1 && map.loc[*pplayer_map-32] > 0 && screenlock == 0)
 	{
 	  //move one map up
 	  update_screen_time();
 	  grab_trick(8);
-	  *pmap -= 32;
-	  game_load_map(map.loc[*pmap]);
-	  if (map.indoor[*pmap] == 0)
-	    play.last_map = *pmap;
+	  *pplayer_map -= 32;
+	  game_load_map(map.loc[*pplayer_map]);
+	  if (map.indoor[*pplayer_map] == 0)
+	    play.last_map = *pplayer_map;
 	  
 	  // compatibility: update Dink X position *before* screen change
 	  // (shouldn't matter when though, since it's an Y motion)
@@ -1932,15 +1932,15 @@ int did_player_cross_screen()
   
   else if (spr[1].y > 399)
     {
-      if ((*pmap+32) <= 24*32 && map.loc[*pmap+32] > 0 && screenlock == 0)
+      if ((*pplayer_map+32) <= 24*32 && map.loc[*pplayer_map+32] > 0 && screenlock == 0)
 	{
 	  //move one map down
 	  update_screen_time();
 	  grab_trick(2);
-	  *pmap += 32;
-	  game_load_map(map.loc[*pmap]);
-	  if (map.indoor[*pmap] == 0)
-	    play.last_map = *pmap;
+	  *pplayer_map += 32;
+	  game_load_map(map.loc[*pplayer_map]);
+	  if (map.indoor[*pplayer_map] == 0)
+	    play.last_map = *pplayer_map;
 	  
 	  draw_map_game();
 	  // compatibility: update Dink position *after* screen change
@@ -3770,7 +3770,7 @@ void process_warp_man(void)
 	  update_screen_time();
 	  spr[1].x = pam.sprite[block].warp_x;
 	  spr[1].y = pam.sprite[block].warp_y;
-	  *pmap = pam.sprite[block].warp_map;	
+	  *pplayer_map = pam.sprite[block].warp_map;	
 
 	  // update map indicator
 	  if (map.indoor[pam.sprite[block].warp_map] == 0)

@@ -3757,7 +3757,7 @@ void updateFrame(void)
 
 			load_info();
 
-			cur_map=  (((spr[1].y+1)*32) / 20)+(spr[1].x / 20);
+			cur_map = (((spr[1].y+1)*32) / 20)+(spr[1].x / 20);
 			if (map.loc[cur_map] == 0)
 			  {
 			    //new map screen

@@ -849,7 +849,7 @@ past:
 	if (mode == 2)
 	{
 	  set_mode(3);
-	  game_load_map(map.loc[*pmap]);
+	  game_load_map(map.loc[*pplayer_map]);
 	  draw_map_game();
 	  flife = *plife;
 	}
@@ -914,7 +914,7 @@ past:
 			" Moveman X%d X%d: %d Y%d Y%d Map %d",
 			last_sprite_created, fps/*_show*/, show_dot, plane_process,
 			spr[1].lpx[0], spr[1].lpy[0], spr[1].moveman,
-			spr[1].lpx[1], spr[1].lpy[1], *pmap);
+			spr[1].lpx[1], spr[1].lpy[1], *pplayer_map);
 	      }
 	    
 	    print_text_wrap_debug(msg, 0, 0);

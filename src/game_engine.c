@@ -221,36 +221,36 @@ void fix_dead_sprites()
 
   for (i = 1; i < 100; i++)
     {
-      int type = play.spmap[*pmap].type[i];
+      int type = play.spmap[*pplayer_map].type[i];
 
       // Resurrect sprites after 5mn
       if (type == 6)
 	{
-	  if  ((thisTickCount > (play.spmap[*pmap].last_time + 300000))
-	       || (thisTickCount + 400000 < play.spmap[*pmap].last_time + 300000))
+	  if  ((thisTickCount > (play.spmap[*pplayer_map].last_time + 300000))
+	       || (thisTickCount + 400000 < play.spmap[*pplayer_map].last_time + 300000))
 	    {
 	      //this sprite can come back online now
-	      play.spmap[*pmap].type[i] = 0;
+	      play.spmap[*pplayer_map].type[i] = 0;
 	    }
 	}
 
       // Resurrect sprites after 3mn
       if (type == 7)
 	{
-	  if (thisTickCount > (play.spmap[*pmap].last_time + 180000))
+	  if (thisTickCount > (play.spmap[*pplayer_map].last_time + 180000))
 	    {
 	      //this sprite can come back online now
-	      play.spmap[*pmap].type[i] = 0;
+	      play.spmap[*pplayer_map].type[i] = 0;
 	    }
 	}
 
       // Resurrect sprites after 1mn
       if (type == 8)
 	{
-	  if (thisTickCount > (play.spmap[*pmap].last_time + 60000))
+	  if (thisTickCount > (play.spmap[*pplayer_map].last_time + 60000))
 	    {
 	      //this sprite can come back online now
-	      play.spmap[*pmap].type[i] = 0;
+	      play.spmap[*pplayer_map].type[i] = 0;
 	    }
 	}
     }
@@ -286,10 +286,10 @@ int game_load_map(int num)
  */
 void update_screen_time()
 {
-  //Msg("Cur time is %d", play.spmap[*pmap].last_time);
-  //Msg("Map is %d..", *pmap);
-  play.spmap[*pmap].last_time = thisTickCount;
-  //Msg("Time was saved as %d", play.spmap[*pmap].last_time);
+  //Msg("Cur time is %d", play.spmap[*pplayer_map].last_time);
+  //Msg("Map is %d..", *pplayer_map);
+  play.spmap[*pplayer_map].last_time = thisTickCount;
+  //Msg("Time was saved as %d", play.spmap[*pplayer_map].last_time);
 }
 
 
@@ -299,21 +299,21 @@ void update_play_changes( void )
         for (j = 1; j < 100; j++)
         {
                 if (pam.sprite[j].active)
-                        if (play.spmap[*pmap].type[j] != 0)
+                        if (play.spmap[*pplayer_map].type[j] != 0)
                         {
                                 //lets make some changes, player has extra info
-                                if (play.spmap[*pmap].type[j] == 1)
+                                if (play.spmap[*pplayer_map].type[j] == 1)
                                 {
                                         pam.sprite[j].active = 0;
 
                                 }
 
-                                if (play.spmap[*pmap].type[j] == 2)
+                                if (play.spmap[*pplayer_map].type[j] == 2)
                                 {
                                         pam.sprite[j].type = 1;
                     pam.sprite[j].hard = 1;
                                 }
-                                if (play.spmap[*pmap].type[j] == 3)
+                                if (play.spmap[*pplayer_map].type[j] == 3)
                                 {
 
                                         //              Msg("Changing sprite %d", j);
@@ -322,36 +322,36 @@ void update_play_changes( void )
 
                                 }
 
-                                if (play.spmap[*pmap].type[j] == 4)
+                                if (play.spmap[*pplayer_map].type[j] == 4)
                                 {
                                         pam.sprite[j].type = 1;
                     pam.sprite[j].hard = 0;
                                 }
 
-                                if (play.spmap[*pmap].type[j] == 5)
+                                if (play.spmap[*pplayer_map].type[j] == 5)
                                 {
                                         pam.sprite[j].type = 0;
                     pam.sprite[j].hard = 0;
                                 }
 
-                                if (play.spmap[*pmap].type[j] == 6)
+                                if (play.spmap[*pplayer_map].type[j] == 6)
                                 {
                                         pam.sprite[j].active = 0;
 
                                 }
-                                if (play.spmap[*pmap].type[j] == 7)
+                                if (play.spmap[*pplayer_map].type[j] == 7)
                                 {
                                         pam.sprite[j].active = 0;
 
                                 }
-                                if (play.spmap[*pmap].type[j] == 8)
+                                if (play.spmap[*pplayer_map].type[j] == 8)
                                 {
                                         pam.sprite[j].active = 0;
 
                                 }
 
-                                pam.sprite[j].seq = play.spmap[*pmap].seq[j];
-                                pam.sprite[j].frame = play.spmap[*pmap].frame[j];
+                                pam.sprite[j].seq = play.spmap[*pplayer_map].seq[j];
+                                pam.sprite[j].frame = play.spmap[*pplayer_map].frame[j];
                                 strcpy(pam.sprite[j].script, "");
 
 

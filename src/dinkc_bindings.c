@@ -580,13 +580,13 @@ void dc_load_screen(int script, int* yield, int* preturnint)
 {
   /* STOP_IF_BAD_SPRITE(active_sprite); */
 
-  //Msg("Loading map %d..",*pmap);
+  //Msg("Loading map %d..",*pplayer_map);
   update_screen_time();
-  game_load_map(map.loc[*pmap]);
+  game_load_map(map.loc[*pplayer_map]);
 
   // update indicator on mini-map
-  if (map.indoor[*pmap] == 0)
-    play.last_map = *pmap;
+  if (map.indoor[*pplayer_map] == 0)
+    play.last_map = *pplayer_map;
     
   return;
 }
@@ -1113,14 +1113,14 @@ void dc_editor_type(int script, int* yield, int* preturnint, int editor_sprite, 
   if (editor_sprite < 0 || editor_sprite >= 100)
     return;
   *preturnint = change_edit_char(editor_sprite, type,
-				 &play.spmap[*pmap].type[editor_sprite]);
+				 &play.spmap[*pplayer_map].type[editor_sprite]);
 }
 void dc_editor_seq(int script, int* yield, int* preturnint, int editor_sprite, int seq)
 {
   if (editor_sprite < 0 || editor_sprite >= 100)
     return;
   *preturnint = change_edit(editor_sprite, seq,
-			    &play.spmap[*pmap].seq[editor_sprite]);
+			    &play.spmap[*pplayer_map].seq[editor_sprite]);
 }
 
 void dc_editor_frame(int script, int* yield, int* preturnint, int editor_sprite, int frame)
@@ -1128,7 +1128,7 @@ void dc_editor_frame(int script, int* yield, int* preturnint, int editor_sprite,
   if (editor_sprite < 0 || editor_sprite >= 100)
     return;
   *preturnint = change_edit_char(editor_sprite, frame,
-				 &play.spmap[*pmap].frame[editor_sprite]);
+				 &play.spmap[*pplayer_map].frame[editor_sprite]);
 }
 
 
@@ -2256,7 +2256,7 @@ void attach(void)
       if (compare("&gold", play.var[i].name))  pgold = &play.var[i].var;
       if (compare("&magic", play.var[i].name))  pmagic = &play.var[i].var;
       if (compare("&level", play.var[i].name))  plevel = &play.var[i].var;
-      if (compare("&player_map", play.var[i].name)) pmap = &play.var[i].var;
+      if (compare("&player_map", play.var[i].name)) pplayer_map = &play.var[i].var;
       if (compare("&cur_weapon", play.var[i].name)) pcur_weapon = &play.var[i].var;
       if (compare("&cur_magic", play.var[i].name)) pcur_magic = &play.var[i].var;
       if (compare("&last_text", play.var[i].name)) plast_text = &play.var[i].var;

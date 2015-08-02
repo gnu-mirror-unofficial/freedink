@@ -130,7 +130,7 @@ extern struct small_map pam;
 extern int playl;
 extern int playx;
 extern int playy;
-extern int *pmap;
+extern int *pplayer_map;
 extern int screenlock;
 extern int show_dot;
 extern Uint32 thisTickCount;
