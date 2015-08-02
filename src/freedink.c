@@ -4187,7 +4187,8 @@ static void freedink_input(SDL_Event* ev) {
       SDL_StopTextInput();
   }
 
-  if (SDL_GetModState()&KMOD_LALT) {
+  if ((ev->type == SDL_KEYDOWN || ev->type == SDL_KEYUP)
+      && ev->key.keysym.mod & KMOD_ALT) {
     freedink_input_global_shortcuts(ev);
   } else if (console_active) {
     dinkc_console_process_key(ev);
