@@ -62,13 +62,6 @@
 #include <windows.h>
 #endif
 
-#ifdef _PSP
-/* The following is necessary if you're running in PRX format, whose
-   default heap size is only 64kB... */
-#include <pspmoduleinfo.h>
-PSP_HEAP_SIZE_MAX();
-#endif
-
 #ifdef __ANDROID__
 #include <string.h> /* strerror */
 #include <errno.h>

@@ -250,40 +250,6 @@ void input_set_default_buttons(void)
   input_set_button_action( 8-1, ACTION_BUTTON8);
   input_set_button_action( 9-1, ACTION_BUTTON9);
   input_set_button_action(10-1, ACTION_BUTTON10);
-
-#ifdef _PSP
-  /* Alternate mapping, more consistent with other apps on PSP; in
-     addition, the buttons numbering/placement is different than on
-     PC, so it needs to be redefined anyway. */
-  /* Here are names for the button indices returned by SDL, 12 buttons
-     in [0,11]; home/hold/note/screen/vol+/vol- can't be used */
-  enum buttons_psp {
-    BUTTON_TRIANGLE=0, BUTTON_CIRCLE, BUTTON_CROSS, BUTTON_SQUARE,
-    BUTTON_LTRIGGER, BUTTON_RTRIGGER,
-    BUTTON_DOWN, BUTTON_LEFT, BUTTON_UP, BUTTON_RIGHT,
-    BUTTON_SELECT, BUTTON_START, BUTTON_HOME, BUTTON_HOLD };
-  input_set_button_action(BUTTON_TRIANGLE,  ACTION_INVENTORY);
-  input_set_button_action(BUTTON_CIRCLE,    ACTION_MAGIC);
-  input_set_button_action(BUTTON_CROSS,     ACTION_ATTACK);
-  input_set_button_action(BUTTON_SQUARE,    ACTION_TALK);
-  input_set_button_action(BUTTON_LTRIGGER,  ACTION_MENU);
-  input_set_button_action(BUTTON_RTRIGGER,  ACTION_MAP);
-  // TODO: make these also work like d/l/u/r:
-  input_set_button_action(BUTTON_DOWN,      ACTION_DOWN);
-  input_set_button_action(BUTTON_LEFT,      ACTION_LEFT);
-  input_set_button_action(BUTTON_UP,        ACTION_UP);
-  input_set_button_action(BUTTON_RIGHT,     ACTION_RIGHT);
-  /* TODO: we could also map:
-     - debug (Alt+D),
-     - pause/resume midi (Alt+N/B)
-     - fast-quit (Alt+Q) - fast-quit is somewhat already available
-     through the classic Home key, although handled differently. */
-  /* Let's also try to get a free key to possibly implement a
-     zooming/switch-view function for small screens, as well as a
-     virtual keyboard feature (like ScummVM)... */
-  /* Maybe also map inventory to start instead of Triangle. */
-  input_set_button_action(BUTTON_START,     ACTION_INVENTORY);
-#endif
 }
 
 enum buttons_actions input_get_button_action(int button_index)

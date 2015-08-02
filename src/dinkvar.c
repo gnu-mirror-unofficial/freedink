@@ -379,10 +379,6 @@ int realhard(int tile)
  */
 int load_map_to(char* path, const int num, struct small_map* screen)
 {
-  /* Instead of using 'fseek(...)' when we want to skip a little bit
-     of data, we read it to this buffer - this is much faster on PSP
-     (1000ms -> 60ms), probably related to cache validation. No
-     noticeable change on PC (<1ms). */
   char skipbuf[10000]; // more than any fseek we do
 
   FILE *f = NULL;
@@ -496,10 +492,6 @@ int load_map_to(char* path, const int num, struct small_map* screen)
  */
 void save_map(const int num)
 {
-  /* Instead of using 'fseek(...)' when we want to skip a little bit
-     of data, we read it to this buffer - this is much faster on PSP
-     (1000ms -> 60ms), probably related to cache validation. No
-     noticeable change on PC (<1ms). */
   char skipbuf[10000]; // more than any fseek we do
   memset(skipbuf, 0, 10000);
 
@@ -691,10 +683,6 @@ void load_info(void)
  */
 void save_hard(void)
 {
-  /* Instead of using 'fseek(...)' when we want to skip a little bit
-     of data, we read it to this buffer - this is much faster on PSP
-     (1000ms -> 60ms), probably related to cache validation. No
-     noticeable change on PC (<1ms). */
   char skipbuf[10000]; // more than any fseek we do
   memset(skipbuf, 0, 10000);
 
@@ -734,10 +722,6 @@ void load_hard(void)
 {
   memset(&hmap, 0, sizeof(struct hardness));
 
-  /* Instead of using 'fseek(...)' when we want to skip a little bit
-     of data, we read it to this buffer - this is much faster on PSP
-     (1000ms -> 60ms), probably related to cache validation. No
-     noticeable change on PC (<1ms). */
   char skipbuf[10000]; // more than any fseek we do
 
   FILE *f = NULL;

@@ -171,10 +171,6 @@ int load_info_to(char* path, struct map_info *mymap)
  */
 int load_map_to(char* path, const int num, struct small_map* screen)
 {
-  /* Instead of using 'fseek(...)' when we want to skip a little bit
-     of data, we read it to this buffer - this is much faster on PSP
-     (1000ms -> 60ms), probably related to cache validation. No
-     noticeable change on PC (<1ms). */
   char skipbuf[10000]; // more than any fseek we do
 
   FILE *f = NULL;

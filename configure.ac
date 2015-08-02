@@ -44,7 +44,6 @@ CFLAGS="$CFLAGS -Wall -std=c99"
 # Gnulib prefix detected from Makefile.am:ACLOCAL_AMFLAGS
 gl_EARLY
 
-AM_CONDITIONAL(PSP, test "$host" = "mipsallegrexel-psp-elf")
 AM_CONDITIONAL(ANDROID, test "$host" = "arm-unknown-linux-androideabi")
 case "${host}" in *-*-mingw32* | *-*-cygwin* | *-*-windows*) woe=1;; esac
 AM_CONDITIONAL(WOE, test x"$woe" = x"1")
@@ -147,7 +146,6 @@ case "${host}" in
 | mipsallegrexel-psp-elf \
 | arm-unknown-linux-androideabi)
     # Can't search fonts using fontconfig under ms woe
-    # Nor under a PSP
     # Nor under Android
     use_fontconfig="no"
     ;;
