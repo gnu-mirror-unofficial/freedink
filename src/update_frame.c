@@ -678,13 +678,6 @@ animate:
 
 past:
 				check_seq_status(spr[h].seq);
-				
-
-				// TODO: this seems to be copy
-				// protection. What does it do if we
-				// remove the draw_sprite_game line?
-
-				// if (mcc == sound_support)
 				draw_sprite_game(GFX_lpDDSBack, h);
 }
 } /* for 0->max_s */
