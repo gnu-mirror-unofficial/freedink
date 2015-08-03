@@ -23,11 +23,6 @@
 #ifndef _RECT_H
 #define _RECT_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
 typedef struct rect {
   int left, top, right, bottom;
 } rect;
@@ -36,9 +31,5 @@ extern int rect_set(rect *rect, int left, int top, int right, int bottom);
 extern int rect_offset(rect *rect, int tx, int ty);
 extern int rect_copy(rect *src, rect *dst);
 extern int rect_inflate(rect *rect, int dw, int dh);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

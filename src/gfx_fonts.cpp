@@ -227,7 +227,7 @@ static TTF_Font *load_default_font() {
 int initfont(char* fontname) {
   TTF_Font *new_font = NULL;
   char* ext = ".ttf";
-  char* filename = malloc(strlen(fontname) + strlen(ext) + 1);
+  char* filename = (char*)malloc(strlen(fontname) + strlen(ext) + 1);
   strcpy(filename, fontname);
   strcat(filename, ext);
 
@@ -609,7 +609,7 @@ print_text_wrap_debug(char *text, int x, int y)
   int lineskip = TTF_FontHeight(system_font);
 
   int textlen = strlen(text);
-  tmp = malloc(strlen(text) + 1);
+  tmp = (char*)malloc(strlen(text) + 1);
   /* drop '\r' */
   pc = tmp;
   int i;

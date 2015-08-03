@@ -23,11 +23,6 @@
 #ifndef _PATH_H
 #define _PATH_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
 #include <stdio.h>
 
   extern void paths_init(char* argv0, char* refdir_opt, char* dmoddir_opt);
@@ -48,9 +43,5 @@ extern "C"
   extern void paths_quit(void);
 
   extern void ts_paths_init();
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

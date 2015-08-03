@@ -147,8 +147,8 @@ FastFileInit(char *filename, int max_handles)
 #endif
 
   /* Allocate the memory */
-  g_Entries = calloc(sizeof(struct FF_Entry), g_numEntries);
-  g_Handles = calloc(sizeof(struct FF_Handle), max_handles);
+  g_Entries = (FF_Entry*)calloc(sizeof(struct FF_Entry), g_numEntries);
+  g_Handles = (FF_Handle*)calloc(sizeof(struct FF_Handle), max_handles);
 
   for (count = 0; count < g_numEntries; count++)
     {
@@ -296,7 +296,7 @@ FastFileLock(struct FF_Handle *i)
   return SDL_RWFromMem(buffer, i->len);
 #else
   fseek(g_File, i->off, SEEK_SET);
-  return SDL_RWFromFP(g_File, /*autoclose=*/0);
+  return SDL_RWFromFP(g_File, /*autoclose=*/SDL_FALSE);
 #endif
 }
 

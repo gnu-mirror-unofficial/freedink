@@ -37,6 +37,10 @@
 
 - Fix portability when saving a FreeDinkedit screen for the first time
 
+- Fix 'make_global_function' and 'load_map' DinkC functions
+
+- Move to C++
+
 
 108.4
 =====

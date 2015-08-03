@@ -211,7 +211,7 @@
 
   play.last_talk = read_lsb_int(f);
   play.mouse = read_lsb_int(f);
-  play.item_magic = fgetc(f);
+  play.item_type = (enum item_type)fgetc(f);
   fread(skipbuf, 3, 1, f); // reproduce memory alignment
   play.last_map = read_lsb_int(f);
   fread(skipbuf, 4, 1, f); // reproduce unused 'crap' field
@@ -461,7 +461,7 @@ void save_game(int num)
 
   write_lsb_int(play.last_talk, f);
   write_lsb_int(play.mouse, f);
-  fputc(play.item_magic, f);
+  fputc(play.item_type, f);
   fwrite(skipbuf, 3, 1, f); // reproduce memory alignment
   write_lsb_int(play.last_map, f);
   fwrite(skipbuf, 4, 1, f); // reproduce unused 'crap' field

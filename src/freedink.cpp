@@ -2583,17 +2583,17 @@ void human_brain(int h)
 	      || scancode == SDL_SCANCODE_RSHIFT
 	      || scancode == SDL_SCANCODE_LALT
 	      || scancode == SDL_SCANCODE_RALT
-	      || SDL_GetKeyFromScancode(scancode) == SDLK_m)
+	      || SDL_GetKeyFromScancode((SDL_Scancode)scancode) == SDLK_m)
 	    continue;
 	  
 	  char scriptname[30];
-	  if (input_getscancodestate(scancode))
+	  if (input_getscancodestate((SDL_Scancode)scancode))
 	    {
 	      /* Get the same keycodes than the original Dink engines
 		 for letters, that is, uppercase ascii rather than
 		 lowercase ascii */
 	      int code;
-	      int keycode = SDL_GetKeyFromScancode(scancode);
+	      int keycode = SDL_GetKeyFromScancode((SDL_Scancode)scancode);
 	      if (keycode >= SDLK_a && keycode <= SDLK_z)
 		code = 'A' + (keycode - SDLK_a);
 	      else
@@ -2611,38 +2611,39 @@ void human_brain(int h)
 	    }
 	}
     }
-  
-  enum buttons_actions actions[5];
-  enum buttons_actions actions_script[5];
-  int nb_actions = 1;
-  actions[0] = ACTION_MAP;
-  actions_script[0] = 6;
-  if (dversion >= 108)
-    {
-      nb_actions = 5;
-      actions[1] = ACTION_BUTTON7;
-      actions_script[1] = 7;
-      actions[2] = ACTION_BUTTON8;
-      actions_script[2] = 8;
-      actions[3] = ACTION_BUTTON9;
-      actions_script[3] = 9;
-      actions[4] = ACTION_BUTTON10;
-      actions_script[4] = 10;
-    }
-  int i = 0;
-  for (i = 0; i < nb_actions; i++)
-    {
-      // button6.c, button7.c, ..., button10.c
-      if (sjoy.button[actions[i]] == 1)
-	{
-	  char script_filename[6+2+1]; // 'button' + '7'..'10' + '\0' (no '.c')
-	  sprintf(script_filename, "button%d", actions_script[i]);
-	  int mycrap = load_script(script_filename, 1, /*false*/0);
-	  if (locate(mycrap, "MAIN"))
-	    run_script(mycrap);
-	  goto b1end;
-	}
-    }
+
+  {
+    enum buttons_actions actions[5];
+    int actions_script[5];
+    int nb_actions = 1;
+    actions[0] = ACTION_MAP;
+    actions_script[0] = 6;
+    if (dversion >= 108)
+      {
+	nb_actions = 5;
+	actions[1] = ACTION_BUTTON7;
+	actions_script[1] = 7;
+	actions[2] = ACTION_BUTTON8;
+	actions_script[2] = 8;
+	actions[3] = ACTION_BUTTON9;
+	actions_script[3] = 9;
+	actions[4] = ACTION_BUTTON10;
+	actions_script[4] = 10;
+      }
+    for (int i = 0; i < nb_actions; i++)
+      {
+	// button6.c, button7.c, ..., button10.c
+	if (sjoy.button[actions[i]] == 1)
+	  {
+	    char script_filename[6+2+1]; // 'button' + '7'..'10' + '\0' (no '.c')
+	    sprintf(script_filename, "button%d", actions_script[i]);
+	    int mycrap = load_script(script_filename, 1, /*false*/0);
+	    if (locate(mycrap, "MAIN"))
+	      run_script(mycrap);
+	    goto b1end;
+	  }
+      }
+  }
   
   if (magic_script != 0 && sjoy.joybit[ACTION_MAGIC])
     goto shootm;

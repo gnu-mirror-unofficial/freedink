@@ -26,11 +26,6 @@
 #include "SDL.h"
 #include "rect.h"
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
 /* Max number of sprites, minus 1 (GFX_k is indexed from 1) */
 #define MAX_SPRITES 4000
 #define MAX_FRAMES_PER_SEQUENCE 50
@@ -92,9 +87,5 @@ extern "C"
   extern void seq_set_ini(int seq_no, char *line);
 
   extern void(*gfx_sprites_loading_listener)();
-  
-#ifdef __cplusplus
-}
-#endif
 
 #endif

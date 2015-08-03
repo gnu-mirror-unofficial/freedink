@@ -91,7 +91,7 @@ void dinkc_sp_custom_set(dinkc_sp_custom hash, char key[200], int val)
     }
   else
     {
-      struct str_int* newslot = malloc(sizeof(struct str_int));
+      struct str_int* newslot = (struct str_int*)malloc(sizeof(struct str_int));
       strcpy(newslot->key, key);
       ((struct str_int*)newslot)->val = val;
       if (hash_insert(hash, newslot) == NULL)

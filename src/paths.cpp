@@ -74,7 +74,7 @@ char* paths_getcwd()
   char* cwd = NULL;
   int cwd_size = PATH_MAX;
   do {
-    cwd = realloc(cwd, cwd_size);
+    cwd = (char*)realloc(cwd, cwd_size);
     getcwd(cwd, cwd_size);
     cwd_size *= 2;
   } while (errno == ERANGE);
@@ -248,7 +248,7 @@ void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
 	char *subdir = dmoddir_opt;
 	if (subdir == NULL || strlen(subdir) == 0)  /* no opt, or -g '' */
 	  subdir = "dink";
-	dmoddir = malloc(strlen(refdir) + 1 + strlen(subdir) + 1);
+	dmoddir = (char*)malloc(strlen(refdir) + 1 + strlen(subdir) + 1);
 	strcpy(dmoddir, refdir);
 	strcat(dmoddir, "/");
 	strcat(dmoddir, subdir);
@@ -288,7 +288,7 @@ void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
 	exit(1);
       }
     int dmodname_len = start - dmoddir;
-    dmodname = malloc(dmodname_len+1);
+    dmodname = (char*)malloc(dmodname_len+1);
     strncpy(dmodname, start, dmodname_len);
     dmodname[dmodname_len] = '\0';
   }
@@ -306,7 +306,7 @@ void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
 #endif
     if (userappdir != NULL)
       {
-	userappdir = realloc(userappdir, strlen(userappdir) + 1 + 1 + strlen(PACKAGE) + 1);
+	userappdir = (char*)realloc(userappdir, strlen(userappdir) + 1 + 1 + strlen(PACKAGE) + 1);
 	strcat(userappdir, "/");
 #if defined _WIN32 || defined __WIN32__ || defined __CYGWIN__
 #else
@@ -410,7 +410,7 @@ FILE *paths_savegame_fopen(int num, char *mode)
 
   /** fullpath_in_userappdir **/
   char *savedir = strdup(userappdir);
-  savedir = realloc(savedir, strlen(userappdir) + 1 + strlen(dmodname) + 1);
+  savedir = (char*)realloc(savedir, strlen(userappdir) + 1 + strlen(dmodname) + 1);
   strcat(savedir, "/");
   strcat(savedir, dmodname);
   /* Create directories if needed */

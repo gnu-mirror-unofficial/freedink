@@ -429,7 +429,7 @@ SDL_Surface* load_bmp_from_fp(FILE* in)
 {
   if (in == NULL)
     return NULL;
-  SDL_RWops *rw = SDL_RWFromFP(in, /*autoclose=*/1);
+  SDL_RWops *rw = SDL_RWFromFP(in, /*autoclose=*/SDL_TRUE);
   return load_bmp_internal(NULL, rw, 1);
 }
 

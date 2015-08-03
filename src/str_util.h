@@ -23,11 +23,6 @@
 #ifndef _STRING_UTIL_H
 #define _STRING_UTIL_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
   extern void strtoupper(char *s);
   extern void strcpy_nooverlap(char *dst, char* src);
   extern int asprintf_append(char **strp, const char* fmt, ...);
@@ -39,9 +34,5 @@ extern "C"
   extern void replace(const char* find, const char* repl, char** line_p);
   extern void replace_norealloc(const char* find, const char* repl, char* line);
   extern char* latin1_to_utf8(char* source);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

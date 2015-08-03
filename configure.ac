@@ -32,12 +32,8 @@ AC_CONFIG_HEADERS(config.h)
 AC_CANONICAL_HOST
 # Checks for programs.
 AC_PROG_CC
+AC_PROG_CXX
 AC_PROG_LN_S
-
-# We use std=c99 which enables some macros, supports '//' comments,
-# and does not warn about mixed declarations and code.  Let's do tests
-# (namely Gnulib tests) with it too.
-CFLAGS="$CFLAGS -Wall -std=c99"
 
 
 # Gnulib - configuration in gnulib/m4/gnulib-cache.m4
@@ -137,7 +133,7 @@ fi
 # SDL and core libs
 # See BUILD for version requirements
 PKG_CHECK_MODULES([SDL2], [sdl2 >= 2.0  SDL2_image > 2.0.0 SDL2_mixer > 2.0.0 SDL2_ttf > 2.0.12 SDL2_gfx >= 1.0.0],
-  [CFLAGS="$CFLAGS $SDL2_CFLAGS"; LIBS="$SDL2_LIBS $LIBS"],
+  [CXXFLAGS="$CXXFLAGS $SDL2_CFLAGS"; LIBS="$SDL2_LIBS $LIBS"],
   AC_MSG_WARN($SDL2_PKG_ERRORS); LACK_SDL2=1)
 
 case "${host}" in

@@ -23,6 +23,6 @@
 #ifndef _I18N_H
 #define _I18N_H
 
-extern char* i18n_translate(char* scriptname, int line, char* text);
+extern char* i18n_translate(char* scriptname, unsigned int line, char* text);
 
 #endif

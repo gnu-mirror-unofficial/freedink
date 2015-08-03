@@ -26,11 +26,6 @@
 #include <limits.h>
 #include "SDL.h"
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
 #define BOOL_1BYTE char /* Boolean value on 1 byte exactly, used to
 			   replace the C++ bool type during the C++=>C
 			   conversion. Do not change to int, else
@@ -39,19 +34,15 @@ extern "C"
 			   change! */
 
   extern void ciconvert (char *filename);
-  extern SDL_RWops *find_resource_as_rwops(const char *filename);
+  extern SDL_RWops *find_resource_as_rwops(char *filename);
   extern /*bool*/int exist(char *name);
-  extern int is_directory(char *name);
-  extern char* pdirname(char *filename);
+  extern int is_directory(const char *name);
+  extern char* pdirname(const char *filename);
   extern void add_text(char *tex ,char *filename);
 
   extern int read_lsb_int(FILE *f);
   extern void write_lsb_int(int n, FILE *f);
   extern short read_lsb_short(FILE *f);
   extern void write_lsb_short(short n, FILE *f);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

@@ -85,7 +85,7 @@ static char* byte_pair_decompress_stream(FILE* in)
 {
   int step = 512;
   int nb_read = 0;
-  char* ret = xmalloc(step);
+  char* ret = (char*)xmalloc(step);
   ret[0] = '\0';
 
   unsigned char stack[NB_PAIRS_MAX+1], pairs[NB_PAIRS_MAX][2];
@@ -162,7 +162,7 @@ static char* read_stream(FILE *in)
 {
   int step = 512;
   int nb_read = 0;
-  char* ret = xmalloc(step);
+  char* ret = (char*)xmalloc(step);
   ret[0] = '\0';
 
   int c;
@@ -464,7 +464,7 @@ void strip_beginning_spaces(char *str)
 /*bool*/int locate_goto(char* expr, int script)
 {
   replace_norealloc(";", "", expr);
-  char* label = xmalloc(strlen(expr) + 1 + 1);
+  char* label = (char*)xmalloc(strlen(expr) + 1 + 1);
   sprintf(label, "%s:", expr);
   
   char* line = NULL;
@@ -945,7 +945,7 @@ char* read_next_line(int script)
   if (k < rinfo[script]->end)
     {
       int len = rinfo[script]->current - start;
-      char* buf = xmalloc(len + 1);
+      char* buf = (char*)xmalloc(len + 1);
 
       char* pc = buf;
       int k = start;
@@ -1119,7 +1119,6 @@ void kill_returning_stuff(int script)
 
 void run_script(int script)
 {
-  int result;
   char* line = NULL;
 
   /* keep 'return' value? */
@@ -1169,7 +1168,7 @@ void run_script(int script)
 	      doelse = 1;
 	      doelse_once = 0;
 	    }
-	  result = process_line(script, line, doelse);
+	  int result = process_line(script, line, doelse);
 	  
 
 	  if (result == DCPS_DOELSE_ONCE)

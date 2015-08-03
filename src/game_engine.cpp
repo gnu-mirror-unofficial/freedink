@@ -597,7 +597,7 @@ void draw_screen_game(void)
 
   gfx_tiles_draw_screen();
 
-  int script_id;
+  int script_id = 0;
   if (cur_screen.ts_script_id > 0)
     script_id = cur_screen.ts_script_id;
   else if (strlen(cur_screen.script) > 1)

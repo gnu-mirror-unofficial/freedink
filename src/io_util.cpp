@@ -92,13 +92,13 @@ ciconvert (char *filename)
      already returned in case-insensitive environments (woe&dos) */
   if (filename[0] == '/')
     {
-      cur_dir = malloc(strlen("/") + strlen(filename) + 1);
+      cur_dir = (char*)malloc(strlen("/") + strlen(filename) + 1);
       strcpy(cur_dir, "/");
       pend_of_cur_dir = cur_dir + 1;
     }
   else
     {
-      cur_dir = malloc(strlen("./") + strlen(filename) + 1);
+      cur_dir = (char*)malloc(strlen("./") + strlen(filename) + 1);
       strcpy(cur_dir, "./");
       pend_of_cur_dir = cur_dir + 2;
     }
@@ -194,7 +194,7 @@ int exist(char *name)
 /**
  * Is it a directory that exists?
  */
-int is_directory(char *name)
+int is_directory(const char *name)
 {
   char *tmp_filename = strdup(name);
   int accessible = 0;
@@ -244,7 +244,7 @@ SDL_RWops* find_resource_as_rwops(char *name)
 #endif
 
   if (in != NULL)
-    rwops = SDL_RWFromFP(in, /*autoclose=*/1);
+    rwops = SDL_RWFromFP(in, /*autoclose=*/SDL_TRUE);
 
   if (rwops != NULL)
      return rwops;

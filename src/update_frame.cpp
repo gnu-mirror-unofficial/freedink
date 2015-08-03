@@ -384,8 +384,7 @@ void updateFrame()
 	
 	
 	
-	int j = 0;
-	for (; j <= max_s; j++)
+	for (int j = 0; j <= max_s; j++)
 	{
 		//h  = 1;
 		int h = 0;
@@ -831,8 +830,7 @@ past:
 	  print_text_wrap_debug(retval, 20, 360);
 	}
 
-	int j2 = 0;
-	for (; j2 <= max_s; j2++)
+	for (int j2 = 0; j2 <= max_s; j2++)
 	  {
 	    int h = 0;
 	    if (plane_process)

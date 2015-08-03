@@ -2,7 +2,7 @@
  * Game inventory
 
  * Copyright (C) 1997, 1998, 1999, 2002, 2003  Seth A. Robinson
- * Copyright (C) 2005, 2007, 2008, 2009, 2010, 2012, 2014  Sylvain Beucler
+ * Copyright (C) 2005, 2007, 2008, 2009, 2010, 2012, 2014, 2015  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -306,8 +306,8 @@ void process_item()
   
   
   if (play.curitem < 0
-      || (!play.item_magic && play.curitem >= NB_ITEMS)
-      || (play.item_magic && play.curitem >= NB_MITEMS))
+      || (play.item_type == ITEM_REGULAR && play.curitem >= NB_ITEMS)
+      || (play.item_type == ITEM_MAGIC && play.curitem >= NB_MITEMS))
     play.curitem = 0;
 
   if (thisTickCount > item_timer)
@@ -319,9 +319,9 @@ void process_item()
 	item_pic = 2;
       item_timer = thisTickCount + 400;
     }
-  draw_item(play.curitem, play.item_magic, 423, item_pic);
+  draw_item(play.curitem, play.item_type, 423, item_pic);
   
-  if (!play.item_magic)
+  if (play.item_type == ITEM_REGULAR)
     {
       int hor  = play.curitem % 4;
       int vert = play.curitem / 4;
@@ -369,7 +369,7 @@ void process_item()
 	    {
 	      SoundPlayEffect(11, 22050,0,0,0);
 	      //switch to magic mode
-	      play.item_magic = 1;
+	      play.item_type = ITEM_MAGIC;
 	      play.curitem = vert * 2 + 1;
 	    }
 	}
@@ -426,7 +426,7 @@ void process_item()
 	    }
 	  else
 	    { 
-	      play.item_magic = 0;
+	      play.item_type = ITEM_REGULAR;
 	      play.curitem = vert * 4;
 	      SoundPlayEffect(11, 22050,0,0,0);
 	    }

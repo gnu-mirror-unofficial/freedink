@@ -77,7 +77,7 @@ int asprintf_append(char **strp, const char* fmt, ...)
   int result = vasprintf(&tmp, fmt, ap);
   va_end(ap);
 
-  *strp = realloc(*strp, strlen(*strp) + strlen(tmp) + 1);
+  *strp = (char*)realloc(*strp, strlen(*strp) + strlen(tmp) + 1);
   strcat(*strp, tmp);
   free(tmp);
   return result;
@@ -142,7 +142,7 @@ char* separate_string (char* line, int num, char sep)
   if (l >= num)
     {
       int size = end - start;
-      char* result = xmalloc(size + 1);
+      char* result = (char*)xmalloc(size + 1);
       strncpy(result, line + start, size);
       result[size] = '\0';
 
@@ -192,7 +192,7 @@ char* get_word(char* line, int word)
   /* copy word - either we're on the right word and will copy it,
      either we're at the end of string and will copy an empty word */
   int len = pc - start;
-  char* result = xmalloc(len + 1);
+  char* result = (char*)xmalloc(len + 1);
   memcpy(result, start, len);
   result[len] = '\0';
 
@@ -315,9 +315,9 @@ char* latin1_to_utf8(char* source)
 {
   int cur_alloc_size = 512;
   const int step = 256;
-  unsigned char* dest = xmalloc(cur_alloc_size);
-  unsigned char* pcs = (unsigned char*) source;
-  unsigned char* pcd = (unsigned char*) dest;
+  unsigned char* dest = (unsigned char*)xmalloc(cur_alloc_size);
+  unsigned char* pcs = (unsigned char*)source;
+  unsigned char* pcd = (unsigned char*)dest;
   unsigned char* pcd_limit = pcd + cur_alloc_size;
   while(*pcs != '\0')
     {

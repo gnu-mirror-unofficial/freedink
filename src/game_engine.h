@@ -31,6 +31,7 @@
 #include "dinkc.h"
 #include "gfx_tiles.h"
 #include "dinkc_sp_custom.h"
+#include "inventory.h"
 
 #define FPS 60
 
@@ -68,7 +69,7 @@ struct player_info
   struct item_struct item[NB_ITEMS];
   
   int curitem; // highlighted item in the inventory
-  BOOL_1BYTE item_magic; // 1 if it's a magic item, 0 if regular
+  enum item_type item_type;
 
   struct mydata spmap[769];
   struct varman var[MAX_VARS];

@@ -1,5 +1,4 @@
-# Done in configure.ac so that Gnulib better detect environment
-#AM_CFLAGS = -Wall -std=c99
+AM_CXXFLAGS = -Wno-write-strings # -Wall
 # Cf. (autoconf.info)Installation Directory Variables:
 # Don't use DATADIR, it conflicts with something in MinGW
 AM_CPPFLAGS = -DBUILD_DATA_DIR=\"$(datadir)\"
@@ -25,15 +24,16 @@ AM_CPPFLAGS += -I$(top_srcdir)/intl -I$(top_builddir)/intl
 
 LIBS += -lm
 
-COMMON_OBJS= app.c app.h bgm.c bgm.h dinkc_sp_custom.c			\
-	dinkc_sp_custom.h dinkini.c dinkini.h dinkvar.c dinkvar.h	\
-	fastfile.c fastfile.h str_util.c str_util.h io_util.c		\
-	io_util.h gfx.c gfx.h gfx_fade.c gfx_fade.h gfx_tiles.c		\
-	gfx_tiles.h gfx_palette.c gfx_palette.h gfx_fonts.c		\
-	gfx_fonts.h rect.c rect.h input.c input.h freedink_xpm.c	\
-	freedink_xpm.h map.c map.h paths.c paths.h log.c log.h		\
-	gfx_sprites.c gfx_sprites.h vgasys_fon.c vgasys_fon.h		\
-	msgbox.c msgbox.h screen.c screen.h sfx.c sfx.h
+COMMON_OBJS= app.cpp app.h bgm.cpp bgm.h dinkc_sp_custom.cpp		\
+	dinkc_sp_custom.h dinkini.cpp dinkini.h dinkvar.cpp dinkvar.h	\
+	fastfile.cpp fastfile.h str_util.cpp str_util.h io_util.cpp	\
+	io_util.h gfx.cpp gfx.h gfx_fade.cpp gfx_fade.h gfx_tiles.cpp	\
+	gfx_tiles.h gfx_palette.cpp gfx_palette.h gfx_fonts.cpp		\
+	gfx_fonts.h rect.cpp rect.h input.cpp input.h			\
+	freedink_xpm.cpp freedink_xpm.h map.cpp map.h paths.cpp		\
+	paths.h log.cpp log.h gfx_sprites.cpp gfx_sprites.h		\
+	vgasys_fon.cpp vgasys_fon.h msgbox.cpp msgbox.h screen.cpp	\
+	screen.h sfx.cpp sfx.h
 
 if ANDROID
   # Build .so JNI libs rather than executables
@@ -41,18 +41,18 @@ if ANDROID
   AM_CFLAGS = -fPIC
   AM_LDFLAGS = -shared
   LIBS += -llog
-  COMMON_OBJS += SDL_android_main.c
+  COMMON_OBJS += SDL_android_main.cpp
 endif
 
 bin_PROGRAMS = freedink freedinkedit
-freedink_SOURCES = $(COMMON_OBJS) freedink.c freedink.h			\
-	freedink_main.c update_frame.c update_frame.h			\
-	dinkc_bindings.c dinkc_bindings.h dinkc.c dinkc.h		\
-	dinkc_console.c dinkc_console.h game_engine.c game_engine.h	\
-	i18n.c i18n.h inventory.c inventory.h meminfo.c meminfo.h	\
-	savegame.c savegame.h status.c status.h talk.c talk.h text.c	\
-	text.h
-freedinkedit_SOURCES = $(COMMON_OBJS) freedinkedit.c
+freedink_SOURCES = $(COMMON_OBJS) freedink.cpp freedink.h		\
+	freedink_main.cpp update_frame.cpp update_frame.h		\
+	dinkc_bindings.cpp dinkc_bindings.h dinkc.cpp dinkc.h		\
+	dinkc_console.cpp dinkc_console.h game_engine.cpp		\
+	game_engine.h i18n.cpp i18n.h inventory.cpp inventory.h		\
+	meminfo.cpp meminfo.h savegame.cpp savegame.h status.cpp	\
+	status.h talk.cpp talk.h text.cpp text.h
+freedinkedit_SOURCES = $(COMMON_OBJS) freedinkedit.cpp
 nodist_freedink_SOURCES = $(WOERES)
 nodist_freedinkedit_SOURCES = $(WOERES)
 
@@ -81,11 +81,11 @@ uninstall-hook:
 # help2man-generated manpages
 # Inspiration from (automake-1.10.info.gz)distcleancheck
 dist_man_MANS = freedink.6 freedinkedit.6 dink.6 dinkedit.6
-freedink.6: app.c $(top_srcdir)/configure.ac Makefile.am
+freedink.6: app.cpp $(top_srcdir)/configure.ac Makefile.am
 	$(MAKE) $(AM_MAKEFLAGS) freedink$(EXEEXT)
 	-$(HELP2MAN) -s6 -n "adventure and role-playing game (engine)"	\
 	  --no-info --output=freedink.6 ./freedink$(EXEEXT)
-freedinkedit.6: app.c $(top_srcdir)/configure.ac Makefile.am
+freedinkedit.6: app.cpp $(top_srcdir)/configure.ac Makefile.am
 	$(MAKE) $(AM_MAKEFLAGS) freedinkedit$(EXEEXT)
 	-$(HELP2MAN) -s6 -n "adventure and role-playing game (editor)"	\
 	  --no-info --output=freedinkedit.6 ./freedinkedit$(EXEEXT)
@@ -109,11 +109,11 @@ endif
 if HAVE_TESTS
 TESTS = check_freedink
 check_PROGRAMS = check_freedink
-check_freedink_SOURCES = $(COMMON_OBJS) dinkc_bindings.c		\
-	dinkc_bindings.h dinkc.c dinkc.h dinkc_console.c		\
-	dinkc_console.h game_engine.c game_engine.h i18n.c i18n.h	\
-	inventory.c inventory.h meminfo.c meminfo.h savegame.c		\
-	savegame.h status.c status.h talk.c talk.h text.c text.h	\
-	check_freedink.c freedink.c
+check_freedink_SOURCES = $(COMMON_OBJS) dinkc_bindings.cpp		\
+	dinkc_bindings.h dinkc.cpp dinkc.h dinkc_console.cpp		\
+	dinkc_console.h game_engine.cpp game_engine.h i18n.cpp i18n.h	\
+	inventory.cpp inventory.h meminfo.cpp meminfo.h savegame.cpp	\
+	savegame.h status.cpp status.h talk.cpp talk.h text.cpp		\
+	text.h check_freedink.cpp freedink.cpp
 check_freedink_LDADD = $(LDADD) @CHECK_LIBS@
 endif

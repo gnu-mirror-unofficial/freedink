@@ -24,11 +24,6 @@
 #ifndef _INPUT_H
 #define _INPUT_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
 #include "SDL.h"
 
 #define NB_BUTTONS 12
@@ -81,12 +76,12 @@ extern "C"
   extern /*BOOL*/int joystick;
   extern SDL_Joystick* jinfo;
 
-  extern void input_update();
+  extern void input_update(SDL_Event *ev);
   extern void input_init();
   extern void input_quit();
   extern void input_set_default_buttons();
-  extern enum buttons_actions input_get_button_action(int button_index);
-  extern void input_set_button_action(int button_index, enum buttons_actions action_index);
+  extern int input_get_button_action(int button_index);
+  extern void input_set_button_action(int button_index, int action_index);
 
   extern void input_reset();
 
@@ -94,9 +89,5 @@ extern "C"
   extern /*bool*/int input_getscancodejustpressed(SDL_Scancode scancode);
   extern Uint8 input_getcharstate(SDL_Keycode ch);
   extern /*bool*/int input_getcharjustpressed(SDL_Keycode ch);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

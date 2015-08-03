@@ -166,10 +166,10 @@ START_TEST(test_ioutil_ciconvert)
   ck_assert( test_ioutil_ciconvert_ext(TESTDIR "/ToTo", TESTDIR "toto"));
 
   /* - absolute path */
-  char* dir = malloc(PATH_MAX);
+  char* dir = (char*)malloc(PATH_MAX);
   getcwd(dir, PATH_MAX);
-  char* good_case  = calloc(1, strlen(dir) + 1 + strlen(TESTDIR) + 4 + 1);
-  char* wrong_case = calloc(1, strlen(dir) + 1 + strlen(TESTDIR) + 4 + 1);
+  char* good_case  = (char*)calloc(1, strlen(dir) + 1 + strlen(TESTDIR) + 4 + 1);
+  char* wrong_case = (char*)calloc(1, strlen(dir) + 1 + strlen(TESTDIR) + 4 + 1);
   strcat(good_case, dir);
   strcat(good_case, "/");
   strcat(good_case, TESTDIR);
@@ -361,6 +361,14 @@ START_TEST(test_dinkc_sp_custom)
   ck_assert_int_eq(dinkc_sp_custom_get(myhash, "bar"), -1);
 
   dinkc_sp_custom_free(myhash);
+}
+END_TEST
+
+/* Run {2,2} / (char*,char*) functions without crashing */
+START_TEST(test_dinkc_make_global_function)
+{
+  int ret = dinkc_execute_one_liner("make_global_function(\"test\", \"my_function\")");
+  ck_assert_int_eq(ret, 0);
 }
 END_TEST
 
@@ -574,8 +582,10 @@ Suite* freedink_suite()
   tcase_add_test(tc_dinkc, test_dinkc_lookup_var_107);
   tcase_add_test(tc_dinkc, test_dinkc_lookup_var_108);
   tcase_add_test(tc_dinkc, test_dinkc_sp_custom);
+  tcase_add_test(tc_dinkc, test_dinkc_make_global_function);
   tcase_add_test(tc_dinkc, test_dinkc_dont_return_same_script_id_twice);
   tcase_add_test(tc_dinkc, test_dinkc_concurrent_fades);
+  suite_add_tcase(s, tc_dinkc);
 
   TCase *tc_integration = tcase_create("Integration");
   tcase_add_test(tc_integration, test_integration_player_position_is_updated_after_screen_is_loaded);

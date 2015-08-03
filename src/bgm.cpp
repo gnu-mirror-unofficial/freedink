@@ -105,7 +105,7 @@ int PlayMidi(char *midi_filename)
 
   /* Try to load the ogg vorbis or midi in the DMod or the main game */
   int exists = 0;
-  fullpath = malloc(1);
+  fullpath = (char*)malloc(1);
   if (!exists && oggv_filename != NULL)
     {
       free(fullpath);

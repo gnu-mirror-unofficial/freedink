@@ -4391,12 +4391,12 @@ void updateFrame(void)
        int x;
        for (x = 0; x < 256; x++)
          {
-           if (input_getscancodestate(x))
+           if (input_getscancodestate((SDL_Scancode)x))
              {
                sprintf(msg + strlen(msg), " (Scancode %i '%s')",
 		       x,
 		       //SDL_GetScancodeName(x),
-		       SDL_GetKeyName(SDL_GetKeyFromScancode(x)));
+		       SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)x)));
              }
          }
       }

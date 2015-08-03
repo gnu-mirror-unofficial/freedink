@@ -45,7 +45,7 @@ int sound_on = 1;
 
 /* Channel metadata */
 #define NUM_CHANNELS 20
-struct
+static struct
 {
   /*bool*/int repeat;
   int owner;
@@ -354,7 +354,7 @@ int CreateBufferFromWaveFile(char* filename, int index)
       return 0;
     }
 
-  SDL_RWops* rwops = SDL_RWFromFP(in, /*autoclose=*/1);
+  SDL_RWops* rwops = SDL_RWFromFP(in, /*autoclose=*/SDL_TRUE);
   return CreateBufferFromWaveFile_RW(rwops, 1, index);
 }
 int CreateBufferFromWaveFile_RW(SDL_RWops* rwops, int rwfreesrc, int index)
@@ -667,7 +667,7 @@ static int SoundPlayEffectChannel(int sound, int min, int plus, int sound3d, /*b
     channelinfo[channel].finished = 0;
     channelinfo[channel].looping = repeat;
 
-    struct callback_data *data = calloc(1, sizeof(struct callback_data));
+    struct callback_data *data = (struct callback_data*)calloc(1, sizeof(struct callback_data));
     data->pos = 0;
     data->shift = shift;
     data->sound = sound;
@@ -834,7 +834,7 @@ void sfx_init()
   if (hw_format != AUDIO_U8 && hw_format != AUDIO_S8)
     /*  2 bytes per frame */
     fake_buf_len *= 2;
-  fake_buf = calloc(1, fake_buf_len);
+  fake_buf = (Uint8*)calloc(1, fake_buf_len);
 
   /* No sound playing yet - initialize the lookup table: */
   memset(channelinfo, 0, sizeof(channelinfo));

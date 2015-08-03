@@ -252,7 +252,7 @@ void input_set_default_buttons(void)
   input_set_button_action(10-1, ACTION_BUTTON10);
 }
 
-enum buttons_actions input_get_button_action(int button_index)
+int input_get_button_action(int button_index)
 {
   if (button_index >= 0 && button_index < NB_BUTTONS)
     {
@@ -265,12 +265,12 @@ enum buttons_actions input_get_button_action(int button_index)
  * Set what action will be triggered when button 'button_index' is
  * pressed. Action '0' currently means 'do nothing'.
  */
-void input_set_button_action(int button_index, enum buttons_actions action_index)
+void input_set_button_action(int button_index, int action_index)
 {
   if (button_index >= 0 && button_index < NB_BUTTONS)
     {
       if (action_index >= ACTION_FIRST && action_index < ACTION_LAST)
-	buttons_map[button_index] = action_index;
+	buttons_map[button_index] = (buttons_actions)action_index;
       else
 	log_error("Attempted to set invalid action %d", action_index);
     }

@@ -53,7 +53,7 @@ void dinkini_init()
   nb_idata = 600;
   if (dversion >= 108)
     nb_idata = 1000;
-  id = calloc(sizeof(struct idata), nb_idata);
+  id = (struct idata*)calloc(sizeof(struct idata), nb_idata);
 }
 
 /**

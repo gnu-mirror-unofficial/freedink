@@ -1,4 +1,4 @@
 # List of source files which contain translatable strings.
-src/app.c
-src/freedink.c
-src/dinkc.c
+src/app.cpp
+src/freedink.cpp
+src/dinkc.cpp

@@ -23,7 +23,9 @@
 #ifndef DINKC_SP_CUSTOM_HASH
 #define DINKC_SP_CUSTOM_HASH
 
+extern "C" {
 #include "hash.h"
+}
 
 typedef Hash_table* dinkc_sp_custom;
 
