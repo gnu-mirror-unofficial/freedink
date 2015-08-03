@@ -50,37 +50,6 @@ struct attackinfo_struct
 	int pull_wait;
 };
 
-struct sprite_placement
-{
-  int x, y;
-  int seq, frame, type;  /* DinkC: editor_seq, editor_frame, editor_type */
-  int size;
-  BOOL_1BYTE active;
-  int rotation, special, brain;
-  
-  char script[13+1]; /* attached DinkC script */
-  int speed, base_walk, base_idle, base_attack, base_hit, timer, que;
-  int hard;
-  rect alt; /* trim left/top/right/bottom */
-  int is_warp;
-  int warp_map;
-  int warp_x;
-  int warp_y;
-  int parm_seq;
-  
-  int base_die, gold, hitpoints, strength, defense, exp, sound, vision, nohit, touch_damage;
-  int buff[5];
-};
-
-/* one screen from map.dat */
-struct small_map
-{
-  struct tile t[12*8+1]; // 97 background tiles
-  struct sprite_placement sprite[100+1];
-  char script[20+1]; /* script to run when entering the script */
-};
-
-
 
 extern int GetKeyboard(int key);
 extern int add_sprite(int x1, int y, int brain,int pseq, int pframe );
@@ -91,7 +60,6 @@ extern void check_seq_status(int h);
 extern void draw_sprite_game(SDL_Surface *GFX_lpdest, int h);
 extern void duck_brain(int h);
 extern /*BOOL*/int init_mouse();
-extern int load_map_to(char* path, const int num, struct small_map* screen);
 extern int load_script(char filename[15], int sprite, /*bool*/int set_sprite);
 extern /*bool*/int locate(int script, char proc[20]);
 extern void process_callbacks(void);
@@ -172,8 +140,6 @@ extern void kill_returning_stuff(int script);
 extern unsigned char get_hard(int x1, int y1);
 extern unsigned char get_hard_play(int h, int x1, int y1);
 extern void load_hard(void);
-extern int load_info_to(char* path, struct map_info *mymap);
-extern void load_info(void);
 
 /* OS */
 extern int bActive; // is application active?
@@ -229,7 +195,6 @@ extern void add_hardness(int sprite, int num);
 extern /*bool*/int kill_last_sprite(void);
 extern void check_frame_status(int h, int frame);
 extern void flip_it_second(void);
-extern void save_map(const int num);
 extern int realhard(int tile);
 extern void save_hard(void);
 

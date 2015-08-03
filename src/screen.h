@@ -26,10 +26,13 @@
 
 #include "rect.h"
 #include "dinkc_sp_custom.h"
+#include "gfx_tiles.h"
 
 #define MAX_SPRITES_EDITOR 99
 
 #define MAX_SPRITES_AT_ONCE 300
+
+extern char current_map[50];
 
 struct sp
 {
@@ -131,22 +134,43 @@ struct hit_map
 };
 extern struct hit_map hm;
 
-extern char current_map[50];
-extern char current_dat[50];
-
-/* dink.dat */
-struct map_info
-{
-  int loc[769];
-  int music[769];
-  int indoor[769];
-};
-extern struct map_info map;
-
 extern int last_sprite_created;
 
 
+struct sprite_placement
+{
+  int x, y;
+  int seq, frame, type;  /* DinkC: editor_seq, editor_frame, editor_type */
+  int size;
+  BOOL_1BYTE active;
+  int rotation, special, brain;
+  
+  char script[13+1]; /* attached DinkC script */
+  int speed, base_walk, base_idle, base_attack, base_hit, timer, que;
+  int hard;
+  rect alt; /* trim left/top/right/bottom */
+  int is_warp;
+  int warp_map;
+  int warp_x;
+  int warp_y;
+  int parm_seq;
+  
+  int base_die, gold, hitpoints, strength, defense, exp, sound, vision, nohit, touch_damage;
+  int buff[5];
+};
+
+/* one screen from map.dat */
+struct small_map
+{
+  struct tile t[12*8+1]; // 97 background tiles
+  struct sprite_placement sprite[100+1];
+  char script[20+1]; /* script to run when entering the script */
+};
+
+
 extern void screen_init();
+extern int load_map_to(char* path, const int num, struct small_map* screen);
+extern void save_map(const int num);
 extern void screen_rank_map_sprites(int rank[]);
 extern void screen_rank_game_sprites(int rank[]);
 extern void fill_hard_sprites(void);

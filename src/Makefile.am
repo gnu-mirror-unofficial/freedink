@@ -31,9 +31,9 @@ COMMON_OBJS= app.c app.h bgm.c bgm.h dinkc_sp_custom.c			\
 	io_util.h gfx.c gfx.h gfx_fade.c gfx_fade.h gfx_tiles.c		\
 	gfx_tiles.h gfx_palette.c gfx_palette.h gfx_fonts.c		\
 	gfx_fonts.h rect.c rect.h input.c input.h freedink_xpm.c	\
-	freedink_xpm.h paths.c paths.h log.c log.h gfx_sprites.c	\
-	gfx_sprites.h vgasys_fon.c vgasys_fon.h msgbox.c msgbox.h	\
-	screen.c screen.h sfx.c sfx.h
+	freedink_xpm.h map.c map.h paths.c paths.h log.c log.h		\
+	gfx_sprites.c gfx_sprites.h vgasys_fon.c vgasys_fon.h		\
+	msgbox.c msgbox.h screen.c screen.h sfx.c sfx.h
 
 if ANDROID
   # Build .so JNI libs rather than executables

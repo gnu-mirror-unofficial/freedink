@@ -37,6 +37,7 @@
 
 #include "dinkvar.h"
 #include "game_engine.h"
+#include "map.h"
 #include "screen.h"
 #include "freedink.h"
 #include "gfx.h"

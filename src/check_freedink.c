@@ -55,6 +55,7 @@
 #include "dinkc_bindings.h"
 #include "dinkc.h"
 #include "game_engine.h"
+#include "map.h"
 #include "screen.h"
 #include "dinkvar.h"
 #include "freedink.h"
@@ -427,7 +428,16 @@ END_TEST
 START_TEST(test_integration_player_position_is_updated_after_screen_is_loaded)
 {
   ts_paths_init();
-  
+
+  make_int("ts_x", -1, DINKC_GLOBAL_SCOPE, 0);
+  make_int("ts_y", -1, DINKC_GLOBAL_SCOPE, 0);
+  char* screen_main_code =
+    "void main(void) {\n"
+    "  &ts_x = sp_x(1, -1);\n"
+    "  &ts_y = sp_y(1, -1);\n"
+    "}";
+  int screen_main_id = ts_script_init("pos check", strdup(screen_main_code));
+
   int player_map = 33;
   pplayer_map = &player_map;
   int vision = 0;

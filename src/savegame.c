@@ -28,6 +28,7 @@
 #include <string.h>
 
 #include "dinkvar.h"
+#include "map.h"
 #include "dinkc.h"
 #include "sfx.h"
 #include "bgm.h"

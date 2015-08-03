@@ -41,6 +41,7 @@
 #include "hash.h"
 
 #include "game_engine.h"
+#include "map.h"
 #include "screen.h"
 #include "dinkvar.h"
 #include "dinkc.h"

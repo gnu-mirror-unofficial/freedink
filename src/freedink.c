@@ -52,6 +52,7 @@
 #include "log.h"
 
 #include "game_engine.h"
+#include "map.h"
 #include "screen.h"
 #include "meminfo.h"
 #include "dinkvar.h"
