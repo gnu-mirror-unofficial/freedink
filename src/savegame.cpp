@@ -178,7 +178,7 @@
       for (j = 0; j < 100; j++)
 	play.spmap[i].seq[j] = read_lsb_short(f);
       fread(play.spmap[i].frame, 100, 1, f);
-      play.spmap[i].last_time = read_lsb_int(f);
+      play.spmap[i].last_time = read_lsb_uint(f);
     }
 
   /* Here's we'll perform a few tricks to respect a misconception in
@@ -429,7 +429,7 @@ void save_game(int num)
       for (j = 0; j < 100; j++)
 	write_lsb_short(play.spmap[i].seq[j], f);
       fwrite(play.spmap[i].frame, 100, 1, f);
-      write_lsb_int(play.spmap[i].last_time, f);
+      write_lsb_uint(play.spmap[i].last_time, f);
     }
 
   /* Here's we'll perform a few tricks to respect a misconception in

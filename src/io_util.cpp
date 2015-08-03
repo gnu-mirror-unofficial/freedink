@@ -301,6 +301,32 @@ void write_lsb_int(int n, FILE *f)
 }
 
 /**
+ * Read unsigned integer portably (same result with MSB and LSB
+ * endianness). Source data is a file with little-endian data.
+ */
+unsigned int read_lsb_uint(FILE *f)
+{
+  unsigned char buf[4];
+  fread(buf, 4, 1, f);
+  return (buf[3] << 24) | (buf[2] << 16) | (buf[1] << 8) | (buf[0]);
+}
+
+/**
+ * Write integer portably (same result with MSB and LSB
+ * endianness). Will write little-endian data to file.
+ */
+void write_lsb_uint(unsigned int n, FILE *f)
+{
+  unsigned char buf[4];
+  buf[0] = n & 0xFF;
+  buf[1] = (n >> (1*8)) & 0xFF;
+  buf[2] = (n >> (2*8)) & 0xFF;
+  buf[3] = (n >> (3*8)) & 0xFF;
+  fwrite(buf, 4, 1, f);
+}
+
+
+/**
  * Read short portably (same result with MSB and LSB
  * endianness). Source data is a file with little-endian data.
  */

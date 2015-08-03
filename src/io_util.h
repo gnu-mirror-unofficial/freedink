@@ -42,6 +42,8 @@
 
   extern int read_lsb_int(FILE *f);
   extern void write_lsb_int(int n, FILE *f);
+  extern unsigned int read_lsb_uint(FILE *f);
+  extern void write_lsb_uint(unsigned int n, FILE *f);
   extern short read_lsb_short(FILE *f);
   extern void write_lsb_short(short n, FILE *f);
 

@@ -46,8 +46,8 @@ struct attackinfo_struct
 	int script;
 	/*bool*/int hitme;
 	int last_power;
-	int wait;
-	int pull_wait;
+	Uint32 wait;
+	Uint32 pull_wait;
 };
 
 

@@ -34,7 +34,7 @@
 #include "status.h"
 
 /* Blinking selector in the inventory screen */
-static int item_timer;
+static Uint32 item_timer;
 static int item_pic;
 
 void add_item(char* name, int mseq, int mframe, enum item_type type)

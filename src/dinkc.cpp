@@ -980,7 +980,7 @@ char* read_next_line(int script)
  **/
 void process_callbacks(void)
 {
-  int now = game_GetTicks();
+  Uint32 now = game_GetTicks();
   int i, k;
 
   for (i = 1; i < MAX_SCRIPTS; i++)

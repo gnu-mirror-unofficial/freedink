@@ -23,6 +23,8 @@
 #ifndef _TALK_H
 #define _TALK_H
 
+#include "SDL.h"
+
 /* Talk choices */
 #define TALK_TITLE_BUFSIZ 3000
 #define TALK_LINE_BUFSIZ 101
@@ -42,7 +44,7 @@ struct talk_struct
   int newy;
   int color;
   int curf;
-  int timer;
+  Uint32 timer;
 };
 extern struct talk_struct talk;
 extern void talk_start(int script, int nb_choices);

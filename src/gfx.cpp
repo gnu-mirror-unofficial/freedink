@@ -94,8 +94,8 @@ SDL_Color GFX_real_pal[256];
 
 /* True color fade in [0,256]; 0 is completely dark, 256 is unaltered */
 double truecolor_fade_brightness = 256;
-/* Time elapsed since last fade computation; -1 is disabled */
-Uint32 truecolor_fade_lasttick = -1;
+/* Time elapsed since last fade computation; 0 is disabled */
+Uint32 truecolor_fade_lasttick = 0;
 
 
 /**
@@ -169,7 +169,7 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
   SDL_GetRendererInfo(renderer, &info);
   log_info("Renderer driver: %s", info.name);
   /* Uint32 flags a mask of supported renderer flags; see Remarks for details */
-  for (int i = 0; i < info.num_texture_formats; i++)
+  for (unsigned int i = 0; i < info.num_texture_formats; i++)
     log_info("Renderer texture formats: %s",
 	     SDL_GetPixelFormatName(info.texture_formats[i]));
   log_info("Renderer max texture width: %d", info.max_texture_width);

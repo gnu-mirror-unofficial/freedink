@@ -176,7 +176,7 @@ static int y = 480;
 static char in_temp[200];
 static int in_command;
 static int in_onflag;
-static int in_max = 10;
+static unsigned int in_max = 10;
 static int in_huh = 0;
 static char in_default[200];
 static int in_master = 0;

@@ -42,7 +42,7 @@
 SDL_Surface* gfx_tiles[GFX_TILES_NB_SETS+1];
 
 /* Animated tiles current status */
-static int water_timer = 0;
+static unsigned int water_timer = 0;
 static int fire_flip = 0;
 
 

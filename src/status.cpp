@@ -35,14 +35,13 @@
 #include "talk.h"
 #include "screen.h" /* spr */
 
-int draw_num(int mseq, char nums[50], int mx, int my)
+static int draw_num(int mseq, char* nums, int mx, int my)
 {
   int length = 0;
 /*   HRESULT             ddrval; */
   int rnum = 0;
-  int i;
 
-  for (i=0; i < strlen(nums); i++)
+  for (unsigned int i = 0; i < strlen(nums); i++)
     {
       if (nums[i] == '0') rnum = 10;
       else if (nums[i] == '1') rnum = 1;
@@ -95,133 +94,57 @@ int draw_num(int mseq, char nums[50], int mx, int my)
 
 void draw_exp()
 {
-        char buffer[30];
-        char nums[30];
-        char final[30];
+  char buffer[5+1];
+  char final[5+1+5+1];
+  
+  strcpy(final, "");
+  snprintf(buffer, sizeof(buffer), "%05d", fexp);
+  strcat(final, buffer);
+  strcat(final,"/");
 
-        //Msg("Drawing exp.. which is %d and %d",fexp, *pexp);
-        strcpy(final, "");
-	sprintf(buffer, "%d", fexp);
-        strcpy(nums, buffer);
-        if (strlen(nums) < 5)
-	  {
-	    int i;
-	    for (i = 1; i < (6 - strlen(nums)); i++)
-	      strcat(final, "0");
-	  }
-	strcat(final, nums);
-	strcat(final,"/");
-
-		sprintf(buffer, "%d", fraise);
-                strcpy(nums, buffer);
-                if (strlen(nums) < 5)
-		  {
-		    int i;
-		    for (i = 1; i < (6 - strlen(nums)); i++)
-		      strcat(final, "0");
-		  }
-		strcat(final, nums);
-		draw_num(181, final, 404, 459);
-
+  snprintf(buffer, sizeof(buffer), "%05d", fraise);
+  strcat(final, buffer);
+  draw_num(181, final, 404, 459);
 }
-
 
 void draw_strength()
 {
-        char final[30];
-        char buffer[30];
-        char nums[30];
-        //Msg("Drawing exp.. which is %d and %d",fexp, *pexp);
-        strcpy(final, "");
-
-	sprintf(buffer, "%d", fstrength);
-        strcpy(nums, buffer);
-        if (strlen(nums) < 3)
-	  {
-	    int i;
-	    for (i = 1; i < (4 - strlen(nums)); i++)
-	      strcat(final, "0");
-	  }
-	strcat(final, nums);
-	//Msg("Drawing %s..",final);
-	draw_num(182, final, 81, 415);
+  char final[3+1];
+  snprintf(final, sizeof(final), "%03d", fstrength);
+  draw_num(182, final, 81, 415);
 }
-
 
 void draw_defense()
 {
-        char final[30];
-        char buffer[30];
-        char nums[30];
-        //Msg("Drawing exp.. which is %d and %d",fexp, *pexp);
-        strcpy(final, "");
-	sprintf(buffer, "%d", fdefense);
-        strcpy(nums, buffer);
-        if (strlen(nums) < 3)
-	  {
-	    int i;
-	    for (i = 1; i < (4 - strlen(nums)); i++)
-	      strcat(final, "0");
-	  }
-	strcat(final, nums);
-	draw_num(183, final, 81, 437);
+  char final[3+1];
+  snprintf(final, sizeof(final), "%03d", fdefense);
+  draw_num(183, final, 81, 437);
 }
-
 
 void draw_magic()
 {
-        char final[30];
-        char buffer[30];
-        char nums[30];
-        //Msg("Drawing exp.. which is %d and %d",fexp, *pexp);
-        strcpy(final, "");
-	sprintf(buffer, "%d", fmagic);
-        strcpy(nums, buffer);
-        if (strlen(nums) < 3)
-	  {
-	    int i;
-	    for (i = 1; i < (4 - strlen(nums)); i++)
-	      strcat(final, "0");
-	  }
-	strcat(final, nums);
-	draw_num(184, final, 81, 459);
+  char final[3+1];
+  snprintf(final, sizeof(final), "%03d", fmagic);
+  draw_num(184, final, 81, 459);
 }
-
 
 void draw_level()
 {
-        char final[30];
-        char buffer[30];
-        //*plevel = 15;
-        //Msg("Drawing level.. which is %d ",*plevel);
-	sprintf(buffer, "%d", *plevel);
-        strcpy(final, buffer);
-
-        if (strlen(final) == 1)
-
-                draw_num(SEQ_LEVEL_NUMS, final, 528, 456); else
-                draw_num(SEQ_LEVEL_NUMS, final, 523, 456);
+  char final[2+1];
+  snprintf(final, sizeof(final), "%d", *plevel);
+  
+  if (strlen(final) == 1)
+    draw_num(SEQ_LEVEL_NUMS, final, 528, 456);
+  else
+    draw_num(SEQ_LEVEL_NUMS, final, 523, 456);
 
 }
 
-
 void draw_gold()
 {
-        char final[30];
-        char buffer[30];
-        char nums[30];
-        //Msg("Drawing exp.. which is %d and %d",fexp, *pexp);
-        strcpy(final, "");
-	sprintf(buffer, "%d", fgold);
-        strcpy(nums, buffer);
-        if (strlen(nums) < 5)
-	  {
-	    int i;
-	    for (i = 1; i < (6 - strlen(nums)); i++)
-	      strcat(final, "0");
-	  }
-	strcat(final, nums);
-	draw_num(185, final, 298, 457);
+  char final[5+1];
+  snprintf(final, sizeof(final), "%05d", fgold);
+  draw_num(185, final, 298, 457);
 }
 
 

@@ -104,7 +104,7 @@ struct sp
   /*BOOL*/int disabled;
   int target;
   int attack_wait;
-  int move_wait;
+  Uint32 move_wait;
   int distance;
   int last_hit;
   /*BOOL*/int live;

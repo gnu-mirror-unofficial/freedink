@@ -68,7 +68,7 @@ void change_dir_to_diag( int *dir);
 int hurt_thing(int h, int damage, int special);
 
 
-static int but_timer = 0;
+static Uint32 but_timer = 0;
 
 /* Fadedown/fadeup counter */
 static int process_count = 0;
@@ -1058,7 +1058,7 @@ void pill_brain(int h)
 		if (spr[h].distance == 0) spr[h].distance = 5;
 		int distance = get_distance_and_dir(h, spr[h].target, &dir);
 		
-		if (distance < spr[h].distance) if (spr[h].attack_wait < thisTickCount)
+		if (distance < spr[h].distance) if ((unsigned)spr[h].attack_wait < thisTickCount)
 		{
 			//	Msg("base attack is %d.",spr[h].base_attack);
 			if (spr[h].base_attack != -1)
@@ -1441,7 +1441,7 @@ void dragon_brain(int h)
 	}
 	
 	if (spr[h].target != 0)
-		if (spr[h].attack_wait < thisTickCount)
+		if ((unsigned)spr[h].attack_wait < thisTickCount)
 		{
 			if (spr[h].script != 0) 
 			{
@@ -3303,7 +3303,7 @@ void CyclePalette()
   else
     {
       /* truecolor */
-      if (truecolor_fade_lasttick == -1)
+      if (truecolor_fade_lasttick == 0)
 	{
 	  truecolor_fade_lasttick = game_GetTicks();
 	  //truecolor_fade_brightness -= 256*.3;
@@ -3325,7 +3325,7 @@ void CyclePalette()
       if (thisTickCount > cycle_clock)
 	{
 	  process_downcycle = /*false*/0;
-	  truecolor_fade_lasttick = -1;
+	  truecolor_fade_lasttick = 0;
 				
 	  if (cycle_script != 0)
 	    {
@@ -3399,7 +3399,7 @@ void up_cycle(void)
     {
       /* truecolor */
       donethistime = 0;
-      if (truecolor_fade_lasttick == -1)
+      if (truecolor_fade_lasttick == 0)
 	{
 	  truecolor_fade_lasttick = game_GetTicks();
 	  //truecolor_fade_brightness += 256*.3;
@@ -3422,7 +3422,7 @@ void up_cycle(void)
     if (donethistime == 1)
       {
 	process_upcycle = 0;
-	truecolor_fade_lasttick = -1;
+	truecolor_fade_lasttick = 0;
 	
 	if (cycle_script != 0)
 	  {
