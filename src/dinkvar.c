@@ -244,7 +244,7 @@ void add_hardness (int sprite, int num)
 	  if ( (xx-20 > 600) | (xx-20 < 0)| (yy > 400) | (yy < 0))
 	    ; /* Nothing */
 	  else
-	    hm.x[xx-20].y[yy] = num;
+	    screen_hitmap[xx-20][yy] = num;
 	}
     }
 }
@@ -272,7 +272,7 @@ unsigned char get_hard(int x1, int y1)
   if ((x1 < 0) || (y1 < 0) || (x1 > 599) || (y1 > 399))
     return 0;
   
-  int value = hm.x[x1].y[y1];
+  int value = screen_hitmap[x1][y1];
   return(value);
 }
 
@@ -298,7 +298,7 @@ unsigned char get_hard_play(int h, int x1, int y1)
   if ((x1 < 0) || (y1 < 0) || (x1 > 599) || (y1 > 399))
     return 0;
 
-  int value =  hm.x[x1].y[y1];
+  int value =  screen_hitmap[x1][y1];
   if (value > 100 && cur_screen.sprite[value-100].is_warp != 0)
     {
       flub_mode = value;
@@ -345,7 +345,7 @@ void fill_hardxy(rect box)
 
   for (x1 = box.left; x1 < box.right; x1++)
     for (y1 = box.top; y1 < box.bottom; y1++)
-      hm.x[x1].y[y1] = get_hard_map(0,x1,y1);
+      screen_hitmap[x1][y1] = get_hard_map(0,x1,y1);
 }
 
 

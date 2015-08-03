@@ -405,7 +405,7 @@ void drawallhard( void)
   for (x1=0; x1 < 600; x1++)
     for (y1=0; y1 < 400; y1++)
       {
-	if (hm.x[x1].y[y1] == 1)
+	if (screen_hitmap[x1][y1] == 1)
 	  {
 /* 	    ddbltfx.dwFillColor = 1; */
 /* 	    ddbltfx.dwSize = sizeof(ddbltfx); */
@@ -430,7 +430,7 @@ void drawallhard( void)
 	    }
 	  }
 
-	if (hm.x[x1].y[y1] == 2)
+	if (screen_hitmap[x1][y1] == 2)
 	  {
 /* 	    ddbltfx.dwFillColor = 128; */
 /* 	    ddbltfx.dwSize = sizeof(ddbltfx); */
@@ -455,7 +455,7 @@ void drawallhard( void)
 	    }
 	  }
 
-	if (hm.x[x1].y[y1] == 3)
+	if (screen_hitmap[x1][y1] == 3)
 	  {
 /* 	    ddbltfx.dwFillColor = 45; */
 /* 	    ddbltfx.dwSize = sizeof(ddbltfx); */
@@ -480,10 +480,10 @@ void drawallhard( void)
 	    }
 	  }
 
-	if (hm.x[x1].y[y1] > 100)
+	if (screen_hitmap[x1][y1] > 100)
 	  {
 
-	    if (cur_screen.sprite[  (hm.x[x1].y[y1]) - 100].is_warp == 1)
+	    if (cur_screen.sprite[  (screen_hitmap[x1][y1]) - 100].is_warp == 1)
 	      {
 		//draw a little pixel
 /* 		ddbltfx.dwFillColor = 20; */

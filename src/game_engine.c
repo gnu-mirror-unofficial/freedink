@@ -29,7 +29,7 @@
 #include <time.h>  /* time */
 #include <string.h>  /* memset */
 #include "game_engine.h"
-#include "screen.h" /* hm */
+#include "screen.h" /* screen_hitmap */
 #include "dinkvar.h"  /* hmap, cur_screen */
 #include "freedink.h"  /* add_time_to_saved_game */
 #include "input.h"
@@ -108,7 +108,7 @@ void game_restart()
   /* Reset all game state */
   memset(&play, 0, sizeof(play));
 
-  memset(&hm, 0, sizeof(hm));
+  memset(&screen_hitmap, 0, sizeof(screen_hitmap));
   input_set_default_buttons();
 
   mainscript = load_script("main", 0, /*true*/1);

@@ -123,14 +123,7 @@ extern struct sp spr[];
 
 
 // struct for hardness map
-struct hit_map
-{
-  struct
-  {
-    unsigned char y[400+1];
-  } x[600+1];
-};
-extern struct hit_map hm;
+extern unsigned char screen_hitmap[600+1][400+1];
 
 
 struct sprite_placement

@@ -41,14 +41,13 @@ struct screen cur_screen;
 struct sp spr[MAX_SPRITES_AT_ONCE]; //max sprite control systems at once
 
 /* hardness */
-struct hit_map hm;
+unsigned char screen_hitmap[600+1][400+1]; /* hit_map */
 
 int last_sprite_created;
 
 void screen_init() {
   memset(&spr, 0, sizeof(spr));
-  memset(&hm, 0, sizeof(hm));
-  memset(&cur_screen, 0, sizeof(cur_screen));
+  memset(&screen_hitmap, 0, sizeof(screen_hitmap));
 }
 
 /**
@@ -174,7 +173,7 @@ void fill_whole_hard(void)
       int x, y;
       for (x = 0; x < 50; x++)
 	for (y = 0; y < 50; y++)
-	  hm.x[offx +x].y[offy+y] = hmap.htile[  realhard(til)  ].x[x].y[y];
+	  screen_hitmap[offx +x][offy+y] = hmap.htile[  realhard(til)  ].x[x].y[y];
     }
 }
 
