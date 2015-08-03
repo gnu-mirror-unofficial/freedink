@@ -121,20 +121,16 @@ struct sp
 };
 extern struct sp spr[];
 
-// sub struct for hardness map
-struct mega_y
-{
-	unsigned char y[401];
-};
 
 // struct for hardness map
 struct hit_map
 {
-	struct mega_y x[601];
+  struct
+  {
+    unsigned char y[400+1];
+  } x[600+1];
 };
 extern struct hit_map hm;
-
-extern int last_sprite_created;
 
 
 struct sprite_placement
@@ -159,17 +155,21 @@ struct sprite_placement
   int buff[5];
 };
 
+
 /* one screen from map.dat */
-struct small_map
+struct screen
 {
   struct tile t[12*8+1]; // 97 background tiles
   struct sprite_placement sprite[100+1];
   char script[20+1]; /* script to run when entering the script */
 };
+extern struct screen cur_screen;
+
+extern int last_sprite_created;
 
 
 extern void screen_init();
-extern int load_map_to(char* path, const int num, struct small_map* screen);
+extern int load_map_to(char* path, const int num, struct screen* screen);
 extern void save_map(const int num);
 extern void screen_rank_map_sprites(int rank[]);
 extern void screen_rank_game_sprites(int rank[]);

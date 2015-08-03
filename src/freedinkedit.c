@@ -137,7 +137,7 @@ static char sp_script[15];
 
 static int old_command;
 static int sp_cycle = 0;
-static   int cur_screen;
+static int cur_tileset;
 static int selx = 1;
 static int sely = 1;
 static int last_mode = 0;
@@ -295,29 +295,29 @@ void place_sprites()
       //Msg("Ok, rank[%d] is %d.",oo,rank[oo]);
       int j = rank[r1];
       
-      if (pam.sprite[j].active == 1
-	  && (pam.sprite[j].vision == 0 || pam.sprite[j].vision == map_vision))
+      if (cur_screen.sprite[j].active == 1
+	  && (cur_screen.sprite[j].vision == 0 || cur_screen.sprite[j].vision == map_vision))
 	{
 	  //we have instructions to make a sprite
 	  
-	  if (pam.sprite[j].type == 0 || pam.sprite[j].type == 2)
+	  if (cur_screen.sprite[j].type == 0 || cur_screen.sprite[j].type == 2)
 	    {
 	      //make it part of the background (much faster)
-	      int sprite = add_sprite_dumb(pam.sprite[j].x,pam.sprite[j].y, 0,
-					   pam.sprite[j].seq,pam.sprite[j].frame,
-					   pam.sprite[j].size);
+	      int sprite = add_sprite_dumb(cur_screen.sprite[j].x,cur_screen.sprite[j].y, 0,
+					   cur_screen.sprite[j].seq,cur_screen.sprite[j].frame,
+					   cur_screen.sprite[j].size);
 
-	      spr[sprite].hard = pam.sprite[j].hard;
+	      spr[sprite].hard = cur_screen.sprite[j].hard;
 	      check_sprite_status(sprite);
 	      spr[sprite].sp_index = j;
-	      rect_copy(&spr[sprite].alt , &pam.sprite[j].alt);
+	      rect_copy(&spr[sprite].alt , &cur_screen.sprite[j].alt);
 	      
-	      if (pam.sprite[j].type == 0)
+	      if (cur_screen.sprite[j].type == 0)
 		draw_sprite(GFX_lpDDSTwo, sprite);
 	      
 	      if (spr[sprite].hard == 0)
 		{
-		  if (pam.sprite[j].is_warp == 0)
+		  if (cur_screen.sprite[j].is_warp == 0)
 		    add_hardness(sprite, 1);
 		  else add_hardness(sprite, 100 + j);
 		}
@@ -325,23 +325,23 @@ void place_sprites()
 	      spr[sprite].active = 0;
 	    }
 	  
-	  if (pam.sprite[j].type == 1)
+	  if (cur_screen.sprite[j].type == 1)
 	    {
 	      //make it a living sprite
 	      
-	      int sprite = add_sprite_dumb(pam.sprite[j].x,pam.sprite[j].y, 0,
-					   pam.sprite[j].seq,pam.sprite[j].frame,
-					   pam.sprite[j].size);
+	      int sprite = add_sprite_dumb(cur_screen.sprite[j].x,cur_screen.sprite[j].y, 0,
+					   cur_screen.sprite[j].seq,cur_screen.sprite[j].frame,
+					   cur_screen.sprite[j].size);
 	      
-	      spr[sprite].que = pam.sprite[j].que;
+	      spr[sprite].que = cur_screen.sprite[j].que;
 	      check_sprite_status(sprite);
-	      spr[sprite].hard = pam.sprite[j].hard;
+	      spr[sprite].hard = cur_screen.sprite[j].hard;
 	      
-	      rect_copy(&spr[sprite].alt , &pam.sprite[j].alt);
+	      rect_copy(&spr[sprite].alt , &cur_screen.sprite[j].alt);
 	      
 	      if (spr[sprite].hard == 0)
 		{
-		  if (pam.sprite[j].is_warp == 0)
+		  if (cur_screen.sprite[j].is_warp == 0)
 		    add_hardness(sprite, 1); else add_hardness(sprite,100+j);
 		}
 	    }
@@ -351,7 +351,7 @@ void place_sprites()
 
 void editor_load_map(int num)
 {
-  if (load_map_to(current_map, num, &pam) < 0)
+  if (load_map_to(current_map, num, &cur_screen) < 0)
     return;
   fill_whole_hard();
 }
@@ -483,7 +483,7 @@ void drawallhard( void)
 	if (hm.x[x1].y[y1] > 100)
 	  {
 
-	    if (pam.sprite[  (hm.x[x1].y[y1]) - 100].is_warp == 1)
+	    if (cur_screen.sprite[  (hm.x[x1].y[y1]) - 100].is_warp == 1)
 	      {
 		//draw a little pixel
 /* 		ddbltfx.dwFillColor = 20; */
@@ -682,7 +682,7 @@ void draw_minimap(void)
      the current D-Mod directory. Maybe change that to handle absolute
      paths and paths relative to the refdir. */
   sprintf(crap, "%sMAP.DAT", buf_path);
-  load_map_to(crap, num, &pam);
+  load_map_to(crap, num, &cur_screen);
   
   return /*true*/1;
 }
@@ -871,7 +871,7 @@ void loadtile(int tileset)
 /*   lpDDSTwo->BltFast(0, 0, tiles[tileset], &tilerect[tileset], DDBLTFAST_NOCOLORKEY |DDBLTFAST_WAIT); */
   // GFX
   SDL_BlitSurface(gfx_tiles[tileset], NULL, GFX_lpDDSTwo, NULL);
-  cur_screen = tileset;
+  cur_tileset = tileset;
 
   last_mode = tileset;
 
@@ -1115,44 +1115,44 @@ void sp_add( void )
   int j;
 	for (j = 1; j < 100; j++)
 	{
-		if (pam.sprite[j].active == /*false*/0)
+		if (cur_screen.sprite[j].active == /*false*/0)
 		{
 
 			last_sprite_added = j;
 			//Msg("Adding sprite %d, seq %d, frame %d.",j,sp_seq,sp_frame);
-			pam.sprite[j].active = /*true*/1;
-            pam.sprite[j].frame = sp_frame;
-            pam.sprite[j].seq = sp_seq;
-			pam.sprite[j].x = spr[1].x;
-			pam.sprite[j].y = spr[1].y;
-			pam.sprite[j].size = spr[1].size;
-			pam.sprite[j].type = sp_type;
-			pam.sprite[j].brain = sp_brain;
-			pam.sprite[j].speed = sp_speed;
-			pam.sprite[j].base_walk = sp_base_walk;
-			pam.sprite[j].base_idle = sp_base_idle;
-			pam.sprite[j].base_attack = sp_base_attack;
-			pam.sprite[j].base_hit = sp_base_hit;
-			pam.sprite[j].timer = sp_timer;
-			pam.sprite[j].que = sp_que;
-			pam.sprite[j].hard = sp_hard;
-			pam.sprite[j].is_warp = sp_is_warp;
-			pam.sprite[j].warp_map = sp_warp_map;
-			pam.sprite[j].warp_x = sp_warp_x;
-			pam.sprite[j].warp_y = sp_warp_y;
-			pam.sprite[j].parm_seq = sp_parm_seq;
-			strcpy(pam.sprite[j].script, sp_script);
-			pam.sprite[j].base_die = sp_base_die;
-			pam.sprite[j].gold = sp_gold;
-			pam.sprite[j].exp = sp_exp;
-			pam.sprite[j].strength = sp_strength;
-			pam.sprite[j].defense = sp_defense;
-			pam.sprite[j].hitpoints = sp_hitpoints;
-			pam.sprite[j].sound = sp_sound;
-		    pam.sprite[j].vision = map_vision;
-		    pam.sprite[j].nohit = sp_nohit;
-			pam.sprite[j].touch_damage = sp_touch_damage;
-			rect_copy(&pam.sprite[j].alt , &spr[1].alt);
+			cur_screen.sprite[j].active = /*true*/1;
+            cur_screen.sprite[j].frame = sp_frame;
+            cur_screen.sprite[j].seq = sp_seq;
+			cur_screen.sprite[j].x = spr[1].x;
+			cur_screen.sprite[j].y = spr[1].y;
+			cur_screen.sprite[j].size = spr[1].size;
+			cur_screen.sprite[j].type = sp_type;
+			cur_screen.sprite[j].brain = sp_brain;
+			cur_screen.sprite[j].speed = sp_speed;
+			cur_screen.sprite[j].base_walk = sp_base_walk;
+			cur_screen.sprite[j].base_idle = sp_base_idle;
+			cur_screen.sprite[j].base_attack = sp_base_attack;
+			cur_screen.sprite[j].base_hit = sp_base_hit;
+			cur_screen.sprite[j].timer = sp_timer;
+			cur_screen.sprite[j].que = sp_que;
+			cur_screen.sprite[j].hard = sp_hard;
+			cur_screen.sprite[j].is_warp = sp_is_warp;
+			cur_screen.sprite[j].warp_map = sp_warp_map;
+			cur_screen.sprite[j].warp_x = sp_warp_x;
+			cur_screen.sprite[j].warp_y = sp_warp_y;
+			cur_screen.sprite[j].parm_seq = sp_parm_seq;
+			strcpy(cur_screen.sprite[j].script, sp_script);
+			cur_screen.sprite[j].base_die = sp_base_die;
+			cur_screen.sprite[j].gold = sp_gold;
+			cur_screen.sprite[j].exp = sp_exp;
+			cur_screen.sprite[j].strength = sp_strength;
+			cur_screen.sprite[j].defense = sp_defense;
+			cur_screen.sprite[j].hitpoints = sp_hitpoints;
+			cur_screen.sprite[j].sound = sp_sound;
+		    cur_screen.sprite[j].vision = map_vision;
+		    cur_screen.sprite[j].nohit = sp_nohit;
+			cur_screen.sprite[j].touch_damage = sp_touch_damage;
+			rect_copy(&cur_screen.sprite[j].alt , &spr[1].alt);
 		    return;
 		}
 
@@ -1641,9 +1641,9 @@ void check_in(void)
     if (in_master == 31)
       {
 	in_command = 2; //string
-	sprintf(in_default, "%s",  pam.script);
+	sprintf(in_default, "%s",  cur_screen.script);
 	in_max = 20;
-	in_string = pam.script;
+	in_string = cur_screen.script;
 	blit(30,1,GFX_lpDDSBack,250,170);
 	Say("Script:",260,175);
 	Say("This script will be run before the screen is drawn.  A good place"
@@ -2495,7 +2495,7 @@ void updateFrame(void)
 
 			    for (jj=1; jj < 100; jj++)
 			      {
-				if ( pam.sprite[jj].active) if (pam.sprite[jj].vision == map_vision) max_spr++;
+				if ( cur_screen.sprite[jj].active) if (cur_screen.sprite[jj].vision == map_vision) max_spr++;
 			      }
 
 
@@ -2534,7 +2534,7 @@ void updateFrame(void)
 				realpic = 0;
 				for (jh = 1; dumbpic != sp_cycle; jh++)
 				  {
-				    if (pam.sprite[jh].active)  if ( pam.sprite[jh].vision == map_vision)
+				    if (cur_screen.sprite[jh].active)  if ( cur_screen.sprite[jh].vision == map_vision)
 								  {
 								    dumbpic++;
 								    realpic = jh;
@@ -2549,10 +2549,10 @@ void updateFrame(void)
 /* 				ddbltfx.dwSize = sizeof(ddbltfx); */
 /* 				ddbltfx.dwFillColor = 235; */
 
-				int	sprite = add_sprite_dumb(pam.sprite[realpic].x,pam.sprite[realpic].y,0,
-								 pam.sprite[realpic].seq, pam.sprite[realpic].frame,
-								 pam.sprite[realpic].size);
-				rect_copy(&spr[sprite].alt , &pam.sprite[realpic].alt);
+				int	sprite = add_sprite_dumb(cur_screen.sprite[realpic].x,cur_screen.sprite[realpic].y,0,
+								 cur_screen.sprite[realpic].seq, cur_screen.sprite[realpic].frame,
+								 cur_screen.sprite[realpic].size);
+				rect_copy(&spr[sprite].alt , &cur_screen.sprite[realpic].alt);
 				get_box(sprite, &box_crap, &box_real);
 
 
@@ -2626,13 +2626,13 @@ void updateFrame(void)
 
 				for (uu = 100; uu > 0; uu--)
 				  {
-				    if ( pam.sprite[uu].active) if ( ( pam.sprite[uu].vision == 0) || (pam.sprite[uu].vision == map_vision))
+				    if ( cur_screen.sprite[uu].active) if ( ( cur_screen.sprite[uu].vision == 0) || (cur_screen.sprite[uu].vision == map_vision))
 								  {
 
-								    int	sprite = add_sprite_dumb(pam.sprite[uu].x,pam.sprite[uu].y,0,
-												 pam.sprite[uu].seq, pam.sprite[uu].frame,
-												 pam.sprite[uu].size);
-								    rect_copy(&spr[sprite].alt , &pam.sprite[uu].alt);
+								    int	sprite = add_sprite_dumb(cur_screen.sprite[uu].x,cur_screen.sprite[uu].y,0,
+												 cur_screen.sprite[uu].seq, cur_screen.sprite[uu].frame,
+												 cur_screen.sprite[uu].size);
+								    rect_copy(&spr[sprite].alt , &cur_screen.sprite[uu].alt);
 								    get_box(sprite, &box_crap, &box_real);
 								    if (realpic > 0) goto spwarp;
 								    //Msg("Got sprite %d's info. X%d Y %d.",uu,box_crap.left,box_crap.right);
@@ -2651,45 +2651,45 @@ void updateFrame(void)
 									  }
 
 
-									spr[1].x = pam.sprite[uu].x;
-									spr[1].y = pam.sprite[uu].y;
-									spr[1].size = pam.sprite[uu].size;
-									sp_type = pam.sprite[uu].type;
-									sp_brain = pam.sprite[uu].brain;
-									sp_speed = pam.sprite[uu].speed;
-									sp_base_walk = pam.sprite[uu].base_walk;
-									sp_base_idle = pam.sprite[uu].base_idle;
-									sp_base_attack = pam.sprite[uu].base_attack;
-									sp_base_hit = pam.sprite[uu].base_hit;
-									sp_timer = pam.sprite[uu].timer;
-									sp_que = pam.sprite[uu].que;
-									sp_seq = pam.sprite[uu].seq;
-									sp_hard = pam.sprite[uu].hard;
-									rect_copy(&spr[1].alt , &pam.sprite[uu].alt);
-									sp_frame = pam.sprite[uu].frame;
-									spr[1].pseq = pam.sprite[uu].seq;
-									spr[1].pframe = pam.sprite[uu].frame;
+									spr[1].x = cur_screen.sprite[uu].x;
+									spr[1].y = cur_screen.sprite[uu].y;
+									spr[1].size = cur_screen.sprite[uu].size;
+									sp_type = cur_screen.sprite[uu].type;
+									sp_brain = cur_screen.sprite[uu].brain;
+									sp_speed = cur_screen.sprite[uu].speed;
+									sp_base_walk = cur_screen.sprite[uu].base_walk;
+									sp_base_idle = cur_screen.sprite[uu].base_idle;
+									sp_base_attack = cur_screen.sprite[uu].base_attack;
+									sp_base_hit = cur_screen.sprite[uu].base_hit;
+									sp_timer = cur_screen.sprite[uu].timer;
+									sp_que = cur_screen.sprite[uu].que;
+									sp_seq = cur_screen.sprite[uu].seq;
+									sp_hard = cur_screen.sprite[uu].hard;
+									rect_copy(&spr[1].alt , &cur_screen.sprite[uu].alt);
+									sp_frame = cur_screen.sprite[uu].frame;
+									spr[1].pseq = cur_screen.sprite[uu].seq;
+									spr[1].pframe = cur_screen.sprite[uu].frame;
 
-									sp_is_warp = pam.sprite[uu].is_warp;
+									sp_is_warp = cur_screen.sprite[uu].is_warp;
 
-									sp_warp_map = pam.sprite[uu].warp_map;
-									sp_warp_x = pam.sprite[uu].warp_x;
-									sp_warp_y = pam.sprite[uu].warp_y;
-									sp_parm_seq = pam.sprite[uu].parm_seq;
-									strcpy(sp_script, pam.sprite[uu].script);
+									sp_warp_map = cur_screen.sprite[uu].warp_map;
+									sp_warp_x = cur_screen.sprite[uu].warp_x;
+									sp_warp_y = cur_screen.sprite[uu].warp_y;
+									sp_parm_seq = cur_screen.sprite[uu].parm_seq;
+									strcpy(sp_script, cur_screen.sprite[uu].script);
 
-									sp_base_die = pam.sprite[uu].base_die;
-									sp_gold = pam.sprite[uu].gold;
-									sp_hitpoints = pam.sprite[uu].hitpoints;
+									sp_base_die = cur_screen.sprite[uu].base_die;
+									sp_gold = cur_screen.sprite[uu].gold;
+									sp_hitpoints = cur_screen.sprite[uu].hitpoints;
 
-									sp_exp = pam.sprite[uu].exp;
-									sp_nohit = pam.sprite[uu].nohit;
-									sp_touch_damage = pam.sprite[uu].touch_damage;
-									sp_defense = pam.sprite[uu].defense;
-									sp_strength = pam.sprite[uu].strength;
-									sp_sound = pam.sprite[uu].sound;
+									sp_exp = cur_screen.sprite[uu].exp;
+									sp_nohit = cur_screen.sprite[uu].nohit;
+									sp_touch_damage = cur_screen.sprite[uu].touch_damage;
+									sp_defense = cur_screen.sprite[uu].defense;
+									sp_strength = cur_screen.sprite[uu].strength;
+									sp_sound = cur_screen.sprite[uu].sound;
 
-									pam.sprite[uu].active = /*false*/0; //erase sprite
+									cur_screen.sprite[uu].active = /*false*/0; //erase sprite
 									draw_map_editor();
 									spr[sprite].active = /*false*/0;
 									break;
@@ -2708,7 +2708,7 @@ void updateFrame(void)
 				int ll;
 				for (ll = 1; ll < 100; ll++)
 				  {
-				    pam.sprite[ll].active = /*false*/0;
+				    cur_screen.sprite[ll].active = /*false*/0;
 				  }
 				draw_map_editor();
 				rect_set(&spr[h].alt,0,0,0,0);
@@ -3408,12 +3408,12 @@ void updateFrame(void)
 		      {
 
 			if (mode == MODE_SCREEN_TILES)
-			  cur_tile = pam.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].square_full_idx0;
+			  cur_tile = cur_screen.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].square_full_idx0;
 
 			if (mode == MODE_TILE_PICKER)
 			  {
 			    cur_tile = (((spr[1].y+1)*12) / 50)+(spr[1].x / 50);
-			    cur_tile += (cur_screen * 128) - 128;
+			    cur_tile += (cur_tileset * 128) - 128;
 			  }
 
 			while(kill_last_sprite());
@@ -3552,7 +3552,7 @@ void updateFrame(void)
 			//EditorSoundPlayEffect( SOUND_JUMP );
 
 
-			pam.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].square_full_idx0 = cur_tile;
+			cur_screen.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].square_full_idx0 = cur_tile;
 
 			for (y = 0; y < sely; y++)
 			  {
@@ -3562,7 +3562,7 @@ void updateFrame(void)
 				holdx = (((spr[1].y+1)*12) / 50)+(spr[1].x / 50);
 				holdx += (y * 12);
 				holdx += x;
-				pam.t[holdx].square_full_idx0 = (cur_tile + (y * 12) + x);
+				cur_screen.t[holdx].square_full_idx0 = (cur_tile + (y * 12) + x);
 
 			      }
 			  }
@@ -3577,7 +3577,7 @@ void updateFrame(void)
 			spr[h].seq = 3;
 			spr[h].seq_orig = 3;
 			//SoundPlayEffect( SOUND_JUMP );
-			cur_tile = pam.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].square_full_idx0;
+			cur_tile = cur_screen.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].square_full_idx0;
 			draw_map_editor();
 		      }
 
@@ -3625,7 +3625,7 @@ void updateFrame(void)
 			spr[h].seq = 3;
 			spr[h].seq_orig = 3;
 			cur_tile = (((spr[1].y+1)*12) / 50)+(spr[1].x / 50);
-			cur_tile += (cur_screen * 128) - 128;
+			cur_tile += (cur_tileset * 128) - 128;
 			//SoundPlayEffect( SOUND_JUMP );
 			m2x = spr[h].x;
 			m2y = spr[h].y;
@@ -3851,7 +3851,7 @@ void updateFrame(void)
 			if (input_getcharjustpressed(SDLK_s))
 			  {
 			    //stamp tile hardness to selected
-			    pam.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].althard = hard_tile;
+			    cur_screen.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].althard = hard_tile;
 			    draw_map_editor();
 			    mode = MODE_SCREEN_HARDNESS_INIT;
 
@@ -3861,7 +3861,7 @@ void updateFrame(void)
 			if (input_getscancodejustpressed(SDL_SCANCODE_DELETE))
 			  {
 			    //stamp tile hardness to selected
-			    pam.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].althard = 0;
+			    cur_screen.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].althard = 0;
 			    draw_map_editor();
 			    mode = MODE_SCREEN_HARDNESS_INIT;
 
@@ -3878,7 +3878,7 @@ void updateFrame(void)
 			if (input_getscancodejustpressed(SDL_SCANCODE_RETURN))
 			  {
 			    //they want to edit this alt hardness, let's do it
-			    cur_tile = pam.t[xy2screentile(spr[1].x, spr[1].y)].square_full_idx0;
+			    cur_tile = cur_screen.t[xy2screentile(spr[1].x, spr[1].y)].square_full_idx0;
 
 			    xx = cur_tile - (cool * 128);
 			    Rect.left = spr[1].x+20;
@@ -4277,7 +4277,7 @@ void updateFrame(void)
 		  mode);
 /* 		  cur_map, */
 /* 		  cur_tile, */
-/* 		  pam.t[crap].num); */
+/* 		  cur_screen.t[crap].num); */
 	}
       if (mode == MODE_TILE_PICKER)
 	sprintf(msg,
@@ -4370,7 +4370,7 @@ void updateFrame(void)
       if (mode == MODE_SCREEN_HARDNESS)
 	{
 	  int screentile = xy2screentile(spr[1].x, spr[1].y);
-	  int sourcetile = pam.t[screentile].square_full_idx0;
+	  int sourcetile = cur_screen.t[screentile].square_full_idx0;
 	  int defaulthardness = hmap.btile_default[sourcetile];
 	  int curhardness = realhard(screentile);
 	  char str[100];
@@ -4437,26 +4437,26 @@ void updateFrame(void)
 	  int j;
 	  for (j = 1; j < 100; j++)
 	    {
-	      if (pam.sprite[j].active == /*true*/1)
+	      if (cur_screen.sprite[j].active == /*true*/1)
 		{
 
 /* 		  ddbltfx.dwSize = sizeof(ddbltfx); */
 /* 		  ddbltfx.dwFillColor = 230; */
 
 		  //info on the sprites  sprite info
-/* 		  int temp = s_index[pam.sprite[j].seq].s + pam.sprite[j].frame; */
+/* 		  int temp = s_index[cur_screen.sprite[j].seq].s + cur_screen.sprite[j].frame; */
 
 
-		  int sprite2 = add_sprite_dumb(pam.sprite[j].x,pam.sprite[j].y,0,
-						pam.sprite[j].seq,pam.sprite[j].frame,
-						pam.sprite[j].size);
-		  rect_copy(&spr[sprite2].alt , &pam.sprite[j].alt);
+		  int sprite2 = add_sprite_dumb(cur_screen.sprite[j].x,cur_screen.sprite[j].y,0,
+						cur_screen.sprite[j].seq,cur_screen.sprite[j].frame,
+						cur_screen.sprite[j].size);
+		  rect_copy(&spr[sprite2].alt , &cur_screen.sprite[j].alt);
 
 		  get_box(sprite2, &box_crap, &box_real);
 
 		  spr[sprite2].active = /*false*/0;
 
-		  //box_crap.top = box_crpam.sprite[j].y - 25;
+		  //box_crap.top = box_crap.sprite[j].y - 25;
 		  box_crap.bottom = box_crap.top + 50;
 		  box_crap.left = box_crap.left + ( (box_crap.right - box_crap.left) / 2);
 		  box_crap.right = box_crap.left+ 50;
@@ -4479,22 +4479,22 @@ void updateFrame(void)
                   char crap6[20];
 
 		  strcpy(crap6,"");
-		  if (pam.sprite[j].hard == 0) strcpy(crap6,"HARD");
+		  if (cur_screen.sprite[j].hard == 0) strcpy(crap6,"HARD");
 
-		  sprintf(crap5, "B: %d %s",pam.sprite[j].brain,crap6);
+		  sprintf(crap5, "B: %d %s",cur_screen.sprite[j].brain,crap6);
 
-		  if (pam.sprite[j].type == 0)
+		  if (cur_screen.sprite[j].type == 0)
 		    {
 
 		      SaySmall(crap5,box_crap.left+3,box_crap.top+3,255,255,255);
 		    }
 
-		  if (pam.sprite[j].type > 0)
+		  if (cur_screen.sprite[j].type > 0)
 		    {
 		      SaySmall(crap5,box_crap.left+3,box_crap.top+3,255,0,0);
 		    }
-		  if (strlen(pam.sprite[j].script) > 1)
-		    SaySmall(pam.sprite[j].script,box_crap.left+3,box_crap.top+35,255,0,0);
+		  if (strlen(cur_screen.sprite[j].script) > 1)
+		    SaySmall(cur_screen.sprite[j].script,box_crap.left+3,box_crap.top+35,255,0,0);
 
 		  sprintf(crap6,"%d",j);
 

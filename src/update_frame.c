@@ -500,7 +500,7 @@ animate:
 				
 				if (spr[h].brain == 1) if (move_result > 100)
 				{
-					if (pam.sprite[move_result-100].is_warp == 1)
+					if (cur_screen.sprite[move_result-100].is_warp == 1)
 						special_block(move_result - 100);
 				}
 				

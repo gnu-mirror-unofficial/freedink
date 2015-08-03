@@ -94,7 +94,6 @@ extern int mbase_count;
 extern unsigned long mold;
 
 extern int *pupdate_status;
-extern struct small_map pam;
 extern int playl;
 extern int playx;
 extern int playy;

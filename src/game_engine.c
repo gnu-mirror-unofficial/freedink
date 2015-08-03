@@ -30,7 +30,7 @@
 #include <string.h>  /* memset */
 #include "game_engine.h"
 #include "screen.h" /* hm */
-#include "dinkvar.h"  /* hmap, pam */
+#include "dinkvar.h"  /* hmap, cur_screen */
 #include "freedink.h"  /* add_time_to_saved_game */
 #include "input.h"
 #include "log.h"
@@ -262,7 +262,7 @@ void fix_dead_sprites()
  */
 int game_load_map(int num)
 {
-  if (load_map_to(current_map, num, &pam) < 0)
+  if (load_map_to(current_map, num, &cur_screen) < 0)
     return -1;
   
   spr[1].move_active = 0;
@@ -298,61 +298,61 @@ void update_play_changes( void )
   int j;
         for (j = 1; j < 100; j++)
         {
-                if (pam.sprite[j].active)
+                if (cur_screen.sprite[j].active)
                         if (play.spmap[*pplayer_map].type[j] != 0)
                         {
                                 //lets make some changes, player has extra info
                                 if (play.spmap[*pplayer_map].type[j] == 1)
                                 {
-                                        pam.sprite[j].active = 0;
+                                        cur_screen.sprite[j].active = 0;
 
                                 }
 
                                 if (play.spmap[*pplayer_map].type[j] == 2)
                                 {
-                                        pam.sprite[j].type = 1;
-                    pam.sprite[j].hard = 1;
+                                        cur_screen.sprite[j].type = 1;
+                    cur_screen.sprite[j].hard = 1;
                                 }
                                 if (play.spmap[*pplayer_map].type[j] == 3)
                                 {
 
                                         //              Msg("Changing sprite %d", j);
-                                        pam.sprite[j].type = 0;
-                                        pam.sprite[j].hard = 1;
+                                        cur_screen.sprite[j].type = 0;
+                                        cur_screen.sprite[j].hard = 1;
 
                                 }
 
                                 if (play.spmap[*pplayer_map].type[j] == 4)
                                 {
-                                        pam.sprite[j].type = 1;
-                    pam.sprite[j].hard = 0;
+                                        cur_screen.sprite[j].type = 1;
+                    cur_screen.sprite[j].hard = 0;
                                 }
 
                                 if (play.spmap[*pplayer_map].type[j] == 5)
                                 {
-                                        pam.sprite[j].type = 0;
-                    pam.sprite[j].hard = 0;
+                                        cur_screen.sprite[j].type = 0;
+                    cur_screen.sprite[j].hard = 0;
                                 }
 
                                 if (play.spmap[*pplayer_map].type[j] == 6)
                                 {
-                                        pam.sprite[j].active = 0;
+                                        cur_screen.sprite[j].active = 0;
 
                                 }
                                 if (play.spmap[*pplayer_map].type[j] == 7)
                                 {
-                                        pam.sprite[j].active = 0;
+                                        cur_screen.sprite[j].active = 0;
 
                                 }
                                 if (play.spmap[*pplayer_map].type[j] == 8)
                                 {
-                                        pam.sprite[j].active = 0;
+                                        cur_screen.sprite[j].active = 0;
 
                                 }
 
-                                pam.sprite[j].seq = play.spmap[*pplayer_map].seq[j];
-                                pam.sprite[j].frame = play.spmap[*pplayer_map].frame[j];
-                                strcpy(pam.sprite[j].script, "");
+                                cur_screen.sprite[j].seq = play.spmap[*pplayer_map].seq[j];
+                                cur_screen.sprite[j].frame = play.spmap[*pplayer_map].frame[j];
+                                strcpy(cur_screen.sprite[j].script, "");
 
 
                         }
@@ -382,75 +382,75 @@ void game_place_sprites()
       //Msg("Ok, rank[%d] is %d.",oo,rank[oo]);
       int j = rank[r1];
       
-      if (pam.sprite[j].active == 1
-	  && (pam.sprite[j].vision == 0 || pam.sprite[j].vision == *pvision))
+      if (cur_screen.sprite[j].active == 1
+	  && (cur_screen.sprite[j].vision == 0 || cur_screen.sprite[j].vision == *pvision))
 	{
-	  check_seq_status(pam.sprite[j].seq);
+	  check_seq_status(cur_screen.sprite[j].seq);
 	  
 	  //we have instructions to make a sprite
-	  if (pam.sprite[j].type == 0 || pam.sprite[j].type == 2)
+	  if (cur_screen.sprite[j].type == 0 || cur_screen.sprite[j].type == 2)
 	    {
 	      //make it part of the background (much faster)
-	      int sprite = add_sprite_dumb(pam.sprite[j].x,pam.sprite[j].y, 0,
-					   pam.sprite[j].seq,pam.sprite[j].frame,
-					   pam.sprite[j].size);
+	      int sprite = add_sprite_dumb(cur_screen.sprite[j].x,cur_screen.sprite[j].y, 0,
+					   cur_screen.sprite[j].seq,cur_screen.sprite[j].frame,
+					   cur_screen.sprite[j].size);
 
-	      spr[sprite].hard = pam.sprite[j].hard;
+	      spr[sprite].hard = cur_screen.sprite[j].hard;
 	      spr[sprite].sp_index = j;
-	      rect_copy(&spr[sprite].alt , &pam.sprite[j].alt);
+	      rect_copy(&spr[sprite].alt , &cur_screen.sprite[j].alt);
 	      
 	      check_sprite_status_full(sprite);
 
-	      if (pam.sprite[j].type == 0)
+	      if (cur_screen.sprite[j].type == 0)
 		draw_sprite_game(GFX_lpDDSTwo, sprite);
 	      
 	      if (spr[sprite].hard == 0)
 		{
-		  /*if (pam.sprite[j].is_warp == 0)
+		  /*if (cur_screen.sprite[j].is_warp == 0)
 		    add_hardness(sprite, 1); else */
 		  add_hardness(sprite, 100 + j);
 		}
 	      spr[sprite].active = 0;
 	    }
 
-	  if (pam.sprite[j].type == 1)
+	  if (cur_screen.sprite[j].type == 1)
 	    {
 	      //make it a living sprite
-	      int sprite = add_sprite_dumb(pam.sprite[j].x,pam.sprite[j].y, 0,
-					   pam.sprite[j].seq,pam.sprite[j].frame,
-					   pam.sprite[j].size);
+	      int sprite = add_sprite_dumb(cur_screen.sprite[j].x,cur_screen.sprite[j].y, 0,
+					   cur_screen.sprite[j].seq,cur_screen.sprite[j].frame,
+					   cur_screen.sprite[j].size);
 	      
-	      spr[sprite].hard = pam.sprite[j].hard;
+	      spr[sprite].hard = cur_screen.sprite[j].hard;
 	      
 	      //assign addition parms to the new sprite
 	      spr[sprite].sp_index = j;
 	      
-	      spr[sprite].brain = pam.sprite[j].brain;
-	      spr[sprite].speed = pam.sprite[j].speed;
-	      spr[sprite].base_walk = pam.sprite[j].base_walk;
-	      spr[sprite].base_idle = pam.sprite[j].base_idle;
-	      spr[sprite].base_attack = pam.sprite[j].base_attack;
-	      spr[sprite].base_hit = pam.sprite[j].base_hit;
-	      spr[sprite].hard = pam.sprite[j].hard;
-	      spr[sprite].timer = pam.sprite[j].timer;
-	      spr[sprite].que = pam.sprite[j].que;
+	      spr[sprite].brain = cur_screen.sprite[j].brain;
+	      spr[sprite].speed = cur_screen.sprite[j].speed;
+	      spr[sprite].base_walk = cur_screen.sprite[j].base_walk;
+	      spr[sprite].base_idle = cur_screen.sprite[j].base_idle;
+	      spr[sprite].base_attack = cur_screen.sprite[j].base_attack;
+	      spr[sprite].base_hit = cur_screen.sprite[j].base_hit;
+	      spr[sprite].hard = cur_screen.sprite[j].hard;
+	      spr[sprite].timer = cur_screen.sprite[j].timer;
+	      spr[sprite].que = cur_screen.sprite[j].que;
 	      
 	      
 	      spr[sprite].sp_index = j;
 	      
-	      rect_copy(&spr[sprite].alt , &pam.sprite[j].alt);
+	      rect_copy(&spr[sprite].alt , &cur_screen.sprite[j].alt);
 	      
-	      spr[sprite].base_die = pam.sprite[j].base_die;
-	      spr[sprite].strength = pam.sprite[j].strength;
-	      spr[sprite].defense = pam.sprite[j].defense;
-	      spr[sprite].gold = pam.sprite[j].gold;
-	      spr[sprite].exp = pam.sprite[j].exp;
-	      spr[sprite].nohit = pam.sprite[j].nohit;
-	      spr[sprite].touch_damage = pam.sprite[j].touch_damage;
-	      spr[sprite].hitpoints = pam.sprite[j].hitpoints;
-	      spr[sprite].sound = pam.sprite[j].sound;
+	      spr[sprite].base_die = cur_screen.sprite[j].base_die;
+	      spr[sprite].strength = cur_screen.sprite[j].strength;
+	      spr[sprite].defense = cur_screen.sprite[j].defense;
+	      spr[sprite].gold = cur_screen.sprite[j].gold;
+	      spr[sprite].exp = cur_screen.sprite[j].exp;
+	      spr[sprite].nohit = cur_screen.sprite[j].nohit;
+	      spr[sprite].touch_damage = cur_screen.sprite[j].touch_damage;
+	      spr[sprite].hitpoints = cur_screen.sprite[j].hitpoints;
+	      spr[sprite].sound = cur_screen.sprite[j].sound;
 	      check_sprite_status_full(sprite);
-	      if (pam.sprite[j].is_warp == 0 && spr[sprite].sound != 0)
+	      if (cur_screen.sprite[j].is_warp == 0 && spr[sprite].sound != 0)
 		{
 		  //make looping sound
 		  log_debug("making sound with sprite %d..", sprite);
@@ -479,16 +479,16 @@ void game_place_sprites()
 	      
 	      if (spr[sprite].hard == 0)
 		{
-		  /*  if (pam.sprite[j].is_warp == 0)
+		  /*  if (cur_screen.sprite[j].is_warp == 0)
 			add_hardness(sprite, 1);
 		      else */
 		  add_hardness(sprite, 100+j);
 		}
 	      
 	      //does it need a script loaded?
-	      if (strlen(pam.sprite[j].script) > 1)
+	      if (strlen(cur_screen.sprite[j].script) > 1)
 		{
-		  spr[sprite].script = load_script(pam.sprite[j].script, sprite, /*true*/1);
+		  spr[sprite].script = load_script(cur_screen.sprite[j].script, sprite, /*true*/1);
 		}
 	    }
 	  //Msg("I just made sprite %d because rank[%d] told me to..",sprite,j);
@@ -513,18 +513,18 @@ void game_place_sprites_background()
       //Msg("Ok, rank[%d] is %d.",oo,rank[oo]);
       int j = rank[r1];
       
-      if (pam.sprite[j].active == 1
-	  && (pam.sprite[j].vision == 0 || pam.sprite[j].vision == *pvision))
+      if (cur_screen.sprite[j].active == 1
+	  && (cur_screen.sprite[j].vision == 0 || cur_screen.sprite[j].vision == *pvision))
 	{
-	  if (pam.sprite[j].type == 0)
+	  if (cur_screen.sprite[j].type == 0)
 	    {
 	      //we have instructions to make a sprite
-	      check_seq_status(pam.sprite[j].seq);
+	      check_seq_status(cur_screen.sprite[j].seq);
 	      
 	      //make it part of the background (much faster)
-	      int sprite = add_sprite_dumb(pam.sprite[j].x,pam.sprite[j].y, 0,
-					   pam.sprite[j].seq,pam.sprite[j].frame,
-					   pam.sprite[j].size);
+	      int sprite = add_sprite_dumb(cur_screen.sprite[j].x,cur_screen.sprite[j].y, 0,
+					   cur_screen.sprite[j].seq,cur_screen.sprite[j].frame,
+					   cur_screen.sprite[j].size);
 
 	      check_sprite_status_full(sprite);
 	      draw_sprite_game(GFX_lpDDSTwo, sprite);
@@ -545,22 +545,22 @@ void fill_back_sprites()
       //Msg("Ok, rank[%d] is %d.",oo,rank[oo]);
       int j = rank[r1];
 
-      if (pam.sprite[j].active == 1
-	  && (pam.sprite[j].vision == 0 || pam.sprite[j].vision == *pvision))
+      if (cur_screen.sprite[j].active == 1
+	  && (cur_screen.sprite[j].vision == 0 || cur_screen.sprite[j].vision == *pvision))
 	{
 
 
 
-	  if (pam.sprite[j].type != 1 && pam.sprite[j].hard == 0)
+	  if (cur_screen.sprite[j].type != 1 && cur_screen.sprite[j].hard == 0)
 	    {
 	      //make it part of the background (much faster)
-	      int sprite = add_sprite_dumb(pam.sprite[j].x,pam.sprite[j].y, 0,
-					   pam.sprite[j].seq,pam.sprite[j].frame,
-					   pam.sprite[j].size);
+	      int sprite = add_sprite_dumb(cur_screen.sprite[j].x,cur_screen.sprite[j].y, 0,
+					   cur_screen.sprite[j].seq,cur_screen.sprite[j].frame,
+					   cur_screen.sprite[j].size);
 
-	      spr[sprite].hard = pam.sprite[j].hard;
+	      spr[sprite].hard = cur_screen.sprite[j].hard;
 	      spr[sprite].sp_index = j;
-	      rect_copy(&spr[sprite].alt , &pam.sprite[j].alt);
+	      rect_copy(&spr[sprite].alt , &cur_screen.sprite[j].alt);
 
 	      check_sprite_status_full(sprite);
 
@@ -569,7 +569,7 @@ void fill_back_sprites()
 
 	      if (spr[sprite].hard == 0)
 		{
-		  /*if (pam.sprite[j].is_warp == 0)
+		  /*if (cur_screen.sprite[j].is_warp == 0)
 		    add_hardness(sprite, 1); else */
 		  add_hardness(sprite,100+j);
 		}
@@ -591,9 +591,9 @@ void draw_map_game(void)
 
   gfx_tiles_draw_screen();
                 
-  if (strlen(pam.script) > 1)
+  if (strlen(cur_screen.script) > 1)
     {
-      int script_id = load_script(pam.script,0, /*true*/1);
+      int script_id = load_script(cur_screen.script,0, /*true*/1);
                         
       if (script_id > 0) 
 	{

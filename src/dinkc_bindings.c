@@ -247,7 +247,7 @@ void dc_sp_hard(int script, int* yield, int* preturnint, int sprite, int sparg)
   RETURN_NEG_IF_BAD_SPRITE(sprite);
   *preturnint = change_sprite(sprite, sparg, &spr[sprite].hard);
   if (spr[sprite].sp_index != 0 && sparg != -1)
-    pam.sprite[spr[sprite].sp_index].hard = *preturnint;
+    cur_screen.sprite[spr[sprite].sp_index].hard = *preturnint;
 }
 
 void dc_sp_hitpoints(int script, int* yield, int* preturnint, int sprite, int sparg)
@@ -1767,13 +1767,13 @@ void dc_map_tile(int script, int* yield, int* preturnint, int tile_position, int
       int max = GFX_TILES_NB_SQUARES - 1;
 
       if (tile_index >= 0 && tile_index <= max)
-	pam.t[tile_position - 1].square_full_idx0 = tile_index;
+	cur_screen.t[tile_position - 1].square_full_idx0 = tile_index;
       else
 	log_error("[DinkC] %s:%d:%s: dc_map_tile: invalid tile index '%d'",
 		  rinfo[script]->name, rinfo[script]->debug_line, cur_funcname,
 		  tile_index);
 
-      *preturnint = pam.t[tile_position - 1].square_full_idx0;
+      *preturnint = cur_screen.t[tile_position - 1].square_full_idx0;
     }
 }
 
@@ -1785,8 +1785,8 @@ void dc_map_hard_tile(int script, int* yield, int* preturnint, int tile_position
     {
       //Only change the value if it is greater than 0...
       if (hard_tile_index > 0)
-	pam.t[tile_position - 1].althard = hard_tile_index;
-      *preturnint = pam.t[tile_position - 1].althard;
+	cur_screen.t[tile_position - 1].althard = hard_tile_index;
+      *preturnint = cur_screen.t[tile_position - 1].althard;
     }
 }
 

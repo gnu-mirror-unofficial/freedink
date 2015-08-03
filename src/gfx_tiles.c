@@ -142,8 +142,8 @@ void gfx_tiles_draw_screen()
   int x = 0;
   for (; x < GFX_TILES_PER_SCREEN; x++)
     {
-      int srctileset_idx0 = pam.t[x].square_full_idx0 / 128;
-      int srctile_square_idx0 = pam.t[x].square_full_idx0 % 128;
+      int srctileset_idx0 = cur_screen.t[x].square_full_idx0 / 128;
+      int srctile_square_idx0 = cur_screen.t[x].square_full_idx0 % 128;
       gfx_tiles_draw(srctileset_idx0, srctile_square_idx0, x);
     }
 }
@@ -163,7 +163,7 @@ void process_animated_tiles(void)
       int x = 0;
       for (; x < 96; x++)
 	{
-	  int screen_square_full_idx0 = pam.t[x].square_full_idx0;
+	  int screen_square_full_idx0 = cur_screen.t[x].square_full_idx0;
 	  int start_full_idx0 = (8-1) * 128; // 8th tileset -> 896
 	  if (screen_square_full_idx0 >= start_full_idx0
 	      && screen_square_full_idx0 < (start_full_idx0 + 128))
@@ -181,7 +181,7 @@ void process_animated_tiles(void)
     int x = 0;
     for (; x < 96; x++)
       {
-	int screen_square_full_idx0 = pam.t[x].square_full_idx0;
+	int screen_square_full_idx0 = cur_screen.t[x].square_full_idx0;
 	int start_full_idx0 = (19-1) * 128; // 19th tileset -> 2304
 	if (screen_square_full_idx0 >= start_full_idx0
 	    && screen_square_full_idx0 < (start_full_idx0 + 128))

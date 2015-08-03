@@ -146,8 +146,6 @@ rect math,box_crap,box_real;
 
 int mode = 0;
 
-struct small_map pam;
-
 
 /* Screen transition */
 /*bool*/int transition_in_progress = /*false*/0;
@@ -301,7 +299,7 @@ unsigned char get_hard_play(int h, int x1, int y1)
     return 0;
 
   int value =  hm.x[x1].y[y1];
-  if (value > 100 && pam.sprite[value-100].is_warp != 0)
+  if (value > 100 && cur_screen.sprite[value-100].is_warp != 0)
     {
       flub_mode = value;
       value = 0;
@@ -357,10 +355,10 @@ void fill_hardxy(rect box)
  */
 int realhard(int tile)
 {
-  if (pam.t[tile].althard > 0)
-    return(pam.t[tile].althard);
+  if (cur_screen.t[tile].althard > 0)
+    return(cur_screen.t[tile].althard);
   else
-    return(hmap.btile_default[pam.t[tile].square_full_idx0]);
+    return(hmap.btile_default[cur_screen.t[tile].square_full_idx0]);
 }
 
 
