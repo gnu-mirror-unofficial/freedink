@@ -215,7 +215,7 @@ int xy2screentile(int x, int y)
 
 /*BOOL*/int initFail(char mess[200] );
 
-void draw_map(void);
+void draw_map_editor(void);
 void draw_minimap(void);
 /* void dderror(HRESULT hErr); */
 
@@ -383,7 +383,7 @@ void editor_load_map(int num)
 }
 
 /* Draw background from tiles */
-void draw_map(void)
+void draw_map_editor(void)
 {
   fill_screen(0);
   fill_whole_hard();
@@ -1964,7 +1964,7 @@ void updateFrame(void)
 	      //a map exists here
 	      editor_load_map(map.loc[draw_map_tiny]);
 	      //map loaded, lets display it
-	      draw_map();
+	      draw_map_editor();
 
 	      goto pass_flip;
 	    } else goto tiny_again;
@@ -2483,13 +2483,13 @@ void updateFrame(void)
 			      {
 				smart_add();
 
-				draw_map();
+				draw_map_editor();
 			      }
 
 			    if ( (sjoy.button[EDITOR_ACTION_RETURN]) | (mouse1) )
 			      {
 				smart_add();
-				draw_map();
+				draw_map_editor();
 				spr[1].pseq = 10;
 				spr[1].pframe = 8;
 				spr[1].size = 100;
@@ -2716,7 +2716,7 @@ void updateFrame(void)
 									sp_sound = pam.sprite[uu].sound;
 
 									pam.sprite[uu].active = /*false*/0; //erase sprite
-									draw_map();
+									draw_map_editor();
 									spr[sprite].active = /*false*/0;
 									break;
 								      }
@@ -2736,7 +2736,7 @@ void updateFrame(void)
 				  {
 				    pam.sprite[ll].active = /*false*/0;
 				  }
-				draw_map();
+				draw_map_editor();
 				rect_set(&spr[h].alt,0,0,0,0);
 			      }
 			  }
@@ -2911,7 +2911,7 @@ void updateFrame(void)
 			      } else
 			      {
 				smart_add();
-				draw_map();
+				draw_map_editor();
 				rect_set(&spr[1].alt,0,0,0,0);
 
 				spr[1].pseq = 10;
@@ -2950,7 +2950,7 @@ void updateFrame(void)
 				smart_add();
 				rect_set(&spr[1].alt,0,0,0,0);
 
-				draw_map();
+				draw_map_editor();
 			      }
 			    spr[1].size = 100;
 			    mode = MODE_SCREEN_TILES;
@@ -3061,7 +3061,7 @@ void updateFrame(void)
 				  m5x = spr[h].x;
 				  m5y = spr[h].y;
 
-				  draw_map();
+				  draw_map_editor();
 				  spr[h].x = m6x;
 				  spr[h].y = m6y;
 
@@ -3089,7 +3089,7 @@ void updateFrame(void)
 				  spr[1].pseq = sp_seq;
 				  spr[1].pframe = holdx + holdy;
 				  sp_frame = holdx + holdy;
-				  draw_map();
+				  draw_map_editor();
 				  spr[h].x = m6x;
 				  spr[h].y = m6y;
 				  mode = MODE_SCREEN_SPRITES;
@@ -3109,7 +3109,7 @@ void updateFrame(void)
 			      //exit to main editor
 			      /*m5x = spr[h].x;
 				m5y = spr[h].y;
-				draw_map();
+				draw_map_editor();
 				spr[h].x = m4x;
 				spr[h].y = m4y;
 				mode = 3;
@@ -3118,7 +3118,7 @@ void updateFrame(void)
 			      m5x = spr[h].x;
 			      m5y = spr[h].y;
 
-			      draw_map();
+			      draw_map_editor();
 			      spr[h].x = m6x;
 			      spr[h].y = m6y;
 			      spr[h].pseq = 10;
@@ -3378,7 +3378,7 @@ void updateFrame(void)
 			    if (last_modereal == 8)
 			      {
 				//return to alt hardness editor
-				draw_map();
+				draw_map_editor();
 				last_modereal = 0;
 				spr[h].x = m4x;
 				spr[h].y = m4y;
@@ -3400,7 +3400,7 @@ void updateFrame(void)
 			      }
 			    fill_whole_hard();
 
-			    draw_map();
+			    draw_map_editor();
 			    spr[h].x = m4x;
 			    spr[h].y = m4y;
 			    mode = MODE_SCREEN_TILES;
@@ -3593,7 +3593,7 @@ void updateFrame(void)
 			      }
 			  }
 
-			draw_map();
+			draw_map_editor();
 		      }
 
 
@@ -3604,7 +3604,7 @@ void updateFrame(void)
 			spr[h].seq_orig = 3;
 			//SoundPlayEffect( SOUND_JUMP );
 			cur_tile = pam.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].square_full_idx0;
-			draw_map();
+			draw_map_editor();
 		      }
 
 		    /* Tile selection */
@@ -3660,7 +3660,7 @@ void updateFrame(void)
 
 			mode = MODE_SCREEN_TILES;
 			spr[h].speed = 50;
-			draw_map();
+			draw_map_editor();
 			last_mode = 0;
 		      }
 
@@ -3679,7 +3679,7 @@ void updateFrame(void)
 			spr[h].y = m3y;
 
 			mode = MODE_SCREEN_TILES;
-			draw_map();
+			draw_map_editor();
 			last_mode = 0;
 			goto b1end;
 		      }
@@ -3809,7 +3809,7 @@ void updateFrame(void)
 			mode = MODE_SCREEN_TILES;
 
 			spr[h].speed = 50;
-			draw_map();
+			draw_map_editor();
 		      }
 
 
@@ -3851,7 +3851,7 @@ void updateFrame(void)
 			    mode = MODE_SCREEN_TILES;
 			    spr[h].seq = 3;
 			    spr[h].seq_orig = 3;
-			    draw_map();
+			    draw_map_editor();
 			    goto b1end;
 			  }
 
@@ -3878,7 +3878,7 @@ void updateFrame(void)
 			  {
 			    //stamp tile hardness to selected
 			    pam.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].althard = hard_tile;
-			    draw_map();
+			    draw_map_editor();
 			    mode = MODE_SCREEN_HARDNESS_INIT;
 
 			    return;
@@ -3888,7 +3888,7 @@ void updateFrame(void)
 			  {
 			    //stamp tile hardness to selected
 			    pam.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].althard = 0;
-			    draw_map();
+			    draw_map_editor();
 			    mode = MODE_SCREEN_HARDNESS_INIT;
 
 			    return;
@@ -4238,7 +4238,7 @@ void updateFrame(void)
       while(kill_last_sprite());
       place_sprites();
 
-      /*	draw_map();
+      /*	draw_map_editor();
 
 
 		rcRect.top = 0;
@@ -4734,7 +4734,7 @@ void updateFrame(void)
 	    }
 	  else
 	    {
-	      draw_map();
+	      draw_map_editor();
 	    }
 	}
     }
