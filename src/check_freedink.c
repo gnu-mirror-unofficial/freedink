@@ -427,16 +427,22 @@ END_TEST
 // See also http://www.dinknetwork.com/forum.cgi?MID=186069#186263
 START_TEST(test_integration_player_position_is_updated_after_screen_is_loaded)
 {
+  //SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
   ts_paths_init();
+  memset(&map.ts_loc_mem, 0, sizeof(map.ts_loc_mem));
 
-  make_int("ts_x", -1, DINKC_GLOBAL_SCOPE, 0);
-  make_int("ts_y", -1, DINKC_GLOBAL_SCOPE, 0);
-  char* screen_main_code =
+  dinkc_init();
+  make_int("&tsx", 123451, DINKC_GLOBAL_SCOPE, 0);
+  make_int("&tsy", 123452, DINKC_GLOBAL_SCOPE, 0);
+  int tsx_id = lookup_var("&tsx", DINKC_GLOBAL_SCOPE);
+  int tsy_id = lookup_var("&tsy", DINKC_GLOBAL_SCOPE);
+  const char* screen_main_code =
     "void main(void) {\n"
-    "  &ts_x = sp_x(1, -1);\n"
-    "  &ts_y = sp_y(1, -1);\n"
+    "  &tsx = sp_x(1, -1);\n"
+    "  &tsy = sp_y(1, -1);\n"
     "}";
-  int screen_main_id = ts_script_init("pos check", strdup(screen_main_code));
+  int screen_script_id = ts_script_init("ts_pos_check", strdup(screen_main_code));
+  rinfo[screen_script_id]->sprite = 1000; // don't kill me
 
   int player_map = 33;
   pplayer_map = &player_map;
@@ -444,37 +450,40 @@ START_TEST(test_integration_player_position_is_updated_after_screen_is_loaded)
   pvision = &vision;
 
   // Create 5 connected screens
-  map.loc[33] = 1;
-  map.loc[32] = 1;
-  map.loc[34] = 1;
-  map.loc[1]  = 1;
-  map.loc[65] = 1;
+  struct screen s;
+  s.ts_script_id = screen_script_id;
+  map.loc[33] = 1; map.ts_loc_mem[33] = &s;
+  map.loc[32] = 1; map.ts_loc_mem[32] = &s;
+  map.loc[34] = 1; map.ts_loc_mem[34] = &s;
+  map.loc[1]  = 1; map.ts_loc_mem[1]  = &s;
+  map.loc[65] = 1; map.ts_loc_mem[65] = &s;
 
   screenlock = 0;
   walk_off_screen = 0;
+  spr[1].active = 1;
 
   *pplayer_map = 33;
   spr[1].x = -1;
   did_player_cross_screen();
-  // TODO: assert x=-1 during screen's main()
+  ck_assert_int_eq(play.var[tsx_id].var, -1);
   ck_assert_int_eq(spr[1].x, 619);
 
   *pplayer_map = 33;
   spr[1].y = -1;
   did_player_cross_screen();
-  // TODO: assert x=-1 during screen's main()
+  ck_assert_int_eq(play.var[tsy_id].var, -1);
   ck_assert_int_eq(spr[1].y, 399);
 
   *pplayer_map = 33;
   spr[1].x = 620;
   did_player_cross_screen();
-  // TODO: assert x=-1 during screen's main()
+  ck_assert_int_eq(play.var[tsx_id].var, 620);
   ck_assert_int_eq(spr[1].x, 20);
 
   *pplayer_map = 33;
   spr[1].y = 401;
   did_player_cross_screen();
-  // TODO: assert x=-1 during screen's main()
+  ck_assert_int_eq(play.var[tsy_id].var, 401);
   ck_assert_int_eq(spr[1].y, 0);
 
   

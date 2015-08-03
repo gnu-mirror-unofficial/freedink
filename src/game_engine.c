@@ -29,6 +29,7 @@
 #include <time.h>  /* time */
 #include <string.h>  /* memset */
 #include "game_engine.h"
+#include "map.h" /* map */
 #include "screen.h" /* screen_hitmap */
 #include "dinkvar.h"  /* hmap, cur_screen */
 #include "freedink.h"  /* add_time_to_saved_game */
@@ -262,7 +263,12 @@ void fix_dead_sprites()
  */
 int game_load_screen(int num)
 {
-  if (load_screen_to(current_map, num, &cur_screen) < 0)
+  if (num > 768)
+    return -1;
+
+  if (map.ts_loc_mem[num] != NULL)
+    memcpy(&cur_screen, map.ts_loc_mem[num], sizeof(struct screen));
+  else if (load_screen_to(current_map, num, &cur_screen) < 0)
     return -1;
   
   spr[1].move_active = 0;
@@ -590,18 +596,19 @@ void draw_screen_game(void)
   kill_all_scripts();
 
   gfx_tiles_draw_screen();
-                
-  if (strlen(cur_screen.script) > 1)
-    {
-      int script_id = load_script(cur_screen.script,0, /*true*/1);
+
+  int script_id;
+  if (cur_screen.ts_script_id > 0)
+    script_id = cur_screen.ts_script_id;
+  else if (strlen(cur_screen.script) > 1)
+    script_id = load_script(cur_screen.script,0, /*true*/1);
                         
-      if (script_id > 0) 
-	{
-	  locate(script_id, "main");
-	  screen_main_is_running = /*true*/1;
-	  run_script(script_id);
-	  screen_main_is_running = /*false*/0;
-	}
+  if (script_id > 0)
+    {
+      locate(script_id, "main");
+      screen_main_is_running = /*true*/1;
+      run_script(script_id);
+      screen_main_is_running = /*false*/0;
     }
 
   // lets add the sprites hardness to the real hardness, adding it's

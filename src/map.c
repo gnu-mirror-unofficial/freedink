@@ -21,9 +21,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "map.h"
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include <stdio.h>
+
+#include "map.h"
 
 #include "paths.h"
 #include "io_util.h"
@@ -57,6 +61,8 @@ int load_info_to(char* path, struct map_info *mymap)
   fseek(f, 2240, SEEK_CUR); // unused space
 
   fclose(f);
+
+  memset(&map.ts_loc_mem, 0, sizeof(map.ts_loc_mem));
 
   return 0;
 }

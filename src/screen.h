@@ -27,6 +27,7 @@
 #include "rect.h"
 #include "dinkc_sp_custom.h"
 #include "gfx_tiles.h"
+#include "io_util.h"
 
 #define MAX_SPRITES_EDITOR 99
 
@@ -155,6 +156,7 @@ struct screen
   struct tile t[12*8+1]; // 97 background tiles
   struct sprite_placement sprite[100+1];
   char script[20+1]; /* script to run when entering the script */
+  char ts_script_id; /* script to run when entering the script (pre-loaded for testsuite) */
 };
 extern struct screen cur_screen;
 
