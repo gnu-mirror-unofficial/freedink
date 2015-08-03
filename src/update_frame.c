@@ -58,7 +58,6 @@
 static Uint32 fps_lasttick = 0;
 static int frames = 0;
 static int fps = 0;
-static int drawthistime = /*true*/1;
 static /*bool*/int turn_on_plane = /*FALSE*/0;
 static /*bool*/int plane_process = /*TRUE*/1;
 
@@ -222,8 +221,6 @@ void updateFrame()
   int max_s;
   int rank[MAX_SPRITES_AT_ONCE];
 
-  SDL_Rect GFX_box_crap;
-  
   abort_this_flip = /*false*/0;
 
 	
@@ -329,10 +326,6 @@ void updateFrame()
 		process_animated_tiles();
 	}
 	
-	
-	
-	//figure out frame rate
-	drawthistime = /*true*/1;
 	
 	if (show_inventory)
 	{
@@ -693,101 +686,6 @@ past:
 
 				// if (mcc == sound_support)
 				draw_sprite_game(GFX_lpDDSBack, h);
-				
-				
-				//draw a dot to show where the computer is guessing the start of the shadow is	 
-				/* Note: show_dot is never set to
-				   true; that's a manual debugging
-				   tool; maybe we could introduce a
-				   command line option, or activate it
-				   along with -debug */
-				/* TODO: test me! */
-				if (show_dot)
-				{
-					
-					
-/* 					ddbltfx.dwSize = sizeof(ddbltfx); */
-					if (drawthistime)
-					{	
-					  int oo;
-/* 						ddbltfx.dwFillColor = 1; */
-						
-/* 						box_crap = k[getpic(h)].hardbox; */
-						//box_crap.bottom = spr[h].y + k[spr[h].pic].hardbox.bottom;
-						//box_crap.left = spr[h].x + k[spr[h].pic].hardbox.left;
-						//box_crap.right = spr[h].x + k[spr[h].pic].hardbox.right;
-						
-						//OffsetRect(&box_crap, spr[h].x, spr[h].y);
-						
-						//	ddrval = lpDDSBack->Blt(&box_crap ,NULL, &box_real, DDBLT_COLORFILL| DDBLT_WAIT, &ddbltfx);
-						
-						
-						//to show center pixel
-/* 						ddbltfx.dwFillColor = 100; */
-						
-/* 						box_crap.top = spr[h].y; */
-/* 						box_crap.bottom = spr[h].y+1; */
-/* 						box_crap.left = spr[h].x ; */
-/* 						box_crap.right = spr[h].x + 1; */
-						// GFX
-						GFX_box_crap.x = spr[h].x;
-						GFX_box_crap.y = spr[h].y;
-						GFX_box_crap.w = 1;
-						GFX_box_crap.h = 1;
-						
-/* 						ddrval = lpDDSBack->Blt(&box_crap ,NULL, &box_real, DDBLT_COLORFILL| DDBLT_WAIT, &ddbltfx); */
-						// GFX
-						SDL_FillRect(GFX_lpDDSBack, &GFX_box_crap,
-							     SDL_MapRGB(GFX_lpDDSBack->format,
-									GFX_real_pal[100].r,
-									GFX_real_pal[100].g,
-									GFX_real_pal[100].b));
-
-						
-						for (oo=0; oo <  spr[h].moveman+1; oo++)
-						{
-/* 							ddbltfx.dwFillColor = 50; */
-							
-/* 							box_crap.top = spr[h].lpy[oo]; */
-/* 							box_crap.bottom = box_crap.top+1; */
-/* 							box_crap.left = spr[h].lpx[oo]; */
-/* 							box_crap.right = box_crap.left+1; */
-							// GFX
-							GFX_box_crap.x = spr[h].lpx[oo];
-							GFX_box_crap.y = spr[h].lpy[oo];
-							GFX_box_crap.w = 1;
-							GFX_box_crap.h = 1;
-							
-/* 							ddrval = lpDDSBack->Blt(&box_crap ,NULL, NULL, DDBLT_COLORFILL|DDBLT_WAIT, &ddbltfx); */
-							// GFX
-							SDL_FillRect(GFX_lpDDSBack, &GFX_box_crap,
-								     SDL_MapRGB(GFX_lpDDSBack->format,
-										GFX_real_pal[50].r,
-										GFX_real_pal[50].g,
-										GFX_real_pal[50].b));
-							
-						}
-/* 						ddbltfx.dwFillColor = 1; */
-						
-/* 						box_crap.top = spr[h].lpy[0]; */
-/* 						box_crap.bottom = box_crap.top+1; */
-/* 						box_crap.left = spr[h].lpx[0]; */
-/* 						box_crap.right = box_crap.left+1; */
-						// GFX
-						GFX_box_crap.x = spr[h].lpx[0];
-						GFX_box_crap.y = spr[h].lpy[0];
-						GFX_box_crap.w = 1;
-						GFX_box_crap.h = 1;
-						
-/* 						ddrval = lpDDSBack->Blt(&box_crap ,NULL, NULL, DDBLT_COLORFILL|DDBLT_WAIT, &ddbltfx); */
-						// GFX
-						SDL_FillRect(GFX_lpDDSBack, &GFX_box_crap,
-							     SDL_MapRGB(GFX_lpDDSBack->format,
-									GFX_real_pal[1].r,
-									GFX_real_pal[1].g,
-									GFX_real_pal[1].b));
-					}
-				}         
 }
 } /* for 0->max_s */
 
@@ -910,9 +808,9 @@ past:
 	      }
 	    if (mode == 3)
 	      {
-		sprintf(msg, "Sprites: %d  FPS: %d  Show_dot: %d Plane_process: %d"
+		sprintf(msg, "Sprites: %d  FPS: %d  Plane_process: %d"
 			" Moveman X%d X%d: %d Y%d Y%d Map %d",
-			last_sprite_created, fps/*_show*/, show_dot, plane_process,
+			last_sprite_created, fps/*_show*/, plane_process,
 			spr[1].lpx[0], spr[1].lpy[0], spr[1].moveman,
 			spr[1].lpx[1], spr[1].lpy[1], *pplayer_map);
 	      }

@@ -132,7 +132,6 @@ extern int playx;
 extern int playy;
 extern int *pplayer_map;
 extern int screenlock;
-extern int show_dot;
 extern Uint32 thisTickCount;
 extern Uint32 lastTickCount;
 extern FPSmanager framerate_manager;

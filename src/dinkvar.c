@@ -118,8 +118,6 @@ char dir[80];
 
 
 
-int  show_dot = /*FALSE*/0;
-
 unsigned long timer = 0;
 char *command_line;
 /*bool*/int dinkedit = /*false*/0;
