@@ -1828,7 +1828,7 @@ int did_player_cross_screen()
 	
   int ret = 0;
   // DO MATH TO SEE IF THEY HAVE CROSSED THE SCREEN, IF SO LOAD NEW ONE
-  if ((spr[1].x) < playl)
+  if (spr[1].x < playl)
     {
       if ((*pplayer_map-1) >= 1 && map.loc[*pplayer_map-1] > 0 && screenlock == 0)
 	{

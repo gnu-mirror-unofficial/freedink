@@ -440,12 +440,92 @@ START_TEST(test_integration_player_position_is_updated_after_screen_is_loaded)
   map.loc[1]  = 1;
   map.loc[65] = 1;
 
+  screenlock = 0;
+  walk_off_screen = 0;
+
   *pplayer_map = 33;
   spr[1].x = -1;
   did_player_cross_screen();
   // TODO: assert x=-1 during screen's main()
   ck_assert_int_eq(spr[1].x, 619);
 
+  *pplayer_map = 33;
+  spr[1].y = -1;
+  did_player_cross_screen();
+  // TODO: assert x=-1 during screen's main()
+  ck_assert_int_eq(spr[1].y, 399);
+
+  *pplayer_map = 33;
+  spr[1].x = 620;
+  did_player_cross_screen();
+  // TODO: assert x=-1 during screen's main()
+  ck_assert_int_eq(spr[1].x, 20);
+
+  *pplayer_map = 33;
+  spr[1].y = 401;
+  did_player_cross_screen();
+  // TODO: assert x=-1 during screen's main()
+  ck_assert_int_eq(spr[1].y, 0);
+
+  
+  walk_off_screen = 1;
+  
+  spr[1].x = -1;
+  did_player_cross_screen();
+  ck_assert_int_eq(spr[1].x, -1);
+
+  spr[1].y = -1;
+  did_player_cross_screen();
+  ck_assert_int_eq(spr[1].y, -1);
+
+  spr[1].x = 700;
+  did_player_cross_screen();
+  ck_assert_int_eq(spr[1].x, 700);
+
+  spr[1].y = 500;
+  did_player_cross_screen();
+  ck_assert_int_eq(spr[1].y, 500);
+
+  walk_off_screen = 0;
+
+
+  screenlock = 1;
+  
+  spr[1].x = 19;
+  did_player_cross_screen();
+  ck_assert_int_eq(spr[1].x, 20);
+
+  spr[1].x = 20;
+  did_player_cross_screen();
+  ck_assert_int_eq(spr[1].x, 20);
+
+  spr[1].y = -1;
+  did_player_cross_screen();
+  ck_assert_int_eq(spr[1].y, 0);
+
+  spr[1].y = 0;
+  did_player_cross_screen();
+  ck_assert_int_eq(spr[1].y, 0);
+
+  spr[1].x = 620;
+  did_player_cross_screen();
+  ck_assert_int_eq(spr[1].x, 619);
+
+  spr[1].x = 619;
+  did_player_cross_screen();
+  ck_assert_int_eq(spr[1].x, 619);
+
+  spr[1].y = 400;
+  did_player_cross_screen();
+  ck_assert_int_eq(spr[1].y, 399);
+  
+  spr[1].y = 399;
+  did_player_cross_screen();
+  ck_assert_int_eq(spr[1].y, 399);
+
+  screenlock = 0;
+
+  
   paths_quit();
 }
 END_TEST
