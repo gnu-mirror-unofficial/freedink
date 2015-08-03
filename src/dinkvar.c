@@ -327,7 +327,7 @@ unsigned char get_hard_map(int h,int x1, int y1)
 
         //Msg("tile %d ",til);
 
-        return( hmap.htile[ realhard(til )  ].x[offx].y[offy]);
+        return( hmap.htile[ realhard(til )  ].hm[offx][offy]);
 
 }
 
@@ -381,9 +381,9 @@ void save_hard(void)
   int i = 0;
   for (i = 0; i < HARDNESS_NB_TILES; i++)
     {
-      int j = 0;
-      for (j = 0; j < 51; j++)
-	fwrite(hmap.htile[i].x[j].y, 51, 1, f);
+      for (int x = 0; x < 50+1; x++)
+	for (int y = 0; y < 50+1; y++)
+	  fwrite(&hmap.htile[i].hm[x][y], 1, 1, f);
       fputc(hmap.htile[i].used, f);
       fwrite(skipbuf, 2, 1, f); // reproduce memory alignment
       fwrite(skipbuf, 4, 1, f); // unused 'hold' field
@@ -427,9 +427,9 @@ void load_hard(void)
   int i = 0;
   for (i = 0; i < HARDNESS_NB_TILES; i++)
     {
-      int j = 0;
-      for (j = 0; j < 51; j++)
-	fread(hmap.htile[i].x[j].y, 51, 1, f);
+      for (int x = 0; x < 50+1; x++)
+	for (int y = 0; y < 50+1; y++)
+	  fread(&hmap.htile[i].hm[x][y], 1, 1, f);
       hmap.htile[i].used = fgetc(f);
       fread(skipbuf, 2, 1, f); // reproduce memory alignment
       fread(skipbuf, 4, 1, f); // unused 'hold' field

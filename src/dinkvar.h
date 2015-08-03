@@ -155,14 +155,9 @@ extern int burn_revision;
 /*
  * Game & editor
  */
-//sub struct for tile hardness
-struct block_y
-{
-  unsigned char y[51];
-};
 struct ts_block
 {
-  struct block_y x[51];
+  unsigned char hm[50+1][50+1];  // tile hardness/hitmap
   BOOL_1BYTE used;
 };
 

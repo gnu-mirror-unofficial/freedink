@@ -173,7 +173,7 @@ void fill_whole_hard(void)
       int x, y;
       for (x = 0; x < 50; x++)
 	for (y = 0; y < 50; y++)
-	  screen_hitmap[offx +x][offy+y] = hmap.htile[  realhard(til)  ].x[x].y[y];
+	  screen_hitmap[offx +x][offy+y] = hmap.htile[  realhard(til)  ].hm[x][y];
     }
 }
 

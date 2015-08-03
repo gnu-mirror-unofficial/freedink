@@ -549,7 +549,7 @@ void draw_hard( void)
       for (y = 0; y < 50; y++)
 	{
 	  /* red */
-	  if (hmap.htile[hard_tile].x[x].y[y] == 1)
+	  if (hmap.htile[hard_tile].hm[x][y] == 1)
 	    {
 /* 	      lpDDSBack->BltFast(95+(x*9), y*9, k[seq[10].frame[2]].k, */
 /* 				 &k[seq[10].frame[2]].box, DDBLTFAST_SRCCOLORKEY | DDBLTFAST_WAIT); */
@@ -563,7 +563,7 @@ void draw_hard( void)
 	    }
 
 	  /* blue */
-	  if (hmap.htile[hard_tile].x[x].y[y] == 2)
+	  if (hmap.htile[hard_tile].hm[x][y] == 2)
 	    {
 /* 	      lpDDSBack->BltFast(95+(x*9),y*9, k[seq[10].frame[9]].k, */
 /* 				 &k[seq[10].frame[9]].box, DDBLTFAST_SRCCOLORKEY | DDBLTFAST_WAIT); */
@@ -577,7 +577,7 @@ void draw_hard( void)
 	    }
 
 	  /* orange */
-	  if (hmap.htile[hard_tile].x[x].y[y] == 3)
+	  if (hmap.htile[hard_tile].hm[x][y] == 3)
 	    {
 /* 	      lpDDSBack->BltFast(95+(x*9),y*9, k[seq[10].frame[10]].k, */
 /* 				 &k[seq[10].frame[10]].box, DDBLTFAST_SRCCOLORKEY | DDBLTFAST_WAIT); */
@@ -1701,8 +1701,8 @@ void change_tile(int tile, int num)
     {
       int y;
       for (y = 0; y < 50; y++)
-	if (hmap.htile[tile].x[x].y[y] != 0)
-	  hmap.htile[tile].x[x].y[y] = num;
+	if (hmap.htile[tile].hm[x][y] != 0)
+	  hmap.htile[tile].hm[x][y] = num;
     }
 }
 
@@ -1852,7 +1852,7 @@ void draw_hard_tile(int x1, int y1, int tile)
       int y = 0;
       for (y = 0; y < 50; y++)
 	{
-	  if (hmap.htile[tile].x[x].y[y] == 1)
+	  if (hmap.htile[tile].hm[x][y] == 1)
 	    {
 	      //draw it
 	      dst.x = x1 + x
@@ -3257,7 +3257,7 @@ void updateFrame(void)
 				int x;
 				for (x = 0; x < selx; x++)
 				  {
-				    hmap.htile[hard_tile].x[((spr[h].x) + (x*9) - 95) / 9].y[(spr[h].y + (y *9)) / 9] = 1;
+				    hmap.htile[hard_tile].hm[((spr[h].x) + (x*9) - 95) / 9][(spr[h].y + (y *9)) / 9] = 1;
 
 				  }
 			      }
@@ -3273,7 +3273,7 @@ void updateFrame(void)
 				int x;
 				for (x = 0; x < selx; x++)
 				  {
-				    hmap.htile[hard_tile].x[((spr[h].x) + (x*9) - 95) / 9].y[(spr[h].y + (y *9)) / 9] = 0;
+				    hmap.htile[hard_tile].hm[((spr[h].x) + (x*9) - 95) / 9][(spr[h].y + (y *9)) / 9] = 0;
 
 				  }
 			      }
@@ -3315,7 +3315,7 @@ void updateFrame(void)
 				int x;
 				for (x = 0; x < selx; x++)
 				  {
-				    hmap.htile[hard_tile].x[((spr[h].x) + (x*9) - 95) / 9].y[(spr[h].y + (y *9)) / 9] = 2;
+				    hmap.htile[hard_tile].hm[((spr[h].x) + (x*9) - 95) / 9][(spr[h].y + (y *9)) / 9] = 2;
 
 				  }
 			      }
@@ -3329,7 +3329,7 @@ void updateFrame(void)
 				int x;
 				for (x = 0; x < selx; x++)
 				  {
-				    hmap.htile[hard_tile].x[((spr[h].x) + (x*9) - 95) / 9].y[(spr[h].y + (y *9)) / 9] = 3;
+				    hmap.htile[hard_tile].hm[((spr[h].x) + (x*9) - 95) / 9][(spr[h].y + (y *9)) / 9] = 3;
 
 				  }
 			      }
