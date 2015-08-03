@@ -327,9 +327,9 @@
 	}
     }
   kill_repeat_sounds_all();
-  game_load_map(map.loc[*pplayer_map]);
+  game_load_screen(map.loc[*pplayer_map]);
   log_info("Loaded map.");
-  draw_map_game();
+  draw_screen_game();
   log_info("Map drawn.");
   
   last_saved_game = num;

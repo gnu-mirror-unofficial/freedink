@@ -162,9 +162,9 @@ extern int last_sprite_created;
 
 
 extern void screen_init();
-extern int load_map_to(char* path, const int num, struct screen* screen);
-extern void save_map(const int num);
-extern void screen_rank_map_sprites(int rank[]);
+extern int load_screen_to(char* path, const int num, struct screen* screen);
+extern void save_screen(const int num);
+extern void screen_rank_editor_sprites(int rank[]);
 extern void screen_rank_game_sprites(int rank[]);
 extern void fill_hard_sprites(void);
 extern void fill_whole_hard(void);

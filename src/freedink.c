@@ -1837,11 +1837,11 @@ int did_player_cross_screen()
 	  update_screen_time();
 	  grab_trick(4);
 	  *pplayer_map -= 1;
-	  game_load_map(map.loc[*pplayer_map]);
+	  game_load_screen(map.loc[*pplayer_map]);
 	  if (map.indoor[*pplayer_map] == 0)
 	    play.last_map = *pplayer_map;
 	  
-	  draw_map_game();
+	  draw_screen_game();
 	  // compatibility: update Dink position *after* screen change
 	  spr[1].x = 619;
 	  spr[1].y = spr[1].lpy[0];
@@ -1861,11 +1861,11 @@ int did_player_cross_screen()
 	  update_screen_time();
 	  grab_trick(6);
 	  *pplayer_map += 1;
-	  game_load_map(map.loc[*pplayer_map]);
+	  game_load_screen(map.loc[*pplayer_map]);
 	  if (map.indoor[*pplayer_map] == 0)
 	    play.last_map = *pplayer_map;
 	  
-	  draw_map_game();
+	  draw_screen_game();
 	  // compatibility: update Dink position *after* screen change
 	  spr[1].x = playl;
 	  spr[1].y = spr[1].lpy[0];
@@ -1885,14 +1885,14 @@ int did_player_cross_screen()
 	  update_screen_time();
 	  grab_trick(8);
 	  *pplayer_map -= 32;
-	  game_load_map(map.loc[*pplayer_map]);
+	  game_load_screen(map.loc[*pplayer_map]);
 	  if (map.indoor[*pplayer_map] == 0)
 	    play.last_map = *pplayer_map;
 	  
 	  // compatibility: update Dink X position *before* screen change
 	  // (shouldn't matter when though, since it's an Y motion)
 	  spr[1].x = spr[1].lpx[0];
-	  draw_map_game();
+	  draw_screen_game();
 	  // compatibility: update Dink Y position *after* screen change
 	  spr[1].y = 399;
 	  ret = 1;
@@ -1912,11 +1912,11 @@ int did_player_cross_screen()
 	  update_screen_time();
 	  grab_trick(2);
 	  *pplayer_map += 32;
-	  game_load_map(map.loc[*pplayer_map]);
+	  game_load_screen(map.loc[*pplayer_map]);
 	  if (map.indoor[*pplayer_map] == 0)
 	    play.last_map = *pplayer_map;
 	  
-	  draw_map_game();
+	  draw_screen_game();
 	  // compatibility: update Dink position *after* screen change
 	  spr[1].y = 0;
 	  spr[1].x = spr[1].lpx[0];
@@ -3750,8 +3750,8 @@ void process_warp_man(void)
 	  if (map.indoor[cur_screen.sprite[block].warp_map] == 0)
 	    play.last_map = cur_screen.sprite[block].warp_map;
 	  
-	  game_load_map(map.loc[cur_screen.sprite[block].warp_map]);
-	  draw_map_game();
+	  game_load_screen(map.loc[cur_screen.sprite[block].warp_map]);
+	  draw_screen_game();
 	  
 	  process_upcycle = 1;
 	  process_warp = 0;

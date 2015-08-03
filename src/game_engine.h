@@ -153,13 +153,13 @@ extern void add_exp(int num, int killed_sprite);
 
 extern void fix_dead_sprites();
 
-extern int game_load_map(int num);
+extern int game_load_screen(int num);
 extern void update_screen_time(void);
 extern void update_play_changes( void );
 extern void game_place_sprites(void);
 extern void game_place_sprites_background(void);
 extern void fill_back_sprites(void);
 
-extern void draw_map_game(void);
-extern void draw_map_game_background(void);
+extern void draw_screen_game(void);
+extern void draw_screen_game_background(void);
 #endif

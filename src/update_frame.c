@@ -373,7 +373,7 @@ void updateFrame()
 		{
 			stop_entire_game = 0;
 			
-			draw_map_game_background();
+			draw_screen_game_background();
 			draw_status_all();
 			
 		}
@@ -741,8 +741,8 @@ past:
 	if (mode == 2)
 	{
 	  set_mode(3);
-	  game_load_map(map.loc[*pplayer_map]);
-	  draw_map_game();
+	  game_load_screen(map.loc[*pplayer_map]);
+	  draw_screen_game();
 	  flife = *plife;
 	}
 	

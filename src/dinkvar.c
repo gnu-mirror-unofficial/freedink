@@ -78,7 +78,7 @@ void check_seq_status(int h);
 
 int realhard(int tile);
 int flub_mode = -500;
-int draw_map_tiny = -1;
+int draw_screen_tiny = -1;
 
 int walk_off_screen = /*false*/0;
 
@@ -875,7 +875,7 @@ int add_sprite_dumb(int x1, int y, int brain,int pseq, int pframe,int size )
   if (spr[h].size == 0)
     spr[h].size = 100;
 
-  if (dinkedit && (mode == 1 || mode == 5) && draw_map_tiny < 1)
+  if (dinkedit && (mode == 1 || mode == 5) && draw_screen_tiny < 1)
     goto do_draw;
 
   if (box_scaled->left < mplayl)

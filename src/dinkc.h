@@ -105,7 +105,7 @@ extern void int_prepare(char line[100], int script);
 extern void make_function(char file[10], char func[20]);
 extern void kill_all_vars();
 
-/* Used by draw_map_game only */
+/* Used by draw_screen_game only */
 extern void kill_all_scripts(void);
 extern void init_scripts(void);
 

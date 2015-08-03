@@ -175,7 +175,7 @@ struct hardness
 
 /*bool*/int get_box (int h, rect * box_crap, rect * box_real);
 extern /*bool*/int dinkedit;
-extern int draw_map_tiny;
+extern int draw_screen_tiny;
 extern int cur_map;
 extern struct hardness hmap;
 

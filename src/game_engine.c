@@ -260,9 +260,9 @@ void fix_dead_sprites()
 /**
  * Load 1 screen from map.dat, which contains all 768 game screens
  */
-int game_load_map(int num)
+int game_load_screen(int num)
 {
-  if (load_map_to(current_map, num, &cur_screen) < 0)
+  if (load_screen_to(current_map, num, &cur_screen) < 0)
     return -1;
   
   spr[1].move_active = 0;
@@ -374,7 +374,7 @@ void game_place_sprites()
   update_play_changes();
   
   int rank[MAX_SPRITES_EDITOR];
-  screen_rank_map_sprites(rank);
+  screen_rank_editor_sprites(rank);
   
   int r1 = 0;  
   for (; r1 < MAX_SPRITES_EDITOR && rank[r1] > 0; r1++)
@@ -505,7 +505,7 @@ void game_place_sprites()
 void game_place_sprites_background()
 {
   int rank[MAX_SPRITES_EDITOR];
-  screen_rank_map_sprites(rank);
+  screen_rank_editor_sprites(rank);
 
   int r1 = 0;
   for (; r1 < MAX_SPRITES_EDITOR && rank[r1] > 0; r1++)
@@ -537,7 +537,7 @@ void game_place_sprites_background()
 void fill_back_sprites()
 {
   int rank[MAX_SPRITES_EDITOR];
-  screen_rank_map_sprites(rank);
+  screen_rank_editor_sprites(rank);
 
   int r1 = 0;
   for (; r1 < MAX_SPRITES_EDITOR && rank[r1] > 0; r1++)
@@ -581,7 +581,7 @@ void fill_back_sprites()
 
 
 /* Draw the background from tiles */
-void draw_map_game(void)
+void draw_screen_game(void)
 {
   *pvision = 0;
                 
@@ -622,8 +622,8 @@ void draw_map_game(void)
 }
         
 /* It's used at: freedink.cpp:restoreAll(), DinkC's draw_background(),
-   stop_entire_game(). What's the difference with draw_map_game()?? */
-void draw_map_game_background(void)
+   stop_entire_game(). What's the difference with draw_screen_game()?? */
+void draw_screen_game_background(void)
 {
   gfx_tiles_draw_screen();
   game_place_sprites_background();

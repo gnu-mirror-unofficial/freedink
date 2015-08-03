@@ -583,7 +583,7 @@ void dc_load_screen(int script, int* yield, int* preturnint)
 
   //Msg("Loading map %d..",*pplayer_map);
   update_screen_time();
-  game_load_map(map.loc[*pplayer_map]);
+  game_load_screen(map.loc[*pplayer_map]);
 
   // update indicator on mini-map
   if (map.indoor[*pplayer_map] == 0)
@@ -741,11 +741,11 @@ void dc_say_xy(int script, int* yield, int* preturnint, char* text, int x, int y
 void dc_draw_screen(int script, int* yield, int* preturnint)
 {
   /* only refresh screen if not in a cut-scene */
-  /* do it before draw_map_game() because that one calls
+  /* do it before draw_screen_game() because that one calls
      kill_all_scripts(), which NULLifies rinfo[script] */
   if (rinfo[script]->sprite != 1000)
     *yield = 1;
-  draw_map_game();
+  draw_screen_game();
 }
 
 void dc_free_items(int script, int* yield, int* preturnint)
@@ -879,7 +879,7 @@ void dc_disable_all_sprites(int script, int* yield, int* preturnint)
 void dc_draw_background(int script, int* yield, int* preturnint)
 {
   // (sprite, direction, until, nohard);
-  draw_map_game_background();
+  draw_screen_game_background();
 }
 
 void dc_draw_hard_map(int script, int* yield, int* preturnint)
@@ -1236,7 +1236,7 @@ void dc_force_vision(int script, int* yield, int* preturnint, int vision)
   *pvision = vision;
   rinfo[script]->sprite = 1000;
   fill_whole_hard();
-  draw_map_game();
+  draw_screen_game();
 }
 
 void dc_fill_screen(int script, int* yield, int* preturnint, int palette_index)

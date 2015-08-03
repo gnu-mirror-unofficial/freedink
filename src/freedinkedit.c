@@ -216,7 +216,7 @@ int xy2screentile(int x, int y)
 
 /*BOOL*/int initFail(char mess[200] );
 
-void draw_map_editor(void);
+void draw_screen_editor(void);
 void draw_minimap(void);
 /* void dderror(HRESULT hErr); */
 
@@ -258,9 +258,9 @@ void draw_sprite(SDL_Surface *GFX_lpdest, int h)
 
 /* 	      //dderror(ddrval); */
 /* 	      dderror(ddrval); */
-/* 	      if (draw_map_tiny > 0)  */
+/* 	      if (draw_screen_tiny > 0)  */
 /* 		{ */
-/* 		  Msg("MainSpriteDraw(): Could not draw sprite %d, pic %d. (Seq %d, Fram %d) (map %d)",h,getpic(h),spr[h].pseq, spr[h].pframe, draw_map_tiny); */
+/* 		  Msg("MainSpriteDraw(): Could not draw sprite %d, pic %d. (Seq %d, Fram %d) (map %d)",h,getpic(h),spr[h].pseq, spr[h].pframe, draw_screen_tiny); */
 /* 		  Msg("Box_crap: %d %d %d %d, Box_real: %d %d %d %d",box_crap.left,box_crap.top, */
 /* 		      box_crap.right, box_crap.bottom,box_real.left,box_real.top, */
 /* 		      box_real.right, box_real.bottom); */
@@ -287,7 +287,7 @@ void draw_sprite(SDL_Surface *GFX_lpdest, int h)
 void place_sprites()
 {
   int rank[MAX_SPRITES_EDITOR];
-  screen_rank_map_sprites(rank);
+  screen_rank_editor_sprites(rank);
   
   int r1 = 0;
   for (; r1 < MAX_SPRITES_EDITOR && rank[r1] > 0; r1++)
@@ -349,15 +349,15 @@ void place_sprites()
     }
 }
 
-void editor_load_map(int num)
+void editor_load_screen(int num)
 {
-  if (load_map_to(current_map, num, &cur_screen) < 0)
+  if (load_screen_to(current_map, num, &cur_screen) < 0)
     return;
   fill_whole_hard();
 }
 
 /* Draw background from tiles */
-void draw_map_editor(void)
+void draw_screen_editor(void)
 {
   fill_screen(0);
   fill_whole_hard();
@@ -675,14 +675,14 @@ void draw_minimap(void)
 
 
 
-/*bool*/int load_map_buf(const int num)
+/*bool*/int load_screen_buf(const int num)
 {
   char crap[120];
   /* TODO: Dinkedit historically loads map with a filename relative to
      the current D-Mod directory. Maybe change that to handle absolute
      paths and paths relative to the refdir. */
   sprintf(crap, "%sMAP.DAT", buf_path);
-  load_map_to(crap, num, &cur_screen);
+  load_screen_to(crap, num, &cur_screen);
   
   return /*true*/1;
 }
@@ -733,7 +733,7 @@ int add_new_map()
   if (loc_new > 768)
     return -1;
 
-  save_map(loc_new);
+  save_screen(loc_new);
   return loc_new;
 }
 
@@ -1187,15 +1187,15 @@ if (spr[1].size == 100)
 		//need to add it to the right
 		if (map.loc[cur_map+1] > 0)
 		{
-        	save_map(map.loc[cur_map]);
+        	save_screen(map.loc[cur_map]);
           log_debug("loading right map");
-			editor_load_map(map.loc[cur_map+1]);
+			editor_load_screen(map.loc[cur_map+1]);
                int holdx = spr[1].x;
                int holdy = spr[1].y;
 			   spr[1].x -= 600;
 			sp_add();
-			save_map(map.loc[cur_map+1]);
-			editor_load_map(map.loc[cur_map]);
+			save_screen(map.loc[cur_map+1]);
+			editor_load_screen(map.loc[cur_map]);
            spr[1].x = holdx;
 		   spr[1].y = holdy;
 		}
@@ -1209,15 +1209,15 @@ if (spr[1].size == 100)
 		//need to add it to the left
 		if (map.loc[cur_map-1] > 0)
 		{
-        	save_map(map.loc[cur_map]);
+        	save_screen(map.loc[cur_map]);
           log_debug("loading right map");
-			editor_load_map(map.loc[cur_map-1]);
+			editor_load_screen(map.loc[cur_map-1]);
                int holdx = spr[1].x;
                int holdy = spr[1].y;
 			   spr[1].x += 600;
 			sp_add();
-			save_map(map.loc[cur_map-1]);
-			editor_load_map(map.loc[cur_map]);
+			save_screen(map.loc[cur_map-1]);
+			editor_load_screen(map.loc[cur_map]);
            spr[1].x = holdx;
 		   spr[1].y = holdy;
 		}
@@ -1231,15 +1231,15 @@ if (spr[1].size == 100)
 		//need to add it to the bottom
 		if (map.loc[cur_map+32] > 0)
 		{
-        	save_map(map.loc[cur_map]);
+        	save_screen(map.loc[cur_map]);
           log_debug("loading bottom ");
-			editor_load_map(map.loc[cur_map+32]);
+			editor_load_screen(map.loc[cur_map+32]);
                int holdx = spr[1].x;
                int holdy = spr[1].y;
 			   spr[1].y -= 400;
 			sp_add();
-			save_map(map.loc[cur_map+32]);
-			editor_load_map(map.loc[cur_map]);
+			save_screen(map.loc[cur_map+32]);
+			editor_load_screen(map.loc[cur_map]);
            spr[1].x = holdx;
 		   spr[1].y = holdy;
 		}
@@ -1253,15 +1253,15 @@ if (spr[1].size == 100)
 		//need to add it to the left
 		if (map.loc[cur_map-32] > 0)
 		{
-        	save_map(map.loc[cur_map]);
+        	save_screen(map.loc[cur_map]);
           log_debug("loading top map");
-			editor_load_map(map.loc[cur_map-32]);
+			editor_load_screen(map.loc[cur_map-32]);
                int holdx = spr[1].x;
                int holdy = spr[1].y;
 			   spr[1].y += 400;
 			sp_add();
-			save_map(map.loc[cur_map-32]);
-			editor_load_map(map.loc[cur_map]);
+			save_screen(map.loc[cur_map-32]);
+			editor_load_screen(map.loc[cur_map]);
            spr[1].x = holdx;
 		   spr[1].y = holdy;
 		}
@@ -1915,30 +1915,30 @@ void updateFrame(void)
   rcRect.right = x;
   rcRect.bottom = y;
 
-  if (draw_map_tiny != -1)
+  if (draw_screen_tiny != -1)
     {
 
     tiny_again:
-      if (draw_map_tiny  == 769)
+      if (draw_screen_tiny  == 769)
 	{
-	  draw_map_tiny = -1;
+	  draw_screen_tiny = -1;
 	  while(kill_last_sprite());
 	  //all done
 	} else
 	{
 
 
-	  draw_map_tiny++;
+	  draw_screen_tiny++;
 
 	  copy_front_to_two();
 
 
-	  if (map.loc[draw_map_tiny] != 0)
+	  if (map.loc[draw_screen_tiny] != 0)
 	    {
 	      //a map exists here
-	      editor_load_map(map.loc[draw_map_tiny]);
+	      editor_load_screen(map.loc[draw_screen_tiny]);
 	      //map loaded, lets display it
-	      draw_map_editor();
+	      draw_screen_editor();
 
 	      goto pass_flip;
 	    } else goto tiny_again;
@@ -2457,13 +2457,13 @@ void updateFrame(void)
 			      {
 				smart_add();
 
-				draw_map_editor();
+				draw_screen_editor();
 			      }
 
 			    if ( (sjoy.button[EDITOR_ACTION_RETURN]) | (mouse1) )
 			      {
 				smart_add();
-				draw_map_editor();
+				draw_screen_editor();
 				spr[1].pseq = 10;
 				spr[1].pframe = 8;
 				spr[1].size = 100;
@@ -2690,7 +2690,7 @@ void updateFrame(void)
 									sp_sound = cur_screen.sprite[uu].sound;
 
 									cur_screen.sprite[uu].active = /*false*/0; //erase sprite
-									draw_map_editor();
+									draw_screen_editor();
 									spr[sprite].active = /*false*/0;
 									break;
 								      }
@@ -2710,7 +2710,7 @@ void updateFrame(void)
 				  {
 				    cur_screen.sprite[ll].active = /*false*/0;
 				  }
-				draw_map_editor();
+				draw_screen_editor();
 				rect_set(&spr[h].alt,0,0,0,0);
 			      }
 			  }
@@ -2885,7 +2885,7 @@ void updateFrame(void)
 			      } else
 			      {
 				smart_add();
-				draw_map_editor();
+				draw_screen_editor();
 				rect_set(&spr[1].alt,0,0,0,0);
 
 				spr[1].pseq = 10;
@@ -2924,7 +2924,7 @@ void updateFrame(void)
 				smart_add();
 				rect_set(&spr[1].alt,0,0,0,0);
 
-				draw_map_editor();
+				draw_screen_editor();
 			      }
 			    spr[1].size = 100;
 			    mode = MODE_SCREEN_TILES;
@@ -3035,7 +3035,7 @@ void updateFrame(void)
 				  m5x = spr[h].x;
 				  m5y = spr[h].y;
 
-				  draw_map_editor();
+				  draw_screen_editor();
 				  spr[h].x = m6x;
 				  spr[h].y = m6y;
 
@@ -3063,7 +3063,7 @@ void updateFrame(void)
 				  spr[1].pseq = sp_seq;
 				  spr[1].pframe = holdx + holdy;
 				  sp_frame = holdx + holdy;
-				  draw_map_editor();
+				  draw_screen_editor();
 				  spr[h].x = m6x;
 				  spr[h].y = m6y;
 				  mode = MODE_SCREEN_SPRITES;
@@ -3083,7 +3083,7 @@ void updateFrame(void)
 			      //exit to main editor
 			      /*m5x = spr[h].x;
 				m5y = spr[h].y;
-				draw_map_editor();
+				draw_screen_editor();
 				spr[h].x = m4x;
 				spr[h].y = m4y;
 				mode = 3;
@@ -3092,7 +3092,7 @@ void updateFrame(void)
 			      m5x = spr[h].x;
 			      m5y = spr[h].y;
 
-			      draw_map_editor();
+			      draw_screen_editor();
 			      spr[h].x = m6x;
 			      spr[h].y = m6y;
 			      spr[h].pseq = 10;
@@ -3352,7 +3352,7 @@ void updateFrame(void)
 			    if (last_modereal == 8)
 			      {
 				//return to alt hardness editor
-				draw_map_editor();
+				draw_screen_editor();
 				last_modereal = 0;
 				spr[h].x = m4x;
 				spr[h].y = m4y;
@@ -3374,7 +3374,7 @@ void updateFrame(void)
 			      }
 			    fill_whole_hard();
 
-			    draw_map_editor();
+			    draw_screen_editor();
 			    spr[h].x = m4x;
 			    spr[h].y = m4y;
 			    mode = MODE_SCREEN_TILES;
@@ -3567,7 +3567,7 @@ void updateFrame(void)
 			      }
 			  }
 
-			draw_map_editor();
+			draw_screen_editor();
 		      }
 
 
@@ -3578,7 +3578,7 @@ void updateFrame(void)
 			spr[h].seq_orig = 3;
 			//SoundPlayEffect( SOUND_JUMP );
 			cur_tile = cur_screen.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].square_full_idx0;
-			draw_map_editor();
+			draw_screen_editor();
 		      }
 
 		    /* Tile selection */
@@ -3634,7 +3634,7 @@ void updateFrame(void)
 
 			mode = MODE_SCREEN_TILES;
 			spr[h].speed = 50;
-			draw_map_editor();
+			draw_screen_editor();
 			last_mode = 0;
 		      }
 
@@ -3653,7 +3653,7 @@ void updateFrame(void)
 			spr[h].y = m3y;
 
 			mode = MODE_SCREEN_TILES;
-			draw_map_editor();
+			draw_screen_editor();
 			last_mode = 0;
 			goto b1end;
 		      }
@@ -3662,7 +3662,7 @@ void updateFrame(void)
 		    if ( (input_getscancodejustpressed(SDL_SCANCODE_SPACE))  && (mode == MODE_MINIMAP))
 		      {
 			//make_map_tiny();
-			draw_map_tiny = 0;
+			draw_screen_tiny = 0;
 
 		      }
 
@@ -3721,7 +3721,7 @@ void updateFrame(void)
 			    buf_mode = /*false*/0;
 
 
-			    if (!load_map_buf(buffmap.loc[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)]))
+			    if (!load_screen_buf(buffmap.loc[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)]))
 			      {
 				draw_minimap();
 				sjoy.button[EDITOR_ACTION_RETURN] = /*false*/0;
@@ -3746,7 +3746,7 @@ void updateFrame(void)
 			    map.indoor[buf_map] = buffmap.indoor[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)];
 			    map.music[buf_map] = buffmap.music[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)];
 
-			    save_map(map.loc[buf_map]);
+			    save_screen(map.loc[buf_map]);
 
 			    save_info();
 			    draw_minimap();
@@ -3764,7 +3764,7 @@ void updateFrame(void)
 			  }
 			else
 			  {
-			    editor_load_map(map.loc[cur_map]);
+			    editor_load_screen(map.loc[cur_map]);
 			  }
 
 			spr[h].seq = 3;
@@ -3783,7 +3783,7 @@ void updateFrame(void)
 			mode = MODE_SCREEN_TILES;
 
 			spr[h].speed = 50;
-			draw_map_editor();
+			draw_screen_editor();
 		      }
 
 
@@ -3825,7 +3825,7 @@ void updateFrame(void)
 			    mode = MODE_SCREEN_TILES;
 			    spr[h].seq = 3;
 			    spr[h].seq_orig = 3;
-			    draw_map_editor();
+			    draw_screen_editor();
 			    goto b1end;
 			  }
 
@@ -3852,7 +3852,7 @@ void updateFrame(void)
 			  {
 			    //stamp tile hardness to selected
 			    cur_screen.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].althard = hard_tile;
-			    draw_map_editor();
+			    draw_screen_editor();
 			    mode = MODE_SCREEN_HARDNESS_INIT;
 
 			    return;
@@ -3862,7 +3862,7 @@ void updateFrame(void)
 			  {
 			    //stamp tile hardness to selected
 			    cur_screen.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].althard = 0;
-			    draw_map_editor();
+			    draw_screen_editor();
 			    mode = MODE_SCREEN_HARDNESS_INIT;
 
 			    return;
@@ -3954,7 +3954,7 @@ void updateFrame(void)
 		    if ((mode == MODE_SCREEN_TILES) && (sjoy.button[EDITOR_ACTION_ESCAPE]))
 		      {
 			// jump to map selector selector from map mode
-			save_map(map.loc[cur_map]);
+			save_screen(map.loc[cur_map]);
 			spr[h].seq = 2;
 			spr[h].seq_orig = 2;
 			//SoundPlayEffect( SOUND_JUMP );
@@ -4143,7 +4143,7 @@ void updateFrame(void)
 	    //		if (  !(( h == 1) & (mode == 9)) )
 	    if (!((h == 1) && (mode == MODE_SCREEN_HARDNESS_INIT)))
 	      {
-		if (draw_map_tiny == -1)
+		if (draw_screen_tiny == -1)
 		  draw_sprite(GFX_lpDDSBack, h);
 		else
 		  draw_sprite(GFX_lpDDSTwo, h);
@@ -4212,7 +4212,7 @@ void updateFrame(void)
       while(kill_last_sprite());
       place_sprites();
 
-      /*	draw_map_editor();
+      /*	draw_screen_editor();
 
 
 		rcRect.top = 0;
@@ -4708,7 +4708,7 @@ void updateFrame(void)
 	    }
 	  else
 	    {
-	      draw_map_editor();
+	      draw_screen_editor();
 	    }
 	}
     }
@@ -4756,13 +4756,13 @@ void updateFrame(void)
 
 
 
-  if (draw_map_tiny != -1)
+  if (draw_screen_tiny != -1)
     {
 
       int huh = 0;
-      //if (draw_map_tiny > 32) huh = 1;
-      shrink_screen_to_these_cords(  (draw_map_tiny-1) * 20 - ((((draw_map_tiny-1) / 32) * 640) )   ,   ((((draw_map_tiny-1) / 32)- huh) * 20));
-      //Msg("Just flipped # %d", draw_map_tiny);
+      //if (draw_screen_tiny > 32) huh = 1;
+      shrink_screen_to_these_cords(  (draw_screen_tiny-1) * 20 - ((((draw_screen_tiny-1) / 32) * 640) )   ,   ((((draw_screen_tiny-1) / 32)- huh) * 20));
+      //Msg("Just flipped # %d", draw_screen_tiny);
 
     }
 
@@ -4793,7 +4793,7 @@ void updateFrame(void)
 /* 	    } */
 /* 	}  */
 
-/*       if (draw_map_tiny != -1)  */
+/*       if (draw_screen_tiny != -1)  */
 /* 	{ */
 	  //extra flip
 

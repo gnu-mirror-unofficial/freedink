@@ -54,7 +54,7 @@ void screen_init() {
  * Fills a int[MAX_SPRITES_EDITOR] with the index of the current
  * screen's sprites, sorted by ascending height/queue.
  */
-void screen_rank_map_sprites(int* rank)
+void screen_rank_editor_sprites(int* rank)
 {
   memset(rank, 0, MAX_SPRITES_EDITOR * sizeof(int));
 
@@ -182,7 +182,7 @@ void fill_whole_hard(void)
 /**
  * Load 1 screen from specified map.dat in specified memory buffer
  */
-int load_map_to(char* path, const int num, struct screen* screen)
+int load_screen_to(char* path, const int num, struct screen* screen)
 {
   char skipbuf[10000]; // more than any fseek we do
 
@@ -194,12 +194,12 @@ int load_map_to(char* path, const int num, struct screen* screen)
       log_error("Cannot find %s file!!!", path);
       return -1;
     }
-  lsize = 31280; // sizeof(struct small_map); // under i386, not portable
+  lsize = 31280; // sizeof(struct screen); // under i386, not portable
   holdme = (lsize * (num-1));
   fseek(f, holdme, SEEK_SET);
   //Msg("Trying to read %d bytes with offset of %d",lsize,holdme);
 
-  /* Portably load map structure from disk */
+  /* Portably load screen structure from disk */
   int i = 0;
   fread(skipbuf, 20, 1, f); // unused 'name' field
   for (i = 0; i < 97; i++)
@@ -295,7 +295,7 @@ int load_map_to(char* path, const int num, struct screen* screen)
 /**
  * Save screen number 'num' in the map. Only used by the editor.
  */
-void save_map(const int num)
+void save_screen(const int num)
 {
   char skipbuf[10000]; // more than any fseek we do
   memset(skipbuf, 0, 10000);
@@ -303,21 +303,21 @@ void save_map(const int num)
   FILE *f = NULL;
   long holdme,lsize;
 
-  log_info("Saving map data..");
+  log_info("Saving screen data..");
   if (num > 0)
     {
       f = paths_dmodfile_fopen(current_map, "r+b");
       if (f == NULL)
 	{
-	  perror("Cannot save map");
+	  perror("Cannot save screen");
 	  return;
 	}
-      lsize = 31280; // sizeof(struct small_map); // under ia32, not portable
+      lsize = 31280; // sizeof(struct screen); // under ia32, not portable
       holdme = (lsize * (num-1));
       fseek(f, holdme, SEEK_SET);
 
 
-      /* Portably dump map structure */
+      /* Portably dump screen structure */
       int i = 0;
       char name[20] = "Smallwood";
       fwrite(name, 20, 1, f);
@@ -408,5 +408,5 @@ void save_map(const int num)
       fclose(f);
     }
 
-  log_info("Done saving map data..");
+  log_info("Done saving screen data..");
 }
