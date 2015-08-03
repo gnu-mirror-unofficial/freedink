@@ -299,12 +299,12 @@ START_TEST(test_dinkc_getparms_parens)
 END_TEST
 
 void test_dinkc_lookup_var_ext() {
-  ck_assert(!lookup_var("toto", DINKC_GLOBAL_SCOPE));
-  make_int("toto", 1, DINKC_GLOBAL_SCOPE, script_id);
-  ck_assert(lookup_var("toto", DINKC_GLOBAL_SCOPE));
-  make_int("tata", 1, script_id, script_id);
-  ck_assert(!lookup_var("tata", DINKC_GLOBAL_SCOPE));
-  ck_assert(lookup_var("tata", script_id));
+  ck_assert(!lookup_var("&toto", DINKC_GLOBAL_SCOPE));
+  make_int("&toto", 1, DINKC_GLOBAL_SCOPE, script_id);
+  ck_assert(lookup_var("&toto", DINKC_GLOBAL_SCOPE));
+  make_int("&tata", 1, script_id, script_id);
+  ck_assert(!lookup_var("&tata", DINKC_GLOBAL_SCOPE));
+  ck_assert(lookup_var("&tata", script_id));
 }
 START_TEST(test_dinkc_lookup_var_107)
 {
@@ -313,11 +313,11 @@ START_TEST(test_dinkc_lookup_var_107)
 
   // v107 has no scope priority
   int var_id;
-  make_int("titi", 1, DINKC_GLOBAL_SCOPE, script_id);
-  make_int("titi", 2, script_id, script_id);
-  ck_assert_int_gt(var_id = lookup_var("titi", script_id), 0);
+  make_int("&titi", 1, DINKC_GLOBAL_SCOPE, script_id);
+  make_int("&titi", 2, script_id, script_id);
+  ck_assert_int_gt(var_id = lookup_var("&titi", script_id), 0);
   ck_assert_int_eq(play.var[var_id].var, 2);
-  ck_assert_int_gt(var_id = ts_lookup_var_local_global("titi", script_id), 0);
+  ck_assert_int_gt(var_id = ts_lookup_var_local_global("&titi", script_id), 0);
   ck_assert_int_eq(play.var[var_id].var, 1);
 
   // needed for CK_FORK=no (woe)
@@ -331,11 +331,11 @@ START_TEST(test_dinkc_lookup_var_108)
 
   // v108 has scope priority
   int var_id;
-  make_int("titi", 1, DINKC_GLOBAL_SCOPE, script_id);
-  make_int("titi", 2, script_id, script_id);
-  ck_assert_int_gt(var_id = lookup_var("titi", script_id), 0);
+  make_int("&titi", 1, DINKC_GLOBAL_SCOPE, script_id);
+  make_int("&titi", 2, script_id, script_id);
+  ck_assert_int_gt(var_id = lookup_var("&titi", script_id), 0);
   ck_assert_int_eq(play.var[var_id].var, 2);
-  ck_assert_int_gt(var_id = ts_lookup_var_local_global("titi", script_id), 0);
+  ck_assert_int_gt(var_id = ts_lookup_var_local_global("&titi", script_id), 0);
   ck_assert_int_eq(play.var[var_id].var, 2);
 
   // needed for CK_FORK=no (woe)
