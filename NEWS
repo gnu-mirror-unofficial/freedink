@@ -35,6 +35,8 @@
   problem opening it (avoids potential corruption when running both
   the game and an editor at the same time).
 
+- Fix portability when saving a FreeDinkedit screen for the first time
+
 
 108.4
 =====

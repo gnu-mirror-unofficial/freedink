@@ -748,22 +748,19 @@ void draw_minimap_buff(void)
 }
 
 
-int add_new_map(void)
+int add_new_map()
 {
-  FILE *fp;
-  long now;
+  int loc_max = 0;
+  for (int i = 0; i < 768+1; i++)
+    if (map.loc[i] > loc_max)
+      loc_max = map.loc[i];
+  
+  int loc_new = loc_max + 1;
+  if (loc_new > 768)
+    return -1;
 
-  fp = paths_dmodfile_fopen("MAP.DAT", "a+b");
-  if (fp == NULL)
-    {
-      perror("Cannot open MAP.DAT");
-      return -1;
-    }
-  fwrite(&pam,sizeof(struct small_map), 1, fp);
-  now = (ftell(fp) / (sizeof(struct small_map)));
-  fclose(fp);
-
-  return(now);
+  save_map(loc_new);
+  return loc_new;
 }
 
 
@@ -3788,11 +3785,8 @@ void updateFrame(void)
 			if (map.loc[cur_map] == 0)
 			  {
 			    //new map screen
-
 			    map.loc[cur_map] = add_new_map();
 			    save_info();
-
-
 			  }
 			else
 			  {

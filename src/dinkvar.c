@@ -379,7 +379,7 @@ int load_map_to(char* path, const int num, struct small_map* screen)
       log_error("Cannot find %s file!!!", path);
       return -1;
     }
-  lsize = 31280; // sizeof(struct small_map); // under ia32, not portable
+  lsize = 31280; // sizeof(struct small_map); // under i386, not portable
   holdme = (lsize * (num-1));
   fseek(f, holdme, SEEK_SET);
   //Msg("Trying to read %d bytes with offset of %d",lsize,holdme);
