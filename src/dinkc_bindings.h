@@ -23,17 +23,11 @@
 #ifndef _DINKC_BINDINGS_H
 #define _DINKC_BINDINGS_H
 
-enum dinkc_parser_state {
-  DCPS_GOTO_NEXTLINE = 0,
-  DCPS_CONTINUE = 1,
-  DCPS_YIELD = 2,
-  DCPS_DOELSE_ONCE = 4,
-};
+#include "dinkc.h"
 
 extern void dinkc_bindings_init();
 extern void dinkc_bindings_quit();
 extern void attach(void);
 extern /*bool*/int talk_get(int script);
-extern enum dinkc_parser_state process_line (int script, char *s, /*bool*/int doelse);
 
 #endif

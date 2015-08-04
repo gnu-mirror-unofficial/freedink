@@ -124,9 +124,6 @@ extern int walk_off_screen;
 /* Sprites - state */
 extern void changedir( int dir1, int k,int base);
 
-/* Sprites - action */
-extern void kill_text_owned_by(int sprite);
-
 /* Sprites - global */
 extern void kill_sprite_all (int sprite);
 extern int find_sprite(int editor_sprite);

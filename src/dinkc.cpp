@@ -43,6 +43,14 @@
 #include "str_util.h"
 #include "log.h"
 #include "screen.h"
+#include "talk.h"
+#include "i18n.h"
+
+/* store current procedure arguments expanded values of type 'int' (see get_parms) */
+static long nlist[10];
+/* store current procedure arguments of type 'string' (idem) */
+static char* slist[10];
+char* cur_funcname = NULL;
 
 int returnint = 0;
 int bKeepReturnInt = 0;
@@ -55,7 +63,7 @@ unsigned short decipher_savegame = 0;
 #define MAX_CALLBACKS 100
 struct call_back
 {
-  int owner;
+  int owner;  // script ID
   /*bool*/int active;
   int type;
   char name[20];
@@ -75,6 +83,8 @@ static char *rinfo_code[MAX_SCRIPTS];
 
 int weapon_script = 0;
 int magic_script = 0;
+
+static enum dinkc_parser_state process_line (int script, char *s, /*bool*/int doelse);
 
 
 /**
@@ -353,7 +363,8 @@ int load_script(char* script_name, int sprite, /*bool*/int set_sprite)
     }
 
   rinfo[script]->sprite = sprite;
-  
+
+  // TODO: move out so we don't depend on 'spr'
   if (set_sprite && sprite != 0 && sprite != 1000)
     spr[sprite].script = script;
 
@@ -731,6 +742,7 @@ void decipher_string(char** line_p, int script)
 
       if (decipher_savegame != 0)
 	{
+	  // TODO: break dep on input, replace input_get_button_action by a callback
 	  int button_action = input_get_button_action(decipher_savegame-1);
 	  if      (button_action == ACTION_ATTACK)    replace("&buttoninfo", _("Attack"), line_p);
 	  else if (button_action == ACTION_TALK)      replace("&buttoninfo", _("Talk/Examine"), line_p);
@@ -1047,29 +1059,6 @@ void process_callbacks(void)
 			}
 		    }
 		}
-	    }
-	}
-    }
-}
-
-
-/**
- * Run main() for all active sprites on screen
- */
-void init_scripts()
-{
-  int k = 1;
-  for (; k < MAX_SCRIPTS; k++)
-    {
-      if (rinfo[k] != NULL && rinfo[k]->sprite != 0
-	  /* don't go out of bounds in spr[300], e.g. when sprite == 1000: */
-	  && rinfo[k]->sprite < MAX_SPRITES_AT_ONCE
-	  && spr[rinfo[k]->sprite].active)
-	{
-	  if (locate(k, "main"))
-	    {
-	      log_debug("Screendraw: running main of script %s..", rinfo[k]->name);
-	      run_script(k);
 	    }
 	}
     }
@@ -1543,14 +1532,1294 @@ void int_prepare(char* line, int script)
   free(hold);
 }
 
+/**
+ * Process DinkC dialog choice stanza
+ * Globals: talk, talk_start, talk_clear, i18n_translate
+ */
+/*bool*/int talk_get(int script)
+{
+  char* line = NULL;
+  int cur = 1;
+  int retnum = 0;
+  talk_clear();
+  talk.newy = -5000;
+  while(1)
+    {
+    redo:
+      line = read_next_line(script);
+      if (line == NULL)
+	line = strdup(""); // compatibility
+      
+      strip_beginning_spaces(line);
+      //Msg("Comparing to %s.", line);
+      
+      char* word = get_word(line, 1);
+      if (compare(word, "set_y"))
+        {
+	  free(word);
+	  word = get_word(line, 2);
+	  talk.newy = atol(word);
+	  free(word);
+	  free(line);
+	  goto redo;
+        }
+      
+      if (compare(word, "set_title_color"))
+        {
+	  free(word);
+	  word = get_word(line, 2);
+	  talk.color = atol(word);
+	  free(word);
+	  free(line);
+	  goto redo;
+        }
+      free(word);
+      
+      strip_beginning_spaces(line);
+      if (compare(line, "\n"))
+	{
+	  free(line);
+	  goto redo;
+	}
+
+      char* directive = NULL;
+morestuff:
+      directive = separate_string(line, 1, '(');
+      strip_beginning_spaces(directive);
+      
+      if (compare(directive, "title_start"))
+	{
+	  free(line);
+	  while((line = read_next_line(script)) != NULL)
+	    {
+	      strip_beginning_spaces(line);
+	      free(directive);
+	      
+	      directive = separate_string(line, 1, '(');
+	      if (directive != NULL)
+		{
+		  strip_beginning_spaces(directive);
+		  
+		  if (compare(directive, "title_end"))
+		    {
+		      replace_norealloc("\n\n\n\n", "\n \n", talk.buffer);
+		      replace_norealloc("\n\n", "\n", talk.buffer);
+		      free(directive);
+		      free(line);
+		      goto redo;
+		    }
+		}
+	      
+	      /* drop '\n', this messes translations */
+	      line[strlen(line)-1] = '\0';
+	      /* Translate text (before variable substitution) */
+	      char* translation = i18n_translate(rinfo[script]->name, rinfo[script]->debug_line, line);
+	      decipher_string(&translation, script);
+	      int cur_len = strlen(talk.buffer);
+	      strncat(talk.buffer, translation, TALK_TITLE_BUFSIZ - 1 - cur_len - 1);
+	      free(translation);
+	      /* put '\n' back */
+	      strcat(talk.buffer, "\n");
+	      talk.buffer[TALK_TITLE_BUFSIZ-1] = '\0';
+	      free(line);
+	    }
+	  
+	  free(directive);
+	  goto redo;
+	}
+      
+      if (compare(directive, "choice_end"))
+	{
+	  if (cur-1 == 0)
+	    {
+	      log_debug("Error: choice() has 0 options in script %s, offset %ld.",
+			rinfo[script]->name, rinfo[script]->current);
+	      
+	      free(directive);
+	      free(line);
+	      return /*false*/0;
+	    }
+	  talk_start(script, cur-1);
+	  free(directive);
+	  free(line);
+	  return /*true*/1;
+	}
+      free(directive);
+
+      char* condition = separate_string(line, 1, '"');
+      strip_beginning_spaces(condition);
+      
+      if (strlen(condition) > 2)
+	{
+	  //found conditional statement
+	  if (strchr(condition, '(') == NULL)
+	    {
+	      log_error("[DinkC] Error with choice() statement in script %s,"
+			" offset %ld. (%s?)",
+			rinfo[script]->name, rinfo[script]->current, condition);
+	      
+	      free(condition);
+	      free(line);
+	      return /*false*/0;
+	    }
+	  
+	  char* temp = separate_string(condition, 2, '(');
+	  free(condition);
+	  condition = separate_string(temp, 1, ')');
+	  free(temp);
+	  
+	  //Msg("Running %s through var figure..", check);
+	  if (var_figure(condition, script) == 0)
+	    {
+	      log_debug("Answer is no.");
+	      retnum++;
+	      
+	      free(condition);
+	      free(line);
+	      goto redo;
+	      //said NO to statement
+	    }
+	  //Msg("Answer is yes.");
+	  free(condition);
+	  
+	  /* Resume processing stripping the first condition (there
+	     may be several conditions on a single dialog ligne, which
+	     are AND'ed) */
+	  char* p = strchr(line, ')') + 1;
+	  int i = 0;
+	  for (; *p != '\0'; i++, p++)
+	    line[i] = *p;
+	  line[i] = '\0';
+	  goto morestuff;
+	}
+      free(condition);
+      
+      retnum++;
+      char* text = separate_string(line, 2, '"');
+      if (strlen(text) > 0)
+	{
+	  /* Translate text (before variable substitution) */
+	  char* translation = i18n_translate(rinfo[script]->name, rinfo[script]->debug_line, text);
+	  strip_beginning_spaces(translation);
+
+	  decipher_savegame = retnum;
+	  decipher_string(&translation, script);
+	  decipher_savegame = 0;
+	  strncpy(talk.line[cur], translation, TALK_LINE_BUFSIZ-1);
+	  talk.line[cur][TALK_LINE_BUFSIZ-1] = '\0';
+	  free(translation);
+	}
+      else
+	{
+	  /* Handle empty text separately because _("") has a special
+	     meaning (returns .mo meta-data). */
+	  strcpy(talk.line[cur], "");
+	}
+      free(text);
+      talk.line_return[cur] = retnum;
+      cur++;
+      free(line);
+    }
+}
+
+
+/**
+ * Utility function for 'process_line', to separate and store the current procedure arguments.
+ *
+ * proc_name: named of the called function
+ * script: script id
+ * str_params: string to parse (what was after the function name)
+ * spec: describe the function's parameters:
+ *    1=int
+ *    2=string
+ *    0=no more args (10 args max)
+ *
+ * Known compatibility issue: passing no argument to a function
+ * expecting 1 int argument is considered valid..
+ *
+ * Return: 0 if parse error, 1 if success
+ */
+int get_parms(char proc_name[20], int script, char *str_params, int* spec)
+{
+  /* Clean-up parameters */
+  memset(nlist, 0, 10 * sizeof (int));
+  {
+    int i = 0;
+    for (; i < 10; i++)
+      slist[i][0] = '\0';
+  }
+
+  /* Safety */
+  char* limit = str_params + strlen(str_params);
+
+  strip_beginning_spaces(str_params);
+  if (str_params[0] == '(')
+    {
+      //Msg("Found first (.");
+      str_params++;
+    }
+  else
+    {
+      log_error("[DinkC] Missing '(' in %s, offset %ld.",
+		rinfo[script]->name, rinfo[script]->current);
+      return 0;
+    }
+
+  int i = 0;
+  for (; i < 10; i++)
+    {
+      strip_beginning_spaces(str_params);
+      
+      if (spec[i] == 1) // type=int
+	{
+	  // Get next parameter (until ',' or ')' is reached)
+	  char* parm = NULL;
+	  if (strchr(str_params, ',') != NULL)
+	    parm = separate_string(str_params, 1, ',');
+	  else if (strchr(str_params, ')') != NULL)
+	    parm = separate_string(str_params, 1, ')');
+	  else
+	    parm = strdup("");
+
+	  // move to next param
+	  str_params += strlen(parm);
+
+	  int intval = -1;
+	  if (parm[0] == '&')
+	    {
+	      replace_norealloc(" ", "", parm);
+	      intval = decipher(parm, script);
+	    }
+	  else
+	    {
+	      intval = atol(parm);
+	    }
+	  // store parameter of type 'int'
+	  nlist[i] = intval;
+	  free(parm);
+	}
+      else if (spec[i] == 2) // type=string
+	{
+	  // Checking for string
+	  char* parm = NULL;
+	  parm = separate_string(str_params, 2, '"');
+
+	  // replace DinkC string parameter
+	  free(slist[i]);
+	  slist[i] = parm;
+
+	  // move to next param
+	  str_params += strlen(parm) + 2; // 2x"
+	  if (str_params > limit) str_params = limit;
+	}
+
+      if ((i+1) == 10 || spec[i+1] == 0) // this was the last arg
+	{
+	  //finish
+	  strip_beginning_spaces(str_params);
+	  
+	  if (str_params[0] == ')')
+	    {
+	      str_params++;
+	    }
+	  else
+	    {
+	      return 0;
+	    }
+	  strip_beginning_spaces(str_params);
+	  return 1;
+	}
+
+      //got a parm, but there is more to get, lets make sure there is a comma there
+      strip_beginning_spaces(str_params);
+
+      if (str_params[0] == ',')
+	{
+	  str_params++;
+	}
+      else
+	{
+	  return 0;
+	}
+    }
+  return 1;
+}
+
+/**
+ * Are these 2 function signatures identical?
+ */
+static int signatures_eq_p(int* params1, int* params2)
+{
+  int i = 0;
+  for (; i < 10; i++)
+    if (params1[i] != params2[i])
+      return 0;
+  return 1;
+}
+
+/**
+ * Process one line of DinkC and returns directive to the DinkC
+ * interpreter.
+ * 
+ * Cf. doc/HACKING_dinkc.txt for understanding in progress ;)
+ * Globals: kill_text_owned_by
+ **/
+static enum dinkc_parser_state
+process_line(int script, char *s, /*bool*/int doelse)
+{
+  char *h, *p;
+  char* ev[3];
+  
+  memset(&ev, 0, sizeof(ev));
+
+  if (rinfo[script]->level < 1)
+    rinfo[script]->level = 1;
+
+  h = s;
+  if (h[0] == '\0')
+    return DCPS_GOTO_NEXTLINE;
+  
+  if ((h[0] == '/') && (h[1] == '/'))
+    {
+      //Msg("It was a comment!");
+      goto bad;
+    }
+
+  /* Cut line */
+  ev[0] = separate_string(h, 1, ' ');
+  ev[1] = separate_string(h, 2, ' ');
+  ev[2] = separate_string(h, 3, ' ');
+  /* Prepare free on return */
+#define PL_RETURN(intval) {free(ev[0]), free(ev[1]), free(ev[2]); return intval;}
+
+  if (compare(ev[0], "VOID"))
+    {
+      if (rinfo[script]->proc_return != 0)
+	{
+	  run_script(rinfo[script]->proc_return);
+	  kill_script(script);
+	}
+      PL_RETURN(DCPS_YIELD);
+    }
+
+  /* goto label? */
+  if (ev[0][strlen(ev[0]) -1] == ':' && strlen(ev[1]) < 2)
+    {
+      if (dversion >= 108)
+	{
+	  /* Attempt to avoid considering:
+			   say("bonus: 5 points", 1); // would not display any text at all!
+			   as a label */
+	  if (strncmp (ev[0], "say", 3) != 0)
+	    {
+	      PL_RETURN(DCPS_GOTO_NEXTLINE); //its a label
+	    }
+	}
+      else
+	{
+	  PL_RETURN(DCPS_GOTO_NEXTLINE); //its a label
+	}
+    }
+
+  /** Expression between parenthesis **/
+  if (ev[0][0] == '(')
+    {
+      //this procedure has been passed a conditional statement finder
+      //what kind of conditional statement is it?
+      p = h;
+      char* temp = separate_string(h, 2, ')');
+      free(ev[0]);
+      ev[0] = separate_string(h, 1, ')');
+
+      // Msg("Ok, turned h %s to  ev1 %s.",h,ev[0]);
+      p += strlen(ev[0]) + 1;
+
+      strip_beginning_spaces(p);
+
+      if (strchr(temp, '=') != NULL)
+	{
+	  h++;
+	  strip_beginning_spaces(h);
+	  process_line(script, h, /*false*/0);
+	  replace_norealloc("==", "", temp);
+	  char* expr = (char*)xmalloc(20 + 4 + strlen(temp) + 1);
+	  sprintf(expr, "%d == %s", returnint, temp);
+	  returnint = var_figure(expr, script);
+	  strcpy(h, "\n");
+	  free(expr);
+	  free(temp);
+	  PL_RETURN(DCPS_GOTO_NEXTLINE);
+	}
+      
+      if (strchr(temp, '>') != NULL)
+	{
+	  h++;
+	  strip_beginning_spaces(h);
+	  process_line(script, h, /*false*/0);
+	  replace_norealloc("==", "", temp);
+	  char* expr = (char*)xmalloc(20 + 3 + strlen(temp) + 1);
+	  sprintf(expr, "%d > %s", returnint, temp);
+	  returnint = var_figure(expr, script);
+	  strcpy(h, "\n");
+	  free(expr);
+	  free(temp);
+	  PL_RETURN(DCPS_GOTO_NEXTLINE);
+	}
+
+      if (strchr(temp, '<') != NULL)
+	{
+	  h++;
+	  strip_beginning_spaces(h);
+	  process_line(script, h, /*false*/0);
+	  replace_norealloc("==", "", temp);
+	  char* expr = (char*)xmalloc(20 + 3 + strlen(temp) + 1);
+	  sprintf(expr, "%d < %s", returnint, temp);
+	  returnint = var_figure(expr, script);
+	  strcpy(h, "\n");
+	  free(expr);
+	  free(temp);
+	  PL_RETURN(DCPS_GOTO_NEXTLINE);
+	}
+      
+      /* Beuc: This should be converted to a set of "if ... else
+       * if... else if ..." and multi-character constants should be
+       * removed. However, this may cause the interpreter to behave
+       * differently, so be careful. */
+      /* For now, I'll rewrite the code in an equivalent warning-free
+       * inelegant way: strchr(str, 'ab') <=> strchr(str, 'b') */
+      /* if (strchr (temp, '<=') != NULL) */
+      if (strchr(temp, '=') != NULL)
+	{
+	  h++;
+	  strip_beginning_spaces(h);
+	  process_line(script, h, /*false*/0);
+	  replace_norealloc("==", "", temp);
+	  char* expr = (char*)xmalloc(20 + 4 + strlen(temp) + 1);
+	  sprintf(expr, "%d <= %s", returnint, temp);
+	  returnint = var_figure(expr, script);
+	  strcpy(h, "\n");
+	  free(expr);
+	  free(temp);
+	  PL_RETURN(DCPS_GOTO_NEXTLINE);
+	}
+      /* if (strchr (temp, '>=') != NULL) */
+      if (strchr (temp, '=') != NULL)
+	{
+	  h++;
+	  strip_beginning_spaces(h);
+	  process_line(script, h, /*false*/0);
+	  replace_norealloc("==", "", temp);
+	  char* expr = (char*)xmalloc(20 + 4 + strlen(temp) + 1);
+	  sprintf(expr, "%d >= %s", returnint, temp);
+	  returnint = var_figure(expr, script);
+	  strcpy(h, "\n");
+	  free(expr);
+	  free(temp);
+	  PL_RETURN(DCPS_GOTO_NEXTLINE);
+	}
+      /* if (strchr (temp, '!=') != NULL) */
+      if (strchr (temp, '=') != NULL)
+	{
+	  h++;
+	  strip_beginning_spaces(h);
+	  process_line(script, h, /*false*/0);
+	  replace_norealloc("==", "", temp);
+	  char* expr = (char*)xmalloc(20 + 4 + strlen(temp) + 1);
+	  sprintf(expr, "%d != %s", returnint, temp);
+	  returnint = var_figure(expr, script);
+	  strcpy(h, "\n");
+	  free(expr);
+	  free(temp);
+	  PL_RETURN(DCPS_GOTO_NEXTLINE);
+	}
+      free(temp);
+
+
+      if (p[0] == ')')
+	{
+	  //its a procedure in the if statement!!!
+	  h++;
+	  p++;
+	  char* line_copy = strdup(p);
+	  process_line(script, h, /*false*/0);
+	  log_debug("Returned %d for the returnint", returnint);
+	  strcpy(s, line_copy); /* strlen(s) >= strlen(line_copy) */
+	  free(line_copy);
+	  h = s;
+	  
+	  PL_RETURN(DCPS_GOTO_NEXTLINE);
+	}
+      else
+	{
+	  h++;
+	  
+	  char* expr = separate_string(h, 1,')');
+	  h += strlen(expr) + 1;
+	  returnint = var_figure(expr, script);
+	  free(expr);
+
+	  strcpy_nooverlap(s, h);
+	  
+	  PL_RETURN(DCPS_GOTO_NEXTLINE);
+	}
+      
+      strip_beginning_spaces(h);
+      strip_beginning_spaces(ev[0]);
+
+      s = h;
+    } /* END expression between parenthesis */
+
+
+  if (strchr(ev[0], '(') != NULL)
+    {
+      //Msg("Has a (, lets change it");
+      free(ev[0]);
+      ev[0] = separate_string(h, 1, '(');
+      //Msg("Ok, first is now %s",ev[0]);
+    }
+
+  /** { Bloc } **/
+  {
+    char first = ev[0][0];
+    if (first == '{')
+      {
+	rinfo[script]->level++;
+	//Msg("Went up level, now at %d.", rinfo[script]->level);
+	h++;
+	if (rinfo[script]->skipnext)
+	  {
+	    /* Skip the whole { section } */
+	    rinfo[script]->skipnext = /*false*/0;
+	    rinfo[script]->onlevel = ( rinfo[script]->level - 1);
+	  }
+	goto good;
+      }
+  
+    if (first == '}')
+      {
+	rinfo[script]->level--;
+	//Msg("Went down a level, now at %d.", rinfo[script]->level);
+	h++;
+      
+	if (rinfo[script]->onlevel > 0 && rinfo[script]->level == rinfo[script]->onlevel)
+	  {
+	    /* Finished skipping the { section }, preparing to run 'else' */
+	    strip_beginning_spaces(h);
+	    strcpy_nooverlap(s, h);
+	    PL_RETURN(DCPS_DOELSE_ONCE);
+	  }
+	goto good;
+      }
+  }
+
+  /* Fix if there are too many closing '}' */
+  if (rinfo[script]->level < 0)
+    {
+      rinfo[script]->level = 0;
+    }
+
+
+  /* Note: that's the 2nd time we compare with "VOID" -
+     cf. above. However ev[0] was modified in between, so this
+     section may still be called if the first comparison didn't
+     match. */
+  if (compare(ev[0], "void"))
+    {
+      //     Msg("Next procedure starting, lets quit");
+      strcpy_nooverlap(s, h);
+      if (rinfo[script]->proc_return != 0)
+	{
+	  run_script(rinfo[script]->proc_return);
+	  kill_script(script);
+	}
+      
+      PL_RETURN(DCPS_YIELD);
+    }
+
+  
+  /* Stop processing if we're skipping the current { section } */
+  if (rinfo[script]->onlevel > 0 && rinfo[script]->level > rinfo[script]->onlevel)
+    {
+      PL_RETURN(DCPS_GOTO_NEXTLINE);
+    }
+    
+  rinfo[script]->onlevel = 0;
+    
+  /* Skip the current line if the previous 'if' or 'else' said so */
+  if (rinfo[script]->skipnext)
+    {
+      //sorry, can't do it, you were told to skip the next thing
+      rinfo[script]->skipnext = /*false*/0;
+      strcpy(s, "\n"); /* jump to next line */
+      //PL_RETURN(3);
+      PL_RETURN(DCPS_DOELSE_ONCE);
+    }
+    
+
+
+  if (compare(ev[0], "void"))
+    {
+      log_error("[DinkC] Missing } in %s, offset %ld.",
+		rinfo[script]->name,rinfo[script]->current);
+      strcpy_nooverlap(s, h);
+      PL_RETURN(DCPS_YIELD);
+    }
+    
+  /** if **/
+  if (compare(ev[0], "if"))
+    {
+      h += strlen(ev[0]);
+      strip_beginning_spaces(h);
+	
+      process_line(script, h, /*false*/0);
+      // Result is 'returnint'
+	
+      if (returnint != 0)
+	{
+	  log_debug("If returned true");
+	}
+      else
+	{
+	  //don't do it!
+	  rinfo[script]->skipnext = /*true*/1;
+	  log_debug("If returned false, skipping next thing");
+	}
+	
+      strcpy_nooverlap(s, h);
+      //g("continuing to run line %s..", h);
+
+      //PL_RETURN(5);
+      PL_RETURN(DCPS_DOELSE_ONCE);
+      /* state 5 should actually be state DCPS_CONTINUE, but keeping
+	 it that way (e.g. with doelse=1 for the next line) for
+	 compatibility, just in case somebody abused it */
+    }
+
+  if (compare(ev[0], "else"))
+    {
+      //Msg("Found else!");
+      h += strlen(ev[0]);
+		
+      if (doelse)
+	{
+	  // Yes to else
+	}
+      else
+	{
+	  // No to else...
+	  // they shouldn't run the next thing
+	  rinfo[script]->skipnext = /*true*/1;
+	}
+      strcpy_nooverlap(s, h);
+      PL_RETURN(DCPS_CONTINUE);
+    }
+    
+  /** Dialog **/
+  if (compare(ev[0], "choice_start"))
+    {
+      kill_text_owned_by(1);
+      if (talk_get(script))
+	{
+	  // Question(s) gathered successfully
+	  PL_RETURN(DCPS_YIELD);
+	}
+      PL_RETURN(DCPS_GOTO_NEXTLINE);
+    }
+
+  /** Jump **/
+  if (compare(ev[0], "goto"))
+    {
+      locate_goto(ev[1], script);
+      PL_RETURN(DCPS_GOTO_NEXTLINE);
+    }
+
+  /** Definition **/
+  if (compare(ev[0], "int"))
+    {
+      int_prepare(h, script);
+      h += strlen(ev[0]);
+
+      if (strchr(h, '=') != NULL)
+	{
+	  strip_beginning_spaces(h);
+	  //Msg("Found =...continuing equation");
+	  strcpy_nooverlap(s, h);
+	  PL_RETURN(DCPS_CONTINUE);
+	}
+      else
+	{
+	  PL_RETURN(DCPS_GOTO_NEXTLINE);
+	}
+    }
+
+  /** "return;" and "return something;" **/
+  if (compare(ev[0], "return;"))
+    {
+      log_debug("Found return; statement");
+	
+      if (rinfo[script]->proc_return != 0)
+	{
+	  bKeepReturnInt = 1; /* v1.08 */
+	  run_script(rinfo[script]->proc_return);
+	  kill_script(script);
+	}
+	
+      PL_RETURN(DCPS_YIELD);
+    }
+
+  if (dversion >= 108)
+    {
+      /* "return", without trailing ';' */
+      /* added so we can have return values and crap. */
+      /* see also "return;" above */
+      if (compare (ev[0], "return"))
+	{
+	  log_debug("Found return; statement");
+	  h += strlen(ev[0]);
+	  strip_beginning_spaces (h);
+	  process_line (script, h, 0);
+	  if (rinfo[script]->proc_return != 0)
+	    {
+	      bKeepReturnInt = 1;
+	      run_script (rinfo[script]->proc_return);
+	      kill_script (script);
+	    }
+	  PL_RETURN(DCPS_YIELD);
+	}
+    }
+
+  /********************/
+  /*  DinkC bindings  */
+  /*                  */
+  /********************/
+    
+  /** Lookup bindings **/
+  {
+    char* funcname = ev[0];
+    char* str_args = h + strlen(ev[0]);
+    struct binding* pbd = NULL;
+    pbd = dinkc_bindings_lookup(bindings, funcname);
+    
+    if (pbd != NULL)
+      {
+	/* Common arguments */
+	int* yield = (int*)alloca(sizeof(int)*1);
+	yield[0] = 0; /* don't yield by default) */
+
+	/* Specific arguments */
+	int* params = pbd->params;
+	if (params[0] != -1) /* no args == no checks*/
+	  {
+	    if (!get_parms(funcname, script, str_args, params))
+	      {
+		/* Invalid parameters in the DinkC script - output an
+		   error message */
+		int i = 0;
+		while (params[i] != 0 && i < 10)
+		  i++;
+		log_error("[DinkC] %s:%d: procedure '%s' takes %d parameters",
+			  rinfo[script]->name, rinfo[script]->debug_line,
+			  funcname, i);
+
+		/* Set 'returnint' if necessary */
+		if (pbd->badparams_returnint_p == 1)
+		  returnint = pbd->badparams_returnint;
+		/* Fallback parser state */
+		PL_RETURN(pbd->badparams_dcps);
+	      }
+	  }
+	
+	/* Call C function */
+	cur_funcname = pbd->funcname; /* for error messages */
+	int sig_void[10]        = {-1,0,0,0,0,0,0,0,0,0};
+	int sig_int[10]         =  {1,0,0,0,0,0,0,0,0,0};
+	int sig_str[10]         =  {2,0,0,0,0,0,0,0,0,0};
+	int sig_int_int[10]     =  {1,1,0,0,0,0,0,0,0,0};
+	int sig_int_str[10]     =  {1,2,0,0,0,0,0,0,0,0};
+	int sig_str_int[10]     =  {2,1,0,0,0,0,0,0,0,0};
+	int sig_str_str[10]     =  {2,2,0,0,0,0,0,0,0,0};
+	int sig_int_int_int[10] =  {1,1,1,0,0,0,0,0,0,0};
+	int sig_str_int_int[10] =  {2,1,1,0,0,0,0,0,0,0};
+	int sig_int_int_int_int[10] =  {1,1,1,1,0,0,0,0,0,0};
+	int sig_int_int_int_int_int[10] =  {1,1,1,1,1,0,0,0,0,0};
+	int sig_int_int_int_int_int_int[10] =  {1,1,1,1,1,1,0,0,0,0};
+
+	/* {-1,0,0,0,0,0,0,0,0,0} */
+	if (signatures_eq_p(pbd->params, sig_void))
+	  {
+	    void (*pf)(int, int*, int*) = (void(*)(int,int*,int*))pbd->func;
+	    (*pf)(script, yield, &returnint);
+	  }
+	/* {1,0,0,0,0,0,0,0,0,0} */
+	else if (signatures_eq_p(pbd->params, sig_int))
+	  {
+	    void (*pf)(int, int*, int* , int) = (void(*)(int,int*,int*,int))pbd->func;
+	    (*pf)(script, yield, &returnint , nlist[0]);
+	  }
+	/* {2,0,0,0,0,0,0,0,0,0} */
+	else if (signatures_eq_p(pbd->params, sig_str))
+	  {
+	    void (*pf)(int, int*, int* , char*) = (void(*)(int,int*,int*,char*))pbd->func;
+	    (*pf)(script, yield, &returnint , slist[0]);
+	  }
+	/* {1,1,0,0,0,0,0,0,0,0} */
+	else if (signatures_eq_p(pbd->params, sig_int_int))
+	  {
+	    void (*pf)(int, int*, int* , int, int) = (void(*)(int,int*,int*,int,int))pbd->func;
+	    (*pf)(script, yield, &returnint , nlist[0], nlist[1]);
+	  }
+	/* {1,2,0,0,0,0,0,0,0,0} */
+	else if (signatures_eq_p(pbd->params, sig_int_str))
+	  {
+	    void (*pf)(int, int*, int* , int, char*) = (void(*)(int,int*,int*,int,char*))pbd->func;
+	    (*pf)(script, yield, &returnint , nlist[0], slist[1]);
+	  }
+	/* {2,1,0,0,0,0,0,0,0,0} */
+	else if (signatures_eq_p(pbd->params, sig_str_int))
+	  {
+	    void (*pf)(int, int*, int* , char*, int) = (void(*)(int,int*,int*,char*,int))pbd->func;
+	    (*pf)(script, yield, &returnint , slist[0], nlist[1]);
+	  }
+	/* {2,2,0,0,0,0,0,0,0,0} */
+	else if (signatures_eq_p(pbd->params, sig_str_str))
+	  {
+	    void (*pf)(int, int*, int* , char*, char*) = (void(*)(int,int*,int*,char*,char*))pbd->func;
+	    (*pf)(script, yield, &returnint , slist[0], slist[1]);
+	  }
+	/* {1,1,1,0,0,0,0,0,0,0} */
+	else if (signatures_eq_p(pbd->params, sig_int_int_int))
+	  {
+	    void (*pf)(int, int*, int* , int, int, int) = (void(*)(int,int*,int*,int,int,int))pbd->func;
+	    (*pf)(script, yield, &returnint , nlist[0], nlist[1], nlist[2]);
+	  }
+	/* {2,1,1,0,0,0,0,0,0,0} */
+	else if (signatures_eq_p(pbd->params, sig_str_int_int))
+	  {
+	    void (*pf)(int, int*, int* , char*, int, int) = (void(*)(int,int*,int*,char*,int,int))pbd->func;
+	    (*pf)(script, yield, &returnint , slist[0], nlist[1], nlist[2]);
+	  }
+	/* {1,1,1,1,0,0,0,0,0,0} */
+	else if (signatures_eq_p(pbd->params, sig_int_int_int_int))
+	  {
+	    void (*pf)(int, int*, int* , int, int, int, int) = (void(*)(int,int*,int*,int,int,int,int))pbd->func;
+	    (*pf)(script, yield, &returnint , nlist[0], nlist[1], nlist[2], nlist[3]);
+	  }
+	/* {1,1,1,1,1,0,0,0,0,0} */
+	else if (signatures_eq_p(pbd->params, sig_int_int_int_int_int))
+	  {
+	    void (*pf)(int, int*, int* , int, int, int, int, int) = (void(*)(int,int*,int*,int,int,int,int,int))pbd->func;
+	    (*pf)(script, yield, &returnint , nlist[0], nlist[1], nlist[2], nlist[3], nlist[4]);
+	  }
+	/* {1,1,1,1,1,1,0,0,0,0} */
+	else if (signatures_eq_p(pbd->params, sig_int_int_int_int_int_int))
+	  {
+	    void (*pf)(int, int*, int* , int, int, int, int, int, int) = (void(*)(int,int*,int*,int,int,int,int,int,int))pbd->func;
+	    (*pf)(script, yield, &returnint , nlist[0], nlist[1], nlist[2], nlist[3], nlist[4], nlist[5]);
+	  }
+	else
+	  {
+	    log_fatal("Internal error: DinkC function %s has unknown signature",
+		      pbd->funcname);
+	    exit(EXIT_FAILURE);
+	  }
+	cur_funcname = "";
+	/* the function can manipulation returnint through argument #3 */
+	
+	if (*yield == 0)
+	  {
+	    PL_RETURN(DCPS_GOTO_NEXTLINE);
+	  }
+	else if (*yield == 1)
+	  {
+	    PL_RETURN(DCPS_YIELD);
+	  }
+	else
+	  {
+	    log_fatal("Internal error: DinkC function %s requested invalid state %d",
+		      pbd->funcname, *yield);
+	    exit(EXIT_FAILURE);
+	  }
+      }
+  }
+  
+  
+  /***************/
+  /** Operators **/
+  /**           **/
+  /***************/
+
+  /* Beware: this works on ev[1], not ev[0]; position in the code is
+     critical! */
+
+  if (compare(ev[1], "="))
+    {
+      h += strlen(ev[0]);
+      strip_beginning_spaces(h);
+      h++;
+      strip_beginning_spaces(h);
+      var_equals(ev[0], ev[2], '=', script, h);
+      strcpy_nooverlap(s, h);
+      PL_RETURN(DCPS_GOTO_NEXTLINE);
+    }
+    
+  if (compare(ev[1], "+="))
+    {
+      h += strlen(ev[0]);
+      strip_beginning_spaces(h);
+      h += 2;
+      strip_beginning_spaces(h);
+      var_equals(ev[0], ev[2], '+', script, h);
+      strcpy_nooverlap(s, h);
+      PL_RETURN(DCPS_GOTO_NEXTLINE);
+    }
+    
+  if (compare(ev[1], "*="))
+    {
+      h += strlen(ev[0]);
+      strip_beginning_spaces(h);
+      h += 2;
+      strip_beginning_spaces(h);
+      var_equals(ev[0], ev[2], '*', script, h);
+      strcpy_nooverlap(s, h);
+      PL_RETURN(DCPS_GOTO_NEXTLINE);
+    }
+    
+  if (compare(ev[1], "-="))
+    {
+      h += strlen(ev[0]);
+      strip_beginning_spaces(h);
+      h += 2;
+      strip_beginning_spaces(h);
+	
+      var_equals(ev[0], ev[2], '-', script, h);
+	
+      strcpy_nooverlap(s, h);
+      PL_RETURN(DCPS_GOTO_NEXTLINE);
+    }
+    
+  if (compare(ev[1], "/")
+      || (dversion >= 108 && compare(ev[1], "/=")))
+    {
+      h += strlen(ev[0]);
+      strip_beginning_spaces(h);
+      h++;
+      strip_beginning_spaces(h);
+	
+      var_equals(ev[0], ev[2], '/', script, h);
+	
+      strcpy_nooverlap(s, h);
+      PL_RETURN(DCPS_GOTO_NEXTLINE);
+    }
+    
+  if (compare(ev[1], "*"))
+    {
+      h += strlen(ev[0]);
+      strip_beginning_spaces(h);
+      h++;
+      strip_beginning_spaces(h);
+	
+      var_equals(ev[0], ev[2], '*', script, h);
+	
+      strcpy_nooverlap(s, h);
+      PL_RETURN(DCPS_GOTO_NEXTLINE);
+    }
+    
+    
+  /***************************************/
+  /** New DinkC user-defined procedures **/
+  /**                                   **/
+  /***************************************/
+  if (dversion >= 108)
+    {
+      if (compare (ev[0], "external"))
+	{
+	  h += strlen(ev[0]);
+	  int p[20] = { 2, 2, 1, 1, 1, 1, 1, 1, 1, 1 };
+	  {
+	    int i = 0;
+	    for (; i < 10; i++)
+	      slist[i][0] = '\0';
+	  }
+	  get_parms(ev[0], script, h, p);
+	  if (strlen(slist[0]) > 0 && strlen(slist[1]) > 0)
+	    {
+	      int myscript1 = load_script(slist[0], rinfo[script]->sprite, 0);
+	      if (myscript1 == 0)
+		{
+		  log_error("[DinkC] external: Couldn't find %s.c (for procedure %s)",
+		       slist[0], slist[1]);
+		  PL_RETURN(DCPS_GOTO_NEXTLINE);
+		}
+	      rinfo[myscript1]->arg1 = nlist[2];
+	      rinfo[myscript1]->arg2 = nlist[3];
+	      rinfo[myscript1]->arg3 = nlist[4];
+	      rinfo[myscript1]->arg4 = nlist[5];
+	      rinfo[myscript1]->arg5 = nlist[6];
+	      rinfo[myscript1]->arg6 = nlist[7];
+	      rinfo[myscript1]->arg7 = nlist[8];
+	      rinfo[myscript1]->arg8 = nlist[9];
+	      if (locate (myscript1, slist[1]))
+		{
+		  rinfo[myscript1]->proc_return = script;
+		  run_script (myscript1);
+		  PL_RETURN(DCPS_YIELD);
+		}
+	      else
+		{
+		  log_error("[DinkC] external: Couldn't find procedure %s in %s.",
+			    slist[1], slist[0]);
+		  kill_script (myscript1);
+		}
+	    }
+	  strcpy (s, h);
+	  PL_RETURN(DCPS_GOTO_NEXTLINE);
+	}
+
+      if (strchr (h, '(') != NULL)
+	{
+	  //lets attempt to run a procedure
+	  int myscript = load_script (rinfo[script]->name, rinfo[script]->sprite, 0);
+	  h += strlen(ev[0]);
+	  int p[20] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+	  get_parms(ev[0], script, h, p);
+	  if (locate(myscript, ev[0]))
+	    {
+	      /* Custom procedure in the current script */
+	      rinfo[myscript]->arg1 = nlist[0];
+	      rinfo[myscript]->arg2 = nlist[1];
+	      rinfo[myscript]->arg3 = nlist[2];
+	      rinfo[myscript]->arg4 = nlist[3];
+	      rinfo[myscript]->arg5 = nlist[4];
+	      rinfo[myscript]->arg6 = nlist[5];
+	      rinfo[myscript]->arg7 = nlist[6];
+	      rinfo[myscript]->arg8 = nlist[7];
+	      rinfo[myscript]->arg9 = nlist[8];
+	      rinfo[myscript]->proc_return = script;
+	      run_script(myscript);
+	      PL_RETURN(DCPS_YIELD);
+	    }
+	  else
+	    {
+	      /* Try custom global procedure */
+	      int i = 0;
+	      for (; i < 100; i++)
+		{
+		  /* Skip empty slots */
+		  if (strlen (play.func[i].func) == 0)
+		    continue;
+		    
+		  if (compare(play.func[i].func, ev[0]))
+		    {
+		      myscript = load_script(play.func[i].file, rinfo[script]->sprite, 0);
+		      rinfo[myscript]->arg1 = nlist[0];
+		      rinfo[myscript]->arg2 = nlist[1];
+		      rinfo[myscript]->arg3 = nlist[2];
+		      rinfo[myscript]->arg4 = nlist[3];
+		      rinfo[myscript]->arg5 = nlist[4];
+		      rinfo[myscript]->arg6 = nlist[5];
+		      rinfo[myscript]->arg7 = nlist[6];
+		      rinfo[myscript]->arg8 = nlist[7];
+		      rinfo[myscript]->arg9 = nlist[8];
+		      if (locate(myscript, ev[0]))
+			{
+			  rinfo[myscript]->proc_return = script;
+			  run_script (myscript);
+			  PL_RETURN(DCPS_YIELD);
+			}
+		      break;
+		    }
+		}
+	      log_error("[DinkC] Procedure void %s( void ); not found in script %s. (word 2 was %s)",
+			ev[0], ev[1], rinfo[myscript] != NULL ? rinfo[myscript]->name : "");
+	      kill_script (myscript);
+	    }
+	    
+	  /*seperate_string(h, 1,'(',line);
+	      
+	    int myscript = load_script(rinfo[script]->name, rinfo[script]->sprite, false);
+	      
+	    if (locate( myscript, line))
+	    {
+	    rinfo[myscript]->proc_return = script;
+	    run_script(myscript);    
+	    PL_RETURN(DCPS_YIELD);
+	    } else
+	    {
+	    Msg("ERROR:  Procedure void %s( void ); not found in script %s. (word 2 was %s) ", line,
+	    ev[1], rinfo[myscript]->name); 
+	    kill_script(myscript);          
+	    } */
+	  PL_RETURN(DCPS_GOTO_NEXTLINE);
+	}
+    }
+  else
+    {
+      /* v1.07 function that are implemented differently than in v1.08 */
+      if (compare(ev[0], "external"))
+	{
+	  h += strlen(ev[0]);
+	  int p[20] = {2,2,0,0,0,0,0,0,0,0};
+	  if (get_parms(ev[0], script, h, p))
+	    {
+	      int myscript1 = load_script(slist[0], rinfo[script]->sprite, /*false*/0);
+	      if (myscript1 == 0)
+		{
+		  log_error("[DinkC] external: Couldn't find %s.c (for procedure %s)", slist[0], slist[1]);
+		  PL_RETURN(DCPS_GOTO_NEXTLINE);
+		}
+	      if (locate(myscript1, slist[1]))
+		{
+		  rinfo[myscript1]->proc_return = script;
+		  run_script(myscript1);
+		  PL_RETURN(DCPS_YIELD);
+		}
+	      else
+		{
+		  log_error("[DinkC] external: Couldn't find procedure %s in %s.", slist[1], slist[0]);
+		  kill_script(myscript1);
+		}
+	    }
+	  else
+	    {
+	      log_error("[DinkC] %s: procedure 'external' takes 2 parameters"
+			" (offset %ld)",
+			rinfo[script]->name, rinfo[script]->current);
+	    }
+	  strcpy_nooverlap(s, h);
+	  PL_RETURN(DCPS_GOTO_NEXTLINE);
+	}
+
+      if (strchr(h, '(') != NULL)
+	{
+	  //lets attempt to run a procedure
+	  char* proc = separate_string(h, 1, '(');
+	  int myscript = load_script(rinfo[script]->name, rinfo[script]->sprite, /*false*/0);
+
+	  if (locate(myscript, proc))
+	    {
+	      rinfo[myscript]->proc_return = script;
+	      run_script(myscript);
+	      free(proc);
+	      PL_RETURN(DCPS_YIELD);
+	    }
+	  else
+	    {
+	      log_error("[DinkC] Procedure void %s( void ); not found in script %s. (word 2 was %s) ",
+			proc, ev[1], rinfo[myscript]->name);
+	      kill_script(myscript);
+	    }
+	  free(proc);
+	  PL_RETURN(DCPS_GOTO_NEXTLINE);
+	}
+	
+      log_error("[DinkC] \"%s\" unknown in %s, offset %ld.",
+		ev[0], rinfo[script]->name,rinfo[script]->current);
+      //in a thingie, ready to go
+    }
+
+ bad:
+  strcpy(s, "\n"); /* jump to next line */
+  //PL_RETURN(DCPS_GOTO_NEXTLINE);
+  PL_RETURN(DCPS_CONTINUE);
+  
+ good:
+  strcpy_nooverlap(s, h);
+  //s = h
+  //Msg("ok, continuing with running %s..",s);
+  PL_RETURN(DCPS_CONTINUE);
+}
+
+
+/****************/
+/*  Hash table  */
+/*              */
+/****************/
+
+/* Hash table of bindings, build dynamically (depending on 'dversion',
+   not statically) */
+Hash_table* bindings = NULL;
+
+/* Auxiliary functions for hash */
+static size_t dinkc_bindings_hasher(const void *x, size_t tablesize)
+{
+  return hash_string(((struct binding*)x)->funcname, tablesize);
+  // We could also call 'hash_pjw' from module 'hash-pjw'
+}
+
+static bool dinkc_bindings_comparator(const void* a, const void* b)
+{
+  return !strcmp(((struct binding*)a)->funcname,
+		 ((struct binding*)b)->funcname);
+}
+
+/**
+ * Search a binding by function name
+ */
+struct binding* dinkc_bindings_lookup(Hash_table* hash, char* funcname)
+{
+  struct binding search;
+  struct binding* result;
+  char* lcfuncname = strdup(funcname);
+  char* pc;
+  for (pc = lcfuncname; *pc != '\0'; pc++)
+    *pc = tolower(*pc);
+  search.funcname = lcfuncname;
+
+  result = (struct binding*)hash_lookup(hash, &search);
+
+  free(lcfuncname);
+  return result;
+}
+
+/**
+ * Add a new binding to hash table 'hash'.
+ */
+void dinkc_bindings_add(Hash_table* hash, struct binding* pbd)
+{
+  void* slot = dinkc_bindings_lookup(hash, pbd->funcname);
+  if (slot != NULL)
+    {
+      log_fatal("Internal error: attempting to redeclare DinkC function %s", pbd->funcname);
+      exit(EXIT_FAILURE);
+    }
+
+  /* Copy uninitialized binding in hash table */
+  struct binding* newslot = (struct binding*)malloc(sizeof(struct binding));
+  *newslot = *pbd;
+  if (hash_insert(hash, newslot) == NULL)
+    {
+      log_fatal("Not enough memory to declare DinkC function %s", pbd->funcname);
+      exit(EXIT_FAILURE);
+    }
+}
+
 
 void dinkc_init()
 {
-  dinkc_bindings_init();
+  /* Set all string params pointers to NULL */
+  int i = 0;
+  for (; i < 10; i++)
+    {
+      /* alloc empty strings; will be replaced as needed in
+	 get_parm(...) */
+      slist[i] = strdup("");
+    }
+
+  Hash_tuning* default_tuner = NULL;
+  int start_size = 400; /* ~nbfuncs*2 to try and avoid collisions */
+  bindings = hash_initialize(start_size, default_tuner,
+			     dinkc_bindings_hasher, dinkc_bindings_comparator,
+			     free);
 }
 
 void dinkc_quit()
 {
+  int i = 0;
+  for (; i < 10; i++)
+    {
+      if (slist[i] != NULL)
+	free(slist[i]);
+      slist[i] = NULL;
+    }
   kill_all_vars();
-  dinkc_bindings_quit();
 }

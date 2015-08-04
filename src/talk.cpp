@@ -64,6 +64,7 @@ void talk_clear()
   memset(&talk, 0, sizeof(talk));
   play.mouse = 0;
 }
+
 void talk_process()
 {
   int px = 48, py = 44;
@@ -406,5 +407,15 @@ void talk_process()
 	  run_script(talk.script);
 
 	}
+    }
+}
+
+void kill_text_owned_by(int sprite)
+{
+  int i;
+  for (i = 1; i < MAX_SPRITES_AT_ONCE; i++)
+    {
+      if (spr[i].active && spr[i].brain == 8 && spr[i].owner == sprite)
+	spr[i].active = /*false*/0;
     }
 }

@@ -51,7 +51,6 @@ void dc_fade_up(int script, int* yield, int* preturnint);
 
 class TestIntegration : public CxxTest::TestSuite {
 public:
-
   /* fade_up() is prioritary over fade_down(),
      post-fade callback script is still overwritten
      
@@ -74,6 +73,7 @@ public:
     int script_id2 = ts_script_init("fade2", strdup(""));
     
     dinkc_init();
+    dinkc_bindings_init();
     process_upcycle = process_downcycle = 0;
     dc_fade_down(script_id1, &yield, &returnint);
     dc_fade_up(script_id2, &yield, &returnint);
@@ -98,6 +98,37 @@ public:
     
     kill_script(script_id1);
     kill_script(script_id2);
+    dinkc_bindings_quit();
+    dinkc_quit();
+  }
+
+  /* Run {2,2} / (char*,char*) functions without crashing */
+  void test_dinkc_make_global_function() {
+    dinkc_init();
+    dinkc_bindings_init();
+    int ret = dinkc_execute_one_liner("make_global_function(\"test\", \"my_function\")");
+    TS_ASSERT_EQUALS(ret, 0);
+    dinkc_bindings_quit();
+    dinkc_quit();
+  }
+
+  void test_dinkc_sp_custom() {
+    dinkc_sp_custom myhash = dinkc_sp_custom_new();
+    
+    dinkc_sp_custom_set(myhash, "foo", -1);
+    dinkc_sp_custom_set(myhash, "foo", 3);
+    dinkc_sp_custom_set(myhash, "foo", -1);
+    dinkc_sp_custom_set(myhash, "foo", 4);
+    
+    dinkc_sp_custom_set(myhash, "bar", 34);
+    
+    TS_ASSERT_EQUALS(dinkc_sp_custom_get(myhash, "foo"), 4);
+    TS_ASSERT_EQUALS(dinkc_sp_custom_get(myhash, "bar"), 34);
+    
+    dinkc_sp_custom_clear(myhash);
+    TS_ASSERT_EQUALS(dinkc_sp_custom_get(myhash, "bar"), -1);
+    
+    dinkc_sp_custom_free(myhash);
   }
 
   // See also http://www.dinknetwork.com/forum.cgi?MID=186069#186263
@@ -107,6 +138,7 @@ public:
     memset(&map.ts_loc_mem, 0, sizeof(map.ts_loc_mem));
     
     dinkc_init();
+    dinkc_bindings_init();
     make_int("&tsx", 123451, DINKC_GLOBAL_SCOPE, 0);
     make_int("&tsy", 123452, DINKC_GLOBAL_SCOPE, 0);
     int tsx_id = lookup_var("&tsx", DINKC_GLOBAL_SCOPE);
@@ -218,8 +250,9 @@ public:
     TS_ASSERT_EQUALS(spr[1].y, 399);
     
     screenlock = 0;
-    
-    
+        
+    dinkc_bindings_quit();
+    dinkc_quit();
     paths_quit();
   }
 };

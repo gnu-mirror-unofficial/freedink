@@ -41,6 +41,8 @@
 #include "gfx_sprites.h"
 #include "savegame.h"
 #include "meminfo.h"
+#include "dinkc.h"
+#include "dinkc_bindings.h"
 
 /* Engine variables directly mapped with DinkC variables */
 int *pvision, *plife, *presult, *pspeed, *ptiming, *plifemax,
@@ -586,6 +588,28 @@ void fill_back_sprites()
 }
 
 
+/**
+ * Run main() for all active sprites on screen
+ */
+void game_screen_init_scripts()
+{
+  int k = 1;
+  for (; k < MAX_SCRIPTS; k++)
+    {
+      if (rinfo[k] != NULL && rinfo[k]->sprite != 0
+	  /* don't go out of bounds in spr[300], e.g. when sprite == 1000: */
+	  && rinfo[k]->sprite < MAX_SPRITES_AT_ONCE
+	  && spr[rinfo[k]->sprite].active)
+	{
+	  if (locate(k, "main"))
+	    {
+	      log_debug("Screendraw: running main of script %s..", rinfo[k]->name);
+	      run_script(k);
+	    }
+	}
+    }
+}
+
 /* Draw the background from tiles */
 void draw_screen_game(void)
 {
@@ -618,7 +642,7 @@ void draw_screen_game(void)
   thisTickCount = game_GetTicks();
                 
   // Run active sprites' scripts
-  init_scripts();
+  game_screen_init_scripts();
 
   // Display some memory stats after loading a screen
   if (debug_mode) {
@@ -677,7 +701,8 @@ void game_init()
 
   srand((unsigned)time(NULL));
 
-  dinkc_init();
+  dinkc_init();  
+  dinkc_bindings_init();
 }
 
 void game_quit()
@@ -692,6 +717,8 @@ void game_quit()
       spr[i].custom = NULL;
     }
 
+  
+  dinkc_bindings_quit();
   dinkc_quit();
 
   if (last_saved_game > 0)

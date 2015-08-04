@@ -29,12 +29,22 @@
 
 int get_parms(char proc_name[20], int script, char *str_params, int* spec);
 
-/* link seams */
-// int dversion = 107;
-// struct player_info {
-//   struct varman var[MAX_VARS];
-// } play;
+/* mocks / link seams */
 #include "game_engine.h"
+int dversion = 107;
+struct player_info play;
+#include "screen.h"
+struct sp spr[MAX_SPRITES_AT_ONCE];
+#include "talk.h"
+struct talk_struct talk;
+int last_sprite_created;
+int input_get_button_action(int button_index) { return -1; }
+void talk_start(int script, int nb_choices) {}
+void talk_clear() {}
+void talk_process() {}
+void kill_text_owned_by(int sprite) {}
+Uint32 game_GetTicks(void) {return 0; }
+
 
 class TestDinkC : public CxxTest::TestSuite {
 public:
@@ -164,31 +174,6 @@ public:
     
     // needed for CK_FORK=no (woe)
     kill_all_vars();
-  }
-
-  void test_dinkc_sp_custom() {
-    dinkc_sp_custom myhash = dinkc_sp_custom_new();
-    
-    dinkc_sp_custom_set(myhash, "foo", -1);
-    dinkc_sp_custom_set(myhash, "foo", 3);
-    dinkc_sp_custom_set(myhash, "foo", -1);
-    dinkc_sp_custom_set(myhash, "foo", 4);
-    
-    dinkc_sp_custom_set(myhash, "bar", 34);
-    
-    TS_ASSERT_EQUALS(dinkc_sp_custom_get(myhash, "foo"), 4);
-    TS_ASSERT_EQUALS(dinkc_sp_custom_get(myhash, "bar"), 34);
-    
-    dinkc_sp_custom_clear(myhash);
-    TS_ASSERT_EQUALS(dinkc_sp_custom_get(myhash, "bar"), -1);
-    
-    dinkc_sp_custom_free(myhash);
-  }
-
-  /* Run {2,2} / (char*,char*) functions without crashing */
-  void test_dinkc_make_global_function() {
-    int ret = dinkc_execute_one_liner("make_global_function(\"test\", \"my_function\")");
-    TS_ASSERT_EQUALS(ret, 0);
   }
 
   void test_dinkc_dont_return_same_script_id_twice() {

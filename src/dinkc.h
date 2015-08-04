@@ -26,6 +26,11 @@
 #include <stdio.h>
 #include "io_util.h"
 
+/* Gnulib */
+extern "C" {
+#include "hash.h"
+}
+
 #define MAX_SCRIPTS 200
 #define MAX_VARS 250
 
@@ -74,6 +79,30 @@ struct refinfo
 };
 extern struct refinfo *rinfo[];
 
+enum dinkc_parser_state {
+  DCPS_GOTO_NEXTLINE = 0,
+  DCPS_CONTINUE = 1,
+  DCPS_YIELD = 2,
+  DCPS_DOELSE_ONCE = 4,
+};
+
+
+/* Map DinkC function with C function */
+struct binding 
+{
+  char* funcname; /* name of the function, as string */
+  void* func;     /* pointer to the C function */
+  int params[10]; /* DinkC specification of params e.g. {2,1,1,0,0,0,0,0,0,0} */
+  enum dinkc_parser_state badparams_dcps; /* if the DinkC script has bad arguments, skip line or yield? */
+  int badparams_returnint_p; /* overwrite returnint if bad arguments? */
+  int badparams_returnint;   /* value for returnint if badparams_returnint_p is 1 */
+};
+
+extern Hash_table* bindings;
+
+
+extern char* cur_funcname;
+
 extern int weapon_script;
 extern int magic_script;
 
@@ -107,7 +136,9 @@ extern void kill_all_vars();
 
 /* Used by draw_screen_game only */
 extern void kill_all_scripts(void);
-extern void init_scripts(void);
+
+extern void dinkc_bindings_add(Hash_table* hash, struct binding* pbd);
+extern struct binding* dinkc_bindings_lookup(Hash_table* hash, char* funcname);
 
 extern int returnint;
 extern int bKeepReturnInt; /* v1.08 */
