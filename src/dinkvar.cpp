@@ -712,78 +712,6 @@ void figure_out(char* line)
 }
 
 
-
-int add_sprite_dumb(int x1, int y, int brain,int pseq, int pframe,int size )
-{
-  int x;
-    for (x = 1; x < MAX_SPRITES_AT_ONCE; x++)
-        {
-                if (spr[x].active == /*FALSE*/0)
-                {
-                        memset(&spr[x], 0, sizeof(spr[x]));
-
-                        //Msg("Making sprite %d.",x);
-                        spr[x].active = /*TRUE*/1;
-                        spr[x].x = x1;
-                        spr[x].y = y;
-                        spr[x].my = 0;
-                        spr[x].mx = 0;
-                        spr[x].speed = 0;
-                        spr[x].brain = brain;
-                        spr[x].frame = 0;
-                        spr[x].pseq = pseq;
-                        spr[x].pframe = pframe;
-                        spr[x].size = size;
-                        spr[x].seq = 0;
-                        if (x > last_sprite_created)
-                                last_sprite_created = x;
-
-                        spr[x].timer = 0;
-                        spr[x].wait = 0;
-                        spr[x].lpx[0] = 0;
-                        spr[x].lpy[0] = 0;
-                        spr[x].moveman = 0;
-                        spr[x].seq_orig = 0;
-
-
-            spr[x].base_hit = -1;
-                        spr[x].base_walk = -1;
-                        spr[x].base_die = -1;
-                        spr[x].base_idle = -1;
-                        spr[x].base_attack = -1;
-                        spr[x].last_sound = 0;
-                        spr[x].hard = 1;
-
-                        rect_set(&spr[x].alt, 0,0,0,0);
-                        spr[x].althard = 0;
-                        spr[x].sp_index = 0;
-                        spr[x].nocontrol = 0;
-                        spr[x].idle = 0;
-                        spr[x].strength = 0;
-                        spr[x].damage = 0;
-                        spr[x].defense = 0;
-
-			if (dversion >= 108)
-			  {
-			    if (spr[x].custom == NULL)
-			      {
-				spr[x].custom = dinkc_sp_custom_new();
-			      }
-			    else
-			      {
-				dinkc_sp_custom_clear(spr[x].custom);
-			      }
-			  }
-
-                        return(x);
-                }
-
-        }
-
-        return(0);
-}
-
-
 /*bool*/int get_box (int h, rect * box_scaled, rect * box_real)
 {
   int x_offset, y_offset;
@@ -1014,17 +942,97 @@ int add_sprite(int x1, int y, int brain,int pseq, int pframe )
                         spr[x].defense = 0;
                         spr[x].hard = 1;
 
-			if (dversion >= 108)
-			  {
-			    if (spr[x].custom == NULL)
-			      {
-				spr[x].custom = dinkc_sp_custom_new();
-			      }
-			    else
-			      {
-				dinkc_sp_custom_clear(spr[x].custom);
-			      }
-			  }
+			if (dversion >= 108) {
+			  if (spr[x].custom == NULL)
+			    spr[x].custom = new std::map<std::string, int>;
+			  else
+			    spr[x].custom->clear();
+			}
+
+                        return(x);
+                }
+
+        }
+
+        return(0);
+}
+
+/* Like add_sprit_dumb, except:
+ * speed      :   1 ->  0
+ * size       : 100 -> size
+ * timer      :  33 ->  0
+ * que        :   0 ->  ?
+ * seq_orig   :   ? ->  0
+ * base_hit   :   ? -> -1
+ * base_walk  :   ? -> -1
+ * base_die   :   ? -> -1
+ * base_idle  :   ? -> -1
+ * base_attack:   ? -> -1
+ * last_sound :   ? ->  0
+ * hard       :   ? ->  1
+ * althard    :   ? ->  0
+ * sp_index   :   ? ->  0
+ * nocontrol  :   ? ->  0
+ * idle       :   ? ->  0
+ * hard       :   1 ->  ?
+ * alt        :   ? -> {0,0,0,0}
+ */
+int add_sprite_dumb(int x1, int y, int brain,int pseq, int pframe,int size )
+{
+  int x;
+    for (x = 1; x < MAX_SPRITES_AT_ONCE; x++)
+        {
+                if (spr[x].active == /*FALSE*/0)
+                {
+                        memset(&spr[x], 0, sizeof(spr[x]));
+
+                        //Msg("Making sprite %d.",x);
+                        spr[x].active = /*TRUE*/1;
+                        spr[x].x = x1;
+                        spr[x].y = y;
+                        spr[x].my = 0;
+                        spr[x].mx = 0;
+                        spr[x].speed = 0;
+                        spr[x].brain = brain;
+                        spr[x].frame = 0;
+                        spr[x].pseq = pseq;
+                        spr[x].pframe = pframe;
+                        spr[x].size = size;
+                        spr[x].seq = 0;
+                        if (x > last_sprite_created)
+                                last_sprite_created = x;
+
+                        spr[x].timer = 0;
+                        spr[x].wait = 0;
+                        spr[x].lpx[0] = 0;
+                        spr[x].lpy[0] = 0;
+                        spr[x].moveman = 0;
+                        spr[x].seq_orig = 0;
+
+
+            spr[x].base_hit = -1;
+                        spr[x].base_walk = -1;
+                        spr[x].base_die = -1;
+                        spr[x].base_idle = -1;
+                        spr[x].base_attack = -1;
+                        spr[x].last_sound = 0;
+                        spr[x].hard = 1;
+
+                        rect_set(&spr[x].alt, 0,0,0,0);
+                        spr[x].althard = 0;
+                        spr[x].sp_index = 0;
+                        spr[x].nocontrol = 0;
+                        spr[x].idle = 0;
+                        spr[x].strength = 0;
+                        spr[x].damage = 0;
+                        spr[x].defense = 0;
+
+			if (dversion >= 108) {
+			  if (spr[x].custom == NULL)
+			    spr[x].custom = new std::map<std::string, int>;
+			  else
+			    spr[x].custom->clear();
+			}
 
                         return(x);
                 }
