@@ -21,11 +21,12 @@ maintainers don't make releases often :/
     - https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=750706
       https://bugzilla.libsdl.org/show_bug.cgi?id=2140
       Fixed in development version: https://hg.libsdl.org/SDL_mixer/raw-rev/8ef083375857
-  - TiMidity support on Android
+  - Enable TiMidity++ on Android
     https://bugzilla.libsdl.org/show_bug.cgi?id=2600
-    https://hg.libsdl.org/SDL_mixer/rev/80c2a4592ff4
+    Fixed in development version: https://hg.libsdl.org/SDL_mixer/rev/80c2a4592ff4
   - Mix_SetError(NULL) segfaults (hg):
     https://bugzilla.libsdl.org/show_bug.cgi?id=2601
+    Fixed in development version: https://hg.libsdl.org/SDL_mixer/rev/3af92aa761d2
   - Fluidsynth can't be enabled AFAICS
     - TODO: check and report me
 - SDL2_image 2.0.0: no transparency when loading XPM files
