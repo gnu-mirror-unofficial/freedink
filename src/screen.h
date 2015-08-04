@@ -25,9 +25,10 @@
 #define _SCREEN_H
 
 #include "rect.h"
-#include "dinkc_sp_custom.h"
 #include "gfx_tiles.h"
 #include "io_util.h"
+#include <string>
+#include <map>
 
 #define MAX_SPRITES_EDITOR 99
 
@@ -118,7 +119,7 @@ struct sp
   /* v1.08 */
   int bloodseq;
   int bloodnum;
-  dinkc_sp_custom custom;
+  std::map<std::string, int>* custom;
 };
 extern struct sp spr[];
 

@@ -122,7 +122,7 @@ public:
     
     spr[1].active = 1;
     spr[2].active = 1;
-    spr[2].custom = dinkc_sp_custom_new();
+    spr[2].custom = new std::map<std::string, int>;
 
     /* Segfaults for sprite 1 in dink108 - and in FreeDink as well :P */
     //dc_sp_custom(script_id, &yield, &returnint, "foo", 1, 3);
@@ -144,6 +144,6 @@ public:
     dc_sp_custom(script_id, &yield, &returnint, "idontexit", 2, -1);
     TS_ASSERT_EQUALS(returnint, 0);
 
-    dinkc_sp_custom_free(spr[2].custom);
+    delete(spr[2].custom);
   }
 };

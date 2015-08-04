@@ -24,16 +24,15 @@ AM_CPPFLAGS += -I$(top_srcdir)/intl -I$(top_builddir)/intl
 
 LIBS += -lm
 
-COMMON_OBJS= app.cpp app.h bgm.cpp bgm.h dinkc_sp_custom.cpp		\
-	dinkc_sp_custom.h dinkini.cpp dinkini.h dinkvar.cpp dinkvar.h	\
-	fastfile.cpp fastfile.h str_util.cpp str_util.h io_util.cpp	\
-	io_util.h gfx.cpp gfx.h gfx_fade.cpp gfx_fade.h gfx_tiles.cpp	\
-	gfx_tiles.h gfx_palette.cpp gfx_palette.h gfx_fonts.cpp		\
-	gfx_fonts.h rect.cpp rect.h resources.cpp resources.h		\
-	input.cpp input.h freedink_xpm.cpp freedink_xpm.h map.cpp	\
-	map.h paths.cpp paths.h log.cpp log.h gfx_sprites.cpp		\
-	gfx_sprites.h vgasys_fon.cpp vgasys_fon.h msgbox.cpp msgbox.h	\
-	screen.cpp screen.h sfx.cpp sfx.h
+COMMON_OBJS= app.cpp app.h bgm.cpp bgm.h dinkini.cpp dinkini.h		\
+	dinkvar.cpp dinkvar.h fastfile.cpp fastfile.h str_util.cpp	\
+	str_util.h io_util.cpp io_util.h gfx.cpp gfx.h gfx_fade.cpp	\
+	gfx_fade.h gfx_tiles.cpp gfx_tiles.h gfx_palette.cpp		\
+	gfx_palette.h gfx_fonts.cpp gfx_fonts.h rect.cpp rect.h		\
+	resources.cpp resources.h input.cpp input.h freedink_xpm.cpp	\
+	freedink_xpm.h map.cpp map.h paths.cpp paths.h log.cpp log.h	\
+	gfx_sprites.cpp gfx_sprites.h vgasys_fon.cpp vgasys_fon.h	\
+	msgbox.cpp msgbox.h screen.cpp screen.h sfx.cpp sfx.h
 
 if ANDROID
   # Build .so JNI libs rather than executables

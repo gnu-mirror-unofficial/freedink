@@ -1551,10 +1551,17 @@ void dc_sp_custom(int script, int* yield, int* preturnint, char* key, int sprite
     }
   else
     {
+      // If key doesn't exist, create it.
+      if (spr[sprite].custom->find(key) == spr[sprite].custom->end())
+	spr[sprite].custom->insert(std::make_pair(key, 0));
+
       // Set the value
-      if (val != -1)
-	dinkc_sp_custom_set(spr[sprite].custom, key, val);
-      *preturnint = dinkc_sp_custom_get(spr[sprite].custom, key);
+      if (val != -1) {
+	spr[sprite].custom->erase(key);
+	spr[sprite].custom->insert(std::make_pair(key, val));
+      }
+
+      *preturnint = spr[sprite].custom->find(key)->second;
     }
 }
 

@@ -25,7 +25,6 @@
 #endif
 
 #include "dinkc.h"
-#include "dinkc_sp_custom.h"
 
 int get_parms(char proc_name[20], int script, char *str_params, int* spec);
 

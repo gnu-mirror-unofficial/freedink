@@ -713,7 +713,7 @@ void game_quit()
   for (i = 1; i < MAX_SPRITES_AT_ONCE; i++)
     {
       if (spr[i].custom != NULL)
-	dinkc_sp_custom_free(spr[i].custom);
+	delete(spr[i].custom);
       spr[i].custom = NULL;
     }
 

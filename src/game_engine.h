@@ -30,7 +30,6 @@
 #include "io_util.h"
 #include "dinkc.h"
 #include "gfx_tiles.h"
-#include "dinkc_sp_custom.h"
 #include "inventory.h"
 
 #define FPS 60
