@@ -55,6 +55,7 @@
 #include "sfx.h"
 #include "input.h"
 #include "io_util.h"
+#include "resources.h"
 #include "paths.h"
 #include "log.h"
 
@@ -199,6 +200,26 @@ static int m2x,m2y;
 static int m3x,m3y;
 static int cur_tile;
 
+
+/**
+ * Append a line of text at the end of a file
+ */
+static void add_text(char *text, char *filename)
+{
+  if (strlen(text) < 1)
+    return;
+  
+  FILE *fp = paths_dmodfile_fopen(filename, "ab");
+  if (fp != NULL)
+    {
+      fwrite(text, strlen(text), 1, fp);
+      fclose(fp);
+    }
+  else
+    {
+      perror("add_text");
+    }
+}
 
 /**
  * Get the screen tile under coords x,y

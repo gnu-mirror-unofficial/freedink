@@ -230,49 +230,6 @@ pdirname (const char* filename)
   return retval;
 }
 
-SDL_RWops* find_resource_as_rwops(char *name)
-{
-  SDL_RWops* rwops = NULL;
-
-  /** curdir, pkgdatadir **/
-  FILE *in = NULL;
-  if (in == NULL)
-    in = paths_pkgdatafile_fopen(name, "rb");
-
-#ifdef __ANDROID__
-  /* Get from .apk */
-#endif
-
-  if (in != NULL)
-    rwops = SDL_RWFromFP(in, /*autoclose=*/SDL_TRUE);
-
-  if (rwops != NULL)
-     return rwops;
-
-  /** Not found! **/
-  return NULL;
-}
-
-/**
- * Append a line of text at the end of a file
- */
-void add_text(char *text, char *filename)
-{
-  if (strlen(text) < 1)
-    return;
-  
-  FILE *fp = paths_dmodfile_fopen(filename, "ab");
-  if (fp != NULL)
-    {
-      fwrite(text, strlen(text), 1, fp);
-      fclose(fp);
-    }
-  else
-    {
-      perror("add_text");
-    }
-}
-
 
 /**
  * Read integer portably (same result with MSB and LSB

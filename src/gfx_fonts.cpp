@@ -38,7 +38,7 @@
 #include "SDL_ttf.h"
 #include "dinkvar.h"
 #include "gfx.h"
-#include "io_util.h"
+#include "resources.h"
 #include "paths.h"
 #include "gfx_fonts.h"
 #include "gfx_palette.h"

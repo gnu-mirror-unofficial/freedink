@@ -29,11 +29,11 @@ COMMON_OBJS= app.cpp app.h bgm.cpp bgm.h dinkc_sp_custom.cpp		\
 	fastfile.cpp fastfile.h str_util.cpp str_util.h io_util.cpp	\
 	io_util.h gfx.cpp gfx.h gfx_fade.cpp gfx_fade.h gfx_tiles.cpp	\
 	gfx_tiles.h gfx_palette.cpp gfx_palette.h gfx_fonts.cpp		\
-	gfx_fonts.h rect.cpp rect.h input.cpp input.h			\
-	freedink_xpm.cpp freedink_xpm.h map.cpp map.h paths.cpp		\
-	paths.h log.cpp log.h gfx_sprites.cpp gfx_sprites.h		\
-	vgasys_fon.cpp vgasys_fon.h msgbox.cpp msgbox.h screen.cpp	\
-	screen.h sfx.cpp sfx.h
+	gfx_fonts.h rect.cpp rect.h resources.cpp resources.h		\
+	input.cpp input.h freedink_xpm.cpp freedink_xpm.h map.cpp	\
+	map.h paths.cpp paths.h log.cpp log.h gfx_sprites.cpp		\
+	gfx_sprites.h vgasys_fon.cpp vgasys_fon.h msgbox.cpp msgbox.h	\
+	screen.cpp screen.h sfx.cpp sfx.h
 
 if ANDROID
   # Build .so JNI libs rather than executables
@@ -107,16 +107,24 @@ endif
 
 
 if HAVE_TESTS
-TESTS = cxxtest_freedink
-check_PROGRAMS = cxxtest_freedink
-cxxtest_freedink_SOURCES = $(COMMON_OBJS) dinkc_bindings.cpp		\
+check_PROGRAMS = test_str_util test_io_util test_dinkc test_integration
+.cxx.cpp:
+	$(CXXTESTGEN) --error-printer --include test_sdl_workaround.h -o $@ $<
+EXTRA_DIST += test_sdl_workaround.h
+test_integration_SOURCES = $(COMMON_OBJS) dinkc_bindings.cpp		\
 	dinkc_bindings.h dinkc.cpp dinkc.h dinkc_console.cpp		\
 	dinkc_console.h freedink.cpp game_engine.cpp game_engine.h	\
 	i18n.cpp i18n.h inventory.cpp inventory.h meminfo.cpp		\
 	meminfo.h savegame.cpp savegame.h status.cpp status.h		\
-	talk.cpp talk.h text.cpp text.h cxxtest_freedink.cpp
-cxxtest_freedink.cpp: $(srcdir)/cxxtest_freedink.hpp
-#	include SDL to avoid conflicting declaration of main
-#	see also http://sourceforge.net/p/scummvm/bugs/3412/#c975
-	$(CXXTESTGEN) --error-printer --include "SDL.h" -o $@ $<
+	talk.cpp talk.h text.cpp text.h test_integration.cpp
+test_str_util_SOURCES = str_util.cpp test_str_util.cpp
+test_io_util_SOURCES = io_util.cpp test_io_util.cpp
+test_dinkc_SOURCES = $(COMMON_OBJS) dinkc_bindings.cpp			\
+	dinkc_bindings.h dinkc.cpp dinkc.h dinkc_console.cpp		\
+	dinkc_console.h freedink.cpp game_engine.cpp game_engine.h	\
+	i18n.cpp i18n.h inventory.cpp inventory.h meminfo.cpp		\
+	meminfo.h savegame.cpp savegame.h status.cpp status.h		\
+	talk.cpp talk.h text.cpp text.h test_dinkc.cpp
+# Tests to run
+TESTS = $(check_PROGRAMS)
 endif

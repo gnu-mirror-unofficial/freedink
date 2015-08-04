@@ -34,11 +34,9 @@
 			   change! */
 
   extern void ciconvert (char *filename);
-  extern SDL_RWops *find_resource_as_rwops(char *filename);
   extern /*bool*/int exist(char *name);
   extern int is_directory(const char *name);
   extern char* pdirname(const char *filename);
-  extern void add_text(char *tex ,char *filename);
 
   extern int read_lsb_int(FILE *f);
   extern void write_lsb_int(int n, FILE *f);
