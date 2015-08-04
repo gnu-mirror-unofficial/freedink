@@ -296,7 +296,7 @@ void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
   /** userappdir (e.g. "~/.dink") **/
   {
 #if defined _WIN32 || defined __WIN32__ || defined __CYGWIN__
-    userappdir = malloc(MAX_PATH);
+    userappdir = (char*)malloc(MAX_PATH);
     /* C:\Documents and Settings\name\Application Data */
     SHGetSpecialFolderPath(NULL, userappdir, CSIDL_APPDATA, 1);
 #else

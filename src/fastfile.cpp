@@ -50,14 +50,14 @@ extern void FastFileFini(void);
 
 struct FF_Entry
 {
-  long off;
+  unsigned long off;
   char name[13];
 };
 
 struct FF_Handle
 {
   int alive;
-  long pos, off, len;
+  unsigned long pos, off, len;
 };
 
 static struct FF_Entry *g_Entries = NULL;
@@ -85,7 +85,7 @@ unsigned char *g_MemMap = NULL;
 int
 FastFileInit(char *filename, int max_handles)
 {
-  long count = 0;
+  unsigned long count = 0;
   FastFileFini();
 
 #if _WIN32 | HAVE_MMAP
@@ -121,7 +121,7 @@ FastFileInit(char *filename, int max_handles)
     return FALSE;
 
   g_FileMap = CreateFileMapping (g_File, NULL, PAGE_READONLY, 0, 0, NULL);
-  g_MemMap = MapViewOfFile (g_FileMap, FILE_MAP_READ, 0, 0, 0);
+  g_MemMap = (unsigned char*)MapViewOfFile (g_FileMap, FILE_MAP_READ, 0, 0, 0);
 #  else
   /* C stdio (portable) */
   g_File = fopen(filename, "rb");
@@ -238,7 +238,7 @@ FastFileOpen(char *name)
 		  i->pos = 0;
 		  /* Normal offset, tells where next the image bytes
 		     start */
-		  int next_off = g_Entries[fCount + 1].off;
+		  unsigned long next_off = g_Entries[fCount + 1].off;
 		  if (next_off == 0)
 		    /* Support badly generated dir.ff such as Mystery
 		       Island's (skip 1 empty entry) */

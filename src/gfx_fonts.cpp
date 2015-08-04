@@ -236,7 +236,7 @@ int initfont(char* fontname) {
       char *path = NULL;
 #if defined _WIN32 || defined __WIN32__ || defined __CYGWIN__
       /* Look in system fonts dir */
-      path = malloc(MAX_PATH + 1 + strlen(filename) + 1);
+      path = (char*)malloc(MAX_PATH + 1 + strlen(filename) + 1);
       /* C:\WINNT\Fonts */
       SHGetSpecialFolderPath(NULL, path, CSIDL_FONTS, 0);
       strcat(path, "\\");
