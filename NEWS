@@ -42,6 +42,10 @@
 - Fix 'make_global_function' and 'load_map' DinkC functions
 
 - sp_custom returns 0 rather than -1 if the lookup key doesn't exist
+  (compatibility with 1.08)
+
+- sp_custom now works for sprite 1 instead of crashing the game
+  (unlike 1.08, that's an improvement :))
 
 * Developer notes:
 

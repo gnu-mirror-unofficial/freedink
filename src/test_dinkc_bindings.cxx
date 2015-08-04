@@ -121,13 +121,14 @@ public:
     dinkc_bindings_init();
     
     spr[1].active = 1;  // player
+    spr[1].custom = new std::map<std::string, int>;  // mode = 0
     int sprite = add_sprite(0,0,0,0,0);
     TS_ASSERT_EQUALS(sprite, 2);
 
     /* Segfaults for sprite 1 in dink108 - and in FreeDink as well :P */
-    //dc_sp_custom(script_id, &yield, &returnint, "foo", 1, 3);
-    //dc_sp_custom(script_id, &yield, &returnint, "foo", 1, -1);
-    //TS_ASSERT_EQUALS(returnint, 0);
+    dc_sp_custom(script_id, &yield, &returnint, "foo", 1, 3);
+    dc_sp_custom(script_id, &yield, &returnint, "foo", 1, -1);
+    TS_ASSERT_EQUALS(returnint, 3);
 
     dc_sp_custom(script_id, &yield, &returnint, "foo", sprite, 4);
     dc_sp_custom(script_id, &yield, &returnint, "foo", sprite, -1);

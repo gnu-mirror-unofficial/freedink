@@ -709,6 +709,7 @@ past:
 		spr[1].size = 100;		 
 		spr[1].base_hit = 100;
 		spr[1].active = /*TRUE*/1;
+		spr[1].custom = new std::map<std::string, int>;
 
 		SDL_WarpMouseInWindow(window, spr[1].x, spr[1].y);
 		
