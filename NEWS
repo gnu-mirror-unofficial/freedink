@@ -3,6 +3,8 @@
 
 * UNRELEASED
 
+* User-visible changes:
+
 - Rewrite graphics/sounds/inputs against SDL2
 
   - Enforce full-screen aspect ratio (no more 4:3 stretched to 16:9).
@@ -38,6 +40,10 @@
 - Fix portability when saving a FreeDinkedit screen for the first time
 
 - Fix 'make_global_function' and 'load_map' DinkC functions
+
+- sp_custom returns 0 rather than -1 if the lookup key doesn't exist
+
+* Developer notes:
 
 - Move to C++
 

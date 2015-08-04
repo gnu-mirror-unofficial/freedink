@@ -103,7 +103,7 @@ void dinkc_sp_custom_set(dinkc_sp_custom hash, char key[200], int val)
 }
 
 /**
- * Get the int value associated with 'key'. Returns -1 if not found
+ * Get the int value associated with 'key'. Returns 0 if not found
  * (DinkC limitation: no way to return NULL or similar).
  */
 int dinkc_sp_custom_get(dinkc_sp_custom hash, char key[200])
@@ -114,5 +114,5 @@ int dinkc_sp_custom_get(dinkc_sp_custom hash, char key[200])
   if (slot != NULL)
     return ((struct str_int*)slot)->val;
   else
-    return -1;
+    return 0;
 }
