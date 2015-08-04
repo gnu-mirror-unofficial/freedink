@@ -1,7 +1,7 @@
 /**
  * FreeDink test suite
 
- * Copyright (C) 2005, 2014, 2015  Sylvain Beucler
+ * Copyright (C) 2014, 2015  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -51,86 +51,6 @@ void dc_fade_up(int script, int* yield, int* preturnint);
 
 class TestIntegration : public CxxTest::TestSuite {
 public:
-  /* fade_up() is prioritary over fade_down(),
-     post-fade callback script is still overwritten
-     
-     - broken during 108 merge of truecolor fade
-     
-     - half-fixed following:
-     http://lists.gnu.org/archive/html/bug-freedink/2009-08/msg00042.html
-     6b6bef615c4aae45206fa98bb8b4bfea96eb0f3b
-     "Give priority to fade_up() over fade_down() - fix SoB intro in truecolor mode"
-     -> in Pilgrim Quest, not Stone of Balance
-     
-     - 2nd half-fixed following:
-     http://www.dinknetwork.com/forum.cgi?MID=189461#189461 "FreeDink-specific"
-     http://www.dinknetwork.com/forum.cgi?MID=107994
-     a54fb13973e6b733e594766f981b724436218061
-  */
-  void test_dinkc_concurrent_fades() {
-    int yield, returnint;
-    int script_id1 = ts_script_init("fade1", strdup(""));
-    int script_id2 = ts_script_init("fade2", strdup(""));
-    
-    dinkc_init();
-    dinkc_bindings_init();
-    process_upcycle = process_downcycle = 0;
-    dc_fade_down(script_id1, &yield, &returnint);
-    dc_fade_up(script_id2, &yield, &returnint);
-    // callback set to last script that fade_xxx()'d
-    TS_ASSERT_EQUALS(cycle_script, script_id2);
-    // on fade_up/fade_down conflict, cancel fade effect
-    TS_ASSERT_EQUALS(process_downcycle, 0);
-    // TODO: in 108, flip_it would basically cancel the fade effect
-    // FreeDink just forces up_cycle=1 and let it finish
-    //TS_ASSERT_EQUALS(process_upcycle, 0);
-    
-    process_upcycle = process_downcycle = 0;
-    dc_fade_up(script_id1, &yield, &returnint);
-    dc_fade_down(script_id2, &yield, &returnint);
-    // callback set to last script that fade_xxx()'d
-    TS_ASSERT_EQUALS(cycle_script, script_id2);
-    // on fade_up/fade_down conflict, cancel fade effect
-    TS_ASSERT_EQUALS(process_downcycle, 0);
-    // TODO: in 108, flip_it would basically cancel the fade effect
-    // FreeDink just forces up_cycle=1 and let it finish
-    //TS_ASSERT_EQUALS(process_upcycle, 0);
-    
-    kill_script(script_id1);
-    kill_script(script_id2);
-    dinkc_bindings_quit();
-    dinkc_quit();
-  }
-
-  /* Run {2,2} / (char*,char*) functions without crashing */
-  void test_dinkc_make_global_function() {
-    dinkc_init();
-    dinkc_bindings_init();
-    int ret = dinkc_execute_one_liner("make_global_function(\"test\", \"my_function\")");
-    TS_ASSERT_EQUALS(ret, 0);
-    dinkc_bindings_quit();
-    dinkc_quit();
-  }
-
-  void test_dinkc_sp_custom() {
-    dinkc_sp_custom myhash = dinkc_sp_custom_new();
-    
-    dinkc_sp_custom_set(myhash, "foo", -1);
-    dinkc_sp_custom_set(myhash, "foo", 3);
-    dinkc_sp_custom_set(myhash, "foo", -1);
-    dinkc_sp_custom_set(myhash, "foo", 4);
-    
-    dinkc_sp_custom_set(myhash, "bar", 34);
-    
-    TS_ASSERT_EQUALS(dinkc_sp_custom_get(myhash, "foo"), 4);
-    TS_ASSERT_EQUALS(dinkc_sp_custom_get(myhash, "bar"), 34);
-    
-    dinkc_sp_custom_clear(myhash);
-    TS_ASSERT_EQUALS(dinkc_sp_custom_get(myhash, "bar"), -1);
-    
-    dinkc_sp_custom_free(myhash);
-  }
-
   // See also http://www.dinknetwork.com/forum.cgi?MID=186069#186263
   void test_integration_player_position_is_updated_after_screen_is_loaded() {
     //SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);

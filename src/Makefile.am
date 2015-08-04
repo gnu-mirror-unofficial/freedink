@@ -107,20 +107,27 @@ endif
 
 
 if HAVE_TESTS
-check_PROGRAMS = test_str_util test_io_util test_dinkc test_integration
+check_PROGRAMS = test_str_util test_io_util test_dinkc	\
+	test_dinkc_bindings test_integration
 .cxx.cpp:
 	$(CXXTESTGEN) --error-printer --include test_sdl_workaround.h -o $@ $<
 EXTRA_DIST += test_sdl_workaround.h
+test_str_util_SOURCES = str_util.cpp test_str_util.cpp
+test_io_util_SOURCES = io_util.cpp test_io_util.cpp
+test_dinkc_SOURCES = dinkc.cpp str_util.cpp paths.cpp io_util.cpp	\
+	msgbox.cpp i18n.cpp test_dinkc.cpp
 test_integration_SOURCES = $(COMMON_OBJS) dinkc_bindings.cpp		\
 	dinkc_bindings.h dinkc.cpp dinkc.h dinkc_console.cpp		\
 	dinkc_console.h freedink.cpp game_engine.cpp game_engine.h	\
 	i18n.cpp i18n.h inventory.cpp inventory.h meminfo.cpp		\
 	meminfo.h savegame.cpp savegame.h status.cpp status.h		\
 	talk.cpp talk.h text.cpp text.h test_integration.cpp
-test_str_util_SOURCES = str_util.cpp test_str_util.cpp
-test_io_util_SOURCES = io_util.cpp test_io_util.cpp
-test_dinkc_SOURCES = dinkc.cpp str_util.cpp paths.cpp io_util.cpp	\
-	msgbox.cpp i18n.cpp test_dinkc.cpp
+test_dinkc_bindings_SOURCES = $(COMMON_OBJS) dinkc_bindings.cpp		\
+	dinkc_bindings.h dinkc.cpp dinkc.h dinkc_console.cpp		\
+	dinkc_console.h freedink.cpp game_engine.cpp game_engine.h	\
+	i18n.cpp i18n.h inventory.cpp inventory.h meminfo.cpp		\
+	meminfo.h savegame.cpp savegame.h status.cpp status.h		\
+	talk.cpp talk.h text.cpp text.h test_dinkc_bindings.cpp
 # Tests to run
 TESTS = $(check_PROGRAMS)
 endif
