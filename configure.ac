@@ -81,9 +81,11 @@ AC_ARG_ENABLE([tests],
   AS_HELP_STRING([--disable-tests], [run test suite (default is enabled)]),
   [], [enable_tests=yes])
 if test x"$enable_tests" = x"yes"; then
-  PKG_CHECK_MODULES([CHECK], [check >= 0.9.4],
-    [true],  # continue on error
-    AC_MSG_WARN($CHECK_PKG_ERRORS); LACK_CHECK=1)
+  AC_PATH_PROG(CXXTESTGEN, cxxtestgen)
+  if test -z "$CXXTESTGEN"; then
+    AC_MSG_WARN([Need cxxtestgen to run the testsuite])
+    LACK_CXXTESTGEN=1
+  fi
 fi
 AM_CONDITIONAL(HAVE_TESTS, test x"$enable_tests" = x"yes")
 
@@ -187,9 +189,9 @@ if test "$LACK_SDL2" = 1; then
   echo "$SDL2_PKG_ERRORS"
   error=1
 fi
-if test "$LACK_CHECK" = 1; then
-  echo "* You need to install the 'check' testing framework:"
-  echo "$CHECK_PKG_ERRORS"
+if test "$LACK_CXXTESTGEN" = 1; then
+  echo "* You need to install the 'cxxtest' testing framework:"
+  echo "Could not find 'cxxtestgen'"
   error=1
 fi
 if test "$USE_NLS" = no; then

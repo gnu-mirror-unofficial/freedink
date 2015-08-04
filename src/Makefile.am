@@ -107,13 +107,16 @@ endif
 
 
 if HAVE_TESTS
-TESTS = check_freedink
-check_PROGRAMS = check_freedink
-check_freedink_SOURCES = $(COMMON_OBJS) dinkc_bindings.cpp		\
+TESTS = cxxtest_freedink
+check_PROGRAMS = cxxtest_freedink
+cxxtest_freedink_SOURCES = $(COMMON_OBJS) dinkc_bindings.cpp		\
 	dinkc_bindings.h dinkc.cpp dinkc.h dinkc_console.cpp		\
-	dinkc_console.h game_engine.cpp game_engine.h i18n.cpp i18n.h	\
-	inventory.cpp inventory.h meminfo.cpp meminfo.h savegame.cpp	\
-	savegame.h status.cpp status.h talk.cpp talk.h text.cpp		\
-	text.h check_freedink.cpp freedink.cpp
-check_freedink_LDADD = $(LDADD) @CHECK_LIBS@
+	dinkc_console.h freedink.cpp game_engine.cpp game_engine.h	\
+	i18n.cpp i18n.h inventory.cpp inventory.h meminfo.cpp		\
+	meminfo.h savegame.cpp savegame.h status.cpp status.h		\
+	talk.cpp talk.h text.cpp text.h cxxtest_freedink.cpp
+cxxtest_freedink.cpp: $(srcdir)/cxxtest_freedink.hpp
+#	include SDL to avoid conflicting declaration of main
+#	see also http://sourceforge.net/p/scummvm/bugs/3412/#c975
+	$(CXXTESTGEN) --error-printer --include "SDL.h" -o $@ $<
 endif
