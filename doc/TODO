@@ -119,6 +119,9 @@ Bug reports
 
   Reports of font aspect/load issues.
 
+- The screen fade is too fast when compared to dink108.exe
+  (tested with Wine)
+
 
 Tests
 =====
