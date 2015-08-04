@@ -115,35 +115,35 @@ public:
 
   void test_dinkc_sp_custom() {
     int yield, returnint;
-    int script_id = ts_script_init("fade1", strdup(""));
+    int script_id = ts_script_init("test_dinkc_sp_custom", strdup(""));
     
     dinkc_init();
     dinkc_bindings_init();
     
-    spr[1].active = 1;
-    spr[2].active = 1;
-    spr[2].custom = new std::map<std::string, int>;
+    spr[1].active = 1;  // player
+    int sprite = add_sprite(0,0,0,0,0);
+    TS_ASSERT_EQUALS(sprite, 2);
 
     /* Segfaults for sprite 1 in dink108 - and in FreeDink as well :P */
     //dc_sp_custom(script_id, &yield, &returnint, "foo", 1, 3);
     //dc_sp_custom(script_id, &yield, &returnint, "foo", 1, -1);
     //TS_ASSERT_EQUALS(returnint, 0);
 
-    dc_sp_custom(script_id, &yield, &returnint, "foo", 2, 4);
-    dc_sp_custom(script_id, &yield, &returnint, "foo", 2, -1);
+    dc_sp_custom(script_id, &yield, &returnint, "foo", sprite, 4);
+    dc_sp_custom(script_id, &yield, &returnint, "foo", sprite, -1);
     TS_ASSERT_EQUALS(returnint, 4);
     
-    dc_sp_custom(script_id, &yield, &returnint, "foo", 2, 4);
-    dc_sp_custom(script_id, &yield, &returnint, "bar", 2, 34);
+    dc_sp_custom(script_id, &yield, &returnint, "foo", sprite, 4);
+    dc_sp_custom(script_id, &yield, &returnint, "bar", sprite, 34);
 
-    dc_sp_custom(script_id, &yield, &returnint, "foo", 2, -1);
+    dc_sp_custom(script_id, &yield, &returnint, "foo", sprite, -1);
     TS_ASSERT_EQUALS(returnint, 4);
-    dc_sp_custom(script_id, &yield, &returnint, "bar", 2, -1);
+    dc_sp_custom(script_id, &yield, &returnint, "bar", sprite, -1);
     TS_ASSERT_EQUALS(returnint, 34);
     
-    dc_sp_custom(script_id, &yield, &returnint, "idontexit", 2, -1);
+    dc_sp_custom(script_id, &yield, &returnint, "idontexit", sprite, -1);
     TS_ASSERT_EQUALS(returnint, 0);
 
-    delete(spr[2].custom);
+    delete(spr[sprite].custom);
   }
 };
