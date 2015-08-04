@@ -107,3 +107,11 @@ fluidsynth is now used by default in the Debian version of SDL-Mixer. To disable
 
 Note there's also a bug in the TiMidity backend for said Debian version:
 http://bugs.debian.org/726912
+
+
+ScummVM
+=======
+
+ScummVM implements a few MIDI backends, including two AdLib card
+emulators:
+http://wiki.scummvm.org/index.php/User_Manual/Appendix:_Music_and_sound
