@@ -39,9 +39,7 @@ struct ts_block
 struct hardness
 {
   struct ts_block htile[HARDNESS_NB_TILES];
-  /* default hardness for each background tile square, 12*8=96 tiles
-     per screen but indexed % 128 in the code (so 128*(41-1)+12*8=5216
-     used indexes instead of 12*8*41=3936). */
+  /* default hardness for each background tile square */
   short btile_default[GFX_TILES_NB_SQUARES];
 };
 

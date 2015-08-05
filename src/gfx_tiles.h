@@ -33,6 +33,8 @@
 #define GFX_TILES_SCREEN_H 8
 #define GFX_TILES_PER_SCREEN (GFX_TILES_SCREEN_W * GFX_TILES_SCREEN_H)
 #define GFX_TILES_SQUARE_SIZE 50
+/* 96 tiles per tileset but indexed in slots of 128 in the code (aka memory holes)
+   so 128*(41-1)+12*8=5216 indexes used, instead of 12*8*41=3936 */
 #define GFX_TILES_NB_SQUARES (128*(GFX_TILES_NB_SETS-1)+GFX_TILES_SCREEN_W*GFX_TILES_SCREEN_H)
 
 extern SDL_Surface *gfx_tiles[GFX_TILES_NB_SETS + 1];
