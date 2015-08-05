@@ -41,6 +41,7 @@
 #include "SDL_image.h"
 
 #include "game_engine.h"
+#include "map.h"
 #include "screen.h"
 #include "dinkini.h"
 #include "input.h"
@@ -370,7 +371,7 @@ void save_hard(void)
   char skipbuf[10000]; // more than any fseek we do
   memset(skipbuf, 0, 10000);
 
-  FILE *f = paths_dmodfile_fopen("hard.dat", "wb");
+  FILE *f = paths_dmodfile_fopen(current_hard, "wb");
   if (!f)
     {
       perror("Couldn't save hard.dat");
@@ -411,11 +412,11 @@ void load_hard(void)
   FILE *f = NULL;
 
   /* Try loading the D-Mod hard.dat */
-  f = paths_dmodfile_fopen("hard.dat", "rb");
+  f = paths_dmodfile_fopen(current_hard, "rb");
 
   /* Fallback to the default hard.dat */
   if (f == NULL)
-    f = paths_fallbackfile_fopen("hard.dat", "rb");
+    f = paths_fallbackfile_fopen(current_hard, "rb");
 
   if (f == NULL)
     {
