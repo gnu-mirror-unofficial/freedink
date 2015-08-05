@@ -370,6 +370,10 @@ void place_sprites()
     }
 }
 
+void editor_save_screen(int num) {
+  save_screen(current_map, num);
+}
+
 void editor_load_screen(int num)
 {
   if (load_screen_to(current_map, num, &cur_screen) < 0)
@@ -754,7 +758,7 @@ int add_new_map()
   if (loc_new > 768)
     return -1;
 
-  save_screen(loc_new);
+  editor_save_screen(loc_new);
   return loc_new;
 }
 
@@ -1208,14 +1212,14 @@ if (spr[1].size == 100)
 		//need to add it to the right
 		if (map.loc[cur_map+1] > 0)
 		{
-        	save_screen(map.loc[cur_map]);
+        	editor_save_screen(map.loc[cur_map]);
           log_debug("loading right map");
 			editor_load_screen(map.loc[cur_map+1]);
                int holdx = spr[1].x;
                int holdy = spr[1].y;
 			   spr[1].x -= 600;
 			sp_add();
-			save_screen(map.loc[cur_map+1]);
+			editor_save_screen(map.loc[cur_map+1]);
 			editor_load_screen(map.loc[cur_map]);
            spr[1].x = holdx;
 		   spr[1].y = holdy;
@@ -1230,14 +1234,14 @@ if (spr[1].size == 100)
 		//need to add it to the left
 		if (map.loc[cur_map-1] > 0)
 		{
-        	save_screen(map.loc[cur_map]);
+        	editor_save_screen(map.loc[cur_map]);
           log_debug("loading right map");
 			editor_load_screen(map.loc[cur_map-1]);
                int holdx = spr[1].x;
                int holdy = spr[1].y;
 			   spr[1].x += 600;
 			sp_add();
-			save_screen(map.loc[cur_map-1]);
+			editor_save_screen(map.loc[cur_map-1]);
 			editor_load_screen(map.loc[cur_map]);
            spr[1].x = holdx;
 		   spr[1].y = holdy;
@@ -1252,14 +1256,14 @@ if (spr[1].size == 100)
 		//need to add it to the bottom
 		if (map.loc[cur_map+32] > 0)
 		{
-        	save_screen(map.loc[cur_map]);
+        	editor_save_screen(map.loc[cur_map]);
           log_debug("loading bottom ");
 			editor_load_screen(map.loc[cur_map+32]);
                int holdx = spr[1].x;
                int holdy = spr[1].y;
 			   spr[1].y -= 400;
 			sp_add();
-			save_screen(map.loc[cur_map+32]);
+			editor_save_screen(map.loc[cur_map+32]);
 			editor_load_screen(map.loc[cur_map]);
            spr[1].x = holdx;
 		   spr[1].y = holdy;
@@ -1274,14 +1278,14 @@ if (spr[1].size == 100)
 		//need to add it to the left
 		if (map.loc[cur_map-32] > 0)
 		{
-        	save_screen(map.loc[cur_map]);
+        	editor_save_screen(map.loc[cur_map]);
           log_debug("loading top map");
 			editor_load_screen(map.loc[cur_map-32]);
                int holdx = spr[1].x;
                int holdy = spr[1].y;
 			   spr[1].y += 400;
 			sp_add();
-			save_screen(map.loc[cur_map-32]);
+			editor_save_screen(map.loc[cur_map-32]);
 			editor_load_screen(map.loc[cur_map]);
            spr[1].x = holdx;
 		   spr[1].y = holdy;
@@ -3767,7 +3771,7 @@ void updateFrame(void)
 			    map.indoor[buf_map] = buffmap.indoor[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)];
 			    map.music[buf_map] = buffmap.music[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)];
 
-			    save_screen(map.loc[buf_map]);
+			    editor_save_screen(map.loc[buf_map]);
 
 			    save_info();
 			    draw_minimap();
@@ -3975,7 +3979,7 @@ void updateFrame(void)
 		    if ((mode == MODE_SCREEN_TILES) && (sjoy.button[EDITOR_ACTION_ESCAPE]))
 		      {
 			// jump to map selector selector from map mode
-			save_screen(map.loc[cur_map]);
+			editor_save_screen(map.loc[cur_map]);
 			spr[h].seq = 2;
 			spr[h].seq_orig = 2;
 			//SoundPlayEffect( SOUND_JUMP );

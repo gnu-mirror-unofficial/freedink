@@ -34,8 +34,6 @@
 
 #define MAX_SPRITES_AT_ONCE 300
 
-extern char current_map[50];
-
 struct sp
 {
   int x,moveman;
@@ -166,7 +164,7 @@ extern int last_sprite_created;
 
 extern void screen_init();
 extern int load_screen_to(char* path, const int num, struct screen* screen);
-extern void save_screen(const int num);
+extern void save_screen(char* path, const int num);
 extern void screen_rank_editor_sprites(int rank[]);
 extern void screen_rank_game_sprites(int rank[]);
 extern void fill_hard_sprites(void);

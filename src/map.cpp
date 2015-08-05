@@ -36,7 +36,7 @@
 struct map_info map;
 
 char current_dat[50] = "dink.dat";
-
+char current_map[50] = "map.dat";
 
 /**
  * Load dink.dat to specified memory buffer

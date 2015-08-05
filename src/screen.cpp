@@ -33,9 +33,7 @@
 #include "sfx.h"
 #include "log.h"
 #include "paths.h"
-#include "map.h"
 
-char current_map[50] = "map.dat";
 struct screen cur_screen;
 
 struct sp spr[MAX_SPRITES_AT_ONCE]; //max sprite control systems at once
@@ -295,7 +293,7 @@ int load_screen_to(char* path, const int num, struct screen* screen)
 /**
  * Save screen number 'num' in the map. Only used by the editor.
  */
-void save_screen(const int num)
+void save_screen(char* path, const int num)
 {
   char skipbuf[10000]; // more than any fseek we do
   memset(skipbuf, 0, 10000);
@@ -306,7 +304,7 @@ void save_screen(const int num)
   log_info("Saving screen data..");
   if (num > 0)
     {
-      f = paths_dmodfile_fopen(current_map, "r+b");
+      f = paths_dmodfile_fopen(path, "r+b");
       if (f == NULL)
 	{
 	  perror("Cannot save screen");

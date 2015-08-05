@@ -1,8 +1,7 @@
 /**
- * Map - group of screen references (dink.dat)
+ * FreeDink test suite - Map
 
- * Copyright (C) 1997, 1998, 1999, 2002, 2003  Seth A. Robinson
- * Copyright (C) 2005, 2007, 2008, 2009, 2014  Sylvain Beucler
+ * Copyright (C) 2015  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -21,27 +20,23 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MAP_H
-#define _MAP_H
-
-#include "screen.h"
-
-extern char current_dat[50];
-extern char current_map[50];
-
-
-/* dink.dat */
-struct map_info
-{
-  int loc[768+1];  // screen index in map.dat
-  struct screen* ts_loc_mem[768+1]; // pre-loaded screen for testsuite
-  int music[768+1];
-  int indoor[768+1];
-};
-extern struct map_info map;
-
-extern int load_info_to(char* path, struct map_info *mymap);
-extern void load_info(void);
-extern void save_info(void);
-
+#ifdef HAVE_CONFIG_H
+#include <config.h>
 #endif
+
+#include "map.h"
+#include "paths.h"
+
+class TestMap : public CxxTest::TestSuite {
+public:
+  void setUp() {
+  }
+  void tearDown() {
+  }
+  
+  void test_new() {
+    ts_paths_init();
+    TS_ASSERT_EQUALS(load_info_to("", &map), -1);
+    TS_ASSERT_EQUALS(map.loc[1], 0);
+  }
+};
