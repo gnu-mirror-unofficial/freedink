@@ -39,13 +39,6 @@
 
 extern SDL_Surface *gfx_tiles[GFX_TILES_NB_SETS + 1];
 
-/* Background square in a screen */
-struct tile
-{
-  short square_full_idx0; /* tile index */
-  short althard; /* alternate hardness index, 0 = default tile hardness */
-};
-
 extern void tiles_load_default(void);
 extern void tiles_load_slot(char* relpath, int slot);
 extern void tiles_unload_all(void);

@@ -40,6 +40,7 @@ struct hardness
 {
   struct ts_block htile[HARDNESS_NB_TILES];
   /* default hardness for each background tile square */
+  /* TODO: move me to gfx_tiles for clarity: */
   short btile_default[GFX_TILES_NB_SQUARES];
 };
 
