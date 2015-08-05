@@ -42,7 +42,7 @@ struct item_struct
   int frame;
 };
 
-struct mydata
+struct editor_sprite_override
 {
   unsigned char type[100];  // DinkC's editor_type(i)
   unsigned short seq[100];  // DinkC's editor_seq(i)
@@ -70,7 +70,7 @@ struct player_info
   int curitem; // highlighted item in the inventory
   enum item_type item_type;
 
-  struct mydata spmap[769]; /* editor sprite override */
+  struct editor_sprite_override spmap[769]; /* editor sprite override */
   
   struct varman var[MAX_VARS];
   
