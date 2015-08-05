@@ -11,11 +11,9 @@ EXTRA_DIST = bootstrap gnulib/m4/gnulib-cache.m4
 EXTRA_DIST += doc
 EXTRA_DIST += BUILD TRANSLATIONS.txt TROUBLESHOOTING
 # Packaging
-EXTRA_DIST += debian freedink.spec psp
+EXTRA_DIST += debian freedink.spec
 # Other programs of interest
-EXTRA_DIST += test contrib
-# Developer tools
-EXTRA_DIST += valgrind
+EXTRA_DIST += contrib
 
 dist-hook:
 	find $(distdir) -name '*~' | xargs -r rm -f
@@ -24,7 +22,6 @@ dist-hook:
 	find $(distdir) -name '.gitignore' | xargs -r rm -f
 #	At the end of each line (doubled $), add a \r, so we get \r\n
 	cd $(distdir) && sed 's/$$/\r/' README > README.txt
-	make -C $(distdir)/test/sdl clean
 
 version:
 	@echo $(VERSION)

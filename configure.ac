@@ -134,7 +134,8 @@ fi
 
 # SDL and core libs
 # See BUILD for version requirements
-PKG_CHECK_MODULES([SDL2], [sdl2 >= 2.0  SDL2_image > 2.0.0 SDL2_mixer > 2.0.0 SDL2_ttf > 2.0.12 SDL2_gfx >= 1.0.0],
+# PACKAGERS: DO *NOT* LOWER THE VERSIONS UNLESS YOU WANT TONS OF BUGS!
+PKG_CHECK_MODULES([SDL2], [sdl2 >= 2.0  SDL2_image > 2.0.0 SDL2_mixer > 2.0.0 SDL2_ttf > 2.0.12 SDL2_gfx >= 1.0.1],
   [CXXFLAGS="$CXXFLAGS $SDL2_CFLAGS"; LIBS="$SDL2_LIBS $LIBS"],
   AC_MSG_WARN($SDL2_PKG_ERRORS); LACK_SDL2=1)
 

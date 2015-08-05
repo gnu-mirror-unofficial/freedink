@@ -76,8 +76,8 @@ find destdir/usr/local/bin/ -type f -name "*.exe" | while read file; do
   mv $file ../zip/
 done
 # Resources
-cp -a destdir/usr/local/share/freedink zip/
-cp -a destdir/usr/local/share/locale zip/freedink/
+cp -a destdir/usr/local/share/freedink ../zip/
+cp -a destdir/usr/local/share/locale ../zip/freedink/
 popd
 #rm -rf cross-woe-32/
 
