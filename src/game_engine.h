@@ -70,9 +70,9 @@ struct player_info
   int curitem; // highlighted item in the inventory
   enum item_type item_type;
 
-  struct mydata spmap[769];
-  struct varman var[MAX_VARS];
+  struct mydata spmap[769]; /* editor sprite override */
   
+  struct varman var[MAX_VARS];
   
   BOOL_1BYTE push_active;
   int push_dir;
