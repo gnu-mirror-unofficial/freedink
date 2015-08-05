@@ -41,6 +41,7 @@ struct map_info
 };
 extern struct map_info map;
 
+
 extern int load_info_to(char* path, struct map_info *mymap);
 extern void load_info(void);
 extern void save_info(void);

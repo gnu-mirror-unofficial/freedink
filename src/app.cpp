@@ -43,6 +43,7 @@
 #include "dinkini.h"
 #include "dinkvar.h"
 #include "map.h"
+#include "hardness_tiles.h"
 #include "gfx.h"
 #include "gfx_fonts.h"
 #include "gfx_palette.h"

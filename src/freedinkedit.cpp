@@ -45,6 +45,7 @@
 #include "dinkvar.h"
 #include "map.h"
 #include "screen.h"
+#include "hardness_tiles.h"
 #include "fastfile.h"
 #include "gfx.h"
 #include "game_engine.h"

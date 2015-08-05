@@ -29,6 +29,7 @@
 
 #include "dinkvar.h"
 #include "screen.h"
+#include "hardness_tiles.h"
 #include "gfx.h"
 #include "sfx.h"
 #include "log.h"

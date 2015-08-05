@@ -135,7 +135,6 @@ extern void kill_returning_stuff(int script);
 /* Map */
 extern unsigned char get_hard(int x1, int y1);
 extern unsigned char get_hard_play(int h, int x1, int y1);
-extern void load_hard(void);
 
 /* OS */
 extern int bActive; // is application active?
@@ -149,32 +148,10 @@ extern void figure_out(char* line);
 /* Metadata */
 extern int burn_revision;
 
-/*
- * Game & editor
- */
-struct ts_block
-{
-  unsigned char hm[50+1][50+1];  // tile hardness/hitmap
-  BOOL_1BYTE used;
-};
-
-//struct for hardness info, INDEX controls which hardness each block has.  800 max
-//types available.
-#define HARDNESS_NB_TILES 800
-struct hardness
-{
-  struct ts_block htile[HARDNESS_NB_TILES];
-  /* default hardness for each background tile square, 12*8=96 tiles
-     per screen but indexed % 128 in the code (so 128*(41-1)+12*8=5216
-     used indexes instead of 12*8*41=3936). */
-  short btile_default[GFX_TILES_NB_SQUARES];
-};
-
 /*bool*/int get_box (int h, rect * box_crap, rect * box_real);
 extern /*bool*/int dinkedit;
 extern int draw_screen_tiny;
 extern int cur_map;
-extern struct hardness hmap;
 
 
 /*
@@ -187,7 +164,6 @@ extern /*bool*/int kill_last_sprite(void);
 extern void check_frame_status(int h, int frame);
 extern void flip_it_second(void);
 extern int realhard(int tile);
-extern void save_hard(void);
 
 extern void fill_screen(int num);
 
