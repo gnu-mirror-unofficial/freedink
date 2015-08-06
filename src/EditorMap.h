@@ -25,6 +25,7 @@
 #define _MAP_H
 
 #include "editor_screen.h"
+#include <string>
 
 extern char current_dat[50];
 extern char current_map[50];
@@ -35,6 +36,13 @@ extern char current_hard[50];
 class EditorMap
 {
  public:
+  std::string dink_dat;
+  std::string map_dat;
+  std::string hard_dat;
+
+  EditorMap();
+  bool load();
+  
   int loc[768+1];  // screen index in map.dat
   struct screen* ts_loc_mem[768+1]; // pre-loaded screen for testsuite
   int music[768+1];
@@ -43,7 +51,7 @@ class EditorMap
 extern EditorMap g_map;
 
 
-extern int map_new(char* path, EditorMap *mymap);
+extern int map_new(const char* path, EditorMap *mymap);
 extern void map_load();
 extern void map_save();
 

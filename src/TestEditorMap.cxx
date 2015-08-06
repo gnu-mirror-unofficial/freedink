@@ -29,18 +29,17 @@
 
 class TestEditorMap : public CxxTest::TestSuite {
 public:
-  void setUp() {
-  }
-  void tearDown() {
-  }
-  
-  void test_new() {
-    ts_paths_init();
-    TS_ASSERT_EQUALS(current_dat, "dink.dat");
-    map_load();
-    TS_ASSERT_EQUALS(g_map.loc[1], 0);
-
-    EditorMap testmap;
-    TS_ASSERT_EQUALS(map_new("", &testmap), -1);
-  }
+	void setUp() {}
+	void tearDown() {}
+	
+	void test_new() {
+		ts_paths_init();
+		TS_ASSERT_EQUALS(current_dat, "dink.dat");
+		map_load();
+		TS_ASSERT_EQUALS(g_map.loc[1], 0);
+		
+		EditorMap testmap;
+		TS_ASSERT_EQUALS(map_new("", &testmap), -1);
+		testmap.load();
+	}
 };

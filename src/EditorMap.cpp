@@ -39,10 +39,18 @@ char current_dat[50] = "dink.dat";
 char current_map[50] = "map.dat";
 char current_hard[50] = "hard.dat";
 
+EditorMap::EditorMap() :
+	dink_dat("dink.dat"), map_dat("map.dat"), hard_dat("hard.dat")
+{}
+
+bool EditorMap::load() {
+	return (map_new(dink_dat.c_str(), this) != -1);
+}
+
 /**
  * Load dink.dat to specified memory buffer
  */
-int map_new(char* path, EditorMap* mymap)
+int map_new(const char* path, EditorMap* mymap)
 {
   FILE *f = NULL;
 
