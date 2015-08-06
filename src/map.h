@@ -32,8 +32,9 @@ extern char current_hard[50];
 
 
 /* dink.dat */
-struct map_info
+class map_info
 {
+ public:
   int loc[768+1];  // screen index in map.dat
   struct screen* ts_loc_mem[768+1]; // pre-loaded screen for testsuite
   int music[768+1];

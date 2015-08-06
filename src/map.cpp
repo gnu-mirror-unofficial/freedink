@@ -33,7 +33,7 @@
 #include "io_util.h"
 
 /* dink.dat */
-struct map_info map;
+map_info map;
 
 char current_dat[50] = "dink.dat";
 char current_map[50] = "map.dat";
