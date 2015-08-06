@@ -27,10 +27,11 @@
 #include "editor_screen.h"
 #include <string>
 
+using namespace std;
+
 extern char current_dat[50];
 extern char current_map[50];
 extern char current_hard[50];
-
 
 /* dink.dat */
 class EditorMap
@@ -40,7 +41,7 @@ class EditorMap
   std::string map_dat;
   std::string hard_dat;
 
-  EditorMap();
+  EditorMap(string dink_dat = "dink.dat", string map_dat = "map.dat");
   bool load();
   
   int loc[768+1];  // screen index in map.dat

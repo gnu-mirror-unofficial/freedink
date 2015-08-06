@@ -32,6 +32,8 @@
 #include "paths.h"
 #include "io_util.h"
 
+using namespace std;
+
 /* dink.dat */
 EditorMap g_map;
 
@@ -39,9 +41,12 @@ char current_dat[50] = "dink.dat";
 char current_map[50] = "map.dat";
 char current_hard[50] = "hard.dat";
 
-EditorMap::EditorMap() :
-	dink_dat("dink.dat"), map_dat("map.dat"), hard_dat("hard.dat")
-{}
+EditorMap::EditorMap(string dink_dat, string map_dat) :
+	dink_dat(dink_dat), map_dat(map_dat), hard_dat("hard.dat") {
+	strcpy(current_dat, dink_dat.c_str());
+	strcpy(current_map, map_dat.c_str());
+}
+
 
 bool EditorMap::load() {
 	return (map_new(dink_dat.c_str(), this) != -1);
