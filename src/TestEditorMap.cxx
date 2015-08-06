@@ -40,9 +40,10 @@ public:
 		
 		EditorMap testmap;
 		TS_ASSERT_EQUALS(map_new("", &testmap), -1);
-		testmap.load();
+		TS_ASSERT_EQUALS(testmap.load(), false);
 
 		EditorMap testmap2("dink2.dat", "map2.dat");
+		TS_ASSERT_EQUALS(testmap.load(), false);
 		TS_ASSERT_EQUALS(testmap2.dink_dat.c_str(), "dink2.dat");
 		TS_ASSERT_EQUALS(testmap2.map_dat.c_str(), "map2.dat");
 	}
