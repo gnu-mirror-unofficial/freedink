@@ -372,12 +372,12 @@ void place_sprites()
 }
 
 void editor_save_screen(int num) {
-  save_screen(current_map, num);
+  save_screen(g_map.map_dat.c_str(), num);
 }
 
 void editor_load_screen(int num)
 {
-  if (load_screen_to(current_map, num, &cur_ed_screen) < 0)
+  if (load_screen_to(g_map.map_dat.c_str(), num, &cur_ed_screen) < 0)
     return;
   fill_whole_hard();
 }

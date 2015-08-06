@@ -469,7 +469,7 @@ void save_game(int num)
   /* v1.08: use wasted space for storing file location of map.dat,
      dink.dat, palette, and tiles */
   /* char cbuff[6000];*/
-  fwrite(current_map, 50, 1, f);
+  fwrite(g_map.map_dat.c_str(), 50, 1, f);
   fwrite(g_map.dink_dat.c_str(), 50, 1, f);
   fwrite(play.palette, 50, 1, f);
 

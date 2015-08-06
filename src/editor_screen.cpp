@@ -94,7 +94,7 @@ void screen_rank_editor_sprites(int* rank)
 /**
  * Load 1 screen from specified map.dat in specified memory buffer
  */
-int load_screen_to(char* path, const int num, struct screen* screen)
+int load_screen_to(const char* path, const int num, struct screen* screen)
 {
   char skipbuf[10000]; // more than any fseek we do
 
@@ -207,7 +207,7 @@ int load_screen_to(char* path, const int num, struct screen* screen)
 /**
  * Save screen number 'num' in the map. Only used by the editor.
  */
-void save_screen(char* path, const int num)
+void save_screen(const char* path, const int num)
 {
   char skipbuf[10000]; // more than any fseek we do
   memset(skipbuf, 0, 10000);

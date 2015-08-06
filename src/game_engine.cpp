@@ -271,7 +271,7 @@ int game_load_screen(int num)
 
   if (g_map.ts_loc_mem[num] != NULL)
     memcpy(&cur_ed_screen, g_map.ts_loc_mem[num], sizeof(struct screen));
-  else if (load_screen_to(current_map, num, &cur_ed_screen) < 0)
+  else if (load_screen_to(g_map.map_dat.c_str(), num, &cur_ed_screen) < 0)
     return -1;
   
   spr[1].move_active = 0;

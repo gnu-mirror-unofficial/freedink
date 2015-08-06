@@ -37,13 +37,10 @@ using namespace std;
 /* dink.dat */
 EditorMap g_map;
 
-char current_map[50] = "map.dat";
 char current_hard[50] = "hard.dat";
 
 EditorMap::EditorMap(string dink_dat, string map_dat) :
-	dink_dat(dink_dat), map_dat(map_dat), hard_dat("hard.dat") {
-	strcpy(current_map, map_dat.c_str());
-}
+	dink_dat(dink_dat), map_dat(map_dat), hard_dat("hard.dat") {}
 
 
 bool EditorMap::load() {

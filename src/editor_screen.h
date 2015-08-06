@@ -71,8 +71,8 @@ struct screen
 };
 
 extern void screen_init();
-extern int load_screen_to(char* path, const int num, struct screen* screen);
-extern void save_screen(char* path, const int num);
+extern int load_screen_to(const char* path, const int num, struct screen* screen);
+extern void save_screen(const char* path, const int num);
 extern void screen_rank_editor_sprites(int rank[]);
 extern int realhard(int tile);
 
