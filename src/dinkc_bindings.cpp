@@ -1801,8 +1801,7 @@ void dc_set_save_game_info(int script, int* yield, int* preturnint, char* info)
 void dc_load_map(int script, int* yield, int* preturnint, char* mapdat_file, char* dinkdat_file)
 {
   // load a new map/dink.dat
-  strcpy(current_map, mapdat_file);
-  strcpy(current_dat, dinkdat_file);
+  g_map = EditorMap(dinkdat_file, mapdat_file);
   map_load();
 }
 

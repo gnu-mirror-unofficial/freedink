@@ -29,7 +29,6 @@
 
 using namespace std;
 
-extern char current_dat[50];
 extern char current_map[50];
 extern char current_hard[50];
 

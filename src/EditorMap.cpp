@@ -37,13 +37,11 @@ using namespace std;
 /* dink.dat */
 EditorMap g_map;
 
-char current_dat[50] = "dink.dat";
 char current_map[50] = "map.dat";
 char current_hard[50] = "hard.dat";
 
 EditorMap::EditorMap(string dink_dat, string map_dat) :
 	dink_dat(dink_dat), map_dat(map_dat), hard_dat("hard.dat") {
-	strcpy(current_dat, dink_dat.c_str());
 	strcpy(current_map, map_dat.c_str());
 }
 
@@ -87,7 +85,7 @@ int map_new(const char* path, EditorMap* mymap)
  */
 void map_load(void)
 {
-  map_new(current_dat, &g_map);
+	map_new(g_map.dink_dat.c_str(), &g_map);
 }
 
 
@@ -97,7 +95,7 @@ void map_load(void)
  */
 void map_save(void)
 {
-  FILE *f = paths_dmodfile_fopen(current_dat, "wb");
+  FILE *f = paths_dmodfile_fopen(g_map.dink_dat.c_str(), "wb");
   if (f == NULL)
     {
       perror("Cannot save dink.dat");

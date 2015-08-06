@@ -253,8 +253,7 @@
       // new map, if exist
       if (strlen (mapdat) > 0 && strlen (dinkdat) > 0)
 	{
-	  strcpy (current_map, mapdat);
-	  strcpy (current_dat, dinkdat);
+	  g_map = EditorMap(dinkdat, mapdat);
 	  map_load();
 	}
       
@@ -471,7 +470,7 @@ void save_game(int num)
      dink.dat, palette, and tiles */
   /* char cbuff[6000];*/
   fwrite(current_map, 50, 1, f);
-  fwrite(current_dat, 50, 1, f);
+  fwrite(g_map.dink_dat.c_str(), 50, 1, f);
   fwrite(play.palette, 50, 1, f);
 
   for (i = 0; i < GFX_TILES_NB_SETS+1; i++)
