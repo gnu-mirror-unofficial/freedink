@@ -41,6 +41,7 @@ class EditorMap
 
   EditorMap(string dink_dat = "dink.dat", string map_dat = "map.dat");
   bool load();
+  void save();
   
   int loc[768+1];  // screen index in map.dat
   struct screen* ts_loc_mem[768+1]; // pre-loaded screen for testsuite

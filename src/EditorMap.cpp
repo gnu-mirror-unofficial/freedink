@@ -68,6 +68,29 @@ bool EditorMap::load() {
   return true;
 }
 
+void EditorMap::save() {
+	FILE *f = paths_dmodfile_fopen(dink_dat.c_str(), "wb");
+	if (f == NULL)
+		{
+			perror("Cannot save dink.dat");
+			return;
+		}
+	
+	/* Portably dump EditorMap to disk */
+	int i = 0;
+	char name[20] = "Smallwood";
+	fwrite(name, 20, 1, f);
+	for (i = 0; i < 769; i++)
+		write_lsb_int(loc[i],    f);
+	for (i = 0; i < 769; i++)
+		write_lsb_int(music[i],  f);
+	for (i = 0; i < 769; i++)
+		write_lsb_int(indoor[i], f);
+	fseek(f, 2240, SEEK_CUR); // unused field
+	
+	fclose(f);
+}
+
 /**
  * Load dink.dat to specified memory buffer
  */
@@ -93,24 +116,5 @@ void map_load(void)
  */
 void map_save(void)
 {
-  FILE *f = paths_dmodfile_fopen(g_map.dink_dat.c_str(), "wb");
-  if (f == NULL)
-    {
-      perror("Cannot save dink.dat");
-      return;
-    }
-  
-  /* Portably dump EditorMap to disk */
-  int i = 0;
-  char name[20] = "Smallwood";
-  fwrite(name, 20, 1, f);
-  for (i = 0; i < 769; i++)
-    write_lsb_int(g_map.loc[i],    f);
-  for (i = 0; i < 769; i++)
-    write_lsb_int(g_map.music[i],  f);
-  for (i = 0; i < 769; i++)
-    write_lsb_int(g_map.indoor[i], f);
-  fseek(f, 2240, SEEK_CUR); // unused field
-
-  fclose(f);
+	g_map.save();
 }
