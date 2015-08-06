@@ -162,4 +162,5 @@ extern void fill_back_sprites(void);
 
 extern void draw_screen_game(void);
 extern void draw_screen_game_background(void);
+
 #endif

@@ -108,5 +108,3 @@ void load_hard(void)
 
   fclose(f);
 }
-
-

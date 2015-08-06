@@ -52,8 +52,9 @@
 #include "log.h"
 
 #include "game_engine.h"
+#include "live_sprites_manager.h"
+#include "live_screen.h"
 #include "map.h"
-#include "screen.h"
 #include "meminfo.h"
 #include "dinkvar.h"
 #include "dinkc_console.h"

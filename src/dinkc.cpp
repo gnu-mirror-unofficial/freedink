@@ -38,6 +38,7 @@
 #include "dinkc.h"
 #include "dinkc_bindings.h"
 #include "game_engine.h"
+#include "live_sprites_manager.h"
 #include "input.h"
 #include "paths.h"
 #include "str_util.h"
@@ -444,6 +445,7 @@ void strip_beginning_spaces(char *str)
 	      //clean up vars so it is ready to run
 	      if (rinfo[script]->sprite != 1000)
 		{
+		  // TODO: move out so we don't depend on 'spr'
 		  spr[rinfo[script]->sprite].move_active = 0;
 		  if (dversion >= 108)
 		    spr[rinfo[script]->sprite].move_nohard = 0;
@@ -999,6 +1001,7 @@ void process_callbacks(void)
     {
       if (rinfo[i] != NULL)
 	{
+	  // TODO: move out so we don't depend on 'spr'
 	  if (rinfo[i]->sprite > 0 && rinfo[i]->sprite != 1000 && spr[rinfo[i]->sprite].active == /*false*/0)
 	    {
 	      //kill this script, owner is dead
@@ -1097,6 +1100,7 @@ void kill_returning_stuff(int script)
   // callbacks from say_*()
   for (i = 1; i <= last_sprite_created; i++)
     {
+      // TODO: move out so we don't depend on 'spr'
       if (spr[i].active && spr[i].brain == 8 && spr[i].callback == script)
 	{
 	  log_debug("Killed sprites callback command");

@@ -41,6 +41,8 @@
 #include "SDL_image.h"
 
 #include "game_engine.h"
+#include "live_sprites_manager.h"
+#include "live_screen.h"
 #include "map.h"
 #include "screen.h"
 #include "hardness_tiles.h"
@@ -88,6 +90,7 @@ int walk_off_screen = /*false*/0;
    setting up show_bmp and copy_bmp */
 /*bool*/int abort_this_flip = /*false*/0;
 
+int screenlock = 0;
 
 struct show_bmp showb;
 
@@ -95,8 +98,6 @@ int keep_mouse = 0;
 
 
 struct attackinfo_struct bow;
-
-int screenlock = 0;
 
 unsigned long mold;
 
@@ -213,69 +214,6 @@ char * lmon(long money, char *dest)
 }
 
 /**
- * Get the current graphic (current sequence/current frame) for sprite
- * 'sprite_no'
- */
-int getpic(int sprite_no)
-{
-  if (spr[sprite_no].pseq == 0)
-    return 0;
-  
-  if (spr[sprite_no].pseq >= MAX_SEQUENCES)
-    {
-      log_error("Sequence %d?  But max is %d!", spr[sprite_no].pseq, MAX_SEQUENCES);
-      return 0;
-    }
-
-  return seq[spr[sprite_no].pseq].frame[spr[sprite_no].pframe];
-}
-
-
-//add hardness from a sprite
-void add_hardness (int sprite, int num)
-{
-  int xx;
-  for (xx = spr[sprite].x + k[getpic(sprite)].hardbox.left; xx < spr[sprite].x + k[getpic(sprite)].hardbox.right; xx++)
-    {
-      int yy;
-      for (yy = spr[sprite].y + k[getpic(sprite)].hardbox.top; yy < spr[sprite].y + k[getpic(sprite)].hardbox.bottom; yy++)
-	{
-	  if ( (xx-20 > 600) | (xx-20 < 0)| (yy > 400) | (yy < 0))
-	    ; /* Nothing */
-	  else
-	    screen_hitmap[xx-20][yy] = num;
-	}
-    }
-}
-
-
-
-
-/**
- * Check whether planned new position (x1,y1) is solid
- * 
- * Only used in 'check_if_move_is_legal'
- *
- * Returns: 0 if not solid, !0 otherwise
- */
-unsigned char get_hard(int x1, int y1)
-{
-  if (screenlock)
-    {
-      if (x1 < 0)        x1 = 0;
-      else if (x1 > 599) x1 = 599;
-
-      if (y1 < 0)        y1 = 0;
-      else if (y1 > 399) y1 = 399;
-    }
-  if ((x1 < 0) || (y1 < 0) || (x1 > 599) || (y1 > 399))
-    return 0;
-  
-  int value = screen_hitmap[x1][y1];
-  return(value);
-}
-
-/**
  * Check whether planned new position (x1,y1) is solid
  * 
  * Does something weird when hard value is > 100??
@@ -345,19 +283,6 @@ void fill_hardxy(rect box)
   for (x1 = box.left; x1 < box.right; x1++)
     for (y1 = box.top; y1 < box.bottom; y1++)
       screen_hitmap[x1][y1] = get_hard_map(0,x1,y1);
-}
-
-
-/**
- * Return hardness index for this screen tile, either its default
- * hardness, or the replaced/alternative hardness. Tile is in [0,95].
- */
-int realhard(int tile)
-{
-  if (cur_screen.t[tile].althard > 0)
-    return(cur_screen.t[tile].althard);
-  else
-    return(hmap.btile_default[cur_screen.t[tile].square_full_idx0]);
 }
 
 
@@ -825,141 +750,6 @@ void figure_out(char* line)
 /*         lpDDPal->SetEntries(0,0,256,holdpal);    */
 /* } */
 
-
-int add_sprite(int x1, int y, int brain,int pseq, int pframe )
-{
-  int x;
-    for (x = 1; x < MAX_SPRITES_AT_ONCE; x++)
-        {
-                if (spr[x].active == /*FALSE*/0)
-                {
-                        memset(&spr[x], 0, sizeof(spr[x]));
-
-                        spr[x].active = /*TRUE*/1;
-                        spr[x].x = x1;
-                        spr[x].y = y;
-                        spr[x].my = 0;
-                        spr[x].mx = 0;
-                        spr[x].speed = 1;
-                        spr[x].brain = brain;
-                        spr[x].frame = 0;
-                        spr[x].pseq = pseq;
-                        spr[x].pframe = pframe;
-                        spr[x].seq = 0;
-                        if (x > last_sprite_created)
-                                last_sprite_created = x;
-                        spr[x].timer = 33;
-                        spr[x].wait = 0;
-                        spr[x].lpx[0] = 0;
-                        spr[x].lpy[0] = 0;
-                        spr[x].moveman = 0;
-                        spr[x].size = 100;
-                        spr[x].que = 0;
-                        spr[x].strength = 0;
-                        spr[x].damage = 0;
-                        spr[x].defense = 0;
-                        spr[x].hard = 1;
-
-			if (dversion >= 108) {
-			  if (spr[x].custom == NULL)
-			    spr[x].custom = new std::map<std::string, int>;
-			  else
-			    spr[x].custom->clear();
-			}
-
-                        return(x);
-                }
-
-        }
-
-        return(0);
-}
-
-/* Like add_sprit_dumb, except:
- * speed      :   1 ->  0
- * size       : 100 -> size
- * timer      :  33 ->  0
- * que        :   0 ->  ?
- * seq_orig   :   ? ->  0
- * base_hit   :   ? -> -1
- * base_walk  :   ? -> -1
- * base_die   :   ? -> -1
- * base_idle  :   ? -> -1
- * base_attack:   ? -> -1
- * last_sound :   ? ->  0
- * hard       :   ? ->  1
- * althard    :   ? ->  0
- * sp_index   :   ? ->  0
- * nocontrol  :   ? ->  0
- * idle       :   ? ->  0
- * hard       :   1 ->  ?
- * alt        :   ? -> {0,0,0,0}
- */
-int add_sprite_dumb(int x1, int y, int brain,int pseq, int pframe,int size )
-{
-  int x;
-    for (x = 1; x < MAX_SPRITES_AT_ONCE; x++)
-        {
-                if (spr[x].active == /*FALSE*/0)
-                {
-                        memset(&spr[x], 0, sizeof(spr[x]));
-
-                        //Msg("Making sprite %d.",x);
-                        spr[x].active = /*TRUE*/1;
-                        spr[x].x = x1;
-                        spr[x].y = y;
-                        spr[x].my = 0;
-                        spr[x].mx = 0;
-                        spr[x].speed = 0;
-                        spr[x].brain = brain;
-                        spr[x].frame = 0;
-                        spr[x].pseq = pseq;
-                        spr[x].pframe = pframe;
-                        spr[x].size = size;
-                        spr[x].seq = 0;
-                        if (x > last_sprite_created)
-                                last_sprite_created = x;
-
-                        spr[x].timer = 0;
-                        spr[x].wait = 0;
-                        spr[x].lpx[0] = 0;
-                        spr[x].lpy[0] = 0;
-                        spr[x].moveman = 0;
-                        spr[x].seq_orig = 0;
-
-
-            spr[x].base_hit = -1;
-                        spr[x].base_walk = -1;
-                        spr[x].base_die = -1;
-                        spr[x].base_idle = -1;
-                        spr[x].base_attack = -1;
-                        spr[x].last_sound = 0;
-                        spr[x].hard = 1;
-
-                        rect_set(&spr[x].alt, 0,0,0,0);
-                        spr[x].althard = 0;
-                        spr[x].sp_index = 0;
-                        spr[x].nocontrol = 0;
-                        spr[x].idle = 0;
-                        spr[x].strength = 0;
-                        spr[x].damage = 0;
-                        spr[x].defense = 0;
-
-			if (dversion >= 108) {
-			  if (spr[x].custom == NULL)
-			    spr[x].custom = new std::map<std::string, int>;
-			  else
-			    spr[x].custom->clear();
-			}
-
-                        return(x);
-                }
-
-        }
-
-        return(0);
-}
-
 /* Editor only */
 void check_sprite_status(int h)
 {
@@ -1082,54 +872,6 @@ void check_sprite_status_full(int sprite_no)
 }
 
 
-int does_sprite_have_text(int sprite)
-{
-  int k;
-        //Msg("getting callback # with %d..", sprite);
-        for (k = 1; k <= MAX_SPRITES_AT_ONCE; k++)
-        {
-                if (   spr[k].active) if (spr[k].owner == sprite) if (spr[k].brain == 8)
-                {
-                        //Msg("Found it!  returning %d.", k);
-
-                        return(k);
-                }
-
-        }
-
-        return(0);
-
-}
-
-
-/**
- * Is 'sprite' currently talking?
- * Returns 1 if a text sprite is owned by sprite number 'sprite'.
- */
-/*bool*/int text_owned_by(int sprite)
-{
-  int i = 1;
-  for (; i < MAX_SPRITES_AT_ONCE; i++)
-    if (spr[i].active && spr[i].brain == 8 && spr[i].owner == sprite)
-      return /*true*/1;
-  return /*false*/0;
-}
-
-
-
-/**
- * Find an editor sprite in active sprites
- */
-int find_sprite(int editor_sprite)
-{
-  int k;
-  for (k = 1; k <= last_sprite_created; k++)
-    if (spr[k].sp_index == editor_sprite)
-      return k;
-  return 0;
-}
-
-
 void get_right(char line[200], char thing[100], char *ret)
         {
                 char *dumb;
@@ -1145,68 +887,6 @@ void get_right(char line[200], char thing[100], char *ret)
 
 
 
-
-int change_sprite(int h, int val, int *change)
-{
-  //Msg("Searching sprite %s with val %d.  Cur is %d", h, val, *change);
-  if (h < 1 || h >= MAX_SPRITES_AT_ONCE)
-    {
-      log_error("Error with an SP command - Sprite %d is invalid.", h);
-      return -1;
-    }
-
-  if (spr[h].active == 0)
-    return -1;
-
-  if (val != -1)
-    *change = val;
-  
-  return *change;
-  
-}
-
-int change_edit(int h, int val, unsigned short* change)
-{
-  //Msg("Searching sprite %s with val %d.  Cur is %d", h, val, *change);
-  
-  if (h < 1 || h > 99)
-    return -1;
-
-  if (val != -1)
-    *change = val;
-  
-  return *change;
-}
-
-/**
- * Sanity-check and set an editor variable (editor_type(),
- * editor_seq() and editor_frame())
- */
-int change_edit_char(int h, int val, unsigned char* change)
-{
-  //Msg("Searching sprite %s with val %d.  Cur is %d", h, val, *change);
-  //  Msg("h is %d..",val);
-  if (h < 1 || h > 99)
-    return -1;
-
-  if (val != -1)
-    *change = val;
-  
-  return *change;
-}
-
-int change_sprite_noreturn(int h, int val, int* change)
-{
-  //Msg("Searching sprite %s with val %d.  Cur is %d", h, val, *change);
-  if (h < 0
-      || h >= MAX_SPRITES_AT_ONCE
-      || spr[h].active == 0)
-    return -1;
-
-  *change = val;
-
-  return(*change);
-}
 
 
 void draw_sprite_game(SDL_Surface *GFX_lpdest, int h)
@@ -1433,38 +1113,6 @@ void draw_sprite_game(SDL_Surface *GFX_lpdest, int h)
 
 }
 
-
-/*bool*/int kill_last_sprite(void)
-{
-  int found = 0;
-  /*bool*/int nosetlast = /*false*/0;
-  int k;
-  for (k=1; k < MAX_SPRITES_AT_ONCE; k++ )
-    {
-      if (spr[k].active)
-        {
-          if (spr[k].live)
-            {
-              nosetlast = /*true*/1;
-            }
-          else
-            {
-              found = k;
-            }
-        }
-    }
-
-  if (found > 1)
-    {
-      spr[found].active = /*FALSE*/0;
-      if (nosetlast == /*false*/0)
-	last_sprite_created = found - 1;
-      return(/*true*/1);
-    }
-
-  //we didn't kill any sprites, only 1 remains
-  return(/*false*/0);
-}
 
 
 void show_bmp(char* name, int showdot, int script)

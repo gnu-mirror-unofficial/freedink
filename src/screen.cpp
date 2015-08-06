@@ -1,8 +1,8 @@
 /**
- * Screen sprites and hardness
+ * Editor screen
 
  * Copyright (C) 1997, 1998, 1999, 2002, 2003  Seth A. Robinson
- * Copyright (C) 2005, 2007, 2008, 2009, 2014  Sylvain Beucler
+ * Copyright (C) 2005, 2007, 2008, 2009, 2014, 2015  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -29,24 +29,30 @@
 
 #include "dinkvar.h"
 #include "screen.h"
+#include "live_screen.h" /* cur_screen */
 #include "hardness_tiles.h"
 #include "gfx.h"
 #include "sfx.h"
 #include "log.h"
 #include "paths.h"
 
-struct screen cur_screen;
-
-struct sp spr[MAX_SPRITES_AT_ONCE]; //max sprite control systems at once
-
 /* hardness */
 unsigned char screen_hitmap[600+1][400+1]; /* hit_map */
 
-int last_sprite_created;
-
 void screen_init() {
-  memset(&spr, 0, sizeof(spr));
   memset(&screen_hitmap, 0, sizeof(screen_hitmap));
+}
+
+/**
+ * Return hardness index for this screen tile, either its default
+ * hardness, or the replaced/alternative hardness. Tile is in [0,95].
+ */
+int realhard(int tile)
+{
+  if (cur_screen.t[tile].althard > 0)
+    return(cur_screen.t[tile].althard);
+  else
+    return(hmap.btile_default[cur_screen.t[tile].square_full_idx0]);
 }
 
 /**
@@ -87,96 +93,6 @@ void screen_rank_editor_sprites(int* rank)
 	already_checked[rank[r1]] = 1;
     }
 }
-
-/**
- * Fills a int[MAX_SPRITES_AT_ONCE] with the index of the current
- * screen's sprites, sorted by ascending height/queue.
- */
-void screen_rank_game_sprites(int* rank)
-{
-  memset(rank, 0, MAX_SPRITES_AT_ONCE * sizeof(int));
-
-  int r1 = 0;
-  int already_checked[MAX_SPRITES_AT_ONCE+1];
-  memset(already_checked, 0, sizeof(already_checked));
-  for (r1 = 0; r1 < last_sprite_created; r1++)
-    {
-      int highest_sprite = 22000; //more than it could ever be
-      rank[r1] = 0;
-
-      int h1;
-      for (h1 = 1; h1 <= last_sprite_created; h1++)
-	{
-	  if (already_checked[h1] == 0 && spr[h1].active)
-	    {
-	      int height;
-	      if (spr[h1].que != 0)
-		height = spr[h1].que;
-	      else
-		height = spr[h1].y;
-	      
-	      if (height < highest_sprite)
-		{
-		  highest_sprite = height;
-		  rank[r1] = h1;
-		}
-	    }
-	}
-      if (rank[r1] != 0)
-	already_checked[rank[r1]] = 1;
-    }
-}
-
-
-void fill_hard_sprites()
-{
-  int rank[MAX_SPRITES_AT_ONCE];
-  screen_rank_game_sprites(rank);
-
-  int r1 = 0;
-  for (; r1 < last_sprite_created && rank[r1] > 0; r1++)
-    {
-      int h = rank[r1];
-      if (spr[h].active)
-	{
-	  // Msg("proccesing sprite %d", h);
-	  if (spr[h].sp_index != 0)
-	    {
-	      //Msg("has spindex of %d is_warp is %d",spr[h].sp_index,cur_screen.sprite[spr[h].sp_index].is_warp);
-	      if (cur_screen.sprite[spr[h].sp_index].hard == 0)
-		{
-		  add_hardness(h,100+spr[h].sp_index);
-		  //Msg("added warp hardness for %d", spr[h].sp_index);
-		}
-	    }
-	  else
-	    {
-	      if (spr[h].hard == 0)
-		{
-		  //Msg("adding a new sprite hardness %d (not from editor)", h);
-		  add_hardness(h, 1);
-		}
-	    }
-	}
-    }
-}
-
-
-void fill_whole_hard(void)
-{
-  int til;
-  for (til=0; til < 96; til++)
-    {
-      int offx = (til * 50 - ((til / 12) * 600));
-      int offy = (til / 12) * 50;
-      int x, y;
-      for (x = 0; x < 50; x++)
-	for (y = 0; y < 50; y++)
-	  screen_hitmap[offx +x][offy+y] = hmap.htile[  realhard(til)  ].hm[x][y];
-    }
-}
-
-
 
 /**
  * Load 1 screen from specified map.dat in specified memory buffer

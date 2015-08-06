@@ -32,7 +32,7 @@ int get_parms(char proc_name[20], int script, char *str_params, int* spec);
 #include "game_engine.h"
 int dversion = 107;
 struct player_info play;
-#include "screen.h"
+#include "live_sprites_manager.h"
 struct sp spr[MAX_SPRITES_AT_ONCE];
 #include "talk.h"
 struct talk_struct talk;

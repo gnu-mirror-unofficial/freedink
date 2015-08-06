@@ -30,6 +30,7 @@
 #include "gfx_sprites.h" /* GFX_k */
 #include "game_engine.h" /* fexp, fraise, fstrength, fdefense, fmagic,
 			    plevel, fgold, plife... */
+#include "live_sprites_manager.h"
 #include "dinkvar.h"
 #include "sfx.h"
 #include "talk.h"

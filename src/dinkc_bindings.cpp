@@ -38,6 +38,8 @@
 #include <xalloc.h>
 
 #include "game_engine.h"
+#include "live_sprites_manager.h"
+#include "live_screen.h"
 #include "map.h"
 #include "screen.h"
 #include "dinkvar.h"
@@ -62,6 +64,73 @@
 #include "status.h"
 #include "text.h"
 #include "savegame.h"
+
+
+int change_sprite(int h, int val, int *change)
+{
+  //Msg("Searching sprite %s with val %d.  Cur is %d", h, val, *change);
+  if (h < 1 || h >= MAX_SPRITES_AT_ONCE)
+    {
+      log_error("Error with an SP command - Sprite %d is invalid.", h);
+      return -1;
+    }
+
+  if (spr[h].active == 0)
+    return -1;
+
+  if (val != -1)
+    *change = val;
+  
+  return *change;
+  
+}
+
+/**
+ * Change sprite value even if value is -1
+ */
+int change_sprite_noreturn(int h, int val, int* change)
+{
+  //Msg("Searching sprite %s with val %d.  Cur is %d", h, val, *change);
+  if (h < 0
+      || h >= MAX_SPRITES_AT_ONCE
+      || spr[h].active == 0)
+    return -1;
+
+  *change = val;
+
+  return(*change);
+}
+
+
+int change_edit(int h, int val, unsigned short* change)
+{
+  //Msg("Searching sprite %s with val %d.  Cur is %d", h, val, *change);
+  
+  if (h < 1 || h > 99)
+    return -1;
+
+  if (val != -1)
+    *change = val;
+  
+  return *change;
+}
+
+/**
+ * Sanity-check and set an editor variable (editor_type(),
+ * editor_seq() and editor_frame())
+ */
+int change_edit_char(int h, int val, unsigned char* change)
+{
+  //Msg("Searching sprite %s with val %d.  Cur is %d", h, val, *change);
+  //  Msg("h is %d..",val);
+  if (h < 1 || h > 99)
+    return -1;
+
+  if (val != -1)
+    *change = val;
+  
+  return *change;
+}
 
 
 /***************/

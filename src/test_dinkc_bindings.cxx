@@ -39,6 +39,7 @@
 #include "dinkc.h"
 #include "dinkc_bindings.h"
 #include "game_engine.h"
+#include "live_sprites_manager.h"
 #include "map.h"
 #include "screen.h"
 #include "dinkvar.h"

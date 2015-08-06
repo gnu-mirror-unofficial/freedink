@@ -24,7 +24,10 @@
 #include "text.h"
 
 #include "dinkvar.h"
+#include "live_sprites_manager.h"
+#include "gfx.h"
 #include "gfx_sprites.h"
+#include "talk.h"
 #include "log.h"
 
 #define TEXT_MIN 2700

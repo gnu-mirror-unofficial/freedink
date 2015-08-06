@@ -25,6 +25,7 @@
 #endif
 
 #include "screen.h"
+#include "live_sprites_manager.h"
 
 class TestScreen : public CxxTest::TestSuite {
 public:

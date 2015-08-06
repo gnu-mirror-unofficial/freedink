@@ -52,8 +52,6 @@ struct attackinfo_struct
 
 
 extern int GetKeyboard(int key);
-extern int add_sprite(int x1, int y, int brain,int pseq, int pframe );
-extern int add_sprite_dumb(int x1, int y, int brain,int pseq, int pframe,int size);
 extern void check_seq_status(int h);
 /* extern void dderror(HRESULT hErr); */
 //extern void draw_sprite_game(LPDIRECTDRAWSURFACE lpdest,int h);
@@ -75,7 +73,6 @@ extern int flub_mode;
 extern int fps_final;
 extern int show_inventory;
 extern int stop_entire_game;
-extern int getpic(int h);
 
 /* show_bmp() currently ran */
 struct show_bmp
@@ -98,7 +95,6 @@ extern int playl;
 extern int playx;
 extern int playy;
 extern int *pplayer_map;
-extern int screenlock;
 extern Uint32 thisTickCount;
 extern Uint32 lastTickCount;
 extern FPSmanager framerate_manager;
@@ -116,6 +112,7 @@ extern int fcur_weapon, fcur_magic;
 extern int push_active;
 extern int move_screen;
 extern int move_counter;
+extern int screenlock;
 
 /* Player */
 extern /*bool*/int inside_box(int x1, int y1, rect box);
@@ -126,15 +123,10 @@ extern void changedir( int dir1, int k,int base);
 
 /* Sprites - global */
 extern void kill_sprite_all (int sprite);
-extern int find_sprite(int editor_sprite);
 
 /* Scripts */
 extern void kill_all_scripts_for_real(void);
 extern void kill_returning_stuff(int script);
-
-/* Map */
-extern unsigned char get_hard(int x1, int y1);
-extern unsigned char get_hard_play(int h, int x1, int y1);
 
 /* OS */
 extern int bActive; // is application active?
@@ -159,24 +151,15 @@ extern int cur_map;
  */
 
 extern void check_sprite_status(int h);
-extern void add_hardness(int sprite, int num);
-extern /*bool*/int kill_last_sprite(void);
 extern void check_frame_status(int h, int frame);
 extern void flip_it_second(void);
-extern int realhard(int tile);
 
 extern void fill_screen(int num);
 
 
 extern void show_bmp(char name[80], int showdot, int script);
 extern void copy_bmp( char name[80]);
-extern /*bool*/int text_owned_by(int sprite);
 extern void fill_hardxy(rect box);
-extern int does_sprite_have_text(int sprite);
-extern int change_sprite(int h,  int val, int * change);
-extern int change_sprite_noreturn(int h,  int val, int * change);
-extern int change_edit_char(int h,  int val, unsigned char * change);
-extern int change_edit(int h,  int val, unsigned short * change);
 extern int hurt_thing(int h, int damage, int special);
 extern void random_blood(int mx, int my, int h);
 extern void check_sprite_status_full(int sprite_no);

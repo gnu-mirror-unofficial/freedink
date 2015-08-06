@@ -28,6 +28,7 @@
 #include <string.h>
 
 #include "dinkvar.h"
+#include "live_sprites_manager.h"
 #include "map.h"
 #include "dinkc.h"
 #include "sfx.h"

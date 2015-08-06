@@ -1,7 +1,8 @@
 /**
- * FreeDink (not FreeDinkEdit) screen update
+ * Displayed sprite
 
- * Copyright (C) 2005, 2007  Sylvain Beucler
+ * Copyright (C) 1997, 1998, 1999, 2002, 2003  Seth A. Robinson
+ * Copyright (C) 2005, 2007, 2008, 2009, 2014, 2015  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -20,10 +21,29 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _UPDATE_FRAME_H
-#define _UPDATE_FRAME_H
-
-extern void updateFrame(void);
-extern void talk_process();
-
+#ifdef HAVE_CONFIG_H
+#include <config.h>
 #endif
+
+#include "live_sprite.h"
+#include "live_sprites_manager.h"
+#include "gfx_sprites.h"
+#include "log.h"
+
+/**
+ * Get the current graphic (current sequence/current frame) for sprite
+ * 'sprite_no'
+ */
+int getpic(int sprite_no)
+{
+  if (spr[sprite_no].pseq == 0)
+    return 0;
+  
+  if (spr[sprite_no].pseq >= MAX_SEQUENCES)
+    {
+      log_error("Sequence %d?  But max is %d!", spr[sprite_no].pseq, MAX_SEQUENCES);
+      return 0;
+    }
+
+  return seq[spr[sprite_no].pseq].frame[spr[sprite_no].pframe];
+}

@@ -32,13 +32,13 @@
 
 #include "SDL.h"
 #include "SDL_mixer.h"
+#include "live_sprites_manager.h"
 #include "io_util.h"
 #include "paths.h"
 #include "log.h"
 #include "math.h"
 #include "sfx.h"
 #include "log.h"
-#include "screen.h"
 
 /* Sound - BGM */
 int sound_on = 1;

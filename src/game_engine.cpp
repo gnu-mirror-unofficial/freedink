@@ -29,6 +29,8 @@
 #include <time.h>  /* time */
 #include <string.h>  /* memset */
 #include "game_engine.h"
+#include "live_sprites_manager.h"
+#include "live_screen.h"
 #include "map.h" /* map */
 #include "screen.h" /* screen_hitmap */
 #include "dinkvar.h"  /* hmap, cur_screen */
@@ -55,7 +57,6 @@ int *pupdate_status, *pmissile_target, *penemy_sprite,
 int flife, fexp, fstrength, fdefense, fgold, fmagic, fmagic_level, flifemax, fraise, last_magic_draw;
 
 int fcur_weapon, fcur_magic;
-
 
 
 struct wait_for_button wait4b;
@@ -661,7 +662,6 @@ void draw_screen_game_background(void)
 }
 
 
-
 /**
  * Display a flashing "Please Wait" anim directly on the screen, just
  * before switching to a screen that requires loading new graphics
@@ -691,6 +691,7 @@ void game_init()
      automatically done by C, and this causes errors. TODO: fix the
      errors properly instead of using this dirty trick. */
   memset(&play, 0, sizeof(play));
+  live_sprites_manager_init();
 
   gfx_sprites_loading_listener = draw_wait;
   

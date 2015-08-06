@@ -1,7 +1,8 @@
 /**
- * FreeDink (not FreeDinkEdit) screen update
+ * Displayed screen
 
- * Copyright (C) 2005, 2007  Sylvain Beucler
+ * Copyright (C) 1997, 1998, 1999, 2002, 2003  Seth A. Robinson
+ * Copyright (C) 2005, 2007, 2008, 2009, 2014, 2015  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -20,10 +21,20 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _UPDATE_FRAME_H
-#define _UPDATE_FRAME_H
+#ifndef LIVE_SCREEN_H
+#define LIVE_SCREEN_H
 
-extern void updateFrame(void);
-extern void talk_process();
+#include "live_sprite.h"
+
+/* base editor screen */
+extern struct screen cur_screen;
+
+extern void add_hardness(int sprite, int num);
+extern unsigned char get_hard(int x1, int y1);
+extern unsigned char get_hard_play(int h, int x1, int y1);
+extern void fill_hard_sprites(void);
+extern void fill_whole_hard(void);
+
+extern void screen_rank_game_sprites(int* rank);
 
 #endif

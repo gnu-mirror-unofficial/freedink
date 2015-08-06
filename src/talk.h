@@ -48,8 +48,7 @@ struct talk_struct
 };
 extern struct talk_struct talk;
 extern void talk_start(int script, int nb_choices);
+extern void talk_stop();
 extern void talk_clear();
-extern void talk_process();
-extern void kill_text_owned_by(int sprite);
 
 #endif

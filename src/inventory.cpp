@@ -30,7 +30,8 @@
 #include "gfx_sprites.h" /* draw_status_all, GFX_k */
 #include "input.h"
 #include "sfx.h"
-#include "talk.h"
+#include "talk.h" /* talk.active */
+#include "update_frame.h" /* talk_process */
 #include "status.h"
 
 /* Blinking selector in the inventory screen */
@@ -456,6 +457,7 @@ void process_item()
 	    }
 	}
     }
+  // TODO: what is this doing here?
   if (talk.active)
     talk_process();
   
