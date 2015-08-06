@@ -79,7 +79,9 @@
 /*bool*/int load_game(int num)
 {
   char skipbuf[10000]; // more than any fseek we do
-
+  char dinkdat[50] = "";
+  char mapdat[50] = "";
+  
   FILE *f = NULL;
   
   //lets get rid of our magic and weapon scripts
@@ -224,8 +226,8 @@
      dink.dat, palette, and tiles */
   /* char cbuff[6000]; */
   /* Thoses are char arrays, not null-terminated strings */
-  fread(play.mapdat, 50, 1, f);
-  fread(play.dinkdat, 50, 1, f);
+  fread(mapdat, 50, 1, f);
+  fread(dinkdat, 50, 1, f);
   fread(play.palette, 50, 1, f);
 
   for (i = 0; i < GFX_TILES_NB_SETS+1; i++)
@@ -249,10 +251,10 @@
   if (dversion >= 108)
     {
       // new map, if exist
-      if (strlen (play.mapdat) > 0 && strlen (play.dinkdat) > 0)
+      if (strlen (mapdat) > 0 && strlen (dinkdat) > 0)
 	{
-	  strcpy (current_map, play.mapdat);
-	  strcpy (current_dat, play.dinkdat);
+	  strcpy (current_map, mapdat);
+	  strcpy (current_dat, dinkdat);
 	  map_load();
 	}
       
@@ -352,11 +354,6 @@ void save_game(int num)
   play.minutes += (int) (difftime(ct,time_start) / 60);
         //reset timer
   time(&time_start);
-  
-  // save game things for storing new map, palette, and tile
-  // information
-  strncpy (play.mapdat, current_map, 50);
-  strncpy (play.dinkdat, current_dat, 50);
 
   last_saved_game = num;
   f = paths_savegame_fopen(num, "wb");
@@ -473,8 +470,8 @@ void save_game(int num)
   /* v1.08: use wasted space for storing file location of map.dat,
      dink.dat, palette, and tiles */
   /* char cbuff[6000];*/
-  fwrite(play.mapdat, 50, 1, f);
-  fwrite(play.dinkdat, 50, 1, f);
+  fwrite(current_map, 50, 1, f);
+  fwrite(current_dat, 50, 1, f);
   fwrite(play.palette, 50, 1, f);
 
   for (i = 0; i < GFX_TILES_NB_SETS+1; i++)
