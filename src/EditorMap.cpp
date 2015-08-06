@@ -44,7 +44,28 @@ EditorMap::EditorMap(string dink_dat, string map_dat) :
 
 
 bool EditorMap::load() {
-	return (map_new(dink_dat.c_str(), this) != -1);
+  FILE *f = NULL;
+
+  f = paths_dmodfile_fopen(dink_dat.c_str(), "rb");
+  if (!f)
+    return false;
+
+  /* Portably load EditorMap from disk */
+  int i = 0;
+  fseek(f, 20, SEEK_CUR); // unused 'name' field
+  for (i = 0; i < 769; i++)
+    loc[i]    = read_lsb_int(f);
+  for (i = 0; i < 769; i++)
+    music[i]  = read_lsb_int(f);
+  for (i = 0; i < 769; i++)
+    indoor[i] = read_lsb_int(f);
+  fseek(f, 2240, SEEK_CUR); // unused space
+
+  fclose(f);
+
+  memset(&g_map.ts_loc_mem, 0, sizeof(g_map.ts_loc_mem));
+
+  return true;
 }
 
 /**
@@ -52,28 +73,8 @@ bool EditorMap::load() {
  */
 int map_new(const char* path, EditorMap* mymap)
 {
-  FILE *f = NULL;
-
-  f = paths_dmodfile_fopen(path, "rb");
-  if (!f)
-    return -1;
-
-  /* Portably load EditorMap from disk */
-  int i = 0;
-  fseek(f, 20, SEEK_CUR); // unused 'name' field
-  for (i = 0; i < 769; i++)
-    mymap->loc[i]    = read_lsb_int(f);
-  for (i = 0; i < 769; i++)
-    mymap->music[i]  = read_lsb_int(f);
-  for (i = 0; i < 769; i++)
-    mymap->indoor[i] = read_lsb_int(f);
-  fseek(f, 2240, SEEK_CUR); // unused space
-
-  fclose(f);
-
-  memset(&g_map.ts_loc_mem, 0, sizeof(g_map.ts_loc_mem));
-
-  return 0;
+	mymap->dink_dat = path;
+	return mymap->load() ? 0 : -1;
 }
 
 /**
@@ -82,7 +83,7 @@ int map_new(const char* path, EditorMap* mymap)
  */
 void map_load(void)
 {
-	map_new(g_map.dink_dat.c_str(), &g_map);
+	g_map.load();
 }
 
 
