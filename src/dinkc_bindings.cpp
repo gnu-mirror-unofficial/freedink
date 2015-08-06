@@ -1802,7 +1802,7 @@ void dc_load_map(int script, int* yield, int* preturnint, char* mapdat_file, cha
 {
   // load a new map/dink.dat
   g_map = EditorMap(dinkdat_file, mapdat_file);
-  map_load();
+  g_map.load();
 }
 
 void dc_load_tile(int script, int* yield, int* preturnint, char* tileset_file, int tileset_index)

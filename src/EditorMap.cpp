@@ -42,7 +42,10 @@ char current_hard[50] = "hard.dat";
 EditorMap::EditorMap(string dink_dat, string map_dat) :
 	dink_dat(dink_dat), map_dat(map_dat), hard_dat("hard.dat") {}
 
-
+/**
+ * Load dink.dat, an offsets index to screens stored in map.dat, with
+ * some metadata (midi #, indoor/outdoor)
+ */
 bool EditorMap::load() {
   FILE *f = NULL;
 
@@ -68,6 +71,10 @@ bool EditorMap::load() {
   return true;
 }
 
+/**
+ * Save dink.dat (index of map offsets + midi# + indoor/outdoor)
+ * Only used by the editor
+ */
 void EditorMap::save() {
 	FILE *f = paths_dmodfile_fopen(dink_dat.c_str(), "wb");
 	if (f == NULL)
@@ -89,32 +96,4 @@ void EditorMap::save() {
 	fseek(f, 2240, SEEK_CUR); // unused field
 	
 	fclose(f);
-}
-
-/**
- * Load dink.dat to specified memory buffer
- */
-int map_new(const char* path, EditorMap* mymap)
-{
-	mymap->dink_dat = path;
-	return mymap->load() ? 0 : -1;
-}
-
-/**
- * Load dink.dat, an offsets index to screens stored in map.dat, with
- * some metadata (midi #, indoor/outdoor)
- */
-void map_load(void)
-{
-	g_map.load();
-}
-
-
-/**
- * Save dink.dat (index of map offsets + midi# + indoor/outdoor)
- * Only used by the editor
- */
-void map_save(void)
-{
-	g_map.save();
 }

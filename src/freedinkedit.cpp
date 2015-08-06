@@ -749,6 +749,9 @@ void draw_minimap_buff(void)
 }
 
 
+/**
+ * Add new screen to the map
+ */
 int add_new_map()
 {
   int loc_max = 0;
@@ -3707,7 +3710,7 @@ void updateFrame(void)
 
 		    if ( (input_getscancodejustpressed(SDL_SCANCODE_ESCAPE)) && (mode == MODE_MINIMAP))
 		      {
-			map_load();
+			g_map.load();
 			draw_minimap();
 			buf_mode = /*false*/0;
 
@@ -3756,7 +3759,7 @@ void updateFrame(void)
 			      }
 
 
-			    map_load();
+			    g_map.load();
 
 			    if (g_map.loc[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)] == 0)
 			      {
@@ -3775,19 +3778,19 @@ void updateFrame(void)
 
 			    editor_save_screen(g_map.loc[buf_map]);
 
-			    map_save();
+			    g_map.save();
 			    draw_minimap();
 			    return;
 			  }
 
-			map_load();
+			g_map.load();
 
 			cur_map = (((spr[1].y+1)*32) / 20)+(spr[1].x / 20);
 			if (g_map.loc[cur_map] == 0)
 			  {
 			    //new map screen
 			    g_map.loc[cur_map] = add_new_map();
-			    map_save();
+			    g_map.save();
 			  }
 			else
 			  {
@@ -3972,7 +3975,7 @@ void updateFrame(void)
 			spr[h].y = m1y;
 			mode = MODE_MINIMAP;
 			spr[h].speed = 20;
-			map_load();
+			g_map.load();
 			draw_minimap();
 			while (kill_last_sprite());
 			return;
@@ -3992,7 +3995,7 @@ void updateFrame(void)
 			spr[h].y = m1y;
 			mode = 1;
 			spr[h].speed = 20;
-			map_load();
+			g_map.load();
 			draw_minimap();
 			while (kill_last_sprite());
 			return;
@@ -4629,12 +4632,12 @@ void updateFrame(void)
 		  in_crap2 = in_crap;
 		  
 		  if ((old_command == INPUT_SCREEN_MIDI) || (old_command == INPUT_SCREEN_TYPE))
-		    map_load();
+		    g_map.load();
 		  
 		  *in_int = in_crap2;
 
 		  if ((old_command == INPUT_SCREEN_MIDI) || (old_command == INPUT_SCREEN_TYPE))
-		    map_save();
+		    g_map.save();
 		}
 	      else
 		{

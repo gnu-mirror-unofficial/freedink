@@ -50,9 +50,4 @@ class EditorMap
 };
 extern EditorMap g_map;
 
-
-extern int map_new(const char* path, EditorMap *mymap);
-extern void map_load();
-extern void map_save();
-
 #endif

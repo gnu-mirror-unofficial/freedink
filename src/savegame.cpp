@@ -254,7 +254,7 @@
       if (strlen (mapdat) > 0 && strlen (dinkdat) > 0)
 	{
 	  g_map = EditorMap(dinkdat, mapdat);
-	  map_load();
+	  g_map.load();
 	}
       
       // load palette
