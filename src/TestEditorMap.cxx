@@ -39,7 +39,6 @@ public:
 		TS_ASSERT_EQUALS(g_map.loc[1], 0);
 		
 		EditorMap testmap;
-		TS_ASSERT_EQUALS(map_new("", &testmap), -1);
 		TS_ASSERT_EQUALS(testmap.load(), false);
 
 		EditorMap testmap2("dink2.dat", "map2.dat");

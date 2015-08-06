@@ -719,7 +719,8 @@ void load_info_buff(void)
 
   sprintf(dinkdat_path, "%sDINK.DAT", buf_path);
 
-  if (map_new(dinkdat_path, &buffmap) < 0)
+  buffmap.dink_dat = dinkdat_path;
+  if (!buffmap.load())
     {
       log_error("World not found in %s.", buf_path);
       buf_mode = /*false*/0;
