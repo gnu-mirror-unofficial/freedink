@@ -43,7 +43,7 @@
 #include "paths.h"
 #include "str_util.h"
 #include "log.h"
-#include "screen.h"
+#include "editor_screen.h"
 #include "talk.h"
 #include "i18n.h"
 

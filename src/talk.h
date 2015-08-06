@@ -1,7 +1,7 @@
 /**
- * Dialog choices
+ * Talk interface for DinkC
 
- * Copyright (C) 2014  Sylvain Beucler
+ * Copyright (C) 2014, 2015  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 

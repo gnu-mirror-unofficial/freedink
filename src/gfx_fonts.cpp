@@ -1,7 +1,7 @@
 /**
  * Fonts
 
- * Copyright (C) 2007, 2008, 2009, 2014  Sylvain Beucler
+ * Copyright (C) 2007, 2008, 2009, 2014, 2015  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -351,7 +351,7 @@ print_text (TTF_Font * font, char *str, int x, int y, int w, SDL_Color /*&*/colo
      color (so when after a fade_down(), the available colors are only
      black and white, yellow becomes white, as yellow is just not
      available, and white is closest than black). */
-  /* So we get the color index from cur_screen_palette (final color
+  /* So we get the color index from cur_ed_screen_palette (final color
      even after palette effects), and use the color value from
      GFX_real_pal (reference palette used for all graphics before
      palette effects). */

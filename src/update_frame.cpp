@@ -3,7 +3,7 @@
 
  * Copyright (C) 1997, 1998, 1999, 2002, 2003  Seth A. Robinson
  * Copyright (C) 2005, 2006  Dan Walma
- * Copyright (C) 2005, 2007, 2008, 2009, 2010, 2011, 2012, 2014  Sylvain Beucler
+ * Copyright (C) 2005, 2007, 2008, 2009, 2010, 2011, 2012, 2014, 2015  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -39,7 +39,7 @@
 #include "game_engine.h"
 #include "live_sprites_manager.h"
 #include "map.h"
-#include "screen.h"
+#include "editor_screen.h"
 #include "live_screen.h"
 #include "freedink.h"
 #include "gfx.h"
@@ -848,7 +848,7 @@ animate:
 				
 				if (spr[h].brain == 1) if (move_result > 100)
 				{
-					if (cur_screen.sprite[move_result-100].is_warp == 1)
+					if (cur_ed_screen.sprite[move_result-100].is_warp == 1)
 						special_block(move_result - 100);
 				}
 				

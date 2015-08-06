@@ -4,7 +4,7 @@
  * Copyright (C) 1997, 1998, 1999, 2002, 2003  Seth A. Robinson
  * Copyright (C) 2003  Shawn Betts
  * Copyright (C) 2005, 2006  Dan Walma
- * Copyright (C) 2005, 2007, 2008, 2009, 2010, 2012, 2014  Sylvain Beucler
+ * Copyright (C) 2005, 2007, 2008, 2009, 2010, 2012, 2014, 2015  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -44,7 +44,7 @@
 #include "live_sprites_manager.h"
 #include "live_screen.h"
 #include "map.h"
-#include "screen.h"
+#include "editor_screen.h"
 #include "hardness_tiles.h"
 #include "dinkini.h"
 #include "input.h"
@@ -236,7 +236,7 @@ unsigned char get_hard_play(int h, int x1, int y1)
     return 0;
 
   int value =  screen_hitmap[x1][y1];
-  if (value > 100 && cur_screen.sprite[value-100].is_warp != 0)
+  if (value > 100 && cur_ed_screen.sprite[value-100].is_warp != 0)
     {
       flub_mode = value;
       value = 0;

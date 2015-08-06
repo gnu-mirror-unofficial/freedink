@@ -1,7 +1,7 @@
 /**
  * Header for code common to FreeDink and FreeDinkedit
 
- * Copyright (C) 2005, 2007, 2008, 2009, 2010, 2012, 2014  Sylvain Beucler
+ * Copyright (C) 2005, 2007, 2008, 2009, 2010, 2012, 2014, 2015  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -37,7 +37,7 @@
 #include "game_engine.h"
 #include "rect.h"
 #include "dinkc.h"
-#include "screen.h"
+#include "editor_screen.h"
 
 struct attackinfo_struct
 {

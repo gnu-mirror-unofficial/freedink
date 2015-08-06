@@ -41,7 +41,7 @@
 #include "game_engine.h"
 #include "live_sprites_manager.h"
 #include "map.h"
-#include "screen.h"
+#include "editor_screen.h"
 #include "dinkvar.h"
 #include "freedink.h"
 #include "paths.h"

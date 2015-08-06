@@ -2,7 +2,7 @@
  * FreeDink game-specific code
 
  * Copyright (C) 1997, 1998, 1999, 2002, 2003  Seth A. Robinson
- * Copyright (C) 2003, 2004, 2005, 2007, 2008, 2009, 2010, 2012, 2014  Sylvain Beucler
+ * Copyright (C) 2003, 2004, 2005, 2007, 2008, 2009, 2010, 2012, 2014, 2015  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -2834,7 +2834,7 @@ shootm:
   if (crap != 0)
     {
       // TODO: crap-100 may be negative...
-      if (cur_screen.sprite[crap-100].is_warp != 0)
+      if (cur_ed_screen.sprite[crap-100].is_warp != 0)
 	flub_mode = crap;
 		  
       //hit something, can we move around it?
@@ -3207,21 +3207,21 @@ shootm:
  */
 int special_block(int block)
 {
-  if (cur_screen.sprite[block].is_warp == 1)
+  if (cur_ed_screen.sprite[block].is_warp == 1)
     {
       //they touched a warp
-      if (cur_screen.sprite[block].sound == 0)
+      if (cur_ed_screen.sprite[block].sound == 0)
         SoundPlayEffect(7, 12000, 0, 0, 0);
       else
-        SoundPlayEffect(cur_screen.sprite[block].sound, 22050, 0, 0, 0);
+        SoundPlayEffect(cur_ed_screen.sprite[block].sound, 22050, 0, 0, 0);
       
-      if (cur_screen.sprite[block].parm_seq != 0)
+      if (cur_ed_screen.sprite[block].parm_seq != 0)
         {
           // we'll also play an animation here
           int sprite = find_sprite(block);
           if (sprite > 0)
             {
-              spr[sprite].seq = cur_screen.sprite[block].parm_seq;
+              spr[sprite].seq = cur_ed_screen.sprite[block].parm_seq;
               process_warp = block;
             }
           return 1;
@@ -3744,15 +3744,15 @@ void process_warp_man(void)
 	  process_count = 0;
 	  int block = process_warp;
 	  update_screen_time();
-	  spr[1].x = cur_screen.sprite[block].warp_x;
-	  spr[1].y = cur_screen.sprite[block].warp_y;
-	  *pplayer_map = cur_screen.sprite[block].warp_map;
+	  spr[1].x = cur_ed_screen.sprite[block].warp_x;
+	  spr[1].y = cur_ed_screen.sprite[block].warp_y;
+	  *pplayer_map = cur_ed_screen.sprite[block].warp_map;
 
 	  // update map indicator
-	  if (map.indoor[cur_screen.sprite[block].warp_map] == 0)
-	    play.last_map = cur_screen.sprite[block].warp_map;
+	  if (map.indoor[cur_ed_screen.sprite[block].warp_map] == 0)
+	    play.last_map = cur_ed_screen.sprite[block].warp_map;
 	  
-	  game_load_screen(map.loc[cur_screen.sprite[block].warp_map]);
+	  game_load_screen(map.loc[cur_ed_screen.sprite[block].warp_map]);
 	  draw_screen_game();
 	  
 	  process_upcycle = 1;
@@ -3880,11 +3880,11 @@ void repeat_brain(int h)
 	
 	if (spr[h].seq_orig == 0) if (spr[h].sp_index != 0) 
 	{
-		spr[h].seq_orig = cur_screen.sprite[spr[h].sp_index].seq;
-		spr[h].frame = cur_screen.sprite[spr[h].sp_index].frame;
+		spr[h].seq_orig = cur_ed_screen.sprite[spr[h].sp_index].seq;
+		spr[h].frame = cur_ed_screen.sprite[spr[h].sp_index].frame;
 		spr[h].wait = 0;
 		
-		//cur_screen.sprite[spr[h].sp_index].frame;
+		//cur_ed_screen.sprite[spr[h].sp_index].frame;
 		
 	}
 	   

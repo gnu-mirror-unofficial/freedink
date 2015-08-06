@@ -24,14 +24,17 @@
 #include "game_engine.h"
 #include "live_sprites_manager.h"
 #include "live_screen.h"
-#include "screen.h"
+#include "editor_screen.h"
 #include "hardness_tiles.h"
 #include "gfx_sprites.h"
 #include "log.h"
 #include "dinkvar.h"
 
 /* base editor screen */
-struct screen cur_screen;
+struct screen cur_ed_screen;
+
+/* hardness */
+unsigned char screen_hitmap[600+1][400+1]; /* hit_map */
 
 /**
  * Fills a int[MAX_SPRITES_AT_ONCE] with the index of the current
@@ -86,8 +89,8 @@ void fill_hard_sprites()
 	  // Msg("proccesing sprite %d", h);
 	  if (spr[h].sp_index != 0)
 	    {
-	      //Msg("has spindex of %d is_warp is %d",spr[h].sp_index,cur_screen.sprite[spr[h].sp_index].is_warp);
-	      if (cur_screen.sprite[spr[h].sp_index].hard == 0)
+	      //Msg("has spindex of %d is_warp is %d",spr[h].sp_index,cur_ed_screen.sprite[spr[h].sp_index].is_warp);
+	      if (cur_ed_screen.sprite[spr[h].sp_index].hard == 0)
 		{
 		  add_hardness(h,100+spr[h].sp_index);
 		  //Msg("added warp hardness for %d", spr[h].sp_index);

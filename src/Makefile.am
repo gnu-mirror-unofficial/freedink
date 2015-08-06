@@ -26,16 +26,16 @@ LIBS += -lm
 
 COMMON_OBJS= app.cpp app.h bgm.cpp bgm.h dinkini.cpp dinkini.h		\
 	dinkvar.cpp dinkvar.h fastfile.cpp fastfile.h str_util.cpp	\
-	str_util.h io_util.cpp io_util.h live_sprites_manager.cpp	\
-	live_sprites_manager.h gfx.cpp gfx.h gfx_fade.cpp gfx_fade.h	\
+	str_util.h io_util.cpp io_util.h editor_screen.cpp		\
+	editor_screen.h gfx.cpp gfx.h gfx_fade.cpp gfx_fade.h		\
 	gfx_tiles.cpp gfx_tiles.h gfx_palette.cpp gfx_palette.h		\
 	gfx_fonts.cpp gfx_fonts.h hardness_tiles.cpp hardness_tiles.h	\
 	live_screen.cpp live_screen.h live_sprite.cpp live_sprite.h	\
-	rect.cpp rect.h resources.cpp resources.h input.cpp input.h	\
+	live_sprites_manager.cpp live_sprites_manager.h rect.cpp	\
+	rect.h resources.cpp resources.h input.cpp input.h		\
 	freedink_xpm.cpp freedink_xpm.h map.cpp map.h paths.cpp		\
 	paths.h log.cpp log.h gfx_sprites.cpp gfx_sprites.h		\
-	vgasys_fon.cpp vgasys_fon.h msgbox.cpp msgbox.h screen.cpp	\
-	screen.h sfx.cpp sfx.h
+	vgasys_fon.cpp vgasys_fon.h msgbox.cpp msgbox.h sfx.cpp sfx.h
 
 if ANDROID
   # Build .so JNI libs rather than executables
@@ -109,8 +109,9 @@ endif
 
 
 if HAVE_TESTS
-check_PROGRAMS = test_str_util test_io_util test_map test_screen	\
-	test_dinkc test_dinkc_bindings test_integration
+check_PROGRAMS = test_str_util test_io_util test_map		\
+	test_editor_screen test_dinkc test_dinkc_bindings	\
+	test_integration
 .cxx.cpp:
 	$(CXXTESTGEN) --error-printer --include test_sdl_workaround.h -o $@ $<
 EXTRA_DIST += test_sdl_workaround.h
@@ -122,13 +123,13 @@ test_map_SOURCES = $(COMMON_OBJS) dinkc_bindings.cpp dinkc_bindings.h	\
 	inventory.cpp inventory.h meminfo.cpp meminfo.h savegame.cpp	\
 	savegame.h status.cpp status.h talk.cpp talk.h text.cpp		\
 	text.h update_frame.cpp test_map.cpp
-test_screen_SOURCES = $(COMMON_OBJS) dinkc_bindings.cpp			\
+test_editor_screen_SOURCES = $(COMMON_OBJS) dinkc_bindings.cpp		\
 	dinkc_bindings.h dinkc.cpp dinkc.h dinkc_console.cpp		\
 	dinkc_console.h freedink.cpp game_engine.cpp game_engine.h	\
 	i18n.cpp i18n.h inventory.cpp inventory.h meminfo.cpp		\
 	meminfo.h savegame.cpp savegame.h status.cpp status.h		\
 	talk.cpp talk.h text.cpp text.h update_frame.cpp		\
-	test_screen.cpp
+	test_editor_screen.cpp
 test_dinkc_SOURCES = dinkc.cpp str_util.cpp paths.cpp io_util.cpp	\
 	msgbox.cpp i18n.cpp test_dinkc.cpp
 test_dinkc_bindings_SOURCES = $(COMMON_OBJS) dinkc_bindings.cpp		\

@@ -2,7 +2,7 @@
  * Map - group of screen references (dink.dat)
 
  * Copyright (C) 1997, 1998, 1999, 2002, 2003  Seth A. Robinson
- * Copyright (C) 2005, 2007, 2008, 2009, 2014  Sylvain Beucler
+ * Copyright (C) 2005, 2007, 2008, 2009, 2014, 2015  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -24,7 +24,7 @@
 #ifndef _MAP_H
 #define _MAP_H
 
-#include "screen.h"
+#include "editor_screen.h"
 
 extern char current_dat[50];
 extern char current_map[50];

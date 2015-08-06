@@ -30,9 +30,6 @@
 
 #define MAX_SPRITES_EDITOR 99
 
-// struct for hardness map
-extern unsigned char screen_hitmap[600+1][400+1];
-
 
 struct sprite_placement
 {

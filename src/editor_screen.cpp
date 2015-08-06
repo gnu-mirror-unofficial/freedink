@@ -28,16 +28,13 @@
 #include <string.h>
 
 #include "dinkvar.h"
-#include "screen.h"
-#include "live_screen.h" /* cur_screen */
+#include "editor_screen.h"
+#include "live_screen.h" /* cur_ed_screen */
 #include "hardness_tiles.h"
 #include "gfx.h"
 #include "sfx.h"
 #include "log.h"
 #include "paths.h"
-
-/* hardness */
-unsigned char screen_hitmap[600+1][400+1]; /* hit_map */
 
 void screen_init() {
   memset(&screen_hitmap, 0, sizeof(screen_hitmap));
@@ -49,10 +46,10 @@ void screen_init() {
  */
 int realhard(int tile)
 {
-  if (cur_screen.t[tile].althard > 0)
-    return(cur_screen.t[tile].althard);
+  if (cur_ed_screen.t[tile].althard > 0)
+    return(cur_ed_screen.t[tile].althard);
   else
-    return(hmap.btile_default[cur_screen.t[tile].square_full_idx0]);
+    return(hmap.btile_default[cur_ed_screen.t[tile].square_full_idx0]);
 }
 
 /**
@@ -74,13 +71,13 @@ void screen_rank_editor_sprites(int* rank)
       int h1;
       for (h1 = 1; h1 <= MAX_SPRITES_EDITOR; h1++)
 	{
-	  if (already_checked[h1] == 0 && cur_screen.sprite[h1].active)
+	  if (already_checked[h1] == 0 && cur_ed_screen.sprite[h1].active)
 	    {
 	      int height;
-	      if (cur_screen.sprite[h1].que != 0)
-		height = cur_screen.sprite[h1].que;
+	      if (cur_ed_screen.sprite[h1].que != 0)
+		height = cur_ed_screen.sprite[h1].que;
 	      else
-		height = cur_screen.sprite[h1].y;
+		height = cur_ed_screen.sprite[h1].y;
 	      
 	      if (height < highest_sprite)
 		{
@@ -238,9 +235,9 @@ void save_screen(char* path, const int num)
       fwrite(name, 20, 1, f);
       for (i = 0; i < 97; i++)
 	{
-	  write_lsb_int(cur_screen.t[i].square_full_idx0, f);
+	  write_lsb_int(cur_ed_screen.t[i].square_full_idx0, f);
 	  fwrite(skipbuf, 4, 1, f); // unused 'property' field
-	  write_lsb_int(cur_screen.t[i].althard, f);
+	  write_lsb_int(cur_ed_screen.t[i].althard, f);
 	  fwrite(skipbuf, 6, 1, f); // unused 'more2', 'more3', 'more4' fields
 	  fwrite(skipbuf, 2, 1, f); // reproduce memory alignment
 	  fwrite(skipbuf, 60, 1, f); // unused 'buff' field
@@ -255,67 +252,67 @@ void save_screen(char* path, const int num)
       /* size = 220 */
       for (i = 0; i < 101; i++)
 	{
-	  write_lsb_int(cur_screen.sprite[i].x, f);
-	  write_lsb_int(cur_screen.sprite[i].y, f);
-	  write_lsb_int(cur_screen.sprite[i].seq, f);
-	  write_lsb_int(cur_screen.sprite[i].frame, f);
-	  write_lsb_int(cur_screen.sprite[i].type, f);
-	  write_lsb_int(cur_screen.sprite[i].size, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].x, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].y, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].seq, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].frame, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].type, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].size, f);
 
-	  fputc(cur_screen.sprite[i].active, f);
+	  fputc(cur_ed_screen.sprite[i].active, f);
 	  fwrite(skipbuf, 3, 1, f); // reproduce memory alignment
 	  // offset 28
 	  
-	  write_lsb_int(cur_screen.sprite[i].rotation, f);
-	  write_lsb_int(cur_screen.sprite[i].special, f);
-	  write_lsb_int(cur_screen.sprite[i].brain, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].rotation, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].special, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].brain, f);
 
-	  fwrite(cur_screen.sprite[i].script, 14, 1, f);
+	  fwrite(cur_ed_screen.sprite[i].script, 14, 1, f);
 	  fwrite(skipbuf, 38, 1, f); // reproduce memory alignment
 	  // offset 92
 
-	  write_lsb_int(cur_screen.sprite[i].speed, f);
-	  write_lsb_int(cur_screen.sprite[i].base_walk, f);
-	  write_lsb_int(cur_screen.sprite[i].base_idle, f);
-	  write_lsb_int(cur_screen.sprite[i].base_attack, f);
-	  write_lsb_int(cur_screen.sprite[i].base_hit, f);
-	  write_lsb_int(cur_screen.sprite[i].timer, f);
-	  write_lsb_int(cur_screen.sprite[i].que, f);
-	  write_lsb_int(cur_screen.sprite[i].hard, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].speed, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].base_walk, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].base_idle, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].base_attack, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].base_hit, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].timer, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].que, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].hard, f);
 	  // offset 124
 
-	  write_lsb_int(cur_screen.sprite[i].alt.left, f);
-	  write_lsb_int(cur_screen.sprite[i].alt.top, f);
-	  write_lsb_int(cur_screen.sprite[i].alt.right, f);
-	  write_lsb_int(cur_screen.sprite[i].alt.bottom, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].alt.left, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].alt.top, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].alt.right, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].alt.bottom, f);
 	  // offset 140
 
-	  write_lsb_int(cur_screen.sprite[i].is_warp, f);
-	  write_lsb_int(cur_screen.sprite[i].warp_map, f);
-	  write_lsb_int(cur_screen.sprite[i].warp_x, f);
-	  write_lsb_int(cur_screen.sprite[i].warp_y, f);
-	  write_lsb_int(cur_screen.sprite[i].parm_seq, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].is_warp, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].warp_map, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].warp_x, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].warp_y, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].parm_seq, f);
 	  // offset 160
   
-	  write_lsb_int(cur_screen.sprite[i].base_die, f);
-	  write_lsb_int(cur_screen.sprite[i].gold, f);
-	  write_lsb_int(cur_screen.sprite[i].hitpoints, f);
-	  write_lsb_int(cur_screen.sprite[i].strength, f);
-	  write_lsb_int(cur_screen.sprite[i].defense, f);
-	  write_lsb_int(cur_screen.sprite[i].exp, f);
-	  write_lsb_int(cur_screen.sprite[i].sound, f);
-	  write_lsb_int(cur_screen.sprite[i].vision, f);
-	  write_lsb_int(cur_screen.sprite[i].nohit, f);
-	  write_lsb_int(cur_screen.sprite[i].touch_damage, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].base_die, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].gold, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].hitpoints, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].strength, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].defense, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].exp, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].sound, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].vision, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].nohit, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].touch_damage, f);
 	  // offset 200
 
 	  int j = 0;
 	  for (j = 0; j < 5; j++)
-	    write_lsb_int(cur_screen.sprite[i].buff[j], f);
+	    write_lsb_int(cur_ed_screen.sprite[i].buff[j], f);
 	}
       // offset 30204
       
-      fwrite(cur_screen.script, 21, 1, f);
+      fwrite(cur_ed_screen.script, 21, 1, f);
       fwrite(skipbuf, 1018, 1, f); // unused random/load/buffer fields
       fwrite(skipbuf, 1, 1, f); // reproduce memory alignment
       // offset 31280

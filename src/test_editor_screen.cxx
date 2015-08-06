@@ -24,7 +24,7 @@
 #include <config.h>
 #endif
 
-#include "screen.h"
+#include "editor_screen.h"
 #include "live_sprites_manager.h"
 
 class TestScreen : public CxxTest::TestSuite {
