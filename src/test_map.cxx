@@ -36,7 +36,11 @@ public:
   
   void test_new() {
     ts_paths_init();
-    TS_ASSERT_EQUALS(map_new("", &map), -1);
+    TS_ASSERT_EQUALS(current_dat, "dink.dat");
+    map_load();
     TS_ASSERT_EQUALS(map.loc[1], 0);
+
+    map_info testmap;
+    TS_ASSERT_EQUALS(map_new("", &testmap), -1);
   }
 };
