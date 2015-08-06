@@ -1090,7 +1090,7 @@ past:
 	if (mode == 2)
 	{
 	  set_mode(3);
-	  game_load_screen(map.loc[*pplayer_map]);
+	  game_load_screen(g_map.loc[*pplayer_map]);
 	  draw_screen_game();
 	  flife = *plife;
 	}

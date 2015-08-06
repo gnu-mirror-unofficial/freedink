@@ -328,7 +328,7 @@
 	}
     }
   kill_repeat_sounds_all();
-  game_load_screen(map.loc[*pplayer_map]);
+  game_load_screen(g_map.loc[*pplayer_map]);
   log_info("Loaded map.");
   draw_screen_game();
   log_info("Map drawn.");

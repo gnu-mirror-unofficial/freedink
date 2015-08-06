@@ -40,7 +40,7 @@ class EditorMap
   int music[768+1];
   int indoor[768+1];
 };
-extern EditorMap map;
+extern EditorMap g_map;
 
 
 extern int map_new(char* path, EditorMap *mymap);

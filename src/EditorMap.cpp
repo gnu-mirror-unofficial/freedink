@@ -33,7 +33,7 @@
 #include "io_util.h"
 
 /* dink.dat */
-EditorMap map;
+EditorMap g_map;
 
 char current_dat[50] = "dink.dat";
 char current_map[50] = "map.dat";
@@ -63,7 +63,7 @@ int map_new(char* path, EditorMap* mymap)
 
   fclose(f);
 
-  memset(&map.ts_loc_mem, 0, sizeof(map.ts_loc_mem));
+  memset(&g_map.ts_loc_mem, 0, sizeof(g_map.ts_loc_mem));
 
   return 0;
 }
@@ -74,7 +74,7 @@ int map_new(char* path, EditorMap* mymap)
  */
 void map_load(void)
 {
-  map_new(current_dat, &map);
+  map_new(current_dat, &g_map);
 }
 
 
@@ -96,11 +96,11 @@ void map_save(void)
   char name[20] = "Smallwood";
   fwrite(name, 20, 1, f);
   for (i = 0; i < 769; i++)
-    write_lsb_int(map.loc[i],    f);
+    write_lsb_int(g_map.loc[i],    f);
   for (i = 0; i < 769; i++)
-    write_lsb_int(map.music[i],  f);
+    write_lsb_int(g_map.music[i],  f);
   for (i = 0; i < 769; i++)
-    write_lsb_int(map.indoor[i], f);
+    write_lsb_int(g_map.indoor[i], f);
   fseek(f, 2240, SEEK_CUR); // unused field
 
   fclose(f);

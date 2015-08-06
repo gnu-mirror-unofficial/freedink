@@ -643,10 +643,10 @@ void dc_load_screen(int script, int* yield, int* preturnint)
 
   //Msg("Loading map %d..",*pplayer_map);
   update_screen_time();
-  game_load_screen(map.loc[*pplayer_map]);
+  game_load_screen(g_map.loc[*pplayer_map]);
 
   // update indicator on mini-map
-  if (map.indoor[*pplayer_map] == 0)
+  if (g_map.indoor[*pplayer_map] == 0)
     play.last_map = *pplayer_map;
     
   return;

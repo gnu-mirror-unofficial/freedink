@@ -38,7 +38,7 @@ public:
     ts_paths_init();
     TS_ASSERT_EQUALS(current_dat, "dink.dat");
     map_load();
-    TS_ASSERT_EQUALS(map.loc[1], 0);
+    TS_ASSERT_EQUALS(g_map.loc[1], 0);
 
     EditorMap testmap;
     TS_ASSERT_EQUALS(map_new("", &testmap), -1);

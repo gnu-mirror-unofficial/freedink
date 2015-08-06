@@ -56,7 +56,7 @@ public:
   void test_integration_player_position_is_updated_after_screen_is_loaded() {
     //SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
     ts_paths_init();
-    memset(&map.ts_loc_mem, 0, sizeof(map.ts_loc_mem));
+    memset(&g_map.ts_loc_mem, 0, sizeof(g_map.ts_loc_mem));
     
     dinkc_init();
     dinkc_bindings_init();
@@ -80,11 +80,11 @@ public:
     // Create 5 connected screens
     struct screen s;
     s.ts_script_id = screen_script_id;
-    map.loc[33] = 1; map.ts_loc_mem[33] = &s;
-    map.loc[32] = 1; map.ts_loc_mem[32] = &s;
-    map.loc[34] = 1; map.ts_loc_mem[34] = &s;
-    map.loc[1]  = 1; map.ts_loc_mem[1]  = &s;
-    map.loc[65] = 1; map.ts_loc_mem[65] = &s;
+    g_map.loc[33] = 1; g_map.ts_loc_mem[33] = &s;
+    g_map.loc[32] = 1; g_map.ts_loc_mem[32] = &s;
+    g_map.loc[34] = 1; g_map.ts_loc_mem[34] = &s;
+    g_map.loc[1]  = 1; g_map.ts_loc_mem[1]  = &s;
+    g_map.loc[65] = 1; g_map.ts_loc_mem[65] = &s;
     
     screenlock = 0;
     walk_off_screen = 0;
