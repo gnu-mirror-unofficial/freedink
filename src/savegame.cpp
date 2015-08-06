@@ -253,7 +253,7 @@
 	{
 	  strcpy (current_map, play.mapdat);
 	  strcpy (current_dat, play.dinkdat);
-	  load_info();
+	  map_load();
 	}
       
       // load palette

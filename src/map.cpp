@@ -42,7 +42,7 @@ char current_hard[50] = "hard.dat";
 /**
  * Load dink.dat to specified memory buffer
  */
-int load_info_to(char* path, struct map_info *mymap)
+int map_new(char* path, struct map_info *mymap)
 {
   FILE *f = NULL;
 
@@ -72,9 +72,9 @@ int load_info_to(char* path, struct map_info *mymap)
  * Load dink.dat, an offsets index to screens stored in map.dat, with
  * some metadata (midi #, indoor/outdoor)
  */
-void load_info(void)
+void map_load(void)
 {
-  load_info_to(current_dat, &map);
+  map_new(current_dat, &map);
 }
 
 
@@ -82,7 +82,7 @@ void load_info(void)
  * Save dink.dat (index of map offsets + midi# + indoor/outdoor)
  * Only used by the editor
  */
-void save_info(void)
+void map_save(void)
 {
   FILE *f = paths_dmodfile_fopen(current_dat, "wb");
   if (f == NULL)

@@ -462,7 +462,7 @@ int app_start(int argc, char *argv[],
   log_info(" done!");
 
   log_info("World data....");
-  load_info();
+  map_load();
   log_info(" done!");
 
   init_hook();

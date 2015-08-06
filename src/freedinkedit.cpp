@@ -703,23 +703,23 @@ void draw_minimap(void)
 
 /*bool*/int load_screen_buf(const int num)
 {
-  char crap[120];
+  char mapdat_path[120];
   /* TODO: Dinkedit historically loads map with a filename relative to
      the current D-Mod directory. Maybe change that to handle absolute
      paths and paths relative to the refdir. */
-  sprintf(crap, "%sMAP.DAT", buf_path);
-  load_screen_to(crap, num, &cur_ed_screen);
+  sprintf(mapdat_path, "%sMAP.DAT", buf_path);
+  load_screen_to(mapdat_path, num, &cur_ed_screen);
   
   return /*true*/1;
 }
 
 void load_info_buff(void)
 {
-  char crap[120];
+  char dinkdat_path[120];
 
-  sprintf(crap, "%sDINK.DAT", buf_path);
+  sprintf(dinkdat_path, "%sDINK.DAT", buf_path);
 
-  if (load_info_to(crap, &buffmap) < 0)
+  if (map_new(dinkdat_path, &buffmap) < 0)
     {
       log_error("World not found in %s.", buf_path);
       buf_mode = /*false*/0;
@@ -3706,7 +3706,7 @@ void updateFrame(void)
 
 		    if ( (input_getscancodejustpressed(SDL_SCANCODE_ESCAPE)) && (mode == MODE_MINIMAP))
 		      {
-			load_info();
+			map_load();
 			draw_minimap();
 			buf_mode = /*false*/0;
 
@@ -3755,7 +3755,7 @@ void updateFrame(void)
 			      }
 
 
-			    load_info();
+			    map_load();
 
 			    if (map.loc[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)] == 0)
 			      {
@@ -3774,19 +3774,19 @@ void updateFrame(void)
 
 			    editor_save_screen(map.loc[buf_map]);
 
-			    save_info();
+			    map_save();
 			    draw_minimap();
 			    return;
 			  }
 
-			load_info();
+			map_load();
 
 			cur_map = (((spr[1].y+1)*32) / 20)+(spr[1].x / 20);
 			if (map.loc[cur_map] == 0)
 			  {
 			    //new map screen
 			    map.loc[cur_map] = add_new_map();
-			    save_info();
+			    map_save();
 			  }
 			else
 			  {
@@ -3971,7 +3971,7 @@ void updateFrame(void)
 			spr[h].y = m1y;
 			mode = MODE_MINIMAP;
 			spr[h].speed = 20;
-			load_info();
+			map_load();
 			draw_minimap();
 			while (kill_last_sprite());
 			return;
@@ -3991,7 +3991,7 @@ void updateFrame(void)
 			spr[h].y = m1y;
 			mode = 1;
 			spr[h].speed = 20;
-			load_info();
+			map_load();
 			draw_minimap();
 			while (kill_last_sprite());
 			return;
@@ -4628,12 +4628,12 @@ void updateFrame(void)
 		  in_crap2 = in_crap;
 		  
 		  if ((old_command == INPUT_SCREEN_MIDI) || (old_command == INPUT_SCREEN_TYPE))
-		    load_info();
+		    map_load();
 		  
 		  *in_int = in_crap2;
 
 		  if ((old_command == INPUT_SCREEN_MIDI) || (old_command == INPUT_SCREEN_TYPE))
-		    save_info();
+		    map_save();
 		}
 	      else
 		{

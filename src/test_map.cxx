@@ -36,7 +36,7 @@ public:
   
   void test_new() {
     ts_paths_init();
-    TS_ASSERT_EQUALS(load_info_to("", &map), -1);
+    TS_ASSERT_EQUALS(map_new("", &map), -1);
     TS_ASSERT_EQUALS(map.loc[1], 0);
   }
 };

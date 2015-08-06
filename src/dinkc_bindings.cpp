@@ -1803,7 +1803,7 @@ void dc_load_map(int script, int* yield, int* preturnint, char* mapdat_file, cha
   // load a new map/dink.dat
   strcpy(current_map, mapdat_file);
   strcpy(current_dat, dinkdat_file);
-  load_info();
+  map_load();
 }
 
 void dc_load_tile(int script, int* yield, int* preturnint, char* tileset_file, int tileset_index)
