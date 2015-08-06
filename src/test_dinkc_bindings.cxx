@@ -40,7 +40,7 @@
 #include "dinkc_bindings.h"
 #include "game_engine.h"
 #include "live_sprites_manager.h"
-#include "map.h"
+#include "EditorMap.h"
 #include "editor_screen.h"
 #include "dinkvar.h"
 #include "freedink.h"

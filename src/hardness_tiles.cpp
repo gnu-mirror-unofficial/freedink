@@ -22,7 +22,7 @@
  */
 
 #include "hardness_tiles.h"
-#include "map.h"
+#include "EditorMap.h"
 #include "paths.h"
 #include "log.h"
 

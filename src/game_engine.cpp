@@ -31,7 +31,7 @@
 #include "game_engine.h"
 #include "live_sprites_manager.h"
 #include "live_screen.h"
-#include "map.h" /* map */
+#include "EditorMap.h" /* map */
 #include "live_screen.h" /* screen_hitmap */
 #include "dinkvar.h"  /* hmap, cur_ed_screen */
 #include "freedink.h"  /* add_time_to_saved_game */

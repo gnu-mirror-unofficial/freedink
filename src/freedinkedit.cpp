@@ -43,7 +43,7 @@
 
 #include "app.h"
 #include "dinkvar.h"
-#include "map.h"
+#include "EditorMap.h"
 #include "hardness_tiles.h"
 #include "fastfile.h"
 #include "gfx.h"
@@ -107,7 +107,7 @@ enum editor_buttons {
   EDITOR_ACTION_LAST // max+1 constant for loops
 };
 
-struct map_info buffmap;
+EditorMap buffmap;
 /*bool*/int buf_mode = /*false*/0;
 static char buf_path[100];
 static int buf_map = 0;
@@ -621,7 +621,7 @@ void draw_hard( void)
 
 
 void
-draw_this_map(struct map_info* pmap)
+draw_this_map(EditorMap* pmap)
 {
   int x;
   for (x = 0; x < 768; x++)

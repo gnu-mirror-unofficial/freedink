@@ -42,7 +42,7 @@
 #include "game_engine.h"
 #include "dinkini.h"
 #include "dinkvar.h"
-#include "map.h"
+#include "EditorMap.h"
 #include "hardness_tiles.h"
 #include "gfx.h"
 #include "gfx_fonts.h"

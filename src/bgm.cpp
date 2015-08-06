@@ -41,7 +41,7 @@
 #include "paths.h"
 #include "log.h"
 #include "sfx.h"
-#include "map.h"
+#include "EditorMap.h"
 
 /* Current background music (not cd) */
 static Mix_Music *music_data = NULL;

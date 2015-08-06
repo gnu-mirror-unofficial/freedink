@@ -29,7 +29,7 @@
 
 #include "dinkvar.h"
 #include "live_sprites_manager.h"
-#include "map.h"
+#include "EditorMap.h"
 #include "dinkc.h"
 #include "sfx.h"
 #include "bgm.h"

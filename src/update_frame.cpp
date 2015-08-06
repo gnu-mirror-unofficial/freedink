@@ -38,7 +38,7 @@
 #include "dinkvar.h"
 #include "game_engine.h"
 #include "live_sprites_manager.h"
-#include "map.h"
+#include "EditorMap.h"
 #include "editor_screen.h"
 #include "live_screen.h"
 #include "freedink.h"

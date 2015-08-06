@@ -27,13 +27,13 @@
 
 #include <stdio.h>
 
-#include "map.h"
+#include "EditorMap.h"
 
 #include "paths.h"
 #include "io_util.h"
 
 /* dink.dat */
-map_info map;
+EditorMap map;
 
 char current_dat[50] = "dink.dat";
 char current_map[50] = "map.dat";
@@ -42,7 +42,7 @@ char current_hard[50] = "hard.dat";
 /**
  * Load dink.dat to specified memory buffer
  */
-int map_new(char* path, struct map_info *mymap)
+int map_new(char* path, EditorMap* mymap)
 {
   FILE *f = NULL;
 
@@ -50,7 +50,7 @@ int map_new(char* path, struct map_info *mymap)
   if (!f)
     return -1;
 
-  /* Portably load struct map_info from disk */
+  /* Portably load EditorMap from disk */
   int i = 0;
   fseek(f, 20, SEEK_CUR); // unused 'name' field
   for (i = 0; i < 769; i++)
@@ -91,7 +91,7 @@ void map_save(void)
       return;
     }
   
-  /* Portably dump struct map_info to disk */
+  /* Portably dump EditorMap to disk */
   int i = 0;
   char name[20] = "Smallwood";
   fwrite(name, 20, 1, f);
