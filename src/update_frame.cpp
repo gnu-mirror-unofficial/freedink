@@ -35,6 +35,7 @@
 #include "SDL.h"
 #include "SDL2_framerate.h"
 
+#include "app.h"
 #include "dinkvar.h"
 #include "game_engine.h"
 #include "live_sprites_manager.h"
@@ -42,6 +43,7 @@
 #include "editor_screen.h"
 #include "live_screen.h"
 #include "freedink.h"
+#include "brains.h"
 #include "gfx.h"
 /* For printing strings in debug mode */
 #include "gfx_fonts.h"

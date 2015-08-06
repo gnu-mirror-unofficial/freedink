@@ -76,3 +76,17 @@ rect_inflate(rect *rect, int dw, int dh)
   rect->bottom += dh;
   return 1;
 }
+
+
+/*bool*/int inside_box(int x1, int y1, rect box)
+{
+
+        if (x1 > box.right) return(/*false*/0);
+        if (x1 < box.left) return(/*false*/0);
+
+        if (y1 > box.bottom) return(/*false*/0);
+        if (y1 < box.top) return(/*false*/0);
+
+        return(/*true*/1);
+
+}

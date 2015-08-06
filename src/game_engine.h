@@ -88,6 +88,19 @@ struct player_info
 };
 
 extern struct player_info play;
+
+struct attackinfo_struct
+{
+	int time;
+	/*bool*/int active;
+	int script;
+	/*bool*/int hitme;
+	int last_power;
+	Uint32 wait;
+	Uint32 pull_wait;
+};
+extern struct attackinfo_struct bow;
+
 extern int last_sprite_created;
 
 /* Engine variables directly mapped with DinkC variables */
@@ -133,6 +146,10 @@ extern int cycle_script;
 extern unsigned int dink_base_push;
 
 extern /*bool*/int screen_main_is_running;
+
+extern Uint32 thisTickCount;
+extern Uint32 lastTickCount;
+
 
 extern void game_init();
 extern void game_quit();

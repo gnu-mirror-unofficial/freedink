@@ -1,5 +1,5 @@
 /**
- * Live sprites manager
+ * Brains - Sprites AI
 
  * Copyright (C) 1997, 1998, 1999, 2002, 2003  Seth A. Robinson
  * Copyright (C) 2005, 2007, 2008, 2009, 2014, 2015  Sylvain Beucler
@@ -21,27 +21,21 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _LIVE_SPRITES_MANAGER_H
-#define _LIVE_SPRITES_MANAGER_H
+#ifndef _BRAIN_H
+#define _BRAIN_H
 
-#include "live_sprite.h"
-
-#define MAX_SPRITES_AT_ONCE 300
-extern struct sp spr[];
-extern int last_sprite_created;
-
-extern int add_sprite(int x1, int y, int brain,int pseq, int pframe );
-extern int add_sprite_dumb(int x1, int y, int brain,int pseq, int pframe,int size);
-extern void random_blood(int mx, int my, int sprite);
-
-extern void kill_text_owned_by(int sprite);
-extern int does_sprite_have_text(int sprite);
-extern /*bool*/int text_owned_by(int sprite);
-
-extern void kill_sprite_all (int sprite);
-extern /*bool*/int kill_last_sprite(void);
-extern int find_sprite(int editor_sprite);
-
-extern void live_sprites_manager_init();
+extern /*bool*/int check_for_kill_script(int i);
+extern void add_kill_sprite(int h);
+extern int get_distance_and_dir(int h, int h1, int *dir);
+extern int get_distance_and_dir_nosmooth(int h, int h1, int *dir);
+extern void change_dir_to_diag( int *dir);
+extern void changedir(int dir1, int k, int base);
+extern void process_follow(int h);
+extern void process_move(int h);
+extern void draw_damage(int h);
+extern void automove (int j);
+extern void move(int u, int amount, char kind,  char kindy);
+extern int autoreverse(int j);
+extern int autoreverse_diag(int j);
 
 #endif

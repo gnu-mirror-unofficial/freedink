@@ -76,7 +76,6 @@ int show_inventory = 0; // display inventory?
 void update_status_all(void);
 int add_sprite(int x1, int y, int brain,int pseq, int pframe );
 
-void add_exp(int num, int h);
 void draw_status_all(void);
 void check_seq_status(int h);
 
@@ -96,8 +95,6 @@ struct show_bmp showb;
 
 int keep_mouse = 0;
 
-
-struct attackinfo_struct bow;
 
 unsigned long mold;
 
@@ -130,18 +127,8 @@ int sp_mode = 0;
 int fps,fps_final = 0;
 int move_screen = 0;
 int move_counter = 0;
-int playx = 620;
-/*bool*/int windowed = /*false*/0; /* TODO: move to gfx.c? */
-int playl = 20;
-
-int playy = 400;
 int cur_map;
 int* pplayer_map;
-
-/* Number of ms since an arbitrarily fixed point */
-Uint32 thisTickCount,lastTickCount;
-/* SDL_gfx accurate framerate */
-FPSmanager framerate_manager;
 
 unsigned long timecrap;
 rect math,box_crap,box_real;
@@ -541,19 +528,6 @@ void figure_out(char* line)
     free(ev[i]);
 }
 
-/*bool*/int inside_box(int x1, int y1, rect box)
-{
-
-        if (x1 > box.right) return(/*false*/0);
-        if (x1 < box.left) return(/*false*/0);
-
-        if (y1 > box.bottom) return(/*false*/0);
-        if (y1 < box.top) return(/*false*/0);
-
-        return(/*true*/1);
-
-}
-
 
 /*bool*/int get_box (int h, rect * box_scaled, rect * box_real)
 {
@@ -933,188 +907,6 @@ void draw_sprite_game(SDL_Surface *GFX_lpdest, int h)
 }
 
 
-        void changedir( int dir1, int k,int base)
-        {
-                int hspeed;
-                int speed_hold = spr[k].speed;
-                if (k > 1) if (spr[k].brain != 9) if (spr[k].brain != 10)
-                {
-                        hspeed = spr[k].speed * (base_timing / 4);
-                        if (hspeed > 49)
-                        {
-                                log_debug("Speed was %d", hspeed);
-                                spr[k].speed = 49;
-                        } else
-                                spr[k].speed = hspeed;
-                }
-                int old_seq = spr[k].seq;
-                spr[k].dir = dir1;
-
-                if (dir1 == 1)
-                {
-                        spr[k].mx = (0 - spr[k].speed ) + (spr[k].speed / 3);
-                        spr[k].my = spr[k].speed - (spr[k].speed / 3);
-
-                        if (base != -1)
-                        {
-
-
-                                spr[k].seq = base + 1;
-                                if (!seq[spr[k].seq].is_active)
-                                {
-                                        spr[k].seq = base + 9;
-
-                                }
-
-                        }
-
-                        if (old_seq != spr[k].seq)
-                        {
-                                spr[k].frame = 0;
-                                spr[k].delay = 0;
-                        }
-
-
-                }
-
-                if (dir1 == 2)
-                {
-                        spr[k].mx = 0;
-                        spr[k].my = spr[k].speed;
-                        if (base != -1)
-                                spr[k].seq = base + 2;
-
-                        if (!seq[spr[k].seq].is_active && seq[base+3].is_active)
-			  spr[k].seq = base + 3;
-                        if (!seq[spr[k].seq].is_active && seq[base+1].is_active)
-			  spr[k].seq = base + 1;
-
-
-                        if (old_seq != spr[k].seq)
-                        {
-                                spr[k].frame = 0;
-                                spr[k].delay = 0;
-                        }
-
-
-                }
-                if (dir1 == 3)
-                {
-                        spr[k].mx = spr[k].speed - (spr[k].speed / 3);
-                        spr[k].my = spr[k].speed - (spr[k].speed / 3);
-                        if (base != -1)
-                        {
-                                spr[k].seq = base + 3;
-                                if (!seq[spr[k].seq].is_active)
-                                        spr[k].seq = base + 7;
-
-                        }
-
-                        if (old_seq != spr[k].seq)
-                        {
-                                spr[k].frame = 0;
-                                spr[k].delay = 0;
-                        }
-
-
-                }
-
-                if (dir1 == 4)
-                {
-
-                        //Msg("Changing %d to four..",k);
-                        spr[k].mx = (0 - spr[k].speed);
-                        spr[k].my = 0;
-                        if (base != -1)
-                                spr[k].seq = base + 4;
-                        if (!seq[spr[k].seq].is_active && seq[base+7].is_active)
-			  spr[k].seq = base + 7;
-                        if (!seq[spr[k].seq].is_active && seq[base+1].is_active)
-			  spr[k].seq = base + 1;
-                }
-
-                if (dir1 == 6)
-                {
-                        spr[k].mx = spr[k].speed;
-                        spr[k].my = 0;
-                        if (base != -1)
-                                spr[k].seq = base + 6;
-
-                        if (!seq[spr[k].seq].is_active && seq[base+3].is_active)
-			  spr[k].seq = base + 3;
-                        if (!seq[spr[k].seq].is_active && seq[base+9].is_active)
-			  spr[k].seq = base + 9;
-
-                }
-
-                if (dir1 == 7)
-                {
-                        spr[k].mx = (0 - spr[k].speed) + (spr[k].speed / 3);
-                        spr[k].my = (0 - spr[k].speed)+ (spr[k].speed / 3);
-                        if (base != -1)
-                        {
-                                spr[k].seq = base + 7;
-
-
-                                if (!seq[spr[k].seq].is_active)
-				  spr[k].seq = base + 3;
-                        }
-
-                }
-                if (dir1 == 8)
-                {
-                        spr[k].mx = 0;
-                        spr[k].my = (0 - spr[k].speed);
-                        if (base != -1)
-                                spr[k].seq = base + 8;
-
-                        if (!seq[spr[k].seq].is_active && seq[base+7].is_active)
-			  spr[k].seq = base + 7;
-                        if (!seq[spr[k].seq].is_active && seq[base+9].is_active)
-			  spr[k].seq = base + 9;
-
-                }
-
-
-                if (dir1 == 9)
-                {
-                        spr[k].mx = spr[k].speed- (spr[k].speed / 3);
-                        spr[k].my = (0 - spr[k].speed)+ (spr[k].speed / 3);
-                        if (base != -1)
-                        {
-                                spr[k].seq = base + 9;
-                                if (!seq[spr[k].seq].is_active)
-                                        spr[k].seq = base + 1;
-                        }
-                }
-
-
-
-                if (old_seq != spr[k].seq)
-                {
-                        spr[k].frame = 0;
-                        spr[k].delay = 0;
-                }
-
-
-                if (!seq[spr[k].seq].is_active)
-                {
-                        //spr[k].mx = 0;
-                        //spr[k].my = 0;
-                        spr[k].seq = old_seq;
-
-                }
-
-                //Msg("Leaving with %d..", spr[k].dir);
-
-                //Msg("Changedir: Tried to switch sprite %d to dir %d",k,dir1);
-
-                spr[k].speed = speed_hold;
-
-}
-
-
-
 void show_bmp(char* name, int showdot, int script)
 {
   char* fullpath = paths_dmodfile(name);
@@ -1222,40 +1014,6 @@ void copy_bmp(char* name)
                 spr[h].damage += num;
                 return(num);
                 //draw blood here
-        }
-
-        void random_blood(int mx, int my, int sprite)
-        {
-                int myseq;
-                /* v1.08 introduces custom blood sequence, as well as
-                   a slightly different default (select blood in range
-                   187-189 included, instead of 187-188 included) */
-                int randy;
-                if (spr[sprite].bloodseq > 0 && spr[sprite].bloodnum > 0)
-                  {
-                    myseq = spr[sprite].bloodseq;
-                    randy = spr[sprite].bloodnum;
-                  }
-                else
-                  {
-                    myseq = 187;
-                    if (dversion >= 108)
-                      randy = 3;
-                    else
-                      randy = 2;
-                  }
-                myseq += (rand () % randy);
-                
-                int crap2 = add_sprite(mx,my,5,myseq,1);
-                /* TODO: add_sprite might return 0, and the following
-                   would trash spr[0] - cf. bugs.debian.org/688934 */
-                spr[crap2].speed = 0;
-                spr[crap2].base_walk = -1;
-                spr[crap2].nohit = 1;
-                spr[crap2].seq = myseq;
-                if (sprite > 0)
-                        spr[crap2].que = spr[sprite].y+1;
-
         }
 
 

@@ -31,5 +31,6 @@ extern int rect_set(rect *rect, int left, int top, int right, int bottom);
 extern int rect_offset(rect *rect, int tx, int ty);
 extern int rect_copy(rect *src, rect *dst);
 extern int rect_inflate(rect *rect, int dw, int dh);
+extern /*bool*/int inside_box(int x1, int y1, rect box);
 
 #endif

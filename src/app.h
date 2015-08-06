@@ -24,8 +24,10 @@
 #define _INIT_H
 
 #include "SDL.h"
+#include "SDL2_framerate.h"
 
 extern int dversion;
+extern FPSmanager framerate_manager;
 
 extern int app_start(int argc, char *argv[],
 		     char* splash_path,

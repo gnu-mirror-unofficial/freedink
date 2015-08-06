@@ -1,5 +1,5 @@
 /**
- * Graphics - sprites management
+ * Graphics - sequences management
 
  * Copyright (C) 2007, 2008  Sylvain Beucler
 
@@ -87,5 +87,8 @@
   extern void seq_set_ini(int seq_no, char *line);
 
   extern void(*gfx_sprites_loading_listener)();
+
+  extern /*bool*/int not_in_this_base(int seq, int base);
+  extern /*bool*/int in_this_base(int seq, int base);
 
 #endif

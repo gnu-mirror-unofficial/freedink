@@ -36,6 +36,10 @@ struct screen cur_ed_screen;
 /* hardness */
 unsigned char screen_hitmap[600+1][400+1]; /* hit_map */
 
+int playx = 620;
+int playl = 20;
+int playy = 400;
+
 /**
  * Fills a int[MAX_SPRITES_AT_ONCE] with the index of the current
  * screen's sprites, sorted by ascending height/queue.

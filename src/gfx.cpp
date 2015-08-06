@@ -47,6 +47,7 @@
 
 /* Is the screen depth more than 8bit? */
 int truecolor = 0;
+/*bool*/int windowed = /*false*/0;
 
 SDL_Surface *GFX_lpDDSBack = NULL; /* Backbuffer and link to physical
 				      screen*/
@@ -635,4 +636,22 @@ void gfx_log_meminfo()
   }
 
   log_debug("GFX total  = %8d (+ ~150kB fonts)", total);
+}
+
+void draw_box(rect box, int color)
+{
+/*   DDBLTFX     ddbltfx; */
+  
+/*   ddbltfx.dwSize = sizeof(ddbltfx); */
+/*   ddbltfx.dwFillColor = color; */
+  
+/*   ddrval = lpDDSBack->Blt(&box ,NULL, NULL, DDBLT_COLORFILL| DDBLT_WAIT, &ddbltfx); */
+  // GFX
+  {
+    SDL_Rect dst;
+    dst.x = box.left; dst.y = box.top;
+    dst.w = box.right - box.left;
+    dst.h = box.bottom - box.top;
+    SDL_FillRect(GFX_lpDDSBack, &dst, color);
+  }
 }

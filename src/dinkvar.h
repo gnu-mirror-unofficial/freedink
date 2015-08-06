@@ -33,22 +33,9 @@
 #include <limits.h>
 
 #include "SDL.h"
-#include "SDL2_framerate.h"
-#include "game_engine.h"
 #include "rect.h"
 #include "dinkc.h"
 #include "editor_screen.h"
-
-struct attackinfo_struct
-{
-	int time;
-	/*bool*/int active;
-	int script;
-	/*bool*/int hitme;
-	int last_power;
-	Uint32 wait;
-	Uint32 pull_wait;
-};
 
 
 extern int GetKeyboard(int key);
@@ -66,7 +53,6 @@ extern void update_status_all(void);
 
 extern /*bool*/int abort_this_flip;
 extern int base_timing;
-extern struct attackinfo_struct bow;
 extern int dinkspeed;
 extern int flife;
 extern int flub_mode;
@@ -91,13 +77,8 @@ extern int mbase_count;
 extern unsigned long mold;
 
 extern int *pupdate_status;
-extern int playl;
-extern int playx;
-extern int playy;
 extern int *pplayer_map;
-extern Uint32 thisTickCount;
-extern Uint32 lastTickCount;
-extern FPSmanager framerate_manager;
+
 extern /*bool*/int transition_in_progress;
 
 /* extern HRESULT ddrval; */
@@ -107,7 +88,6 @@ extern /*bool*/int transition_in_progress;
 
 /* Game state */
 extern void attach(void);
-extern /*bool*/int windowed;
 extern int fcur_weapon, fcur_magic;
 extern int push_active;
 extern int move_screen;
@@ -120,9 +100,6 @@ extern int walk_off_screen;
 
 /* Sprites - state */
 extern void changedir( int dir1, int k,int base);
-
-/* Sprites - global */
-extern void kill_sprite_all (int sprite);
 
 /* Scripts */
 extern void kill_all_scripts_for_real(void);

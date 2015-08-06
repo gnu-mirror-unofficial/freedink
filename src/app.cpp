@@ -72,8 +72,10 @@
 static int g_b_no_write_ini = 0; // -noini passed to command line?
 static char* init_error_msg = NULL;
 
-// TODO: move me to game_engine.c
+// TODO: move me to game_engine.c (and -7 as a game-specific CLI option)
 int dversion = 108;
+
+FPSmanager framerate_manager;
 
 void init_set_error_msg(const char *fmt, ...)
 {

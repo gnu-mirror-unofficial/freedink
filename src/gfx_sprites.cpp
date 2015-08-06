@@ -1,5 +1,5 @@
 /**
- * Graphics - sprites management
+ * Graphics - sequences management
 
  * Copyright (C) 1997, 1998, 1999, 2002, 2003  Seth A. Robinson
  * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2014, 2015  Sylvain Beucler
@@ -617,4 +617,42 @@ void seq_set_ini(int seq_no, char *line)
 	free(seq[seq_no].ini);
       seq[seq_no].ini = strdup(line);
     }
+}
+
+
+// ********* CHECK TO SEE IF THIS CORD IS ON A HARD SPOT *********
+/*bool*/int not_in_this_base(int seq, int base)
+{
+	
+	int realbase = (seq / 10) * 10;
+	
+	
+	if (realbase != base)
+	{
+		
+		
+		return(/*true*/1); 
+	}
+	else
+	{
+		return(/*false*/0);
+	}
+}
+
+/*bool*/int in_this_base(int seq, int base)
+{
+	
+	int realbase = (seq / 10) * 10;
+	if (realbase == base)
+	{
+		
+		//	Msg("TRUE - Ok, realbase is %d, compared to the base, which is %d.", realbase, base);
+		return(/*true*/1); 
+	}
+	else
+	{
+		//	Msg("FALSE - Ok, realbase is %d, compared to the base, which is %d.", realbase, base);
+		
+		return(/*false*/0);
+	}
 }

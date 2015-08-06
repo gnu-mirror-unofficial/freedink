@@ -64,6 +64,7 @@
 #include "status.h"
 #include "text.h"
 #include "savegame.h"
+#include "brain.h"
 
 
 int change_sprite(int h, int val, int *change)

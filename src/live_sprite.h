@@ -115,6 +115,6 @@ struct sp
   std::map<std::string, int>* custom;
 };
 
-int getpic(int sprite_no);
+extern int getpic(int sprite_no);
 
 #endif

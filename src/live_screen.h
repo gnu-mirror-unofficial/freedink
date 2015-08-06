@@ -25,12 +25,17 @@
 #define LIVE_SCREEN_H
 
 #include "live_sprite.h"
+#include "editor_screen.h"
 
 /* base editor screen */
 extern struct screen cur_ed_screen;
 
 // struct for hardness map
 extern unsigned char screen_hitmap[600+1][400+1];
+
+extern int playl;
+extern int playx;
+extern int playy;
 
 extern void add_hardness(int sprite, int num);
 extern unsigned char get_hard(int x1, int y1);

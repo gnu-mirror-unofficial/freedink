@@ -45,6 +45,7 @@
 #include "meminfo.h"
 #include "dinkc.h"
 #include "dinkc_bindings.h"
+#include "app.h"
 
 /* Engine variables directly mapped with DinkC variables */
 int *pvision, *plife, *presult, *pspeed, *ptiming, *plifemax,
@@ -99,6 +100,12 @@ static int please_wait_toggle_frame = 7;
 
 static int high_speed = 0;
 struct player_info play;
+
+struct attackinfo_struct bow;
+
+/* Number of ms since an arbitrarily fixed point */
+Uint32 thisTickCount;
+Uint32 lastTickCount;
 
 void game_restart()
 {

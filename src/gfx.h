@@ -24,6 +24,7 @@
 #define _GFX_H
 
 #include "SDL.h"
+#include "rect.h"
 
 enum gfx_init_state
   {
@@ -49,6 +50,7 @@ enum gfx_windowed_state
 
 
 extern int truecolor;
+extern /*bool*/int windowed;
 extern SDL_Surface *GFX_lpDDSBack;
 extern SDL_Surface *GFX_lpDDSTrick;
 extern SDL_Surface *GFX_lpDDSTrick2;
@@ -75,5 +77,6 @@ extern int gfx_blit_stretch(SDL_Surface *src, SDL_Rect *src_rect, SDL_Surface *d
 extern void flip_it(void);
 extern void gfx_toggle_fullscreen(void);
 extern void gfx_log_meminfo(void);
+extern void draw_box(rect box, int color);
 
 #endif

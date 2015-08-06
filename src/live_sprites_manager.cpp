@@ -28,6 +28,7 @@
 #include "game_engine.h"
 #include "live_sprites_manager.h"
 #include "gfx_sprites.h"
+#include "dinkc.h"
 
 struct sp spr[MAX_SPRITES_AT_ONCE]; //max sprite control systems at once
 int last_sprite_created;
@@ -167,6 +168,40 @@ int add_sprite_dumb(int x1, int y, int brain,int pseq, int pframe,int size )
 }
 
 
+        void random_blood(int mx, int my, int sprite)
+        {
+                int myseq;
+                /* v1.08 introduces custom blood sequence, as well as
+                   a slightly different default (select blood in range
+                   187-189 included, instead of 187-188 included) */
+                int randy;
+                if (spr[sprite].bloodseq > 0 && spr[sprite].bloodnum > 0)
+                  {
+                    myseq = spr[sprite].bloodseq;
+                    randy = spr[sprite].bloodnum;
+                  }
+                else
+                  {
+                    myseq = 187;
+                    if (dversion >= 108)
+                      randy = 3;
+                    else
+                      randy = 2;
+                  }
+                myseq += (rand () % randy);
+                
+                int crap2 = add_sprite(mx,my,5,myseq,1);
+                /* TODO: add_sprite might return 0, and the following
+                   would trash spr[0] - cf. bugs.debian.org/688934 */
+                spr[crap2].speed = 0;
+                spr[crap2].base_walk = -1;
+                spr[crap2].nohit = 1;
+                spr[crap2].seq = myseq;
+                if (sprite > 0)
+                        spr[crap2].que = spr[sprite].y+1;
+
+        }
+
 
 /*bool*/int kill_last_sprite(void)
 {
@@ -246,6 +281,7 @@ int does_sprite_have_text(int sprite)
       return /*true*/1;
   return /*false*/0;
 }
+
 
 /**
  * Find an editor sprite in active sprites

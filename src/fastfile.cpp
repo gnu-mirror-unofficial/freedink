@@ -357,7 +357,7 @@ FastFileRead (struct FF_Handle *i, void *bigBuffer, int size)
 
   if (!i || !bigBuffer || !g_MemMap)
     return 0;
-  if (i->pos + size > i->len)
+f  if (i->pos + size > i->len)
     return 0;
 
   srcBuffer = g_MemMap;

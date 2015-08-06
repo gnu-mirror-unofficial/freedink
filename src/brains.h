@@ -1,5 +1,5 @@
 /**
- * Live sprites manager
+ * Brains - Sprites AI
 
  * Copyright (C) 1997, 1998, 1999, 2002, 2003  Seth A. Robinson
  * Copyright (C) 2005, 2007, 2008, 2009, 2014, 2015  Sylvain Beucler
@@ -21,27 +21,24 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _LIVE_SPRITES_MANAGER_H
-#define _LIVE_SPRITES_MANAGER_H
+#ifndef _BRAINS_H
+#define _BRAINS_H
 
-#include "live_sprite.h"
-
-#define MAX_SPRITES_AT_ONCE 300
-extern struct sp spr[];
-extern int last_sprite_created;
-
-extern int add_sprite(int x1, int y, int brain,int pseq, int pframe );
-extern int add_sprite_dumb(int x1, int y, int brain,int pseq, int pframe,int size);
-extern void random_blood(int mx, int my, int sprite);
-
-extern void kill_text_owned_by(int sprite);
-extern int does_sprite_have_text(int sprite);
-extern /*bool*/int text_owned_by(int sprite);
-
-extern void kill_sprite_all (int sprite);
-extern /*bool*/int kill_last_sprite(void);
-extern int find_sprite(int editor_sprite);
-
-extern void live_sprites_manager_init();
+extern void button_brain(int h);
+extern void pill_brain(int h);
+extern void duck_brain(int h);
+extern void human_brain(int h);
+extern void dragon_brain(int h);
+extern void missile_brain(int h);
+extern void mouse_brain(int h);
+extern void no_brain(int h);
+extern void one_time_brain(int h);
+extern void one_time_brain_for_real(int h);
+extern void people_brain(int h);
+extern void pig_brain(int h);
+extern void repeat_brain(int h);
+extern void scale_brain(int h);
+extern void shadow_brain(int h);
+extern void text_brain(int h);
 
 #endif

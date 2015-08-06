@@ -28,6 +28,7 @@
 #include <string.h>
 
 #include "dinkvar.h"
+#include "game_engine.h"
 #include "live_sprites_manager.h"
 #include "EditorMap.h"
 #include "dinkc.h"

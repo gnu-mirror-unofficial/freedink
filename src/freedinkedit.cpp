@@ -1903,11 +1903,11 @@ void draw_hard_tile(int x1, int y1, int tile)
  * Decide what needs to be blitted next, wait for flip to complete,
  * then flip the buffers.
  */
+unsigned long thisTickCount; /* FIXME: for process_animated_tiles, make it local */
 void updateFrame(void)
 {
   //    static DWORD        lastTickCount[4] = {0,0,0,0};
   //    static int          currentFrame[3] = {0,0,0};
-  unsigned long thisTickCount;
   //  char buffer[20];
   rect                rcRect;
   rect  Rect;
