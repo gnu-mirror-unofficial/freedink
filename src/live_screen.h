@@ -45,5 +45,6 @@ extern void fill_whole_hard(void);
 extern void fill_hardxy(rect box);
 
 extern void screen_rank_game_sprites(int* rank);
+/*bool*/int get_box (int h, rect * box_scaled, rect * box_real, bool skip_screen_clipping);
 
 #endif

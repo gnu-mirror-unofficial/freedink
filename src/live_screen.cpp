@@ -218,3 +218,157 @@ unsigned char get_hard(int x1, int y1, int screenlock)
   int value = screen_hitmap[x1][y1];
   return(value);
 }
+
+
+/*bool*/int get_box (int h, rect * box_scaled, rect * box_real, bool skip_screen_clipping)
+{
+  int x_offset, y_offset;
+
+  int mplayx = playx;
+  int mplayl = playl;
+  int mplayy = playy;
+
+  if (spr[h].noclip)
+    {
+      mplayx = 640;
+      mplayl = 0;
+      mplayy = 480;
+    }
+
+  // added to fix frame-not-in-memory immediately
+  if (getpic(h) < 1)
+    {
+      if (spr[h].pseq != 0)
+	check_seq_status(spr[h].pseq);
+    }
+
+  // if frame is still not in memory:
+  if (getpic(h) < 1)
+    {
+		log_warn("Yo, sprite %d has a bad pic. Seq %d, Frame %d",
+		         h, spr[h].pseq, spr[h].pframe);
+      goto nodraw;
+    }
+
+  *box_real = k[getpic(h)].box;
+
+  /* This doesn't really make sense, but that's the way the game was
+     released, so we keep it for compatibility */
+  {
+    rect krect;
+    rect_copy(&krect, &k[getpic(h)].box);
+
+    double size_ratio = spr[h].size / 100.0;
+    int x_compat = krect.right  * (size_ratio - 1) / 2;
+    int y_compat = krect.bottom * (size_ratio - 1) / 2;
+
+    int center_x = k[getpic(h)].xoffset;
+    int center_y = k[getpic(h)].yoffset;
+    box_scaled->left   = spr[h].x - center_x - x_compat;
+    box_scaled->top    = spr[h].y - center_y - y_compat;
+
+    box_scaled->right  = box_scaled->left + krect.right  * size_ratio;
+    box_scaled->bottom = box_scaled->top  + krect.bottom * size_ratio;
+  }
+
+  if (spr[h].alt.right != 0 || spr[h].alt.left != 0 || spr[h].alt.top != 0)
+    {
+      // checks for correct box stuff
+      if (spr[h].alt.left < 0)
+	spr[h].alt.left = 0;
+      if (spr[h].alt.left > k[getpic(h)].box.right)
+	spr[h].alt.left = k[getpic(h)].box.right;
+
+      if (spr[h].alt.top < 0)
+	spr[h].alt.top = 0;
+      if (spr[h].alt.top > k[getpic(h)].box.bottom)
+	spr[h].alt.top = k[getpic(h)].box.bottom;
+
+      if (spr[h].alt.right < 0)
+	spr[h].alt.right = 0;
+      if (spr[h].alt.right > k[getpic(h)].box.right)
+	spr[h].alt.right = k[getpic(h)].box.right;
+
+      if (spr[h].alt.bottom < 0)
+	spr[h].alt.bottom = 0;
+      if (spr[h].alt.bottom > k[getpic(h)].box.bottom)
+	spr[h].alt.bottom = k[getpic(h)].box.bottom;
+
+      box_scaled->left += spr[h].alt.left;
+      box_scaled->top  += spr[h].alt.top;
+      box_scaled->right  = box_scaled->right  - (k[getpic(h)].box.right  - spr[h].alt.right);
+      box_scaled->bottom = box_scaled->bottom - (k[getpic(h)].box.bottom - spr[h].alt.bottom);
+
+      rect_copy(box_real, &spr[h].alt);
+    }
+
+  //********* Check to see if they need to be cut down and do clipping
+
+  if (spr[h].size == 0)
+    spr[h].size = 100;
+
+  if (skip_screen_clipping)
+    goto do_draw;
+
+  if (box_scaled->left < mplayl)
+    {
+      x_offset = box_scaled->left * (-1) + mplayl;
+      box_scaled->left = mplayl;
+
+      if (spr[h].size == 100)
+	box_real->left += x_offset;
+      else
+	box_real->left += (x_offset * 100) / spr[h].size;
+
+      if (box_scaled->right - 1 < mplayl)
+	goto nodraw;
+    }
+
+  if (box_scaled->top < 0)
+    {
+      y_offset = box_scaled->top * (-1);
+      box_scaled->top = 0;
+
+      if (spr[h].size == 100)
+	box_real->top += y_offset;
+      else
+	box_real->top += (y_offset * 100) / spr[h].size;
+
+      if (box_scaled->bottom-1 < 0)
+	goto nodraw;
+    }
+
+  if (box_scaled->right > mplayx)
+    {
+      x_offset = (box_scaled->right) - mplayx;
+      box_scaled->right = mplayx;
+
+      if (spr[h].size == 100)
+	box_real->right -= x_offset;
+      else
+	box_real->right -= (x_offset * 100) / spr[h].size;
+
+      if (box_scaled->left+1 > mplayx)
+	goto nodraw;
+    }
+
+  if (box_scaled->bottom > mplayy)
+    {
+      y_offset = (box_scaled->bottom) - mplayy;
+      box_scaled->bottom = mplayy;
+
+      if (spr[h].size == 100)
+	box_real->bottom -= y_offset;
+      else
+	box_real->bottom -= (y_offset * 100) / spr[h].size;
+
+      if (box_scaled->top+1 > mplayy)
+	goto nodraw;
+    }
+
+ do_draw:
+    return(/*true*/1);
+
+ nodraw:
+    return(/*false*/0);
+}
