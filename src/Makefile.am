@@ -24,7 +24,7 @@ AM_CPPFLAGS += -I$(top_srcdir)/intl -I$(top_builddir)/intl
 
 LIBS += -lm
 
-COMMON_OBJS= app.cpp app.h bgm.cpp bgm.h dinkini.cpp dinkini.h		\
+COMMON_OBJS = app.cpp app.h bgm.cpp bgm.h dinkini.cpp dinkini.h		\
 	dinkvar.cpp dinkvar.h fastfile.cpp fastfile.h str_util.cpp	\
 	str_util.h io_util.cpp io_util.h editor_screen.cpp		\
 	editor_screen.h gfx.cpp gfx.h gfx_fade.cpp gfx_fade.h		\
