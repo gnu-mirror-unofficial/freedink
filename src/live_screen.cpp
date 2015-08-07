@@ -151,7 +151,7 @@ void add_hardness (int sprite, int num)
 
 
 
-unsigned char get_hard_map(int h,int x1, int y1)
+unsigned char get_hard_map(int x1, int y1)
 {
 
 
@@ -188,7 +188,7 @@ void fill_hardxy(rect box)
 
   for (x1 = box.left; x1 < box.right; x1++)
     for (y1 = box.top; y1 < box.bottom; y1++)
-      screen_hitmap[x1][y1] = get_hard_map(0,x1,y1);
+      screen_hitmap[x1][y1] = get_hard_map(x1,y1);
 }
 
 
