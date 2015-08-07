@@ -326,8 +326,7 @@ void figure_out(char* line)
 }
 
 
-extern int mode;
-/*bool*/int get_box (int h, rect * box_scaled, rect * box_real)
+/*bool*/int get_box (int h, rect * box_scaled, rect * box_real, bool skip_screen_clipping)
 {
   int x_offset, y_offset;
 
@@ -352,12 +351,8 @@ extern int mode;
   // if frame is still not in memory:
   if (getpic(h) < 1)
     {
-      if (dinkedit)
-	log_warn("Yo, sprite %d has a bad pic. (Map %d) Seq %d, Frame %d",
-		 h, cur_map, spr[h].pseq, spr[h].pframe);
-      else
-	log_warn("Yo, sprite %d has a bad pic. (Map %d) Seq %d, Frame %d",
-		 h, *pplayer_map, spr[h].pseq, spr[h].pframe);
+		log_warn("Yo, sprite %d has a bad pic. Seq %d, Frame %d",
+		         h, spr[h].pseq, spr[h].pframe);
       goto nodraw;
     }
 
@@ -418,7 +413,7 @@ extern int mode;
   if (spr[h].size == 0)
     spr[h].size = 100;
 
-  if (dinkedit && (mode == 1 || mode == 5) && draw_screen_tiny < 1)
+  if (skip_screen_clipping)
     goto do_draw;
 
   if (box_scaled->left < mplayl)
@@ -615,7 +610,7 @@ void draw_sprite_game(SDL_Surface *GFX_lpdest, int h)
 
   rect box_crap,box_real;
 
-  if (get_box(h, &box_crap, &box_real))
+  if (get_box(h, &box_crap, &box_real, false))
     {
       /* Generic scaling */
       /* Not perfectly accurate yet: move a 200% sprite to the border

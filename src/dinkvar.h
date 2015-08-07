@@ -59,7 +59,7 @@ extern void figure_out(char* line);
 extern /*bool*/int dinkedit;
 extern int draw_screen_tiny;
 extern int cur_map;
-/*bool*/int get_box (int h, rect * box_crap, rect * box_real);
+/*bool*/int get_box(int h, rect * box_crap, rect * box_real, bool skip_screen_clipping);
 
 extern void check_seq_status(int h);
 extern void draw_sprite_game(SDL_Surface *GFX_lpdest, int h);

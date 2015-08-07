@@ -242,6 +242,9 @@ void draw_screen_editor(void);
 void draw_minimap(void);
 /* void dderror(HRESULT hErr); */
 
+static bool skip_screen_clipping() {
+  return dinkedit && (mode == 1 || mode == 5) && draw_screen_tiny < 1;
+}
 
 void draw_sprite(SDL_Surface *GFX_lpdest, int h)
 {
@@ -251,7 +254,7 @@ void draw_sprite(SDL_Surface *GFX_lpdest, int h)
 /*   ddbltfx.dwSize = sizeof( ddbltfx); */
 /*   ddbltfx.dwFillColor = 0; */
 
-  if (get_box(h, &box_crap, &box_real))
+  if (get_box(h, &box_crap, &box_real, skip_screen_clipping()))
     {
 /*       while(1) */
 /* 	{ */
@@ -2583,12 +2586,12 @@ void updateFrame(void)
 								 cur_ed_screen.sprite[realpic].seq, cur_ed_screen.sprite[realpic].frame,
 								 cur_ed_screen.sprite[realpic].size);
 				rect_copy(&spr[sprite].alt , &cur_ed_screen.sprite[realpic].alt);
-				get_box(sprite, &box_crap, &box_real);
+				get_box(sprite, &box_crap, &box_real, skip_screen_clipping());
 
 
 
 
-				get_box(sprite, &box_crap, &box_real);
+				get_box(sprite, &box_crap, &box_real, skip_screen_clipping());
 				box_crap.bottom = box_crap.top + 5;
 /* 				ddrval = lpDDSBack->Blt(&box_crap ,NULL,NULL, DDBLT_COLORFILL| DDBLT_WAIT, &ddbltfx); */
 				// GFX
@@ -2601,7 +2604,7 @@ void updateFrame(void)
 				  SDL_FillRect(GFX_lpDDSBack, &dst, SDL_MapRGB(GFX_lpDDSTwo->format, 33, 41, 16));
 				}
 
-				get_box(sprite, &box_crap, &box_real);
+				get_box(sprite, &box_crap, &box_real, skip_screen_clipping());
 				box_crap.right = box_crap.left + 5;
 /* 				ddrval = lpDDSBack->Blt(&box_crap ,NULL,NULL, DDBLT_COLORFILL| DDBLT_WAIT, &ddbltfx); */
 				// GFX
@@ -2614,7 +2617,7 @@ void updateFrame(void)
 				  SDL_FillRect(GFX_lpDDSBack, &dst, SDL_MapRGB(GFX_lpDDSTwo->format, 33, 41, 16));
 				}
 
-				get_box(sprite, &box_crap, &box_real);
+				get_box(sprite, &box_crap, &box_real, skip_screen_clipping());
 				box_crap.left = box_crap.right - 5;
 /* 				ddrval = lpDDSBack->Blt(&box_crap ,NULL,NULL, DDBLT_COLORFILL| DDBLT_WAIT, &ddbltfx); */
 				// GFX
@@ -2627,7 +2630,7 @@ void updateFrame(void)
 				  SDL_FillRect(GFX_lpDDSBack, &dst, SDL_MapRGB(GFX_lpDDSTwo->format, 33, 41, 16));
 				}
 
-				get_box(sprite, &box_crap, &box_real);
+				get_box(sprite, &box_crap, &box_real, skip_screen_clipping());
 				box_crap.top = box_crap.bottom - 5;
 /* 				ddrval = lpDDSBack->Blt(&box_crap ,NULL,NULL, DDBLT_COLORFILL| DDBLT_WAIT, &ddbltfx); */
 				// GFX
@@ -2663,7 +2666,7 @@ void updateFrame(void)
 												 cur_ed_screen.sprite[uu].seq, cur_ed_screen.sprite[uu].frame,
 												 cur_ed_screen.sprite[uu].size);
 								    rect_copy(&spr[sprite].alt , &cur_ed_screen.sprite[uu].alt);
-								    get_box(sprite, &box_crap, &box_real);
+								    get_box(sprite, &box_crap, &box_real, skip_screen_clipping());
 								    if (realpic > 0) goto spwarp;
 								    //Msg("Got sprite %d's info. X%d Y %d.",uu,box_crap.left,box_crap.right);
 
@@ -4482,7 +4485,7 @@ void updateFrame(void)
 						cur_ed_screen.sprite[j].size);
 		  rect_copy(&spr[sprite2].alt , &cur_ed_screen.sprite[j].alt);
 
-		  get_box(sprite2, &box_crap, &box_real);
+		  get_box(sprite2, &box_crap, &box_real, skip_screen_clipping());
 
 		  spr[sprite2].active = /*false*/0;
 
