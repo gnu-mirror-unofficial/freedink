@@ -2,7 +2,7 @@
  * Dink.ini - loading graphics
 
  * Copyright (C) 1997, 1998, 1999, 2002, 2003  Seth A. Robinson
- * Copyright (C) 2008, 2009  Sylvain Beucler
+ * Copyright (C) 2008, 2009, 2010, 2015  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -135,7 +135,7 @@ void program_idata(void)
 
 
 /* Parse dink.ini */
-void load_batch(void)
+void load_batch(bool playmidi)
 {
   FILE *in = NULL;
   char line[255];
@@ -149,7 +149,7 @@ void load_batch(void)
     {
       while(fgets(line, 255, in) != NULL) 
 	{
-	  pre_figure_out(line);
+		pre_figure_out(line, playmidi);
 	  /* printf("[pre_figure_out] %s", line); */
 	}
       fclose(in);

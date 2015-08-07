@@ -53,10 +53,9 @@ extern /*bool*/int transition_in_progress;
 extern int *pplayer_map;
 
 /* Startup */
-extern void pre_figure_out(char* line);
+extern void pre_figure_out(char* line, bool playmidi);
 extern void figure_out(char* line);
 
-extern /*bool*/int dinkedit;
 extern int draw_screen_tiny;
 extern int cur_map;
 

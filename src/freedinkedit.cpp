@@ -5025,7 +5025,7 @@ static void freedinkedit_quit() {
 int main(int argc, char *argv[])
 {
   /* Initialize/setup */
-  dinkedit = 1;
+  dinkedit = true;
   return app_start(argc, argv,
 		   "tiles/esplash.bmp",		   
 		   freedinkedit_init,

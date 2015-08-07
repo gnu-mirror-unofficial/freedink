@@ -28,6 +28,7 @@
 
 extern int dversion;
 extern FPSmanager framerate_manager;
+extern bool dinkedit;
 
 extern int app_start(int argc, char *argv[],
 		     char* splash_path,

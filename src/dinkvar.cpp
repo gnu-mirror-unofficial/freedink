@@ -57,7 +57,6 @@ struct show_bmp showb;
 
 int push_active = 1;
 
-/*bool*/int dinkedit = /*false*/0;
 int base_timing = 0;
 
 int move_screen = 0;
@@ -74,7 +73,7 @@ int* pplayer_map;
  * Parse a dink.ini line, and store instructions for later processing
  * (used in game initialization through 'load_batch')
  */
-void pre_figure_out(char* line)
+void pre_figure_out(char* line, bool playmidi)
 {
   int i;
   char* ev[10];
@@ -87,7 +86,7 @@ void pre_figure_out(char* line)
   if (compare(command, "playmidi"))
     {
       char* midi_filename = ev[1];
-      if (!dinkedit)
+      if (playmidi)
 	PlayMidi(midi_filename);
     }
 

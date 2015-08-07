@@ -75,6 +75,7 @@ static char* init_error_msg = NULL;
 
 // TODO: move me to game_engine.c (and -7 as a game-specific CLI option)
 int dversion = 108;
+bool dinkedit = false;
 
 FPSmanager framerate_manager;
 
@@ -457,7 +458,8 @@ int app_start(int argc, char *argv[],
 
   //dinks normal walk
   log_info("Loading batch...");
-  load_batch();
+  bool playmidi = !dinkedit;
+  load_batch(playmidi);
   log_info(" done!");
 
   log_info("Loading hard...");
