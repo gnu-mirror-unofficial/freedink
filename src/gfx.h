@@ -78,5 +78,7 @@ extern void flip_it(void);
 extern void gfx_toggle_fullscreen(void);
 extern void gfx_log_meminfo(void);
 extern void draw_box(rect box, int color);
+extern void fill_screen(int num);
+
 
 #endif

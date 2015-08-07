@@ -131,8 +131,6 @@ extern void check_sprite_status(int h);
 extern void check_frame_status(int h, int frame);
 extern void flip_it_second(void);
 
-extern void fill_screen(int num);
-
 
 extern void show_bmp(char name[80], int showdot, int script);
 extern void copy_bmp( char name[80]);

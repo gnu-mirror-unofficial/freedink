@@ -655,3 +655,17 @@ void draw_box(rect box, int color)
     SDL_FillRect(GFX_lpDDSBack, &dst, color);
   }
 }
+
+void fill_screen(int num)
+{
+  /* Warning: palette indexes 0 and 255 are hard-coded
+     to black and white (cf. gfx_palette.c). */
+  if (!truecolor)
+    SDL_FillRect(GFX_lpDDSTwo, NULL, num);
+  else
+    SDL_FillRect(GFX_lpDDSTwo, NULL, SDL_MapRGB(GFX_lpDDSTwo->format,
+						GFX_real_pal[num].r,
+						GFX_real_pal[num].g,
+						GFX_real_pal[num].b));
+}
+
