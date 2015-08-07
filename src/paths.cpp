@@ -134,17 +134,17 @@ static char* br_build_path (const char *dir, const char *file)
 #include <unistd.h>
 #endif
 void ts_paths_init() {
-  pkgdatadir = strdup("tmp_ts/pkgdatadir");
-  fallbackdir = strdup("tmp_ts/fallbackdir");
-  dmoddir = strdup("tmp_ts/dmoddir");
-  dmodname = strdup("dmoddir");
-  userappdir = strdup("tmp_ts/useradddir");
-
+  char* cwd = paths_getcwd();
+  pkgdatadir = br_build_path(cwd, "tmp_ts/pkgdatadir");
+  fallbackdir = br_build_path(cwd, "tmp_ts/fallbackdir");
+  dmoddir = br_build_path(cwd, "tmp_ts/dmoddir");
+  dmodname = br_build_path(cwd, "dmoddir");
+  userappdir = br_build_path(cwd, "tmp_ts/useradddir");
 #ifdef _WIN32
   SHFILEOPSTRUCT fileop;
   fileop.hwnd   = NULL;
   fileop.wFunc  = FO_DELETE;
-  fileop.pFrom  = "tmp_ts\0";
+  fileop.pFrom  = br_build_path(cwd, "tmp_ts\0");
   fileop.pTo    = NULL;
   fileop.fFlags = FOF_NOCONFIRMATION|FOF_SILENT;  // do not prompt the user
   fileop.lpszProgressTitle     = NULL;
@@ -156,20 +156,25 @@ void ts_paths_init() {
 	if ((pid = fork()) < 0) {
 	  perror("fork");
 	} else if (pid == 0) {
-	  if (execlp("rm", "rm", "-rf", "tmp_ts/", NULL) < 0) perror("execlp");
-	}
-	else {
+	  if (execlp("rm", "rm", "-rf", "tmp_ts/", NULL) < 0)
+		perror("execlp");
+      exit(EXIT_FAILURE);
+	} else {
 	  int status = 0;
 	  waitpid(pid, &status, 0);
 	}
   }
 #endif
+  free(cwd);
   if (mkdir("tmp_ts", 0777) < 0) perror("mkdir");
   if (mkdir(pkgdatadir, 0777) < 0) perror("mkdir");
   if (mkdir(fallbackdir, 0777) < 0) perror("mkdir");
   if (mkdir(dmoddir, 0777) < 0) perror("mkdir");
   if (mkdir(dmoddir, 0777) < 0) perror("mkdir");
   if (mkdir(userappdir, 0777) < 0) perror("mkdir");
+  // map.dat is always opened in "r" or "r+b", pre-create it:
+  FILE* in = paths_dmodfile_fopen("map.dat", "w");
+  fclose(in);
 }
 
 void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
