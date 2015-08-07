@@ -34,16 +34,38 @@ public:
 	
 	void test_new() {
 		ts_paths_init();
-		g_map.load();
+		TS_ASSERT_EQUALS(g_map.load(), false);
 		TS_ASSERT_EQUALS(g_map.dink_dat.c_str(), "dink.dat");
 		TS_ASSERT_EQUALS(g_map.loc[1], 0);
 		
-		EditorMap testmap;
-		TS_ASSERT_EQUALS(testmap.load(), false);
-
 		EditorMap testmap2("dink2.dat", "map2.dat");
-		TS_ASSERT_EQUALS(testmap.load(), false);
+		TS_ASSERT_EQUALS(testmap2.load(), false);
 		TS_ASSERT_EQUALS(testmap2.dink_dat.c_str(), "dink2.dat");
 		TS_ASSERT_EQUALS(testmap2.map_dat.c_str(), "map2.dat");
+		
+		EditorMap testmapsave;
+		TS_ASSERT_EQUALS(testmapsave.dink_dat.c_str(), "dink.dat");
+		TS_ASSERT_EQUALS(testmapsave.map_dat.c_str(), "map.dat");
+		TS_ASSERT_EQUALS(testmapsave.loc[1], 0);
+		TS_ASSERT_EQUALS(testmapsave.music[1], 0);
+		TS_ASSERT_EQUALS(testmapsave.indoor[1], 0);
+		testmapsave.loc[1] = 1;
+		testmapsave.music[1] = 1;
+		testmapsave.indoor[1] = 1;
+		testmapsave.loc[768] = 768;
+		testmapsave.music[768] = 768;
+		testmapsave.indoor[768] = 768;
+		testmapsave.save();
+
+		EditorMap testmapload;
+		TS_ASSERT_EQUALS(testmapload.dink_dat.c_str(), "dink.dat");
+		TS_ASSERT_EQUALS(testmapload.map_dat.c_str(), "map.dat");
+		TS_ASSERT_EQUALS(testmapload.load(), true);
+		TS_ASSERT_EQUALS(testmapload.loc[1], 1);
+		TS_ASSERT_EQUALS(testmapload.music[1], 1);
+		TS_ASSERT_EQUALS(testmapload.indoor[1], 1);
+		TS_ASSERT_EQUALS(testmapload.loc[768], 768);
+		TS_ASSERT_EQUALS(testmapload.music[768], 768);
+		TS_ASSERT_EQUALS(testmapload.indoor[768], 768);
 	}
 };
