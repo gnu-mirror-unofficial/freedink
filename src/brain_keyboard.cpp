@@ -25,7 +25,7 @@
  * 
  * Does something weird when hard value is > 100??
  */
-unsigned char get_hard_play(int h, int x1, int y1)
+unsigned char get_hard_play(int x1, int y1)
 {
   x1 -= 20;
 
@@ -577,7 +577,7 @@ shootm:
       if (spr[h].seq == spr[h].base_walk + 4
 	  || spr[h].seq == spr[h].base_walk + 6)
 	{
-	  int hardm = get_hard_play(h, spr[h].x, spr[h].y-1);
+	  int hardm = get_hard_play(spr[h].x, spr[h].y-1);
 	  if (hardm == 0)
 	    spr[h].y -= 1;
 	}
@@ -585,7 +585,7 @@ shootm:
       if (spr[h].seq == spr[h].base_walk + 8
 	  || spr[h].seq == spr[h].base_walk + 2)
 	{
-	  int hardm = get_hard_play(h, spr[h].x-1, spr[h].y);
+	  int hardm = get_hard_play(spr[h].x-1, spr[h].y);
 	  if (hardm == 0)
 	    spr[h].x -= 1;
 	}
@@ -593,7 +593,7 @@ shootm:
 
       if (spr[h].seq == spr[h].base_walk + 9)
 	{
-	  int hardm = get_hard_play(h, spr[h].x+1, spr[h].y);
+	  int hardm = get_hard_play(spr[h].x+1, spr[h].y);
 	  if (hardm == 0)
 	    {  
 	      spr[h].x += 1;
@@ -601,7 +601,7 @@ shootm:
 	    }
 	  else
 	    {
-	      int hardm = get_hard_play(h, spr[h].x+1, spr[h].y+1);
+	      int hardm = get_hard_play(spr[h].x+1, spr[h].y+1);
 	      if (hardm == 0)
 		{  
 		  spr[h].x += 1;
@@ -609,7 +609,7 @@ shootm:
 		}
 	      else
 		{
-		  int hardm = get_hard_play(h, spr[h].x+1, spr[h].y+2);
+		  int hardm = get_hard_play(spr[h].x+1, spr[h].y+2);
 		  if (hardm == 0)
 		    {  
 		      spr[h].x += 1;
@@ -617,7 +617,7 @@ shootm:
 		    }
 		  else
 		    {
-		      int hardm = get_hard_play(h, spr[h].x, spr[h].y-1);
+		      int hardm = get_hard_play(spr[h].x, spr[h].y-1);
 		      if (hardm == 0)
 			{  
 			  spr[h].y -= 1;
@@ -625,7 +625,7 @@ shootm:
 			}
 		      else
 			{
-			  int hardm = get_hard_play(h, spr[h].x-1, spr[h].y-1);
+			  int hardm = get_hard_play(spr[h].x-1, spr[h].y-1);
 			  if (hardm == 0)
 			    {  
 			      spr[h].x -= 1;
@@ -639,14 +639,14 @@ shootm:
       
       if (spr[h].seq == spr[h].base_walk + 7)
 	{
-	  int hardm = get_hard_play(h, spr[h].x-1, spr[h].y);
+	  int hardm = get_hard_play(spr[h].x-1, spr[h].y);
 	  if (hardm == 0)
 	    {  
 	      spr[h].x -= 1;
 	    }
 	  else
 	    {
-	      int hardm = get_hard_play(h, spr[h].x-1, spr[h].y+1);
+	      int hardm = get_hard_play(spr[h].x-1, spr[h].y+1);
 	      if (hardm == 0)
 		{  
 		  spr[h].x -= 1;
@@ -654,7 +654,7 @@ shootm:
 		}
 	      else
 		{
-		  int hardm = get_hard_play(h, spr[h].x-1, spr[h].y+2);
+		  int hardm = get_hard_play(spr[h].x-1, spr[h].y+2);
 		  if (hardm == 0)
 		    {  
 		      spr[h].x -= 1;
@@ -662,14 +662,14 @@ shootm:
 		    }
 		  else
 		    {
-		      int hardm = get_hard_play(h, spr[h].x, spr[h].y-1);
+		      int hardm = get_hard_play(spr[h].x, spr[h].y-1);
 		      if (hardm == 0)
 			{  				
 			  spr[h].y -= 1;
 			}
 		      else
 			{
-			  int hardm = get_hard_play(h, spr[h].x+1, spr[h].y-1);
+			  int hardm = get_hard_play(spr[h].x+1, spr[h].y-1);
 			  if (hardm == 0)
 			    {  				
 			      spr[h].x += 1;
@@ -683,14 +683,14 @@ shootm:
       
       if (spr[h].seq == spr[h].base_walk + 1)
 	{
-	  int hardm = get_hard_play(h, spr[h].x-1, spr[h].y);
+	  int hardm = get_hard_play(spr[h].x-1, spr[h].y);
 	  if (hardm == 0)
 	    {  
 	      spr[h].x -= 1;
 	    }
 	  else
 	    {
-	      int hardm = get_hard_play(h, spr[h].x-1, spr[h].y-1);
+	      int hardm = get_hard_play(spr[h].x-1, spr[h].y-1);
 	      if (hardm == 0)
 		{  
 		  spr[h].x -= 1;
@@ -698,7 +698,7 @@ shootm:
 		}
 	      else
 		{
-		  int hardm = get_hard_play(h, spr[h].x-1, spr[h].y-2);
+		  int hardm = get_hard_play(spr[h].x-1, spr[h].y-2);
 		  if (hardm == 0)
 		    {  
 		      spr[h].x -= 1;
@@ -706,14 +706,14 @@ shootm:
 		    }
 		  else
 		    {
-		      int hardm = get_hard_play(h, spr[h].x, spr[h].y+1);
+		      int hardm = get_hard_play(spr[h].x, spr[h].y+1);
 		      if (hardm == 0)
 			{  
 			  spr[h].y += 1;
 			}
 		      else
 			{
-			  int hardm = get_hard_play(h, spr[h].x+1, spr[h].y+1);
+			  int hardm = get_hard_play(spr[h].x+1, spr[h].y+1);
 			  if (hardm == 0)
 			    {  
 			      spr[h].x += 1;
@@ -727,14 +727,14 @@ shootm:
 		  
       if (spr[h].seq == spr[h].base_walk + 3)
 	{
-	  int hardm = get_hard_play(h, spr[h].x+1, spr[h].y);
+	  int hardm = get_hard_play(spr[h].x+1, spr[h].y);
 	  if (hardm == 0)
 	    {  
 	      spr[h].x += 1;
 	    }
 	  else
 	    {
-	      int hardm = get_hard_play(h, spr[h].x+1, spr[h].y-1);
+	      int hardm = get_hard_play(spr[h].x+1, spr[h].y-1);
 	      if (hardm == 0)
 		{  
 		  spr[h].x += 1;
@@ -742,7 +742,7 @@ shootm:
 		}
 	      else
 		{
-		  int hardm = get_hard_play(h, spr[h].x+1, spr[h].y-2);
+		  int hardm = get_hard_play(spr[h].x+1, spr[h].y-2);
 		  if (hardm == 0)
 		    {  
 		      spr[h].x += 1;
@@ -750,14 +750,14 @@ shootm:
 		    }
 		  else
 		    {
-		      int hardm = get_hard_play(h, spr[h].x, spr[h].y+1);
+		      int hardm = get_hard_play(spr[h].x, spr[h].y+1);
 		      if (hardm == 0)
 			{  
 			  spr[h].y += 1;
 			}
 		      else
 			{
-			  int hardm = get_hard_play(h, spr[h].x-1, spr[h].y+1);
+			  int hardm = get_hard_play(spr[h].x-1, spr[h].y+1);
 			  if (hardm == 0)
 			    {  
 			      spr[h].x -= 1;
