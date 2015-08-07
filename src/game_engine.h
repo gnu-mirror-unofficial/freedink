@@ -86,7 +86,6 @@ struct player_info
   struct player_info_tile tile[GFX_TILES_NB_SETS+1];
   struct global_function func[100];
 };
-
 extern struct player_info play;
 
 struct attackinfo_struct
@@ -110,10 +109,9 @@ extern int *pvision, *plife, *presult, *pspeed, *ptiming, *plifemax,
 extern int *pupdate_status, *pmissile_target, *penemy_sprite,
   *pmagic_cost, *pmissle_source;
 
-
 extern int flife, fexp, fstrength, fdefense, fgold, fmagic,
   fmagic_level, flifemax, fraise, last_magic_draw;
-
+extern int walk_off_screen;
 
 struct wait_for_button
 {
@@ -122,6 +120,8 @@ struct wait_for_button
 	/*bool*/int active;
 };
 extern struct wait_for_button wait4b;
+
+extern int stop_entire_game;
 
 
 extern int last_saved_game;
@@ -149,7 +149,10 @@ extern /*bool*/int screen_main_is_running;
 
 extern Uint32 thisTickCount;
 extern Uint32 lastTickCount;
+extern int fps_final;
 
+extern int keep_mouse;
+extern int mode;
 
 extern void game_init();
 extern void game_quit();

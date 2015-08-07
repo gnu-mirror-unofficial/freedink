@@ -56,9 +56,10 @@ int *pupdate_status, *pmissile_target, *penemy_sprite,
 
 
 int flife, fexp, fstrength, fdefense, fgold, fmagic, fmagic_level, flifemax, fraise, last_magic_draw;
+int walk_off_screen = /*false*/0;
 
-int fcur_weapon, fcur_magic;
 
+int stop_entire_game;
 
 struct wait_for_button wait4b;
 
@@ -106,6 +107,10 @@ struct attackinfo_struct bow;
 /* Number of ms since an arbitrarily fixed point */
 Uint32 thisTickCount;
 Uint32 lastTickCount;
+int fps_final = 0;
+
+int keep_mouse = 0;
+int mode = 0;
 
 void game_restart()
 {

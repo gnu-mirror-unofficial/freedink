@@ -49,8 +49,6 @@ int show_inventory = 0; // display inventory?
 int flub_mode = -500;
 int draw_screen_tiny = -1;
 
-int walk_off_screen = /*false*/0;
-
 /* Skip flipping the double buffer for this frame only - used when
    setting up show_bmp and copy_bmp */
 /*bool*/int abort_this_flip = /*false*/0;
@@ -59,20 +57,11 @@ int screenlock = 0;
 
 struct show_bmp showb;
 
-int keep_mouse = 0;
-int mode = 0;
-
-unsigned long mold;
-
 int push_active = 1;
-
-
-int stop_entire_game;
 
 /*bool*/int dinkedit = /*false*/0;
 int base_timing = 0;
 
-int fps,fps_final = 0;
 int move_screen = 0;
 int move_counter = 0;
 int cur_map;
@@ -339,6 +328,7 @@ void figure_out(char* line)
 }
 
 
+extern int mode;
 /*bool*/int get_box (int h, rect * box_scaled, rect * box_real)
 {
   int x_offset, y_offset;

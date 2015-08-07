@@ -89,7 +89,7 @@
 #define MODE_SPRITE_HARDNESS 7
 
 #define MODE_INIT 0
-
+int mode = MODE_INIT;
 
 #define INPUT_MINIMAP_LOAD  30
 #define INPUT_SCREEN_VISION 32

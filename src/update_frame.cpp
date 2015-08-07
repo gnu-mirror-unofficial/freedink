@@ -66,6 +66,7 @@ static int frames = 0;
 static int fps = 0;
 static /*bool*/int turn_on_plane = /*FALSE*/0;
 static /*bool*/int plane_process = /*TRUE*/1;
+static unsigned long mold;
 
 /* Fills 'struct seth_joy sjoy' with the current keyboard and/or
    joystick state */

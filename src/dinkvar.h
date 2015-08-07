@@ -25,16 +25,12 @@
 
 #include "SDL.h"
 #include "rect.h"
-#include "editor_screen.h"
 
-extern /*bool*/int abort_this_flip;
 extern int base_timing;
 extern int dinkspeed;
 extern int flife;
 extern int flub_mode;
-extern int fps_final;
 extern int show_inventory;
-extern int stop_entire_game;
 
 /* show_bmp() currently ran */
 struct show_bmp
@@ -47,24 +43,17 @@ struct show_bmp
 	int picframe;
 };
 extern struct show_bmp showb;
-
-extern unsigned long mold;
-
-extern int *pupdate_status;
-extern int *pplayer_map;
-
-extern /*bool*/int transition_in_progress;
-
-
-/* Game state */
-extern int fcur_weapon, fcur_magic;
+extern /*bool*/int abort_this_flip;
 extern int push_active;
 extern int move_screen;
 extern int move_counter;
-extern int screenlock;
+extern /*bool*/int transition_in_progress;
 
-/* Player */
-extern int walk_off_screen;
+
+extern int *pplayer_map;
+
+/* Game state */
+extern int screenlock;
 
 /* Startup */
 extern void pre_figure_out(char* line);
@@ -73,15 +62,10 @@ extern void figure_out(char* line);
 extern /*bool*/int dinkedit;
 extern int draw_screen_tiny;
 extern int cur_map;
-
-
-/* Game modes */
-extern int mode;
-extern int keep_mouse;
+/*bool*/int get_box (int h, rect * box_crap, rect * box_real);
 
 extern void check_seq_status(int h);
 extern void draw_sprite_game(SDL_Surface *GFX_lpdest, int h);
-/*bool*/int get_box (int h, rect * box_crap, rect * box_real);
 
 extern void show_bmp(char name[80], int showdot, int script);
 extern void copy_bmp( char name[80]);
