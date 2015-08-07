@@ -20,6 +20,35 @@
 #include "bgm.h"
 #include "live_screen.h"
 
+/**
+ * Check whether planned new position (x1,y1) is solid
+ * 
+ * Does something weird when hard value is > 100??
+ */
+unsigned char get_hard_play(int h, int x1, int y1)
+{
+  x1 -= 20;
+
+  if (screenlock)
+    {
+      if (x1 < 0)        x1 = 0;
+      else if (x1 > 599) x1 = 599;
+
+      if (y1 < 0)        y1 = 0;
+      else if (y1 > 399) y1 = 399;
+    }
+  if ((x1 < 0) || (y1 < 0) || (x1 > 599) || (y1 > 399))
+    return 0;
+
+  int value =  screen_hitmap[x1][y1];
+  if (value > 100 && cur_ed_screen.sprite[value-100].is_warp != 0)
+    {
+      flub_mode = value;
+      value = 0;
+    }
+  return(value);
+}
+
 void run_through_tag_list_push(int h)
 {
 	rect box;
