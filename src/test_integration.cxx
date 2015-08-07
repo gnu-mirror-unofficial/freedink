@@ -78,7 +78,7 @@ public:
     pvision = &vision;
     
     // Create 5 connected screens
-    struct screen s;
+    struct editor_screen s;
     s.ts_script_id = screen_script_id;
     g_map.loc[33] = 1; g_map.ts_loc_mem[33] = &s;
     g_map.loc[32] = 1; g_map.ts_loc_mem[32] = &s;

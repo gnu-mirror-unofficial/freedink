@@ -31,7 +31,7 @@
 #include "dinkvar.h"
 
 /* base editor screen */
-struct screen cur_ed_screen;
+struct editor_screen cur_ed_screen;
 
 /* hardness */
 unsigned char screen_hitmap[600+1][400+1]; /* hit_map */

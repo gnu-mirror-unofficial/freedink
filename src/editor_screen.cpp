@@ -94,7 +94,7 @@ void screen_rank_editor_sprites(int* rank)
 /**
  * Load 1 screen from specified map.dat in specified memory buffer
  */
-int load_screen_to(const char* path, const int num, struct screen* screen)
+int load_screen_to(const char* path, const int num, struct editor_screen* screen)
 {
   char skipbuf[10000]; // more than any fseek we do
 
@@ -106,7 +106,7 @@ int load_screen_to(const char* path, const int num, struct screen* screen)
       log_error("Cannot find %s file!!!", path);
       return -1;
     }
-  lsize = 31280; // sizeof(struct screen); // under i386, not portable
+  lsize = 31280; // sizeof(struct editor_screen); // under i386, not portable
   holdme = (lsize * (num-1));
   fseek(f, holdme, SEEK_SET);
   //Msg("Trying to read %d bytes with offset of %d",lsize,holdme);
@@ -224,7 +224,7 @@ void save_screen(const char* path, const int num)
 	  perror("Cannot save screen");
 	  return;
 	}
-      lsize = 31280; // sizeof(struct screen); // under ia32, not portable
+      lsize = 31280; // sizeof(struct editor_screen); // under ia32, not portable
       holdme = (lsize * (num-1));
       fseek(f, holdme, SEEK_SET);
 

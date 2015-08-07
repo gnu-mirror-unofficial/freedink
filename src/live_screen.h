@@ -28,7 +28,7 @@
 #include "editor_screen.h"
 
 /* base editor screen */
-extern struct screen cur_ed_screen;
+extern struct editor_screen cur_ed_screen;
 
 // struct for hardness map
 extern unsigned char screen_hitmap[600+1][400+1];

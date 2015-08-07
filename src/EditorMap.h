@@ -44,7 +44,7 @@ class EditorMap
   void save();
   
   int loc[768+1];  // screen index in map.dat
-  struct screen* ts_loc_mem[768+1]; // pre-loaded screen for testsuite
+  struct editor_screen* ts_loc_mem[768+1]; // pre-loaded screen for testsuite
   int music[768+1];
   int indoor[768+1];
 };

@@ -277,7 +277,7 @@ int game_load_screen(int num)
     return -1;
 
   if (g_map.ts_loc_mem[num] != NULL)
-    memcpy(&cur_ed_screen, g_map.ts_loc_mem[num], sizeof(struct screen));
+    memcpy(&cur_ed_screen, g_map.ts_loc_mem[num], sizeof(struct editor_screen));
   else if (load_screen_to(g_map.map_dat.c_str(), num, &cur_ed_screen) < 0)
     return -1;
   

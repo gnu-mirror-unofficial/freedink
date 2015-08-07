@@ -55,23 +55,23 @@ struct sprite_placement
 
 
 /* Background square in a screen */
-struct screen_tilerefs
+struct editor_screen_tilerefs
 {
   short square_full_idx0; /* bg tile index */
   short althard; /* hardness tile index, 0 = bg tile's default hardness tile */
 };
 
 /* one screen from map.dat */
-struct screen
+struct editor_screen
 {
-  struct screen_tilerefs t[12*8+1]; // 97 background tile refs
+  struct editor_screen_tilerefs t[12*8+1]; // 97 background tile refs
   struct sprite_placement sprite[100+1];
   char script[20+1]; /* script to run when entering the script */
   char ts_script_id; /* script to run when entering the script (pre-loaded for testsuite) */
 };
 
 extern void screen_init();
-extern int load_screen_to(const char* path, const int num, struct screen* screen);
+extern int load_screen_to(const char* path, const int num, struct editor_screen* screen);
 extern void save_screen(const char* path, const int num);
 extern void screen_rank_editor_sprites(int rank[]);
 extern int realhard(int tile);
