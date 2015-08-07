@@ -80,7 +80,7 @@ struct player_info
   int last_talk;
   int mouse; /* vertical position of the mouse when selecting a dialog
 		option */
-  int last_map;
+  int last_map; /* screen to show on the map */
   
   char palette[50];
   struct player_info_tile tile[GFX_TILES_NB_SETS+1];
