@@ -40,6 +40,7 @@
 #include "SDL_ttf.h"
 #include "SDL2_framerate.h"
 #include "game_engine.h"
+#include "live_screen.h"
 #include "dinkini.h"
 #include "dinkvar.h"
 #include "EditorMap.h"
@@ -452,7 +453,7 @@ int app_start(int argc, char *argv[],
 
   dinkini_init();
 
-  screen_init();
+  live_screen_init();
 
   //dinks normal walk
   log_info("Loading batch...");

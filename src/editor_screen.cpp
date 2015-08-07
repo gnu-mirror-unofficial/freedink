@@ -36,10 +36,6 @@
 #include "log.h"
 #include "paths.h"
 
-void screen_init() {
-  memset(&screen_hitmap, 0, sizeof(screen_hitmap));
-}
-
 /**
  * Return hardness index for this screen tile, either its default
  * hardness, or the replaced/alternative hardness. Tile is in [0,95].

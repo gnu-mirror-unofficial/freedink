@@ -40,6 +40,10 @@ int playx = 620;
 int playl = 20;
 int playy = 400;
 
+void live_screen_init() {
+  memset(&screen_hitmap, 0, sizeof(screen_hitmap));
+}
+
 /**
  * Fills a int[MAX_SPRITES_AT_ONCE] with the index of the current
  * screen's sprites, sorted by ascending height/queue.

@@ -70,7 +70,6 @@ struct editor_screen
   char ts_script_id; /* script to run when entering the script (pre-loaded for testsuite) */
 };
 
-extern void screen_init();
 extern int load_screen_to(const char* path, const int num, struct editor_screen* screen);
 extern void save_screen(const char* path, const int num);
 extern void screen_rank_editor_sprites(int rank[]);

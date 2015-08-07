@@ -37,6 +37,7 @@ extern int playl;
 extern int playx;
 extern int playy;
 
+extern void live_screen_init();
 extern void add_hardness(int sprite, int num);
 extern unsigned char get_hard(int x1, int y1);
 extern unsigned char get_hard_play(int h, int x1, int y1);

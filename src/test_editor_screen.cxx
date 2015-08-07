@@ -25,6 +25,7 @@
 #endif
 
 #include "editor_screen.h"
+#include "live_screen.h"
 #include "live_sprites_manager.h"
 
 class TestScreen : public CxxTest::TestSuite {
@@ -35,7 +36,7 @@ public:
   }
   
   void test_new() {
-    screen_init();
+    live_screen_init();
     TS_ASSERT_EQUALS(spr[0].x, 0);
   }
 };
