@@ -151,6 +151,47 @@ void add_hardness (int sprite, int num)
 
 
 
+unsigned char get_hard_map(int h,int x1, int y1)
+{
+
+
+        if ((x1 < 0) || (y1 < 0)) return(0);
+        if ((x1 > 599) ) return(0);
+        if (y1 > 399) return(0);
+
+
+        int til = (x1 / 50) + ( ((y1 / 50)) * 12);
+        //til++;
+
+        int offx = x1 - ((x1 / 50) * 50);
+
+
+        int offy = y1 - ((y1 / 50) * 50);
+
+        //Msg("tile %d ",til);
+
+        return( hmap.htile[ realhard(til )  ].hm[offx][offy]);
+
+}
+
+
+
+void fill_hardxy(rect box)
+{
+  int x1, y1;
+  //Msg("filling hard of %d %d %d %d", box.top, box.left, box.right, box.bottom);
+
+  if (box.right > 600)  box.right  = 600;
+  if (box.top < 0)      box.top    = 0;
+  if (box.bottom > 400) box.bottom = 400;
+  if (box.left < 0)     box.left   = 0;
+
+  for (x1 = box.left; x1 < box.right; x1++)
+    for (y1 = box.top; y1 < box.bottom; y1++)
+      screen_hitmap[x1][y1] = get_hard_map(0,x1,y1);
+}
+
+
 
 /**
  * Check whether planned new position (x1,y1) is solid

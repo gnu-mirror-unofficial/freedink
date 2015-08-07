@@ -136,7 +136,6 @@ extern void fill_screen(int num);
 
 extern void show_bmp(char name[80], int showdot, int script);
 extern void copy_bmp( char name[80]);
-extern void fill_hardxy(rect box);
 extern int hurt_thing(int h, int damage, int special);
 extern void random_blood(int mx, int my, int h);
 extern void check_sprite_status_full(int sprite_no);
