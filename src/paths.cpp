@@ -122,12 +122,54 @@ static char* br_build_path (const char *dir, const char *file)
 }
 
 
+/**
+ * Allow using paths in test suite until we implement in-memory mocked
+ * filesystem, using std::stream rather than hard-to-mock FILE*
+ */
+#ifdef _WIN32
+#include <shellapi.h>
+#else
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#endif
 void ts_paths_init() {
-  pkgdatadir = strdup("");
-  fallbackdir = strdup("");
-  dmoddir = strdup("");
-  dmodname = strdup("");
-  userappdir = strdup("");
+  pkgdatadir = strdup("tmp_ts/pkgdatadir");
+  fallbackdir = strdup("tmp_ts/fallbackdir");
+  dmoddir = strdup("tmp_ts/dmoddir");
+  dmodname = strdup("dmoddir");
+  userappdir = strdup("tmp_ts/useradddir");
+
+#ifdef _WIN32
+  SHFILEOPSTRUCT fileop;
+  fileop.hwnd   = NULL;
+  fileop.wFunc  = FO_DELETE;
+  fileop.pFrom  = "tmp_ts\0";
+  fileop.pTo    = NULL;
+  fileop.fFlags = FOF_NOCONFIRMATION|FOF_SILENT;  // do not prompt the user
+  fileop.lpszProgressTitle     = NULL;
+  fileop.hNameMappings         = NULL;
+  SHFileOperation(&fileop);
+#else
+  {
+	pid_t pid = 0;
+	if ((pid = fork()) < 0) {
+	  perror("fork");
+	} else if (pid == 0) {
+	  if (execlp("rm", "rm", "-rf", "tmp_ts/", NULL) < 0) perror("execlp");
+	}
+	else {
+	  int status = 0;
+	  waitpid(pid, &status, 0);
+	}
+  }
+#endif
+  if (mkdir("tmp_ts", 0777) < 0) perror("mkdir");
+  if (mkdir(pkgdatadir, 0777) < 0) perror("mkdir");
+  if (mkdir(fallbackdir, 0777) < 0) perror("mkdir");
+  if (mkdir(dmoddir, 0777) < 0) perror("mkdir");
+  if (mkdir(dmoddir, 0777) < 0) perror("mkdir");
+  if (mkdir(userappdir, 0777) < 0) perror("mkdir");
 }
 
 void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
