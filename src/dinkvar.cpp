@@ -53,8 +53,6 @@ int draw_screen_tiny = -1;
    setting up show_bmp and copy_bmp */
 /*bool*/int abort_this_flip = /*false*/0;
 
-int screenlock = 0;
-
 struct show_bmp showb;
 
 int push_active = 1;

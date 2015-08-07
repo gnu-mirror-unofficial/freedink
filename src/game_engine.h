@@ -123,6 +123,8 @@ extern struct wait_for_button wait4b;
 
 extern int stop_entire_game;
 
+extern int screenlock;
+
 
 extern int last_saved_game;
 

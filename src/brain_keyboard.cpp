@@ -24,6 +24,8 @@
  * Check whether planned new position (x1,y1) is solid
  * 
  * Does something weird when hard value is > 100??
+ * 
+ * TODO: factor out with 'get_hard'; beware of 'return' semantic
  */
 unsigned char get_hard_play(int x1, int y1)
 {

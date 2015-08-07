@@ -61,6 +61,8 @@ int walk_off_screen = /*false*/0;
 
 int stop_entire_game;
 
+int screenlock = 0;
+
 struct wait_for_button wait4b;
 
 

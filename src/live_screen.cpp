@@ -200,9 +200,10 @@ void fill_hardxy(rect box)
  *
  * Returns: 0 if not solid, !0 otherwise
  */
-unsigned char get_hard(int x1, int y1)
+unsigned char get_hard(int x1, int y1, int screenlock)
 {
-  // TODO: break dependency: pass screenlock as argument
+  // Fix "going diag on screen border + screenlock avoids hardness"
+  // TODO: same for screen with no adjacent screen
   if (screenlock)
     {
       if (x1 < 0)        x1 = 0;

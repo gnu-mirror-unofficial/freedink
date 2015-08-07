@@ -52,9 +52,6 @@ extern /*bool*/int transition_in_progress;
 
 extern int *pplayer_map;
 
-/* Game state */
-extern int screenlock;
-
 /* Startup */
 extern void pre_figure_out(char* line);
 extern void figure_out(char* line);
