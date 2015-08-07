@@ -27,57 +27,24 @@
 #include <config.h>
 #endif
 
-#define WIN32_LEAN_AND_MEAN
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <strings.h> /* strncasecmp */
-#include <ctype.h>
-#include <time.h>
-
-#include <fcntl.h>
+#include "dinkvar.h"
 
 #include "SDL.h"
 #include "SDL_image.h"
 
-#include "game_engine.h"
 #include "live_sprites_manager.h"
 #include "live_screen.h"
-#include "EditorMap.h"
-#include "editor_screen.h"
-#include "hardness_tiles.h"
 #include "dinkini.h"
-#include "input.h"
-
-#include "fastfile.h"
-#include "io_util.h"
-
-
-#include "freedink.h"
-#include "dinkvar.h"
 #include "gfx.h"
-#include "gfx_tiles.h"
 #include "gfx_sprites.h"
 #include "gfx_palette.h"
-/* for DinkC's initfonts(): */
-#include "gfx_fonts.h"
 #include "bgm.h"
-#include "sfx.h"
-#include "dinkc.h"
-#include "dinkc_bindings.h"
-
 #include "str_util.h"
 #include "paths.h"
 #include "log.h"
 
 int dinkspeed = 3;
 int show_inventory = 0; // display inventory?
-
-void update_status_all(void);
-int add_sprite(int x1, int y, int brain,int pseq, int pframe );
-
-void draw_status_all(void);
-void check_seq_status(int h);
 
 int flub_mode = -500;
 int draw_screen_tiny = -1;
@@ -93,65 +60,27 @@ int screenlock = 0;
 struct show_bmp showb;
 
 int keep_mouse = 0;
-
+int mode = 0;
 
 unsigned long mold;
-
-int mbase_count;
-
 
 int push_active = 1;
 
 
 int stop_entire_game;
-const int max_game = 20;
-/*bool*/int in_enabled = /*false*/0;
-char *in_string;
 
-
-char dir[80];
-
-
-//defaults
-
-
-
-
-unsigned long timer = 0;
-char *command_line;
 /*bool*/int dinkedit = /*false*/0;
 int base_timing = 0;
 
-int sp_mode = 0;
 int fps,fps_final = 0;
 int move_screen = 0;
 int move_counter = 0;
 int cur_map;
 int* pplayer_map;
 
-unsigned long timecrap;
-rect math,box_crap,box_real;
-
-
-int mode = 0;
-
 
 /* Screen transition */
 /*bool*/int transition_in_progress = /*false*/0;
-
-
-/* LPDIRECTDRAWSURFACE     game[max_game];       // Game pieces */
-/* LPDIRECTDRAWPALETTE     lpDDPal = NULL;        // The primary surface palette */
-/* PALETTEENTRY    pe[256]; */
-
-int bActive = /*false*/0;        // is application active/foreground?
-//LPDIRECTINPUT lpDI;
-
-
-//LPCDIDATAFORMAT lpc;
-
-unsigned char torusColors[256];  // Marks the colors used in the torus
-
 
 
 /**
@@ -567,44 +496,6 @@ void figure_out(char* line)
     return(/*false*/0);
 }
 
-
-/* void reload_sprites(char name[100], int nummy, int junk) */
-/* { */
-/*         HRESULT     ddrval; */
-/*     PALETTEENTRY    holdpal[256];          */
-
-/*         char crap[100],hold[10]; */
-/*         int n; */
-/*         n = 0;   */
-
-/*         lpDDPal->GetEntries(0,0,256,holdpal);      */
-/*         lpDDPal->SetEntries(0,0,256,real_pal); */
-
-
-/*         for (int oo = index[nummy].s+1; oo <= index[nummy].s + index[nummy].last; oo++) */
-/*         { */
-/*                 n++; */
-
-                //  Msg( "%s", crap);
-
-                //      initFail(hWndMain, crap);
-/*                 ddrval = k[oo].k->Restore(); */
-/*         if( ddrval == DD_OK ) */
-/*         { */
-
-
-/*                         if (n < 10) strcpy(hold, "0"); else strcpy(hold,""); */
-/*                         sprintf(crap, "%s%s%d.BMP",name,hold,n); */
-
-/*                         DDReLoadBitmap(k[oo].k, crap); */
-                        //Msg("Sprite %s%d.bmp reloaded into area %d. ",name,n,oo);
-
-
-/*         } */
-/*         } */
-/*         lpDDPal->SetEntries(0,0,256,holdpal);    */
-/* } */
-
 /* Editor only */
 void check_sprite_status(int h)
 {
@@ -725,23 +616,6 @@ void check_sprite_status_full(int sprite_no)
   if (spr[sprite_no].base_walk > -1)
     check_base(spr[sprite_no].base_walk);
 }
-
-
-void get_right(char line[200], char thing[100], char *ret)
-        {
-                char *dumb;
-                int pos = strcspn(line, thing );
-
-
-                if (pos == 0){ strcpy(ret, ""); return; }
-
-
-                dumb = &ret[pos+1];
-                strcpy(ret, dumb);
-        }
-
-
-
 
 
 void draw_sprite_game(SDL_Surface *GFX_lpdest, int h)
@@ -896,4 +770,3 @@ void copy_bmp(char* name)
                 return(num);
                 //draw blood here
         }
-

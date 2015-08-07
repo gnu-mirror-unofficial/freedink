@@ -665,8 +665,6 @@ void updateFrame()
 		return;
 	}
 	
-	mbase_count++;
-	
 	if (thisTickCount > mold+100)
 	{
 		mold = thisTickCount;

@@ -23,33 +23,9 @@
 #ifndef _DINKVAR_H
 #define _DINKVAR_H
 
-/* for RECT ?? */
-/* #include <windows.h> */
-
-/* #include <ddraw.h> */
-/* #include <dinput.h> */
-/* #include <mmsystem.h> */
-
-#include <limits.h>
-
 #include "SDL.h"
 #include "rect.h"
-#include "dinkc.h"
 #include "editor_screen.h"
-
-
-extern int GetKeyboard(int key);
-extern void check_seq_status(int h);
-/* extern void dderror(HRESULT hErr); */
-//extern void draw_sprite_game(LPDIRECTDRAWSURFACE lpdest,int h);
-extern void draw_sprite_game(SDL_Surface *GFX_lpdest, int h);
-extern void duck_brain(int h);
-extern /*BOOL*/int init_mouse();
-extern int load_script(char filename[15], int sprite, /*bool*/int set_sprite);
-extern /*bool*/int locate(int script, char proc[20]);
-extern void process_callbacks(void);
-extern void run_script (int script);
-extern void update_status_all(void);
 
 extern /*bool*/int abort_this_flip;
 extern int base_timing;
@@ -72,8 +48,6 @@ struct show_bmp
 };
 extern struct show_bmp showb;
 
-
-extern int mbase_count;
 extern unsigned long mold;
 
 extern int *pupdate_status;
@@ -81,13 +55,8 @@ extern int *pplayer_map;
 
 extern /*bool*/int transition_in_progress;
 
-/* extern HRESULT ddrval; */
-/* extern LPDIRECTDRAWPALETTE lpDDPal; /\* The primary surface palette *\/ */
-/* extern PALETTEENTRY    pe[256]; */
-
 
 /* Game state */
-extern void attach(void);
 extern int fcur_weapon, fcur_magic;
 extern int push_active;
 extern int move_screen;
@@ -95,33 +64,29 @@ extern int move_counter;
 extern int screenlock;
 
 /* Player */
-extern /*bool*/int inside_box(int x1, int y1, rect box);
 extern int walk_off_screen;
-
-/* Sprites - state */
-extern void changedir( int dir1, int k,int base);
-
-/* Scripts */
-extern void kill_all_scripts_for_real(void);
-extern void kill_returning_stuff(int script);
-
-/* OS */
-extern int bActive; // is application active?
-extern char *command_line; // command line params, used by doInit
-
 
 /* Startup */
 extern void pre_figure_out(char* line);
 extern void figure_out(char* line);
 
-/* Metadata */
-extern int burn_revision;
-
-/*bool*/int get_box (int h, rect * box_crap, rect * box_real);
 extern /*bool*/int dinkedit;
 extern int draw_screen_tiny;
 extern int cur_map;
 
+
+/* Game modes */
+extern int mode;
+extern int keep_mouse;
+
+extern void check_seq_status(int h);
+extern void draw_sprite_game(SDL_Surface *GFX_lpdest, int h);
+/*bool*/int get_box (int h, rect * box_crap, rect * box_real);
+
+extern void show_bmp(char name[80], int showdot, int script);
+extern void copy_bmp( char name[80]);
+extern int hurt_thing(int h, int damage, int special);
+extern void check_sprite_status_full(int sprite_no);
 
 /*
  * Editor
@@ -129,18 +94,5 @@ extern int cur_map;
 
 extern void check_sprite_status(int h);
 extern void check_frame_status(int h, int frame);
-extern void flip_it_second(void);
 
-
-extern void show_bmp(char name[80], int showdot, int script);
-extern void copy_bmp( char name[80]);
-extern int hurt_thing(int h, int damage, int special);
-extern void random_blood(int mx, int my, int h);
-extern void check_sprite_status_full(int sprite_no);
-
-
-/* Game modes */
-extern int mode;
-extern int keep_mouse;
-// + talk.active
 #endif
