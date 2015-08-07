@@ -974,19 +974,3 @@ void copy_bmp(char* name)
                 //draw blood here
         }
 
-
-void set_mode(int new_mode) {
-  mode = new_mode;
-  if (mode == 3 && !keep_mouse) {
-    SDL_SetWindowGrab(window, SDL_FALSE);
-  } else {
-    /* Jail window cursor (Alt+Tab still works) */
-    SDL_SetWindowGrab(window, SDL_TRUE);
-  }
-}
-
-void set_keep_mouse(int on) {
-  keep_mouse = on;
-  if (!on)
-    SDL_SetWindowGrab(window, SDL_FALSE);
-}

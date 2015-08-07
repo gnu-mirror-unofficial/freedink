@@ -175,4 +175,7 @@ extern void fill_back_sprites(void);
 extern void draw_screen_game(void);
 extern void draw_screen_game_background(void);
 
+extern void set_mode(int new_mode);
+extern void set_keep_mouse(int on);
+
 #endif

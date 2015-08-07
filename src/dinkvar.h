@@ -143,7 +143,4 @@ extern void check_sprite_status_full(int sprite_no);
 extern int mode;
 extern int keep_mouse;
 // + talk.active
-
-extern void set_mode(int new_mode);
-extern void set_keep_mouse(int on);
 #endif
