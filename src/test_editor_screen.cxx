@@ -26,17 +26,23 @@
 
 #include "editor_screen.h"
 #include "live_screen.h"
-#include "live_sprites_manager.h"
+#include "paths.h"
 
 class TestScreen : public CxxTest::TestSuite {
 public:
-  void setUp() {
-  }
-  void tearDown() {
-  }
-  
-  void test_new() {
-    live_screen_init();
-    TS_ASSERT_EQUALS(spr[0].x, 0);
-  }
+	void setUp() {
+		ts_paths_init();
+	}
+	void tearDown() {
+	}
+	
+	void test_new() {
+		TS_ASSERT_EQUALS(cur_ed_screen.script, "");
+		
+		strcpy(cur_ed_screen.script, "onenter.c");
+		save_screen("map.dat", 1);
+		strcpy(cur_ed_screen.script, "");
+		load_screen_to("map.dat", 1, &cur_ed_screen);
+		TS_ASSERT_EQUALS(cur_ed_screen.script, "onenter.c");
+	}
 };
