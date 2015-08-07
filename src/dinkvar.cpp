@@ -154,51 +154,6 @@ unsigned char torusColors[256];  // Marks the colors used in the torus
 
 
 
-
-char * lmon(long money, char *dest)
-{
-        char ho[30];
-        int k,c;
-        char lmon1[30];
-        char buffer[30];
-        /*BOOL*/int quit1;
-        quit1 = /*FALSE*/0;
-
-        sprintf(buffer, "%ld", money);
-        strcpy(lmon1, buffer);
-        // prf("ORG IS '%s'",lmon1);
-
-        if (strlen(lmon1) < 4)
-        {
-                strcpy(dest, lmon1);
-                return(dest);
-        }
-
-        sprintf(buffer, "%ld", money);
-        strcpy(ho, buffer);
-        k = strlen(ho);
-        c = -1;
-        lmon1[0]=0;
-        do {
-                strchar(lmon1,ho[k]);
-                k--;
-                c++;
-                if (c == 3)
-                {
-                        if (k > -1)
-                        {
-                                strchar(lmon1,',');
-                                c = 0;
-                        }
-                }
-                if (k < 0) quit1 = /*TRUE*/1;
-        }while (quit1 == /*FALSE*/0);
-        reverse(lmon1);
-
-        strcpy(dest, lmon1);
-        return(dest);
-}
-
 /**
  * Parse a dink.ini line, and store instructions for later processing
  * (used in game initialization through 'load_batch')
