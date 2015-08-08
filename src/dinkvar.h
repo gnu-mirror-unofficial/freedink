@@ -50,7 +50,6 @@ extern int cur_map;
 extern void check_seq_status(int h);
 extern void draw_sprite_game(SDL_Surface *GFX_lpdest, int h);
 
-extern void show_bmp(char name[80], int script);
 extern int hurt_thing(int h, int damage, int special);
 extern void check_sprite_status_full(int sprite_no);
 

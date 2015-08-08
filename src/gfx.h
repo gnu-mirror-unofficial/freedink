@@ -81,5 +81,6 @@ extern void gfx_log_meminfo(void);
 extern void draw_box(rect box, int color);
 extern void fill_screen(int num);
 extern void copy_bmp(char* name);
+extern void show_bmp(char* name, int script);
 
 #endif

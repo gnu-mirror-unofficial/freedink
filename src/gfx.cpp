@@ -717,3 +717,44 @@ void copy_bmp(char* name)
 
   abort_this_flip = /*true*/1;
 }
+
+void show_bmp(char* name, int script)
+{
+  char* fullpath = paths_dmodfile(name);
+  SDL_Surface* image = IMG_Load(fullpath);
+  if (image == NULL)
+    {
+      log_error("Couldn't load '%s': %s", name, SDL_GetError());
+      return;
+    }
+  
+  /* Set physical screen palette */
+  if (!truecolor)
+    {
+      gfx_palette_set_from_surface(image);
+      SDL_Color phys_pal[256];
+      gfx_palette_get_phys(phys_pal);
+
+      /* In case the DX bug messed the palette, let's convert the
+	 image to the new palette. This also converts 24->8bit if
+	 necessary. */
+      {
+	SDL_Surface* converted = SDL_ConvertSurfaceFormat(image, SDL_PIXELFORMAT_INDEX8, 0);
+	SDL_SetPaletteColors(converted->format->palette, phys_pal, 0, 256);
+	SDL_BlitSurface(image, NULL, converted, NULL);
+	SDL_FreeSurface(image);
+	image = converted;
+      }
+
+      /* Next blit without palette conversion */
+      SDL_SetPaletteColors(image->format->palette, GFX_real_pal, 0, 256);
+    }
+
+  SDL_BlitSurface(image, NULL, GFX_lpDDSTrick, NULL);
+  SDL_FreeSurface(image);
+
+  // After show_bmp(), and before the flip_it() call in updateFrame(),
+  // other parts of the code will draw sprites on lpDDSBack and mess
+  // the showbmp(). So skip the next flip_it().
+  abort_this_flip = /*true*/1;
+}
