@@ -42,8 +42,4 @@ extern int *pplayer_map;
 
 extern int cur_map;
 
-extern void draw_sprite_game(SDL_Surface *GFX_lpdest, int h);
-
-extern int hurt_thing(int h, int damage, int special);
-
 #endif

@@ -628,7 +628,9 @@ void game_screen_init_scripts()
     }
 }
 
-/* Draw the background from tiles */
+/**
+ * Activates a screen: draw it and run scripts
+ */
 void draw_screen_game(void)
 {
   *pvision = 0;

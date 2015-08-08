@@ -26,6 +26,7 @@
 #include "live_screen.h"
 #include "editor_screen.h"
 #include "hardness_tiles.h"
+#include "gfx.h"
 #include "gfx_sprites.h"
 #include "log.h"
 #include "dinkini.h"
@@ -371,4 +372,47 @@ unsigned char get_hard(int x1, int y1, int screenlock)
 
  nodraw:
     return(/*false*/0);
+}
+
+void draw_sprite_game(SDL_Surface *GFX_lpdest, int h)
+{
+  if (spr[h].brain == 8)
+    return; // text
+  if (spr[h].nodraw == 1)
+    return; // invisible
+
+  rect box_crap,box_real;
+
+  if (get_box(h, &box_crap, &box_real, false))
+    {
+      /* Generic scaling */
+      /* Not perfectly accurate yet: move a 200% sprite to the border
+	 of the screen to it is clipped: it's scaled size will slighly
+	 vary. Maybe we need to clip the source zone before scaling
+	 it.. */
+      // error checking for invalid rectangle
+      if (box_crap.left >= box_crap.right || box_crap.top >= box_crap.bottom)
+	return;
+      
+      SDL_Rect src, dst;
+      int retval = 0;
+      src.x = box_real.left;
+      src.y = box_real.top;
+      src.w = box_real.right - box_real.left;
+      src.h = box_real.bottom - box_real.top;
+      dst.x = box_crap.left;
+      dst.y = box_crap.top;
+      dst.w = box_crap.right - box_crap.left;
+      dst.h = box_crap.bottom - box_crap.top;
+
+      retval = gfx_blit_stretch(GFX_k[getpic(h)].k, &src, GFX_lpdest, &dst);
+      
+      if (retval < 0) {
+	log_error("Could not draw sprite %d: %s", getpic(h), SDL_GetError());
+	/* If we failed, then maybe the sprite was actually loaded
+	   yet, let's try now */
+	if (spr[h].pseq != 0)
+	  check_seq_status(spr[h].pseq);
+    }
+  }
 }

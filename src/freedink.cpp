@@ -947,6 +947,25 @@ void up_cycle(void)
 }
 
 
+        int hurt_thing(int h, int damage, int special)
+        {
+                //lets hurt this sprite but good
+                if (damage < 1) return(0);
+                int num = damage - spr[h].defense;
+
+                //      Msg("num is %d.. defense was %d.of sprite %d", num, spr[h].defense, h);
+                if (num < 1) num = 0;
+
+                if (num == 0)
+                {
+                        if ((rand() % 2)+1 == 1) num = 1;
+                }
+
+                spr[h].damage += num;
+                return(num);
+                //draw blood here
+        }
+
 /**
  * Check which sprites are affected by an attack from 'h', the
  * attacker.

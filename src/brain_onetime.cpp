@@ -5,8 +5,7 @@
 #include "brain.h"
 #include "live_sprites_manager.h"
 #include "gfx.h"
-
-#include "dinkvar.h" /* draw_sprite_game */
+#include "game_engine.h" /* draw_sprite_game */
 
 void one_time_brain(int h)
 {

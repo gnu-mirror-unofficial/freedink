@@ -46,5 +46,6 @@ extern void fill_hardxy(rect box);
 
 extern void screen_rank_game_sprites(int* rank);
 /*bool*/int get_box (int h, rect * box_scaled, rect * box_real, bool skip_screen_clipping);
+extern void draw_sprite_game(SDL_Surface *GFX_lpdest, int h);
 
 #endif

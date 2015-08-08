@@ -61,6 +61,7 @@ extern void process_item( void );
 extern void process_show_bmp( void );
 extern void process_warp_man(void);
 extern void run_through_tag_list(int h, int strength);
+extern int hurt_thing(int h, int damage, int special);
 extern /*bool*/int run_through_tag_list_talk(int h);
 extern void run_through_touch_damage_list(int h);
 extern void scale_brain(int h);
