@@ -35,7 +35,11 @@ extern int debug_mode;
 #define log_fatal(...) SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_CRITICAL, __VA_ARGS__)
 
 extern void log_init();
+extern void log_quit();
 extern void log_debug_on();
 extern void log_debug_off();
+
+extern void log_set_init_error_msg(const char *fmt, ...);
+extern char* log_get_init_error_msg();
 
 #endif

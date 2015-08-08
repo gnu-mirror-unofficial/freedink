@@ -45,7 +45,6 @@
 #include "bgm.h"
 #include "sfx.h"
 #include "update_frame.h"
-#include "app.h"
 #include "io_util.h"
 #include "paths.h"
 #include "input.h"

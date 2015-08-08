@@ -32,12 +32,10 @@
 #include "log.h"
 
 // TODO: break deps
-#include "app.h"
 #include "bgm.h"
 
 #include "gfx_sprites.h"
 
-static int nb_idata = 0;
 struct idata
 {
   enum idata_type type;
@@ -47,15 +45,14 @@ struct idata
   rect hardbox;
 };
 static struct idata *id;
+int nb_idata = 0;
 
 /**
  * Allocate idata
  */
-void dinkini_init()
+void dinkini_init(int nb_idata_param)
 {
-  nb_idata = 600;
-  if (dversion >= 108)
-    nb_idata = 1000;
+  nb_idata = nb_idata_param;
   id = (struct idata*)calloc(sizeof(struct idata), nb_idata);
 }
 

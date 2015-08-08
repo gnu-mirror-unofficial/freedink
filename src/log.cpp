@@ -35,6 +35,8 @@ int debug_mode = 0;
 static SDL_LogOutputFunction sdl_logger;
 static FILE* out = NULL;
 
+static char* init_error_msg = NULL;
+
 void log_output(void *userdata,
 		int category, SDL_LogPriority priority,
 		const char *message) {
@@ -57,6 +59,11 @@ void log_output(void *userdata,
 void log_init() {
   SDL_LogGetOutputFunction(&sdl_logger, NULL);
   SDL_LogSetOutputFunction(log_output, NULL);
+}
+
+void log_quit() {
+  if (init_error_msg != NULL)
+    free(init_error_msg);
 }
 
 void log_debug_on()
@@ -84,4 +91,17 @@ void log_debug_off()
   SDL_LogSetPriority(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL);
   /* If you need to debug early: */
   /* SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG); */
+}
+
+void log_set_init_error_msg(const char *fmt, ...)
+{
+  va_list ap;
+  va_start(ap, fmt);
+  vasprintf(&init_error_msg, fmt, ap);
+  va_end(ap);
+}
+
+char* log_get_init_error_msg()
+{
+  return init_error_msg;
 }

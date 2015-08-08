@@ -35,28 +35,17 @@
 #include "gettext.h"
 #define _(String) gettext (String)
 
+#include "app.h"
 #include "SDL.h"
-#include "SDL_image.h"
-#include "SDL_ttf.h"
-#include "SDL2_framerate.h"
-#include "game_engine.h"
-#include "live_screen.h"
 #include "dinkini.h"
 #include "EditorMap.h"
 #include "hardness_tiles.h"
+#include "live_screen.h"
 #include "gfx.h"
-#include "gfx_fonts.h"
-#include "gfx_palette.h"
-#include "gfx_sprites.h"
-#include "gfx_tiles.h"
-#include "fastfile.h"
 #include "sfx.h"
-#include "bgm.h"
 #include "input.h"
-#include "io_util.h"
 #include "paths.h"
 #include "log.h"
-#include "app.h"
 #include "msgbox.h"
 
 #if defined _WIN32 || defined __WIN32__ || defined __CYGWIN__
@@ -70,21 +59,9 @@
 #endif
 
 static int g_b_no_write_ini = 0; // -noini passed to command line?
-static char* init_error_msg = NULL;
+static int opt_version = 108;
 
-// TODO: move me to game_engine.c (and -7 as a game-specific CLI option)
-int dversion = 108;
 bool dinkedit = false;
-
-FPSmanager framerate_manager;
-
-void init_set_error_msg(const char *fmt, ...)
-{
-  va_list ap;
-  va_start(ap, fmt);
-  vasprintf(&init_error_msg, fmt, ap);
-  va_end(ap);
-}
 
 /**
  * Prints the version on the standard ouput. Based on the homonymous
@@ -154,11 +131,9 @@ void app_quit()
   ev.type = SDL_QUIT;
   SDL_PushEvent(&ev);
 
-  log_path(/*playing=*/0);
+  app_dinksmallwoodini(/*playing=*/0);
 
   sfx_quit();
-
-  FastFileFini();
 
   dinkini_quit();
 
@@ -171,19 +146,9 @@ void app_quit()
 
   SDL_Quit();
 
-  if (init_error_msg != NULL)
-    free(init_error_msg);
-
   paths_quit();
-}
 
-/**
- * This function is called if the initialization function fails
- */
-int initFail(char *message)
-{
-  msgbox(message);
-  return EXIT_FAILURE; /* used when "return initFail(...);" */
+  log_quit();
 }
 
 
@@ -254,7 +219,7 @@ static int check_arg(int argc, char *argv[])
 	windowed = 1;
 	break;
       case '7':
-	dversion = 107;
+	opt_version = 107;
 	break;
       case 't':
 	truecolor = 1;
@@ -375,7 +340,7 @@ static void app_chdir() {
    will also initialize each subsystem as needed (eg InitSound) */
 int app_start(int argc, char *argv[],
 	      char* splash_path,
-	      void(*init_hook)(),
+	      void(*init_hook)(int),
 	      void(*input_hook)(SDL_Event* ev),
 	      void(*logic_hook)(),
 	      void(*quit_hook)())
@@ -426,8 +391,9 @@ int app_start(int argc, char *argv[],
   /* SDL */
   /* Init timer subsystem */
   if (SDL_Init(SDL_INIT_TIMER) == -1) {
-    init_set_error_msg("Timer initialization error: %s\n", SDL_GetError());
-    return initFail(init_error_msg);
+    log_set_init_error_msg("Timer initialization error: %s\n", SDL_GetError());
+	msgbox(log_get_init_error_msg());
+    return EXIT_FAILURE;
   }
 
   /* Quits in case we couldn't do it properly first (i.e. attempt to
@@ -436,22 +402,19 @@ int app_start(int argc, char *argv[],
 
   /* GFX */
   if (gfx_init(windowed ? GFX_WINDOWED : GFX_FULLSCREEN,
-	       splash_path) < 0)
-    return initFail(init_error_msg);
-
+			   splash_path) < 0) {
+	msgbox(log_get_init_error_msg());
+    return EXIT_FAILURE;
+  }
+  
   /* Joystick */
   input_init();
 
   /* SFX & BGM */
   sfx_init();
 
-  SDL_initFramerate(&framerate_manager);
-  /* The official v1.08 .exe runs 50-60 FPS in practice, despite the
-     documented intent of running 83 FPS (or 12ms delay). */
-  /* SDL_setFramerate(manager, 83); */
-  SDL_setFramerate(&framerate_manager, FPS);
-
-  dinkini_init();
+  int nb_idata = (opt_version >= 108) ? 1000 : 600;
+  dinkini_init(nb_idata);
 
   live_screen_init();
 
@@ -469,7 +432,7 @@ int app_start(int argc, char *argv[],
   g_map.load();
   log_info(" done!");
 
-  init_hook();
+  init_hook(opt_version);
 
   app_loop(input_hook, logic_hook);
 
@@ -485,12 +448,11 @@ int app_start(int argc, char *argv[],
  * applications like the DinkFrontEnd. Also notify whether Dink is
  * running or not.
  */
-void log_path(/*bool*/int playing)
+void app_dinksmallwoodini(/*bool*/int playing)
 {
   if (g_b_no_write_ini)
     return; //fix problem with NT security if -noini is set
-  /* TODO: saves it in the user home instead. Think about where to
-     cleanly store additional DMods. */
+  /* TODO: saves it in the user home instead. */
 
 #if defined _WIN32 || defined __WIN32__ || defined __CYGWIN__
   char windir[MAX_PATH];

@@ -244,7 +244,7 @@ void draw_minimap(void);
 /* void dderror(HRESULT hErr); */
 
 static bool skip_screen_clipping() {
-  return dinkedit && (mode == 1 || mode == 5) && draw_screen_tiny < 1;
+  return (mode == 1 || mode == 5) && draw_screen_tiny < 1;
 }
 
 void draw_sprite(SDL_Surface *GFX_lpdest, int h)
@@ -4892,7 +4892,7 @@ int load_editor_sounds()
  * doInit - do work required for every instance of the application:
  *                create the window, initialize data
  */
-static void freedinkedit_init()
+static void freedinkedit_init(int /* unused */ version)
 {
   /** SETUP **/
   /* Manually setup basic sequences */

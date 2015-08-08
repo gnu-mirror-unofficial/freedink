@@ -116,8 +116,8 @@ endif
 
 if HAVE_TESTS
 check_PROGRAMS = test_str_util test_io_util TestEditorMap	\
-	test_editor_screen test_dinkc test_dinkc_bindings	\
-	test_integration
+	test_editor_screen test_dinkini test_dinkc		\
+	test_dinkc_bindings test_integration
 .cxx.cpp:
 	$(CXXTESTGEN) --error-printer --include test_sdl_workaround.h -o $@ $<
 EXTRA_DIST += test_sdl_workaround.h
@@ -149,6 +149,9 @@ test_editor_screen_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	meminfo.h savegame.cpp savegame.h status.cpp status.h		\
 	talk.cpp talk.h text.cpp text.h update_frame.cpp		\
 	test_editor_screen.cpp
+test_dinkini_SOURCES = dinkini.cpp rect.cpp gfx_sprites.cpp		\
+	fastfile.cpp str_util.cpp io_util.cpp msgbox.cpp paths.cpp	\
+	log.cpp test_dinkini.cpp
 test_dinkc_SOURCES = dinkc.cpp str_util.cpp paths.cpp io_util.cpp	\
 	msgbox.cpp i18n.cpp test_dinkc.cpp
 test_dinkc_bindings_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\

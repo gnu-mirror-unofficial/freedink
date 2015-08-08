@@ -1,7 +1,7 @@
 /**
- * System initialization, common to FreeDink and FreeDinkEdit
+ * Test suite for Dink INI parsing and sequence configuration
 
- * Copyright (C) 2007, 2008  Sylvain Beucler
+ * Copyright (C) 2015  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -20,19 +20,31 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _INIT_H
-#define _INIT_H
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
+#include "dinkini.h"
 #include "SDL.h"
 
-extern bool dinkedit;
-extern int app_start(int argc, char *argv[],
-		     char* splash_path,
-		     void(*init_hook)(int version),
-		     void(*input_hook)(SDL_Event* ev),
-		     void(*logic_hook)(),
-		     void(*quit_hook)());
-extern void app_quit();
-extern void app_dinksmallwoodini(/*bool*/int playing);
+/* Mocks */
+int truecolor = 1;
+SDL_Surface* GFX_lpDDSTrick2;
+SDL_Color GFX_real_pal[256];
+extern int PlayMidi(char *sFileName) { return 1; }
+extern SDL_Surface* load_bmp_from_fp(FILE* in) { return NULL; }
 
-#endif
+extern int nb_idata;
+
+class TestDinkIni : public CxxTest::TestSuite {
+public:
+	void setUp() {
+	}
+	void tearDown() {
+	}
+	
+	void test_dinkini_init() {
+		dinkini_init(123);
+		TS_ASSERT_EQUALS(nb_idata, 123);
+	}
+};

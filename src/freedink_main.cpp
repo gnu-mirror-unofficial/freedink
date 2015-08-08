@@ -71,15 +71,15 @@ void freedink_update_mouse(SDL_Event* ev)
  * doInit - do work required for every instance of the application:
  *                create the window, initialize data
  */
-static void freedink_init()
+static void freedink_init(int version)
 {
   /* Notify other apps that FreeDink is playing */
-  log_path(/*true*/1);
+  app_dinksmallwoodini(/*true*/1);
 
   /* Game-specific initialization */
   /* Start with this initialization as it resets structures that are
      filled in other subsystems initialization */
-  game_init();
+  game_init(version);
 
   if (sound_on)
     bgm_init();

@@ -35,7 +35,7 @@ enum idata_type { IDATA_EMPTY=0, IDATA_SPRITE_INFO, IDATA_FRAME_SPECIAL,
 #define DINKINI_NOTANIM      0x00000004
 #define DINKINI_COMPAT_DIRFF 0x00000008
 
-extern void dinkini_init(void);
+extern void dinkini_init(int nb_idata);
 extern void dinkini_quit(void);
 extern void load_batch(bool playmidi);
 

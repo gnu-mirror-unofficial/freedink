@@ -32,8 +32,6 @@
 #include "gfx_tiles.h"
 #include "inventory.h"
 
-#define FPS 60
-
 struct attackinfo_struct
 {
 	int time;
@@ -100,7 +98,7 @@ extern int move_screen;
 extern int move_counter;
 extern /*bool*/int transition_in_progress;
 
-extern void game_init();
+extern void game_init(int version);
 extern void game_quit();
 extern void game_restart();
 

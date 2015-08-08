@@ -67,12 +67,10 @@ int add_sprite(int x1, int y, int brain,int pseq, int pframe )
                         spr[x].defense = 0;
                         spr[x].hard = 1;
 
-			if (dversion >= 108) {
-			  if (spr[x].custom == NULL)
-			    spr[x].custom = new std::map<std::string, int>;
-			  else
-			    spr[x].custom->clear();
-			}
+						if (spr[x].custom == NULL)
+						  spr[x].custom = new std::map<std::string, int>;
+						else
+						  spr[x].custom->clear();
 
                         return(x);
                 }
@@ -152,12 +150,10 @@ int add_sprite_dumb(int x1, int y, int brain,int pseq, int pframe,int size )
                         spr[x].damage = 0;
                         spr[x].defense = 0;
 
-			if (dversion >= 108) {
-			  if (spr[x].custom == NULL)
-			    spr[x].custom = new std::map<std::string, int>;
-			  else
-			    spr[x].custom->clear();
-			}
+						if (spr[x].custom == NULL)
+						  spr[x].custom = new std::map<std::string, int>;
+						else
+						  spr[x].custom->clear();
 
                         return(x);
                 }
@@ -168,7 +164,7 @@ int add_sprite_dumb(int x1, int y, int brain,int pseq, int pframe,int size )
 }
 
 
-        void random_blood(int mx, int my, int sprite)
+void random_blood(int mx, int my, int sprite)
         {
                 int myseq;
                 /* v1.08 introduces custom blood sequence, as well as
@@ -183,10 +179,7 @@ int add_sprite_dumb(int x1, int y, int brain,int pseq, int pframe,int size )
                 else
                   {
                     myseq = 187;
-                    if (dversion >= 108)
-                      randy = 3;
-                    else
-                      randy = 2;
+					randy = 3;
                   }
                 myseq += (rand () % randy);
                 

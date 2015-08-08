@@ -24,6 +24,7 @@
 #define _GFX_H
 
 #include "SDL.h"
+#include "SDL2_framerate.h"
 #include "rect.h"
 
 enum gfx_init_state
@@ -64,6 +65,11 @@ extern /*bool*/int abort_this_flip;
 
 extern double truecolor_fade_brightness;
 extern Uint32 truecolor_fade_lasttick;
+
+
+#define FPS 60
+extern FPSmanager framerate_manager;
+
 
 extern enum gfx_init_state gfx_get_init_state(void);
 

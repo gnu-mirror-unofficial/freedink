@@ -46,9 +46,10 @@
 #include "meminfo.h"
 #include "dinkc.h"
 #include "dinkc_bindings.h"
-#include "app.h"
 #include "game_state.h"
 
+
+int dversion = 108;
 
 int walk_off_screen = /*false*/0;
 
@@ -750,8 +751,9 @@ void set_keep_mouse(int on) {
 }
 
 
-void game_init()
+void game_init(int version)
 {
+  dversion = version;
   /* Clean the game state structure - done by C++ but not
      automatically done by C, and this causes errors. TODO: fix the
      errors properly instead of using this dirty trick. */

@@ -37,7 +37,6 @@
 #include "SDL.h"
 #include "SDL2_framerate.h"
 
-#include "app.h"
 #include "game_engine.h"
 #include "live_sprites_manager.h"
 #include "EditorMap.h"
