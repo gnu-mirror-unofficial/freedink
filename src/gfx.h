@@ -60,6 +60,7 @@ extern SDL_Renderer* renderer;
 extern SDL_Texture* render_texture;
 
 extern SDL_Color GFX_real_pal[256];
+extern /*bool*/int abort_this_flip;
 
 extern double truecolor_fade_brightness;
 extern Uint32 truecolor_fade_lasttick;
@@ -79,6 +80,6 @@ extern void gfx_toggle_fullscreen(void);
 extern void gfx_log_meminfo(void);
 extern void draw_box(rect box, int color);
 extern void fill_screen(int num);
-
+extern void copy_bmp(char* name);
 
 #endif

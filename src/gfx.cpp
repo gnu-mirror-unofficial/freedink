@@ -92,6 +92,10 @@ SDL_Surface *rgba_screen = NULL;
 /* PALETTEENTRY  real_pal[256]; */
 SDL_Color GFX_real_pal[256];
 
+/* Skip flipping the double buffer for this frame only - used when
+   setting up show_bmp and copy_bmp */
+/*bool*/int abort_this_flip = /*false*/0;
+
 
 /* True color fade in [0,256]; 0 is completely dark, 256 is unaltered */
 double truecolor_fade_brightness = 256;
@@ -669,3 +673,47 @@ void fill_screen(int num)
 						GFX_real_pal[num].b));
 }
 
+
+/* Used to implement DinkC's copy_bmp_to_screen(). Difference with
+   show_cmp: does not set showb.* (wait for button), install the image
+   to lpDDSTwo (background) and not lpDDSBack (screen double
+   buffer) */
+void copy_bmp(char* name)
+{
+  char* fullpath = paths_dmodfile(name);
+  SDL_Surface* image = IMG_Load(fullpath);
+  if (image == NULL)
+    {
+      log_error("Couldn't load '%s': %s", name, SDL_GetError());
+      return;
+    }
+  
+  /* Set physical screen palette */
+  if (!truecolor)
+    {
+      gfx_palette_set_from_surface(image);
+      /* Grab back palette with DX bug overwrite */
+      SDL_Color phys_pal[256];
+      gfx_palette_get_phys(phys_pal);
+
+      /* In case the DX bug messed the palette, let's convert the
+	 image to the new palette. This also converts 24->8bit if
+	 necessary. */
+      {
+	SDL_Surface* converted =  SDL_CreateRGBSurface(0, image->w,image->h,
+						       8, 0,0,0,0);
+	SDL_SetPaletteColors(converted->format->palette, phys_pal, 0, 256);
+	SDL_BlitSurface(image, NULL, converted, NULL);
+	SDL_FreeSurface(image);
+	image = converted;
+      }
+
+      /* Next blit without palette conversion */
+      SDL_SetPaletteColors(image->format->palette, GFX_real_pal, 0, 256);
+    }
+
+  SDL_BlitSurface(image, NULL, GFX_lpDDSTwo, NULL);
+  SDL_FreeSurface(image);
+
+  abort_this_flip = /*true*/1;
+}

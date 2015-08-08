@@ -43,7 +43,6 @@ struct show_bmp
 	int picframe;
 };
 extern struct show_bmp showb;
-extern /*bool*/int abort_this_flip;
 extern int push_active;
 extern int move_screen;
 extern int move_counter;
@@ -63,7 +62,6 @@ extern void check_seq_status(int h);
 extern void draw_sprite_game(SDL_Surface *GFX_lpdest, int h);
 
 extern void show_bmp(char name[80], int showdot, int script);
-extern void copy_bmp( char name[80]);
 extern int hurt_thing(int h, int damage, int special);
 extern void check_sprite_status_full(int sprite_no);
 
