@@ -29,14 +29,20 @@
 #include "gfx.h" /* gfx_blit_nocolorkey */
 #include "gfx_sprites.h" /* GFX_k */
 #include "dinkini.h" /* check_seq_status */
-#include "game_engine.h" /* fexp, fraise, fstrength, fdefense, fmagic,
-			    plevel, fgold, plife... */
 #include "live_sprites_manager.h"
 #include "sfx.h"
 #include "talk.h"
 #include "editor_screen.h" /* spr */
 
-#include "dinkvar.h" /* show_inventory */
+#include "game_engine.h" /* show_inventory */
+
+/* Status animations */
+int flife;
+static int fstrength, fdefense, fmagic,
+	last_magic_draw,
+	/* flife, */ flifemax,
+	fgold,
+	fexp, fraise;
 
 static int draw_num(int mseq, char* nums, int mx, int my)
 {

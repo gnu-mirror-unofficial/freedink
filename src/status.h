@@ -26,4 +26,6 @@
 extern void draw_status_all();
 extern void update_status_all();
 
+extern int flife;
+
 #endif

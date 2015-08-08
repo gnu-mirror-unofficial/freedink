@@ -61,8 +61,6 @@
 #include "talk.h"
 #include "status.h"
 
-#include "dinkvar.h"
-
 static Uint32 fps_lasttick = 0;
 static int frames = 0;
 static int fps = 0;

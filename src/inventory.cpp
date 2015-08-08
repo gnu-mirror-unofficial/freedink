@@ -25,7 +25,6 @@
 #include "game_engine.h"
 #include "log.h"
 #include "str_util.h" /* compare */
-#include "dinkvar.h" /* draw_status_all */
 #include "gfx.h" /* GFX_lpDDSBack */
 #include "gfx_sprites.h" /* draw_status_all, GFX_k */
 #include "dinkini.h" /* check_seq_status */
@@ -33,12 +32,13 @@
 #include "sfx.h"
 #include "talk.h" /* talk.active */
 #include "update_frame.h" /* talk_process */
-#include "status.h"
+#include "status.h" /* draw_status_all */
 
 /* Blinking selector in the inventory screen */
 static Uint32 item_timer;
 static int item_pic;
 
+/* Used by dinkc_bindings.c only */
 void add_item(char* name, int mseq, int mframe, enum item_type type)
 {
   if (type == ITEM_REGULAR)
@@ -89,6 +89,7 @@ void add_item(char* name, int mseq, int mframe, enum item_type type)
     }
 }
 
+/* Used by dinkc_bindings.c only */
 void kill_cur_item()
 {
   if (*pcur_weapon >= 1 && *pcur_weapon <= NB_ITEMS)
@@ -113,6 +114,7 @@ void kill_cur_item()
     }
 }
 
+/* Used by dinkc_bindings.c only */
 void kill_item_script(char* name)
 {
   int select = 0;
@@ -152,7 +154,7 @@ void kill_item_script(char* name)
   draw_status_all();
 }
 
-
+/* Used by dinkc_bindings.c only */
 void kill_mitem_script(char* name)
 {
   int select = 0;
@@ -194,7 +196,7 @@ void kill_mitem_script(char* name)
   draw_status_all();
 }
 
-
+/* Used by dinkc_bindings.c only */
 void kill_cur_magic()
 {
   if (*pcur_magic >= 1 && *pcur_magic <= NB_MITEMS)
@@ -221,11 +223,12 @@ void kill_cur_magic()
 }
 
 
+
 /**
  * Draw an item icon (or an item selection square) in the inventory
  * screen
  */
-void draw_item(int item_idx0, enum item_type type, int mseq, int mframe)
+static void draw_item(int item_idx0, enum item_type type, int mseq, int mframe)
 {
   int mx = 0;
   int my = 0;

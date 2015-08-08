@@ -1,7 +1,7 @@
 /**
- * Header for code common to FreeDink and FreeDinkedit
+ * Game state
 
- * Copyright (C) 2005, 2007, 2008, 2009, 2010, 2012, 2014, 2015  Sylvain Beucler
+ * Copyright (C) 2015  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -20,26 +20,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _DINKVAR_H
-#define _DINKVAR_H
+/* Engine variables directly mapped with DinkC variables */
+int *pvision, *plife, *presult, *pspeed, *ptiming, *plifemax,
+  *pexper, *pstrength, *pcur_weapon,*pcur_magic, *pdefense,
+  *pgold, *pmagic, *plevel, *plast_text, *pmagic_level;
+int *pupdate_status, *pmissile_target, *penemy_sprite,
+  *pmagic_cost, *pmissle_source;
 
-#include "SDL.h"
-#include "rect.h"
-
-extern int base_timing;
-extern int dinkspeed;
-extern int flife;
-extern int flub_mode;
-extern int show_inventory;
-
-extern int push_active;
-extern int move_screen;
-extern int move_counter;
-extern /*bool*/int transition_in_progress;
-
-
-extern int *pplayer_map;
-
-extern int cur_map;
-
-#endif
+int dinkspeed = 3;
+int push_active = 1;
+int* pplayer_map;

@@ -28,8 +28,6 @@
 #include "gfx_sprites.h"
 #include "log.h"
 
-#include "dinkvar.h" /* base_timing */
-
 /*bool*/int check_for_kill_script(int i)
 {
 	if (spr[i].script > 0)

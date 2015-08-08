@@ -47,19 +47,20 @@
 #include "dinkc.h"
 #include "dinkc_bindings.h"
 #include "app.h"
-
-#include "dinkvar.h"
-
-/* Engine variables directly mapped with DinkC variables */
-int *pvision, *plife, *presult, *pspeed, *ptiming, *plifemax,
-  *pexper, *pstrength, *pcur_weapon,*pcur_magic, *pdefense,
-  *pgold, *pmagic, *plevel, *plast_text, *pmagic_level;
-int *pupdate_status, *pmissile_target, *penemy_sprite,
-  *pmagic_cost, *pmissle_source;
+#include "game_state.h"
 
 
-int flife, fexp, fstrength, fdefense, fgold, fmagic, fmagic_level, flifemax, fraise, last_magic_draw;
 int walk_off_screen = /*false*/0;
+
+int show_inventory = 0; // display inventory?
+int flub_mode = -500;
+
+int move_screen = 0;
+int move_counter = 0;
+
+
+/* Screen transition */
+/*bool*/int transition_in_progress = /*false*/0;
 
 
 int stop_entire_game;
@@ -113,6 +114,7 @@ struct attackinfo_struct bow;
 Uint32 thisTickCount;
 Uint32 lastTickCount;
 int fps_final = 0;
+int base_timing = 0;
 
 int keep_mouse = 0;
 int mode = 0;
@@ -277,6 +279,33 @@ void fix_dead_sprites()
     }
 }
 
+/**
+ * When entering a screen, play the appropriate MIDI
+ */
+void check_midi(void)
+{
+  // TODO: use a better constant (like max_file_path)
+  char midi_filename[20];
+
+  if ((!midi_active) || (g_map.music[*pplayer_map] == 0))
+    return;
+
+  /* There is music information associated with this screen */
+  if (g_map.music[*pplayer_map] != -1) {
+    if (g_map.music[*pplayer_map] > 1000)
+      /* Try to play a CD track (unsupported) - fall back to MIDI */
+      {
+	sprintf(midi_filename, "%d.mid", g_map.music[*pplayer_map] - 1000);
+	PlayMidi(midi_filename);
+      }
+    else
+      {
+	/* Just play the specified MIDI */
+	sprintf(midi_filename, "%d.mid", g_map.music[*pplayer_map]);
+	PlayMidi(midi_filename);
+      }
+  }
+}
 
 /**
  * Load 1 screen from map.dat, which contains all 768 game screens

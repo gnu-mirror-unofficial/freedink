@@ -24,12 +24,14 @@
 #ifndef _BRAINS_H
 #define _BRAINS_H
 
+extern void bounce_brain(int h);
 extern void button_brain(int h);
 extern void pill_brain(int h);
 extern void duck_brain(int h);
 extern void human_brain(int h);
 extern void dragon_brain(int h);
-extern void missile_brain(int h);
+extern void missile_brain(int h, int repeat);
+extern void missile_brain_expire(int h);
 extern void mouse_brain(int h);
 extern void no_brain(int h);
 extern void one_time_brain(int h);

@@ -26,7 +26,7 @@
 #include "SDL.h"
 #include "log.h"
 #include "game_engine.h" /* play */
-#include "dinkvar.h" /* check_seq_status */
+#include "dinkini.h" /* check_seq_status */
 #include "gfx.h" /* GFX_lpDDSBack */
 #include "gfx_fonts.h"
 #include "gfx_sprites.h" /* GFX_k */

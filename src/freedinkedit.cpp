@@ -60,8 +60,6 @@
 #include "paths.h"
 #include "log.h"
 
-#include "dinkvar.h" /* check_sprite_status, cur_map */
-
 //Dinkedit-only vars
 
 
@@ -113,6 +111,7 @@ EditorMap buffmap;
 /*bool*/int buf_mode = /*false*/0;
 static char buf_path[100];
 static int buf_map = 0;
+static int cur_map;
 
 static int draw_screen_tiny = -1;
 
@@ -239,8 +238,6 @@ int xy2screentile(int x, int y)
 
 
 // PROC NAMES
-
-/*BOOL*/int initFail(char mess[200] );
 
 void draw_screen_editor(void);
 void draw_minimap(void);

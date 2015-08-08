@@ -39,9 +39,7 @@
 #include "str_util.h"
 #include "paths.h"
 #include "log.h"
-#include "sfx.h"
-#include "EditorMap.h"
-#include "dinkvar.h" /* pplayer_map */
+#include "sfx.h" /* sound_on */
 
 /* Current background music (not cd) */
 static Mix_Music *music_data = NULL;
@@ -205,34 +203,6 @@ int StopMidi()
 {
   Mix_HaltMusic(); // return always 0
   return 1;
-}
-
-/**
- * When entering a screen, play the appropriate MIDI
- */
-void check_midi(void)
-{
-  // TODO: use a better constant (like max_file_path)
-  char midi_filename[20];
-	
-  if ((!midi_active) || (g_map.music[*pplayer_map] == 0))
-    return;
-
-  /* There is music information associated with this screen */
-  if (g_map.music[*pplayer_map] != -1) {
-    if (g_map.music[*pplayer_map] > 1000)
-      /* Try to play a CD track (unsupported) - fall back to MIDI */
-      {
-	sprintf(midi_filename, "%d.mid", g_map.music[*pplayer_map] - 1000);
-	PlayMidi(midi_filename);
-      }
-    else
-      {
-	/* Just play the specified MIDI */
-	sprintf(midi_filename, "%d.mid", g_map.music[*pplayer_map]);
-	PlayMidi(midi_filename);
-      }
-  }
 }
 
 /**

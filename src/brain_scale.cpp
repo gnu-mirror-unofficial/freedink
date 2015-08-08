@@ -4,7 +4,7 @@
 
 #include "brain.h"
 #include "live_sprites_manager.h"
-#include "dinkvar.h" /* base_timing */
+#include "game_engine.h" /* base_timing */
 
 void scale_brain(int h)
 {

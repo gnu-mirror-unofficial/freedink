@@ -45,8 +45,6 @@
 #include "freedink.h"
 #include "paths.h"
 
-#include "dinkvar.h" /* pplayer_map */
-
 /* test headers */
 void dc_fade_down(int script, int* yield, int* preturnint);
 void dc_fade_up(int script, int* yield, int* preturnint);

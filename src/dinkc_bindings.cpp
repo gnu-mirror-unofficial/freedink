@@ -66,7 +66,6 @@
 #include "savegame.h"
 #include "brain.h"
 
-#include "dinkvar.h"
 
 int change_sprite(int h, int val, int *change)
 {

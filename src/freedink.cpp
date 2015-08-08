@@ -60,13 +60,6 @@
 #include "talk.h"
 #include "text.h"
 
-#include "dinkvar.h"
-
-void move(int u, int amount, char kind,  char kindy);
-void draw_box(rect box, int color);
-int check_if_move_is_legal(int u);
-int hurt_thing(int h, int damage, int special);
-
 
 Uint32 but_timer = 0;
 
@@ -307,39 +300,6 @@ int check_if_move_is_legal(int u)
 	return(0);
 }
 
-
-
-
-void bounce_brain(int h)
-{
-	if (spr[h].y > (playy-k[getpic(h)].box.bottom))
-	{
-		spr[h].my -= (spr[h].my * 2);
-	}         
-	
-	if (spr[h].x > (GFX_RES_W -k[getpic(h)].box.right))
-	{
-		spr[h].mx -= (spr[h].mx * 2);
-	}         
-	
-	if (spr[h].y < 0)
-	{
-		spr[h].my -= (spr[h].my * 2);
-	}         
-	
-	
-	if (spr[h].x < 0) 
-	{
-		spr[h].mx -= (spr[h].mx * 2);
-	}         
-	
-	
-	spr[h].x += spr[h].mx;
-	spr[h].y += spr[h].my;
-	
-	
-}
-//end bounce brain		
 
 /* Capture the current's backbuffer game zone for screen transition */
 void grab_trick(int trick)

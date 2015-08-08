@@ -19,8 +19,6 @@
 #include "bgm.h"
 #include "live_screen.h"
 
-#include "dinkvar.h" /* flub_mode, show_inventory */
-
 /**
  * Check whether planned new position (x1,y1) is solid
  * 

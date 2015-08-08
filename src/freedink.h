@@ -1,7 +1,8 @@
 /**
  * Header for FreeDink-specific code (not FreeDinkedit)
 
- * Copyright (C) 2005, 2007, 2008, 2009, 2010, 2012  Sylvain Beucler
+ * Copyright (C) 1997, 1998, 1999, 2002, 2003  Seth A. Robinson
+ * Copyright (C) 2003, 2004, 2005, 2007, 2008, 2009, 2010, 2012, 2014, 2015  Sylvain Beucler
 
  * This file is part of GNU FreeDink
 
@@ -18,12 +19,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
- */
-
-/**
- * I made this header because I though update_frame had to be compiled
- * separately - actually it was also included in dink.cpp. Might still
- * come in handy.
  */
 
 #ifndef _FREEDINK_H
@@ -45,32 +40,22 @@ extern struct show_bmp showb;
 
 extern Uint32 but_timer;
 
-extern void CyclePalette();
-extern void button_brain(int h );
-extern void bounce_brain(int h);
 extern int check_if_move_is_legal(int u);
 extern int did_player_cross_screen();
 extern void drawscreenlock( void );
-extern void flip_it(void);
 extern void get_last_sprite(void);
-extern int initFail(char mess[200]);
-extern void missile_brain( int h, /*bool*/int repeat);
-extern void missile_brain_expire(int h);
-extern void mouse_brain(int h);
-extern void process_item( void );
 extern void process_show_bmp( void );
 extern void process_warp_man(void);
+
 extern void run_through_tag_list(int h, int strength);
 extern int hurt_thing(int h, int damage, int special);
 extern /*bool*/int run_through_tag_list_talk(int h);
 extern void run_through_touch_damage_list(int h);
-extern void scale_brain(int h);
-extern void shadow_brain(int h);
+
 extern int special_block(int block);
-extern void text_brain(int h);
-/* extern void text_draw(int h, HDC hdc); */
 extern void text_draw(int h);
 extern /*bool*/int transition(void);
+extern void CyclePalette();
 extern void up_cycle(void);
 
 #endif

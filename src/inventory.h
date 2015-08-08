@@ -23,13 +23,14 @@
 #ifndef _INVENTORY_H
 #define _INVENTORY_H
 
-/* Used by dinkc_bindings.c only */
-enum item_type { ITEM_REGULAR, ITEM_MAGIC };
+#include "game_state.h"
+
 extern void add_item(char name[10], int mseq, int mframe, enum item_type type);
 extern void kill_item_script(char* name);
 extern void kill_mitem_script(char* name);
 extern void kill_cur_item( void );
 extern void kill_cur_magic( void );
-//extern void draw_item(int item_idx0, enum item_type type, int mseq, int mframe);
+
 extern void process_item();
+
 #endif
