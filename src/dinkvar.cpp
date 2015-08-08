@@ -49,8 +49,6 @@ int show_inventory = 0; // display inventory?
 int flub_mode = -500;
 int draw_screen_tiny = -1;
 
-struct show_bmp showb;
-
 int push_active = 1;
 
 int base_timing = 0;
@@ -486,7 +484,7 @@ void draw_sprite_game(SDL_Surface *GFX_lpdest, int h)
 }
 
 
-void show_bmp(char* name, int showdot, int script)
+void show_bmp(char* name, int script)
 {
   char* fullpath = paths_dmodfile(name);
   SDL_Surface* image = IMG_Load(fullpath);
@@ -517,10 +515,6 @@ void show_bmp(char* name, int showdot, int script)
       /* Next blit without palette conversion */
       SDL_SetPaletteColors(image->format->palette, GFX_real_pal, 0, 256);
     }
-
-  showb.active = /*true*/1;
-  showb.showdot = showdot;
-  showb.script = script;
 
   SDL_BlitSurface(image, NULL, GFX_lpDDSTrick, NULL);
   SDL_FreeSurface(image);

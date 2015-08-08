@@ -31,6 +31,20 @@
 
 #include "SDL.h"
 
+/* show_bmp() currently ran */
+struct show_bmp
+{
+	/*bool*/int active;
+	/*bool*/int showdot;
+	int reserved;
+	int script;
+	int stime;
+	int picframe;
+};
+extern struct show_bmp showb;
+
+extern Uint32 but_timer;
+
 extern void CyclePalette();
 extern void button_brain(int h );
 extern void bounce_brain(int h);
@@ -57,7 +71,5 @@ extern void text_brain(int h);
 extern void text_draw(int h);
 extern /*bool*/int transition(void);
 extern void up_cycle(void);
-
-extern Uint32 but_timer;
 
 #endif

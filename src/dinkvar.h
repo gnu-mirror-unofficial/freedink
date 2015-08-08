@@ -32,17 +32,6 @@ extern int flife;
 extern int flub_mode;
 extern int show_inventory;
 
-/* show_bmp() currently ran */
-struct show_bmp
-{
-	/*bool*/int active;
-	/*bool*/int showdot;
-	int reserved;
-	int script;
-	int stime;
-	int picframe;
-};
-extern struct show_bmp showb;
 extern int push_active;
 extern int move_screen;
 extern int move_counter;
@@ -61,7 +50,7 @@ extern int cur_map;
 extern void check_seq_status(int h);
 extern void draw_sprite_game(SDL_Surface *GFX_lpdest, int h);
 
-extern void show_bmp(char name[80], int showdot, int script);
+extern void show_bmp(char name[80], int script);
 extern int hurt_thing(int h, int damage, int special);
 extern void check_sprite_status_full(int sprite_no);
 

@@ -72,6 +72,8 @@ Uint32 but_timer = 0;
 /* Fadedown/fadeup counter */
 static int process_count = 0;
 
+struct show_bmp showb;
+
 /* Get sprite #h, grab its text and display it */
 void text_draw(int h)
 {

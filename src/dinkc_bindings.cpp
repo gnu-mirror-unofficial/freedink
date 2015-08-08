@@ -614,7 +614,12 @@ void dc_show_bmp(int script, int* yield, int* preturnint, char* bmp_file, int sh
 {
   log_info("showing BMP");
   wait4b.active = /*false*/0;
-  show_bmp(bmp_file, show_map_dot, script);
+  show_bmp(bmp_file, script);
+  
+  showb.active = /*true*/1;
+  showb.showdot = show_map_dot;
+  showb.script = script;
+
   *yield = 1;
 }
 
