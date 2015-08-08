@@ -42,7 +42,6 @@
 #include "game_engine.h"
 #include "live_screen.h"
 #include "dinkini.h"
-#include "dinkvar.h"
 #include "EditorMap.h"
 #include "hardness_tiles.h"
 #include "gfx.h"

@@ -33,7 +33,7 @@
 #include "live_screen.h"
 #include "EditorMap.h" /* map */
 #include "live_screen.h" /* screen_hitmap */
-#include "dinkvar.h"  /* hmap, cur_ed_screen */
+#include "dinkini.h" /* check_seq_status, hmap, cur_ed_screen */
 #include "freedink.h"  /* add_time_to_saved_game */
 #include "input.h"
 #include "log.h"
@@ -41,11 +41,14 @@
 #include "bgm.h"
 #include "gfx.h"
 #include "gfx_sprites.h"
+#include "hardness_tiles.h"
 #include "savegame.h"
 #include "meminfo.h"
 #include "dinkc.h"
 #include "dinkc_bindings.h"
 #include "app.h"
+
+#include "dinkvar.h"
 
 /* Engine variables directly mapped with DinkC variables */
 int *pvision, *plife, *presult, *pspeed, *ptiming, *plifemax,

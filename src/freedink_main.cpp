@@ -28,7 +28,6 @@
 #include "app.h"
 #include "bgm.h"
 #include "dinkc_console.h"
-#include "dinkvar.h"
 #include "game_engine.h"
 #include "live_sprites_manager.h"
 #include "editor_screen.h"

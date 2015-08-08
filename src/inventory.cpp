@@ -28,6 +28,7 @@
 #include "dinkvar.h" /* draw_status_all */
 #include "gfx.h" /* GFX_lpDDSBack */
 #include "gfx_sprites.h" /* draw_status_all, GFX_k */
+#include "dinkini.h" /* check_seq_status */
 #include "input.h"
 #include "sfx.h"
 #include "talk.h" /* talk.active */

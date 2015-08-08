@@ -116,5 +116,7 @@ struct sp
 };
 
 extern int getpic(int sprite_no);
+extern void check_sprite_status_full(int sprite_no);
+extern void check_sprite_status(int h);
 
 #endif

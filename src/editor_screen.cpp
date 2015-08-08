@@ -27,7 +27,6 @@
 
 #include <string.h>
 
-#include "dinkvar.h"
 #include "editor_screen.h"
 #include "live_screen.h" /* cur_ed_screen */
 #include "hardness_tiles.h"

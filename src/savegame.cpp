@@ -27,7 +27,6 @@
 
 #include <string.h>
 
-#include "dinkvar.h"
 #include "game_engine.h"
 #include "live_sprites_manager.h"
 #include "EditorMap.h"
@@ -39,6 +38,8 @@
 #include "input.h"
 #include "gfx.h"
 #include "gfx_palette.h"
+
+#include "dinkvar.h"
 
 /*bool*/int add_time_to_saved_game(int num)
 {

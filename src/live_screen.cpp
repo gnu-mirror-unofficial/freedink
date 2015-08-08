@@ -28,7 +28,7 @@
 #include "hardness_tiles.h"
 #include "gfx_sprites.h"
 #include "log.h"
-#include "dinkvar.h"
+#include "dinkini.h"
 
 /* base editor screen */
 struct editor_screen cur_ed_screen;

@@ -34,7 +34,6 @@
 #include <string.h>
 #include <strings.h> /* strcasecmp */
 
-#include "dinkvar.h"
 #include "bgm.h"
 #include "io_util.h"
 #include "str_util.h"
@@ -42,6 +41,7 @@
 #include "log.h"
 #include "sfx.h"
 #include "EditorMap.h"
+#include "dinkvar.h" /* pplayer_map */
 
 /* Current background music (not cd) */
 static Mix_Music *music_data = NULL;

@@ -14,11 +14,12 @@
 #include "live_sprites_manager.h"
 #include "sfx.h"
 #include "talk.h"
-#include "dinkvar.h"
 #include "gfx_sprites.h"
 #include "text.h"
 #include "bgm.h"
 #include "live_screen.h"
+
+#include "dinkvar.h" /* flub_mode, show_inventory */
 
 /**
  * Check whether planned new position (x1,y1) is solid

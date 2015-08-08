@@ -37,8 +37,12 @@ enum idata_type { IDATA_EMPTY=0, IDATA_SPRITE_INFO, IDATA_FRAME_SPECIAL,
 
 extern void dinkini_init(void);
 extern void dinkini_quit(void);
-extern void make_idata(enum idata_type type, int myseq, int myframe, int xoffset, int yoffset, rect crect);
-extern void program_idata(void);
 extern void load_batch(bool playmidi);
+
+extern void figure_out(char* line);
+
+extern void check_base(int base);
+extern void check_seq_status(int h);
+extern void check_frame_status(int h, int frame);
 
 #endif

@@ -42,7 +42,6 @@
 #include "live_screen.h"
 #include "EditorMap.h"
 #include "editor_screen.h"
-#include "dinkvar.h"
 #include "dinkc.h"
 #include "freedink.h"
 #include "gfx.h"
@@ -50,6 +49,7 @@
 #include "gfx_palette.h"
 #include "gfx_sprites.h"
 #include "gfx_tiles.h"
+#include "dinkini.h"
 #include "bgm.h"
 #include "sfx.h"
 #include "input.h"
@@ -66,6 +66,7 @@
 #include "savegame.h"
 #include "brain.h"
 
+#include "dinkvar.h"
 
 int change_sprite(int h, int val, int *change)
 {

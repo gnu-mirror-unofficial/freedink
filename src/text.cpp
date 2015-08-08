@@ -23,11 +23,11 @@
 
 #include "text.h"
 
-#include "dinkvar.h"
 #include "game_engine.h"
 #include "live_sprites_manager.h"
 #include "gfx.h"
 #include "gfx_sprites.h"
+#include "dinkini.h" /* check_seq_status */
 #include "talk.h"
 #include "log.h"
 

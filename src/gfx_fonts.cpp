@@ -36,7 +36,6 @@
 #include <errno.h>
 #include "SDL.h"
 #include "SDL_ttf.h"
-#include "dinkvar.h"
 #include "gfx.h"
 #include "resources.h"
 #include "paths.h"

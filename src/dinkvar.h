@@ -40,24 +40,10 @@ extern /*bool*/int transition_in_progress;
 
 extern int *pplayer_map;
 
-/* Startup */
-extern void pre_figure_out(char* line, bool playmidi);
-extern void figure_out(char* line);
-
-extern int draw_screen_tiny;
 extern int cur_map;
 
-extern void check_seq_status(int h);
 extern void draw_sprite_game(SDL_Surface *GFX_lpdest, int h);
 
 extern int hurt_thing(int h, int damage, int special);
-extern void check_sprite_status_full(int sprite_no);
-
-/*
- * Editor
- */
-
-extern void check_sprite_status(int h);
-extern void check_frame_status(int h, int frame);
 
 #endif

@@ -42,9 +42,10 @@
 #include "live_sprites_manager.h"
 #include "EditorMap.h"
 #include "editor_screen.h"
-#include "dinkvar.h"
 #include "freedink.h"
 #include "paths.h"
+
+#include "dinkvar.h" /* pplayer_map */
 
 /* test headers */
 void dc_fade_down(int script, int* yield, int* preturnint);

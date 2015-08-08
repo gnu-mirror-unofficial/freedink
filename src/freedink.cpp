@@ -56,10 +56,11 @@
 #include "live_screen.h"
 #include "EditorMap.h"
 #include "meminfo.h"
-#include "dinkvar.h"
 #include "dinkc_console.h"
 #include "talk.h"
 #include "text.h"
+
+#include "dinkvar.h"
 
 void move(int u, int amount, char kind,  char kindy);
 void draw_box(rect box, int color);

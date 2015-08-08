@@ -32,7 +32,6 @@
 #include "SDL_image.h"
 
 #include "gfx.h"
-#include "dinkvar.h"
 
 #include "fastfile.h"
 #include "io_util.h"

@@ -26,6 +26,8 @@
 #include <config.h>
 #endif
 
+#include "update_frame.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -36,7 +38,6 @@
 #include "SDL2_framerate.h"
 
 #include "app.h"
-#include "dinkvar.h"
 #include "game_engine.h"
 #include "live_sprites_manager.h"
 #include "EditorMap.h"
@@ -49,6 +50,7 @@
 #include "gfx_fonts.h"
 #include "gfx_sprites.h"
 #include "gfx_tiles.h"
+#include "dinkini.h"
 #include "bgm.h"
 #include "log.h"
 #include "rect.h"
@@ -59,7 +61,7 @@
 #include "talk.h"
 #include "status.h"
 
-#include "update_frame.h"
+#include "dinkvar.h"
 
 static Uint32 fps_lasttick = 0;
 static int frames = 0;

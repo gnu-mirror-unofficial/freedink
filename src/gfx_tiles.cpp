@@ -29,7 +29,6 @@
 #include <string.h>
 #include "game_engine.h"
 #include "live_screen.h" /* cur_ed_screen */
-#include "dinkvar.h"
 #include "gfx.h"
 #include "gfx_tiles.h"
 #include "io_util.h"

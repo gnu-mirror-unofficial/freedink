@@ -42,7 +42,6 @@
 #include "SDL2_framerate.h"
 
 #include "app.h"
-#include "dinkvar.h"
 #include "EditorMap.h"
 #include "hardness_tiles.h"
 #include "fastfile.h"
@@ -53,12 +52,15 @@
 #include "gfx_sprites.h"
 #include "gfx_tiles.h"
 #include "gfx_fonts.h"
+#include "dinkini.h" /* check_seq_status */
 #include "sfx.h"
 #include "input.h"
 #include "io_util.h"
 #include "resources.h"
 #include "paths.h"
 #include "log.h"
+
+#include "dinkvar.h" /* check_sprite_status, cur_map */
 
 //Dinkedit-only vars
 
@@ -111,6 +113,8 @@ EditorMap buffmap;
 /*bool*/int buf_mode = /*false*/0;
 static char buf_path[100];
 static int buf_map = 0;
+
+static int draw_screen_tiny = -1;
 
 /* Save x and y coordinates for mode 4, 5 and 6 */
 static int m4x,m4y,m5x,m5y,m6x,m6y,m5ax,m5ay;
