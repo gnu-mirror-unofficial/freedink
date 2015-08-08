@@ -25,6 +25,9 @@
 #include <config.h>
 #endif
 
+#include <gettext.h>
+#define _(String) gettext (String)
+
 /* #define WIN32_LEAN_AND_MEAN */
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,6 +45,7 @@
 #include "SDL2_framerate.h"
 
 #include "app.h"
+#include "AppFreeDinkedit.h"
 #include "EditorMap.h"
 #include "hardness_tiles.h"
 #include "fastfile.h"
@@ -1908,7 +1912,7 @@ void draw_hard_tile(int x1, int y1, int tile)
  * then flip the buffers.
  */
 unsigned long thisTickCount; /* FIXME: for process_animated_tiles, make it local */
-void updateFrame(void)
+void AppFreeDinkedit::logic(void)
 {
   //    static DWORD        lastTickCount[4] = {0,0,0,0};
   //    static int          currentFrame[3] = {0,0,0};
@@ -4888,11 +4892,16 @@ int load_editor_sounds()
 }
 
 
+AppFreeDinkedit::AppFreeDinkedit() {
+	description = _("Edit the Dink Smallwood game or one of its D-Mods.");
+	splash_path = "Tiles/esplash.bmp";
+}
+
 /*
  * doInit - do work required for every instance of the application:
  *                create the window, initialize data
  */
-static void freedinkedit_init(int /* unused */ version)
+void AppFreeDinkedit::init()
 {
   /** SETUP **/
   /* Manually setup basic sequences */
@@ -4982,8 +4991,9 @@ static void freedinkedit_init(int /* unused */ version)
   /* Relative mode with infinite out-of-screen scrolling */
   SDL_SetRelativeMouseMode(SDL_TRUE);
 }
+
 /* Global game shortcuts - just full-screen toggle actually */
-static void freedinkedit_input_global_shortcuts(SDL_Event* ev) {
+void freedinkedit_input_global_shortcuts(SDL_Event* ev) {
   if (ev->type != SDL_KEYDOWN)
     return;
   if (ev->key.repeat)
@@ -4995,7 +5005,7 @@ static void freedinkedit_input_global_shortcuts(SDL_Event* ev) {
     }
 }
 
-static void freedinkedit_input(SDL_Event* ev) {
+void AppFreeDinkedit::input(SDL_Event* ev) {
   if (ev->type == SDL_KEYUP
       && input_getscancodestate(ev->key.keysym.scancode) == SDL_PRESSED) {
     // always tell the game when the player releases a key
@@ -5017,8 +5027,6 @@ static void freedinkedit_input(SDL_Event* ev) {
     freedinkedit_update_cursor_position(ev);
 }
 
-static void freedinkedit_quit() {
-}
 
 /**
  * Bootstrap
@@ -5026,11 +5034,6 @@ static void freedinkedit_quit() {
 int main(int argc, char *argv[])
 {
   /* Initialize/setup */
-  dinkedit = true;
-  return app_start(argc, argv,
-		   "tiles/esplash.bmp",		   
-		   freedinkedit_init,
-		   freedinkedit_input,
-		   updateFrame,
-		   freedinkedit_quit);
+	AppFreeDinkedit freedinkedit;
+	return freedinkedit.main(argc, argv);
 }

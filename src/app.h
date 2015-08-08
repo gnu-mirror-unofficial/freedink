@@ -24,15 +24,31 @@
 #define _INIT_H
 
 #include "SDL.h"
+#include <string>
 
-extern bool dinkedit;
-extern int app_start(int argc, char *argv[],
-		     char* splash_path,
-		     void(*init_hook)(int version),
-		     void(*input_hook)(SDL_Event* ev),
-		     void(*logic_hook)(),
-		     void(*quit_hook)());
-extern void app_quit();
-extern void app_dinksmallwoodini(/*bool*/int playing);
+class App {
+public:
+	std::string description;
+	char* splash_path;
+
+	int g_b_no_write_ini; // -noini passed to command line?
+	int opt_version;
+	bool dinkini_playmidi;
+	bool windowed;
+
+	App();
+	~App();
+
+	virtual void init() = 0;
+	virtual void input(SDL_Event* ev) = 0;
+	virtual void logic() = 0;
+
+	int main(int argc, char* argv[]);
+	void loop();
+
+	void print_version();
+	void print_help(int argc, char *argv[]);
+	int check_arg(int argc, char *argv[]);
+};
 
 #endif

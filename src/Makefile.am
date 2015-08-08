@@ -47,20 +47,22 @@ if ANDROID
 endif
 
 bin_PROGRAMS = freedink freedinkedit
-freedink_SOURCES = $(COMMON_OBJS) freedink.cpp freedink.h		\
-	freedink_main.cpp update_frame.cpp update_frame.h brains.h	\
-	brain.cpp brain.h brain_bounce.cpp brain_button.cpp		\
-	brain_diagonal.cpp brain_duck.cpp brain_keyboard.cpp		\
-	brain_lateral.cpp brain_missile.cpp brain_mouse.cpp		\
-	brain_none.cpp brain_onetime.cpp brain_people.cpp		\
-	brain_pig.cpp brain_repeat.cpp brain_scale.cpp			\
-	brain_shadow.cpp brain_text.cpp dinkc_bindings.cpp		\
-	dinkc_bindings.h dinkc.cpp dinkc.h dinkc_console.cpp		\
-	dinkc_console.h game_engine.cpp game_engine.h game_state.cpp	\
-	game_state.h i18n.cpp i18n.h inventory.cpp inventory.h		\
-	meminfo.cpp meminfo.h savegame.cpp savegame.h status.cpp	\
-	status.h talk.cpp talk.h text.cpp text.h
-freedinkedit_SOURCES = $(COMMON_OBJS) freedinkedit.cpp
+freedink_SOURCES = $(COMMON_OBJS) AppFreeDink.cpp AppFreeDink.h		\
+	freedink.cpp freedink.h freedink_main.cpp update_frame.cpp	\
+	update_frame.h brains.h brain.cpp brain.h brain_bounce.cpp	\
+	brain_button.cpp brain_diagonal.cpp brain_duck.cpp		\
+	brain_keyboard.cpp brain_lateral.cpp brain_missile.cpp		\
+	brain_mouse.cpp brain_none.cpp brain_onetime.cpp		\
+	brain_people.cpp brain_pig.cpp brain_repeat.cpp			\
+	brain_scale.cpp brain_shadow.cpp brain_text.cpp			\
+	dinkc_bindings.cpp dinkc_bindings.h dinkc.cpp dinkc.h		\
+	dinkc_console.cpp dinkc_console.h game_engine.cpp		\
+	game_engine.h game_state.cpp game_state.h i18n.cpp i18n.h	\
+	inventory.cpp inventory.h meminfo.cpp meminfo.h savegame.cpp	\
+	savegame.h status.cpp status.h talk.cpp talk.h text.cpp		\
+	text.h
+freedinkedit_SOURCES = $(COMMON_OBJS) AppFreeDinkedit.h	\
+	freedinkedit.cpp
 nodist_freedink_SOURCES = $(WOERES)
 nodist_freedinkedit_SOURCES = $(WOERES)
 

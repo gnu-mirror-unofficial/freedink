@@ -46,7 +46,6 @@
 
 /* Is the screen depth more than 8bit? */
 int truecolor = 0;
-/*bool*/int windowed = /*false*/0;
 
 SDL_Surface *GFX_lpDDSBack = NULL; /* Backbuffer and link to physical
 				      screen*/
