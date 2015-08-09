@@ -75,7 +75,7 @@ struct sp
   Uint32 kill_timer;
   int script_num;
   char text[200];
-  int owner;
+  int owner; /* if text sprite, sprite that is saying it */
   int script;
   int sound;
   int callback;
