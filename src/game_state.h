@@ -66,10 +66,6 @@ struct player_info
   
   struct varman var[MAX_VARS];
   
-  BOOL_1BYTE push_active;
-  int push_dir;
-  unsigned int push_timer;
-  int last_talk;
   int mouse; /* vertical position of the mouse when selecting a dialog
 		option */
   int last_map; /* screen to show on the map */
@@ -77,12 +73,20 @@ struct player_info
   char palette[50];
   struct player_info_tile tile[GFX_TILES_NB_SETS+1];
   struct global_function func[100];
+
+  /* Variables that need not be saved */
+  BOOL_1BYTE push_active; /* player started maintaining direction against hard object */
+  int push_dir; /* pushing animation direction */
+  unsigned int push_timer; /* time the player started maintaining the direction */
+
+  int last_talk; /* script of last 'say_stop*' sprite */
 };
 extern struct player_info play;
 
 /* TODO: non-backed-up game state */
-extern int dinkspeed;
-extern int push_active; /* player is allowed to push */
+extern int dinkspeed; /* player speed, cf. dc_set_dink_speed */
+extern int push_active; /* player is allowed to push, cf. dc_push_active */
+extern unsigned int dink_base_push; /* base Dink push sequence, cf. set_dink_base_push */
 
 
 /* Engine variables directly mapped with DinkC variables */

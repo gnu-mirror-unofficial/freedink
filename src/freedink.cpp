@@ -249,7 +249,7 @@ int check_if_move_is_legal(int u)
     if (spr[u].move_nohard == 1)
       return(0);
 
-  if (u == 1 && in_this_base(spr[u].seq, dink_base_push))
+  if (u == 1 && in_this_base(spr[1].seq, dink_base_push))
     return(0);
 	
   int hardness = 0;

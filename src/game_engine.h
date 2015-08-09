@@ -79,8 +79,6 @@ extern int process_upcycle;
 extern unsigned long cycle_clock;
 extern int cycle_script;
 
-extern unsigned int dink_base_push;
-
 extern /*bool*/int screen_main_is_running;
 
 extern Uint32 thisTickCount;

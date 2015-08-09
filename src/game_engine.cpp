@@ -97,9 +97,6 @@ unsigned long cycle_clock = 0;
 /* What script to resume after fade: */
 int cycle_script = 0;
 
-/* Base for Dink's push sequences */
-unsigned int dink_base_push = 310;
-
 /* Engine is currently executing a screen's main() - display "Please
    Wait" when loading graphics and postpone other scripts */
 /*bool*/int screen_main_is_running = /*false*/0;
