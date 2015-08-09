@@ -1213,29 +1213,3 @@ void process_show_bmp( void )
       abort_this_flip = /*true*/1;
     }
 }
-
-void drawscreenlock( void )
-{
-/*   HRESULT     ddrval; */
-  
-/*  loop: */
-  //draw the screenlock icon
-/*   ddrval = lpDDSBack->BltFast(0, 0, k[seq[423].frame[9]].k, */
-/* 			      &k[seq[423].frame[9]].box  , DDBLTFAST_NOCOLORKEY  ); */
-/*   if (ddrval == DDERR_WASSTILLDRAWING ) goto loop; */
-  //if (ddrval != DD_OK) dderror(ddrval);
-  // GFX
-  gfx_blit_nocolorkey(GFX_k[seq[423].frame[9]].k, NULL, GFX_lpDDSBack, NULL);
-  
-/*  loop2: */
-  //draw the screenlock icon
-/*   ddrval = lpDDSBack->BltFast(620, 0, k[seq[423].frame[10]].k, */
-/* 			      &k[seq[423].frame[10]].box  , DDBLTFAST_NOCOLORKEY  ); */
-/*   if (ddrval == DDERR_WASSTILLDRAWING ) goto loop2; */
-  // if (ddrval != DD_OK) dderror(ddrval);
-  // GFX
-  {
-    SDL_Rect dst = {620, 0};
-    gfx_blit_nocolorkey(GFX_k[seq[423].frame[10]].k, NULL, GFX_lpDDSBack, &dst);
-  }
-}

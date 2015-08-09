@@ -391,7 +391,7 @@ void draw_mlevel(int percent)
 }
 
 
-/* Draw the status bar and the magic jauge */
+/* Draw screen lateral bars, the status bar and the magic jauge */
 void draw_status_all(void)
 {
 /*   RECT rcRect; */
@@ -449,6 +449,16 @@ void draw_status_all(void)
   if (*pmagic_cost > 0 && *pmagic_level > 0)
     draw_mlevel(*pmagic_level * 100 / *pmagic_cost);
 }
+
+/**
+ * Draw screen lateral bar, with screenlock skin
+ */
+void drawscreenlock() {
+	gfx_blit_nocolorkey(GFX_k[seq[423].frame[9]].k, NULL, GFX_lpDDSBack, NULL);
+    SDL_Rect dst = {620, 0};
+    gfx_blit_nocolorkey(GFX_k[seq[423].frame[10]].k, NULL, GFX_lpDDSBack, &dst);
+}
+
 
 void update_status_all(void)
 {

@@ -24,6 +24,7 @@
 #define _STATUS_H
 
 extern void draw_status_all();
+extern void drawscreenlock();
 extern void update_status_all();
 
 extern int flife;
