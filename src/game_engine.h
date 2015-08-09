@@ -44,7 +44,6 @@ struct attackinfo_struct
 };
 extern struct attackinfo_struct bow;
 
-extern int last_sprite_created;
 extern int walk_off_screen;
 
 struct wait_for_button
