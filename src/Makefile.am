@@ -119,7 +119,8 @@ endif
 if HAVE_TESTS
 check_PROGRAMS = test_str_util test_io_util TestEditorMap	\
 	test_editor_screen test_dinkini test_dinkc		\
-	test_dinkc_bindings test_integration
+	test_dinkc_bindings test_live_sprites_manager		\
+	test_integration
 .cxx.cpp:
 	$(CXXTESTGEN) --error-printer --include test_sdl_workaround.h -o $@ $<
 EXTRA_DIST += test_sdl_workaround.h
@@ -169,6 +170,8 @@ test_dinkc_bindings_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	meminfo.h savegame.cpp savegame.h status.cpp status.h		\
 	talk.cpp talk.h text.cpp text.h update_frame.cpp		\
 	test_dinkc_bindings.cpp
+test_live_sprites_manager_SOURCES = live_sprites_manager.cpp rect.cpp	\
+	test_live_sprites_manager.cpp
 test_integration_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	brain_bounce.cpp brain_button.cpp brain_diagonal.cpp		\
 	brain_duck.cpp brain_keyboard.cpp brain_lateral.cpp		\
