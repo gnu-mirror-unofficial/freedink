@@ -231,17 +231,12 @@ void lsm_kill_all_nonlive_sprites() {
 	while (kill_highest_nonlive_sprite());
 }
 
-void get_last_sprite(void)
-{
-  int i;
-  for (i = MAX_SPRITES_AT_ONCE - 1; i > 2; i--)
-    {
-      if (spr[i].active)
-	{
-	  last_sprite_created = i;
-	  //   Msg("last sprite created is %d.", i);
-	  return;
-	}
+void get_last_sprite() {
+	for (int i = MAX_SPRITES_AT_ONCE - 1; i > 2; i--) {
+		if (spr[i].active) {
+			last_sprite_created = i;
+			return;
+		}
     }
 }
 
