@@ -28,6 +28,11 @@
 	return(/*false*/0);
 }
 
+void kill_sprite_all (int sprite) {
+	spr[sprite].active = /*false*/0;
+	kill_text_owned_by(sprite);
+	kill_scripts_owned_by(sprite);
+}
 
 void duck_brain(int h)
 {

@@ -423,18 +423,6 @@ int did_player_cross_screen()
   return ret;
 }
 
-/**
- * TODO: move me to live_sprites_manager.cpp
- * Note: depends on 'kill_scripts_owned_by' (dinkc.cpp, non-dinkedit)
- */
-void kill_sprite_all (int sprite)
-{
-        spr[sprite].active = /*false*/0;
-
-        kill_text_owned_by(sprite);
-        kill_scripts_owned_by(sprite);
-}
-
 /*bool*/int run_through_tag_list_talk(int h)
 {
 	rect box;
