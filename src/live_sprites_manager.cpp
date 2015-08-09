@@ -200,43 +200,35 @@ void random_blood(int mx, int my, int sprite)
 
         }
 
-static /*bool*/int kill_last_sprite(void)
-{
-  int found = 0;
-  /*bool*/int nosetlast = /*false*/0;
-  int k;
-  for (k=1; k < MAX_SPRITES_AT_ONCE; k++ )
-    {
-      if (spr[k].active)
-        {
-          if (spr[k].live)
-            {
-              nosetlast = /*true*/1;
-            }
-          else
-            {
-              found = k;
-            }
-        }
-    }
-
-  if (found > 1)
-    {
-      spr[found].active = /*FALSE*/0;
-      if (nosetlast == /*false*/0)
-	last_sprite_created = found - 1;
-      return(/*true*/1);
-    }
-
-  //we didn't kill any sprites, only 1 remains
-  return(/*false*/0);
+static bool kill_highest_nonlive_sprite() {
+	int highest_sprite = 0;
+	bool setlast = true;
+	
+	for (int k = 1; k < MAX_SPRITES_AT_ONCE; k++) {
+		if (spr[k].active) {
+			if (spr[k].live)
+				setlast = false;
+			else
+				highest_sprite = k;
+		}
+	}
+	
+	if (highest_sprite > 1) {
+		spr[highest_sprite].active = /*FALSE*/0;
+		if (setlast)
+			last_sprite_created = highest_sprite - 1;
+		return true;
+	}
+	
+	//we didn't kill any sprites, only 1 remains
+	return false;
 }
 
 /**
  * Mark all sprites as inactive except for 'live' sprites nor spr#1
  */
 void lsm_kill_all_nonlive_sprites() {
-	while (kill_last_sprite());
+	while (kill_highest_nonlive_sprite());
 }
 
 void get_last_sprite(void)
