@@ -34,3 +34,6 @@ gnulib/lib
 TAGS
 # gprof
 gmon.out
+# Eclipse
+.project
+.cproject
