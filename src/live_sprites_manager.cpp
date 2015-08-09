@@ -33,6 +33,11 @@
 struct sp spr[MAX_SPRITES_AT_ONCE]; //max sprite control systems at once
 int last_sprite_created;
 
+void live_sprites_manager_init() {
+  memset(&spr, 0, sizeof(spr));
+  last_sprite_created = 0;
+}
+
 int add_sprite(int x1, int y, int brain,int pseq, int pframe )
 {
   int x;
@@ -301,9 +306,4 @@ int find_sprite(int editor_sprite)
     if (spr[k].sp_index == editor_sprite)
       return k;
   return 0;
-}
-
-
-void live_sprites_manager_init() {
-  memset(&spr, 0, sizeof(spr));
 }

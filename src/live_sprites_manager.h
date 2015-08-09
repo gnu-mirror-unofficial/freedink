@@ -30,6 +30,8 @@
 extern struct sp spr[];
 extern int last_sprite_created;
 
+extern void live_sprites_manager_init();
+
 extern int add_sprite(int x1, int y, int brain,int pseq, int pframe );
 extern int add_sprite_dumb(int x1, int y, int brain,int pseq, int pframe,int size);
 extern void random_blood(int mx, int my, int sprite);
@@ -41,7 +43,5 @@ extern /*bool*/int text_owned_by(int sprite);
 extern /*bool*/int kill_last_sprite(void);
 extern void get_last_sprite(void);
 extern int find_sprite(int editor_sprite);
-
-extern void live_sprites_manager_init();
 
 #endif
