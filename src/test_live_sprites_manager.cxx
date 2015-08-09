@@ -88,7 +88,7 @@ public:
 		
 		lsm_kill_all_nonlive_sprites();
 		TS_ASSERT_EQUALS(spr[4].active, 0);
-		TS_ASSERT_EQUALS(last_sprite_created, 4);
+		TS_ASSERT_EQUALS(last_sprite_created, 4); /* should be 3 */
 	}
 	void test_add_sprite_keeps_sprite_created_inconsistent() {
 		TS_ASSERT_EQUALS(add_sprite(0, 0, 0, 0, 0), 1);
@@ -99,11 +99,11 @@ public:
 		
 		lsm_kill_all_nonlive_sprites();
 		TS_ASSERT_EQUALS(spr[4].active, 0);
-		TS_ASSERT_EQUALS(last_sprite_created, 4);
+		TS_ASSERT_EQUALS(last_sprite_created, 4); /* should be 3 */
 		
 		lsm_kill_all_nonlive_sprites();
 		TS_ASSERT_EQUALS(spr[3].active, 0);
-		TS_ASSERT_EQUALS(last_sprite_created, 4);
+		TS_ASSERT_EQUALS(last_sprite_created, 4); /* should be 2 */
 		
 		TS_ASSERT_EQUALS(add_sprite(0, 0, 0, 0, 0), 3);
 		TS_ASSERT_EQUALS(spr[3].active, 1);
@@ -143,7 +143,7 @@ public:
 		get_last_sprite();
 		TS_ASSERT_EQUALS(last_sprite_created, 1);
 	}
-	void test_get_last_sprite_makes_last_sprite_created_consistent() {
+	void test_get_last_sprite_makes_last_sprite_created_consistent_if_gt_2() {
 		TS_ASSERT_EQUALS(add_sprite(0, 0, 0, 0, 0), 1);
 		TS_ASSERT_EQUALS(add_sprite(0, 0, 0, 0, 0), 2);
 		spr[2].live = 1;
@@ -158,5 +158,10 @@ public:
 
 		get_last_sprite();
 		TS_ASSERT_EQUALS(last_sprite_created, 3);
+
+		/* Stops at 3 though */
+		lsm_kill_all_nonlive_sprites();
+		TS_ASSERT_EQUALS(spr[3].active, 0);
+		TS_ASSERT_EQUALS(last_sprite_created, 3); /* should be 2 */
 	}
 };
