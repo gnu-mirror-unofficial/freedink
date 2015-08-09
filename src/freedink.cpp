@@ -221,21 +221,6 @@ void text_draw(int h)
 }
 
 
-void get_last_sprite(void)
-{
-  int i;
-  for (i = MAX_SPRITES_AT_ONCE - 1; i > 2; i--)
-    {
-      if (spr[i].active)
-	{
-	  last_sprite_created = i;
-	  //   Msg("last sprite created is %d.", i);
-	  return;
-	}
-    }
-}
-
-
 
 /**
  * Check if the sprite can pass or should be blocked

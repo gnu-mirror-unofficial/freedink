@@ -229,6 +229,21 @@ void random_blood(int mx, int my, int sprite)
 }
 
 
+void get_last_sprite(void)
+{
+  int i;
+  for (i = MAX_SPRITES_AT_ONCE - 1; i > 2; i--)
+    {
+      if (spr[i].active)
+	{
+	  last_sprite_created = i;
+	  //   Msg("last sprite created is %d.", i);
+	  return;
+	}
+    }
+}
+
+
 void kill_text_owned_by(int sprite)
 {
   int i;

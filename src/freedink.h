@@ -43,7 +43,6 @@ extern Uint32 but_timer;
 extern int check_if_move_is_legal(int u);
 extern int did_player_cross_screen();
 extern void drawscreenlock( void );
-extern void get_last_sprite(void);
 extern void process_show_bmp( void );
 extern void process_warp_man(void);
 
