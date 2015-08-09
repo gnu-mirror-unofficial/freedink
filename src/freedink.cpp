@@ -70,7 +70,6 @@ struct show_bmp showb;
 /* Get sprite #h, grab its text and display it */
 void text_draw(int h)
 {
-	
 	char crap[200];
 	char *cr;
 	rect rcRect;
@@ -110,36 +109,27 @@ void text_draw(int h)
 			cr = &cr[2];
 		}
 		
-		//Msg("Final is %s.",cr);
-		if (spr[h].owner == 1000)
-		{
-			rect_set(&rcRect,spr[h].x,spr[h].y,spr[h].x+620,spr[h].y+400);
-		} else
-		{
-			
-			rect_set(&rcRect,spr[h].x,spr[h].y,spr[h].x+150,spr[h].y+150);
-			
-			if (spr[h].x+150 > 620)
+		// Set size
+		if (spr[h].owner == 1000) {
+			rect_set(&rcRect, spr[h].x, spr[h].y,
+					 spr[h].x + 620, spr[h].y + 400);
+		} else {
+			rect_set(&rcRect, spr[h].x, spr[h].y,
+					 spr[h].x + 150, spr[h].y + 150);
+			if ((spr[h].x + 150) > 620)
 				rect_offset(&rcRect, ((spr[h].x+150)-620) - (((spr[h].x+150)-620) * 2), 0);
-			
-			
-			
 		}
-		
-	} else
-	{
-		
-		
+	} else {
+		// Display damage points
 		sprintf(crap, "%d", spr[h].damage);
 		cr = &crap[0];
 		if (spr[h].brain_parm == 5000)
 			color = 14;
 		
-		
-		if (spr[h].y < 0) spr[h].y = 0;
-		rect_set(&rcRect,spr[h].x,spr[h].y,spr[h].x+50 ,spr[h].y+50);
-		
-		
+		if (spr[h].y < 0)
+			spr[h].y = 0;
+		rect_set(&rcRect, spr[h].x, spr[h].y,
+				 spr[h].x + 50, spr[h].y + 50);
 	}       
 
 
@@ -153,7 +143,6 @@ void text_draw(int h)
 	FONTS_SetTextColor(8, 14, 21);
 	   if (spr[h].owner == 1200)
 	   {
-	     printf("1200 says %s\n", cr);
 		   //this text has no sprite, and doesn't want to be centered.
 /* 		   DrawText(hdc,cr,strlen(cr),&rcRect,DT_WORDBREAK); */
 		   // FONTS
