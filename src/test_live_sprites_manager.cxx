@@ -164,4 +164,14 @@ public:
 		TS_ASSERT_EQUALS(spr[3].active, 0);
 		TS_ASSERT_EQUALS(last_sprite_created, 3); /* should be 2 */
 	}
+
+	void test_lsm_isValidSprite() {
+		TS_ASSERT_EQUALS(lsm_isValidSprite(0), false);
+		TS_ASSERT_EQUALS(lsm_isValidSprite(300), false);
+		TS_ASSERT_EQUALS(lsm_isValidSprite(1000), false);
+		TS_ASSERT_EQUALS(lsm_isValidSprite(1200), false);
+		TS_ASSERT_EQUALS(lsm_isValidSprite(1), true);
+		TS_ASSERT_EQUALS(lsm_isValidSprite(100), true);
+		TS_ASSERT_EQUALS(lsm_isValidSprite(299), true);
+	}
 };

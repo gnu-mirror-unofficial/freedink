@@ -38,6 +38,10 @@ void live_sprites_manager_init() {
   last_sprite_created = 0;
 }
 
+bool lsm_isValidSprite(int sprite) {
+	return (sprite > 0 && sprite < MAX_SPRITES_AT_ONCE);
+}
+
 int add_sprite(int x1, int y, int brain,int pseq, int pframe )
 {
   int x;
@@ -299,3 +303,4 @@ int find_sprite(int editor_sprite)
       return k;
   return 0;
 }
+
