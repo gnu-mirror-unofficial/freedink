@@ -686,7 +686,7 @@ void updateFrame()
 	
 	if (transition_in_progress) 
 	  {
-	    if (transition()) /* transition not finished */
+	    if (transition(fps_final)) /* transition not finished */
 	      goto flip;
 	    else
 	      return;

@@ -37,6 +37,9 @@ extern int playl;
 extern int playx;
 extern int playy;
 
+extern /*bool*/int transition_in_progress;
+
+
 extern void live_screen_init();
 extern void add_hardness(int sprite, int num);
 extern unsigned char get_hard(int x1, int y1, int screenlock);
@@ -47,5 +50,7 @@ extern void fill_hardxy(rect box);
 extern void screen_rank_game_sprites(int* rank);
 /*bool*/int get_box (int h, rect * box_scaled, rect * box_real, bool skip_screen_clipping);
 extern void draw_sprite_game(SDL_Surface *GFX_lpdest, int h);
+extern void grab_trick(int dir);
+extern bool transition(int fps_final);
 
 #endif

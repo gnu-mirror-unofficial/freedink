@@ -41,6 +41,12 @@ int playx = 620;
 int playl = 20;
 int playy = 400;
 
+/* Screen transition */
+static int move_screen = 0;
+static int move_counter = 0;
+/*bool*/int transition_in_progress = /*false*/0;
+
+
 void live_screen_init() {
   memset(&screen_hitmap, 0, sizeof(screen_hitmap));
 }
@@ -415,4 +421,166 @@ void draw_sprite_game(SDL_Surface *GFX_lpdest, int h)
 	  check_seq_status(spr[h].pseq);
     }
   }
+}
+
+
+
+
+
+/**
+ * Screen transition with scrolling effect.
+ * Returns 0 when transition is finished.
+ */
+bool transition(int fps_final)
+{
+	SDL_Rect src, dst;
+	
+	//we need to do our fancy screen transition
+	int dumb = fps_final * 2;
+	
+	move_counter += dumb;
+	
+	
+	if (move_screen == 4) {
+		if (move_counter > 598)
+			move_counter = 598;
+		
+		src.x = 0;
+		src.y = 0;
+		src.w = 600 - move_counter;
+		src.h = 400;
+		dst.x = 20 + move_counter;
+		dst.y = 0;
+		SDL_BlitSurface(GFX_lpDDSTrick, &src, GFX_lpDDSBack, &dst);
+		
+		src.x = 600 - move_counter;
+		src.y = 0;
+		src.w = move_counter;
+		src.h = 400;
+		dst.x = 20;
+		dst.y = 0;
+		SDL_BlitSurface(GFX_lpDDSTrick2, &src, GFX_lpDDSBack, &dst);
+		
+		if (move_counter >= 595) {
+			transition_in_progress = 0;
+			move_screen = 0;
+			move_counter = 0;
+			//draw_map();
+			return false;
+		}
+		
+		return true;
+    }
+	
+  
+	if (move_screen == 6) {
+		if (move_counter > 598)
+			move_counter = 598;
+		
+		src.x = move_counter;
+		src.y = 0;
+		src.w = 600 - move_counter;
+		src.h = 400;
+		dst.x = 20;
+		dst.y = 0;
+		SDL_BlitSurface(GFX_lpDDSTrick, &src, GFX_lpDDSBack, &dst);
+		
+		src.x = 0;
+		src.y = 0;
+		src.w = move_counter;
+		src.h = 400;
+		dst.x = 620 - move_counter;
+		dst.y = 0;
+		SDL_BlitSurface(GFX_lpDDSTrick2, &src, GFX_lpDDSBack, &dst);
+		
+		if (move_counter >= 595) {
+			transition_in_progress = 0;
+			move_screen = 0;
+			move_counter = 0;
+			//draw_map();
+			return false;
+		}
+		
+		return true;
+    }
+	
+	
+	if (move_screen == 8) {
+		if (move_counter > 398)
+			move_counter = 398;
+		
+		src.x = 0;
+		src.y = 0;
+		src.w = 600;
+		src.h = 400 - move_counter;
+		dst.x = 20;
+		dst.y = move_counter;
+		SDL_BlitSurface(GFX_lpDDSTrick, &src, GFX_lpDDSBack, &dst);
+		
+		src.x = 0;
+		src.y = 400 - move_counter;
+		src.w = 600;
+		src.h = move_counter;
+		dst.x = 20;
+		dst.y = 0;
+		SDL_BlitSurface(GFX_lpDDSTrick2, &src, GFX_lpDDSBack, &dst);
+		
+		if (move_counter >= 398) {
+			transition_in_progress = 0;
+			move_screen = 0;
+			move_counter = 0;
+			//draw_map();
+			return false;
+		}
+		
+		return true;
+    }
+	
+	
+	if (move_screen == 2) {
+		if (move_counter > 398)
+			move_counter = 398;
+		
+		src.x = 0;
+		src.y = move_counter;
+		src.w = 600;
+		src.h = 400 - move_counter;
+		dst.x = 20;
+		dst.y = 0;
+		SDL_BlitSurface(GFX_lpDDSTrick, &src, GFX_lpDDSBack, &dst);
+		
+		src.x = 0;
+		src.y = 0;
+		src.w = 600;
+		src.h = move_counter;
+		dst.x = 20;
+		dst.y = 400 - move_counter;
+		SDL_BlitSurface(GFX_lpDDSTrick2, &src, GFX_lpDDSBack, &dst);
+		
+		if (move_counter >= 398) {
+			transition_in_progress = 0;
+			move_screen = 0;
+			move_counter = 0;
+			//draw_map();
+			return false;
+		}
+		
+		return true;
+    }
+	
+	return false;
+}
+
+/* Capture the current's backbuffer game zone for screen transition */
+void grab_trick(int dir) {
+	SDL_Rect src, dst;
+	src.x = playl;
+	src.y = 0;
+	src.w = 620 - playl;
+	src.h = 400;
+	dst.x = dst.y = 0;
+	SDL_BlitSurface(GFX_lpDDSBack, &src, GFX_lpDDSTrick, &dst);
+	
+	move_screen = dir;
+	move_counter = 0;
 }

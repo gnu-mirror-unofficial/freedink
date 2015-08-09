@@ -52,7 +52,6 @@ extern void run_through_touch_damage_list(int h);
 
 extern int special_block(int block);
 extern void text_draw(int h);
-extern /*bool*/int transition(void);
 extern void CyclePalette();
 extern void up_cycle(void);
 

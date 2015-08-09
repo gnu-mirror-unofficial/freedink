@@ -56,14 +56,6 @@ int walk_off_screen = /*false*/0;
 int show_inventory = 0; // display inventory?
 int flub_mode = -500;
 
-int move_screen = 0;
-int move_counter = 0;
-
-
-/* Screen transition */
-/*bool*/int transition_in_progress = /*false*/0;
-
-
 int stop_entire_game;
 
 int screenlock = 0;

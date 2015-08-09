@@ -91,9 +91,6 @@ extern int mode;
 extern int flub_mode;
 extern int show_inventory;
 
-extern int move_screen;
-extern int move_counter;
-extern /*bool*/int transition_in_progress;
 
 extern void game_init(int version);
 extern void game_quit();
