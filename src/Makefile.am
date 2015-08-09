@@ -120,7 +120,7 @@ if HAVE_TESTS
 check_PROGRAMS = test_str_util test_io_util TestEditorMap	\
 	test_editor_screen test_dinkini test_dinkc		\
 	test_dinkc_bindings test_live_sprites_manager		\
-	test_integration
+	test_brain_text test_integration
 .cxx.cpp:
 	$(CXXTESTGEN) --error-printer --include test_sdl_workaround.h -o $@ $<
 EXTRA_DIST += test_sdl_workaround.h
@@ -139,6 +139,11 @@ TestEditorMap_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	meminfo.h savegame.cpp savegame.h status.cpp status.h		\
 	talk.cpp talk.h text.cpp text.h update_frame.cpp		\
 	TestEditorMap.cpp
+test_dinkini_SOURCES = dinkini.cpp rect.cpp gfx_sprites.cpp		\
+	fastfile.cpp str_util.cpp io_util.cpp msgbox.cpp paths.cpp	\
+	log.cpp test_dinkini.cpp
+test_dinkc_SOURCES = dinkc.cpp str_util.cpp paths.cpp io_util.cpp	\
+	msgbox.cpp i18n.cpp test_dinkc.cpp
 test_editor_screen_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	brain_bounce.cpp brain_button.cpp brain_diagonal.cpp		\
 	brain_duck.cpp brain_keyboard.cpp brain_lateral.cpp		\
@@ -152,11 +157,6 @@ test_editor_screen_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	meminfo.h savegame.cpp savegame.h status.cpp status.h		\
 	talk.cpp talk.h text.cpp text.h update_frame.cpp		\
 	test_editor_screen.cpp
-test_dinkini_SOURCES = dinkini.cpp rect.cpp gfx_sprites.cpp		\
-	fastfile.cpp str_util.cpp io_util.cpp msgbox.cpp paths.cpp	\
-	log.cpp test_dinkini.cpp
-test_dinkc_SOURCES = dinkc.cpp str_util.cpp paths.cpp io_util.cpp	\
-	msgbox.cpp i18n.cpp test_dinkc.cpp
 test_dinkc_bindings_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	brain_bounce.cpp brain_button.cpp brain_diagonal.cpp		\
 	brain_duck.cpp brain_keyboard.cpp brain_lateral.cpp		\
@@ -172,6 +172,19 @@ test_dinkc_bindings_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	test_dinkc_bindings.cpp
 test_live_sprites_manager_SOURCES = live_sprites_manager.cpp rect.cpp	\
 	test_live_sprites_manager.cpp
+test_brain_text_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
+	brain_bounce.cpp brain_button.cpp brain_diagonal.cpp		\
+	brain_duck.cpp brain_keyboard.cpp brain_lateral.cpp		\
+	brain_missile.cpp brain_mouse.cpp brain_none.cpp		\
+	brain_onetime.cpp brain_people.cpp brain_pig.cpp		\
+	brain_repeat.cpp brain_scale.cpp brain_shadow.cpp		\
+	brain_text.cpp dinkc_bindings.cpp dinkc_bindings.h dinkc.cpp	\
+	dinkc.h dinkc_console.cpp dinkc_console.h freedink.cpp		\
+	game_engine.cpp game_engine.h game_state.cpp game_state.h	\
+	i18n.cpp i18n.h inventory.cpp inventory.h meminfo.cpp		\
+	meminfo.h savegame.cpp savegame.h status.cpp status.h		\
+	talk.cpp talk.h text.cpp text.h update_frame.cpp		\
+	test_brain_text.cpp
 test_integration_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	brain_bounce.cpp brain_button.cpp brain_diagonal.cpp		\
 	brain_duck.cpp brain_keyboard.cpp brain_lateral.cpp		\
