@@ -79,9 +79,9 @@ public:
 		TS_ASSERT_EQUALS(spr[3].x, 0);
 
 		// Shouldn't crash
-		// spr[3].x = 0;
-		// spr[3].owner = 100000;
-		// text_brain(3);
-		// TS_ASSERT_EQUALS(spr[3].x, 0);
+		spr[3].x = 0;
+		spr[3].owner = 100000;
+		text_brain(3);
+		TS_ASSERT_EQUALS(spr[3].x, 0);
 	}
 };
