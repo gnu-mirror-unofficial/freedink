@@ -49,7 +49,7 @@ public:
 	void test_sprite_1_not_killed() {
 		TS_ASSERT_EQUALS(add_sprite(0, 0, 0, 0, 0), 1);
 		
-		while (kill_last_sprite());
+		lsm_kill_all_nonlive_sprites();
 		TS_ASSERT_EQUALS(spr[1].active, 1);
 		TS_ASSERT_EQUALS(last_sprite_created, 1);
 	}
@@ -61,7 +61,7 @@ public:
 		TS_ASSERT_EQUALS(last_sprite_created, 2);
 		TS_ASSERT_EQUALS(spr[2].active, 1);
 		
-		while (kill_last_sprite());
+		lsm_kill_all_nonlive_sprites();
 		TS_ASSERT_EQUALS(last_sprite_created, 1);
 		TS_ASSERT_EQUALS(spr[2].active, 0);
 	}
@@ -74,7 +74,7 @@ public:
 		TS_ASSERT_EQUALS(spr[2].active, 1);
 		spr[2].live = 1;
 		
-		TS_ASSERT_EQUALS(kill_last_sprite(), 0);
+		lsm_kill_all_nonlive_sprites();
 		TS_ASSERT_EQUALS(last_sprite_created, 2);
 		TS_ASSERT_EQUALS(spr[2].active, 1);
 	}
@@ -86,7 +86,7 @@ public:
 		TS_ASSERT_EQUALS(add_sprite(0, 0, 0, 0, 0), 3);
 		TS_ASSERT_EQUALS(add_sprite(0, 0, 0, 0, 0), 4);
 		
-		while (kill_last_sprite());
+		lsm_kill_all_nonlive_sprites();
 		TS_ASSERT_EQUALS(spr[4].active, 0);
 		TS_ASSERT_EQUALS(last_sprite_created, 4);
 	}
@@ -97,11 +97,11 @@ public:
 		TS_ASSERT_EQUALS(add_sprite(0, 0, 0, 0, 0), 3);
 		TS_ASSERT_EQUALS(add_sprite(0, 0, 0, 0, 0), 4);
 		
-		while (kill_last_sprite());
+		lsm_kill_all_nonlive_sprites();
 		TS_ASSERT_EQUALS(spr[4].active, 0);
 		TS_ASSERT_EQUALS(last_sprite_created, 4);
 		
-		while (kill_last_sprite());
+		lsm_kill_all_nonlive_sprites();
 		TS_ASSERT_EQUALS(spr[3].active, 0);
 		TS_ASSERT_EQUALS(last_sprite_created, 4);
 		
@@ -116,7 +116,7 @@ public:
 		TS_ASSERT_EQUALS(add_sprite(0, 0, 0, 0, 0), 3);
 		
 		spr[3].live = 1;
-		while (kill_last_sprite());
+		lsm_kill_all_nonlive_sprites();
 		TS_ASSERT_EQUALS(last_sprite_created, 3);
 		TS_ASSERT_EQUALS(spr[1].active, 1);
 		TS_ASSERT_EQUALS(spr[2].active, 0);
@@ -135,11 +135,11 @@ public:
 		get_last_sprite();
 		TS_ASSERT_EQUALS(last_sprite_created, 2);
 
-		while (kill_last_sprite());
+		lsm_kill_all_nonlive_sprites();
 		get_last_sprite();
 		TS_ASSERT_EQUALS(last_sprite_created, 1);
 
-		while (kill_last_sprite());
+		lsm_kill_all_nonlive_sprites();
 		get_last_sprite();
 		TS_ASSERT_EQUALS(last_sprite_created, 1);
 	}
@@ -149,8 +149,8 @@ public:
 		spr[2].live = 1;
 		TS_ASSERT_EQUALS(add_sprite(0, 0, 0, 0, 0), 3);
 		TS_ASSERT_EQUALS(add_sprite(0, 0, 0, 0, 0), 4);
-		while (kill_last_sprite());
-		while (kill_last_sprite());
+		lsm_kill_all_nonlive_sprites();
+		lsm_kill_all_nonlive_sprites();
 		TS_ASSERT_EQUALS(add_sprite(0, 0, 0, 0, 0), 3);
 		TS_ASSERT_EQUALS(spr[3].active, 1);
 		TS_ASSERT_EQUALS(spr[4].active, 0);

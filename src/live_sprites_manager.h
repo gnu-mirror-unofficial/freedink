@@ -40,7 +40,7 @@ extern void kill_text_owned_by(int sprite);
 extern int does_sprite_have_text(int sprite);
 extern /*bool*/int text_owned_by(int sprite);
 
-extern /*bool*/int kill_last_sprite(void);
+extern void lsm_kill_all_nonlive_sprites();
 extern void get_last_sprite(void);
 extern int find_sprite(int editor_sprite);
 

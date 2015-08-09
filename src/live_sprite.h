@@ -101,7 +101,7 @@ struct sp
   Uint32 move_wait;
   int distance;
   int last_hit;
-  /*BOOL*/int live; /* sprite created from say_stop_xy(), and ignored by kill_last_sprite */
+  /*BOOL*/int live; /* sprite created from say_stop_xy(), and ignored by lsm_kill_all_nonlive_sprites */
   int range;
   int attack_hit_sound;
   int attack_hit_sound_speed;

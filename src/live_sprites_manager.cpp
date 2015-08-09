@@ -200,8 +200,7 @@ void random_blood(int mx, int my, int sprite)
 
         }
 
-
-/*bool*/int kill_last_sprite(void)
+static /*bool*/int kill_last_sprite(void)
 {
   int found = 0;
   /*bool*/int nosetlast = /*false*/0;
@@ -233,6 +232,12 @@ void random_blood(int mx, int my, int sprite)
   return(/*false*/0);
 }
 
+/**
+ * Mark all sprites as inactive except for 'live' sprites nor spr#1
+ */
+void lsm_kill_all_nonlive_sprites() {
+	while (kill_last_sprite());
+}
 
 void get_last_sprite(void)
 {

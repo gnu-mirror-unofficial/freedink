@@ -396,7 +396,7 @@ void draw_screen_editor(void)
   fill_screen(0);
   fill_whole_hard();
 
-  while (kill_last_sprite());
+  lsm_kill_all_nonlive_sprites();
 
   gfx_tiles_draw_screen();
   place_sprites();
@@ -913,7 +913,7 @@ void loadtile(int tileset)
 
   last_mode = tileset;
 
-  while(kill_last_sprite());
+  lsm_kill_all_nonlive_sprites();
 }
 
 
@@ -1013,7 +1013,7 @@ void draw15(int num)
   int x1;
   //get_sp_seq(2);
 
-  while(kill_last_sprite());
+  lsm_kill_all_nonlive_sprites();
 
 
 /*   ZeroMemory(&ddbltfx, sizeof(ddbltfx)); */
@@ -1088,7 +1088,7 @@ void draw96(int def)
   se = sp_seq;
   check_seq_status(se);
   int num = 0;
-  while(kill_last_sprite());
+  lsm_kill_all_nonlive_sprites();
 
 /*   ZeroMemory(&ddbltfx, sizeof(ddbltfx)); */
 /*   ddbltfx.dwSize = sizeof( ddbltfx); */
@@ -1960,7 +1960,7 @@ void AppFreeDinkedit::logic(void)
       if (draw_screen_tiny  == 769)
 	{
 	  draw_screen_tiny = -1;
-	  while(kill_last_sprite());
+	  lsm_kill_all_nonlive_sprites();
 	  //all done
 	} else
 	{
@@ -2987,7 +2987,7 @@ void AppFreeDinkedit::logic(void)
 		      {
 
 			//they chose sprite picker mode
-			//while (kill_last_sprite());
+			//lsm_kill_all_nonlive_sprites();
 
 
 			mode = MODE_SCREEN_SPRITES;
@@ -3454,7 +3454,7 @@ void AppFreeDinkedit::logic(void)
 			    cur_tile += (cur_tileset * 128) - 128;
 			  }
 
-			while(kill_last_sprite());
+			lsm_kill_all_nonlive_sprites();
 			draw_current();
 
 			if (cur_tile > 0)
@@ -3985,7 +3985,7 @@ void AppFreeDinkedit::logic(void)
 			spr[h].speed = 20;
 			g_map.load();
 			draw_minimap();
-			while (kill_last_sprite());
+			lsm_kill_all_nonlive_sprites();
 			return;
 		      }
 
@@ -4005,7 +4005,7 @@ void AppFreeDinkedit::logic(void)
 			spr[h].speed = 20;
 			g_map.load();
 			draw_minimap();
-			while (kill_last_sprite());
+			lsm_kill_all_nonlive_sprites();
 			return;
 		      }
 
@@ -4247,7 +4247,7 @@ void AppFreeDinkedit::logic(void)
       mode = MODE_SCREEN_HARDNESS;
 
       fill_whole_hard();
-      while(kill_last_sprite());
+      lsm_kill_all_nonlive_sprites();
       place_sprites();
 
       /*	draw_screen_editor();
@@ -4271,7 +4271,7 @@ void AppFreeDinkedit::logic(void)
       // GFX
       SDL_BlitSurface(GFX_lpDDSBack, NULL, GFX_lpDDSTwo, NULL);
 
-      while(kill_last_sprite());
+      lsm_kill_all_nonlive_sprites();
     }
 
 

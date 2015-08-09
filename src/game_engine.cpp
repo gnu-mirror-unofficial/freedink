@@ -120,7 +120,7 @@ int mode = 0;
 void game_restart()
 {
   int mainscript;
-  while (kill_last_sprite());
+  lsm_kill_all_nonlive_sprites();
   kill_repeat_sounds_all();
   kill_all_scripts_for_real();
   set_mode(0);
@@ -662,7 +662,7 @@ void draw_screen_game(void)
 {
   *pvision = 0;
                 
-  while (kill_last_sprite());
+  lsm_kill_all_nonlive_sprites();
   kill_repeat_sounds();
   kill_all_scripts();
 
