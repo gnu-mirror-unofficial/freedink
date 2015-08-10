@@ -667,6 +667,10 @@ static int say_text_from_dc(char* text, int active_sprite, int script)
   log_debug("[DinkC] %s:%d:%s(\"%s\", %d)", rinfo[script]->name,
 	    rinfo[script]->debug_line, cur_funcname,
 	    text, active_sprite);
+  if (active_sprite != 1000 && !lsm_isValidSprite(active_sprite))
+	  log_error("[DinkC] %s:%d:%s(\"%s\", %d): %d is not a valid sprite", rinfo[script]->name,
+				rinfo[script]->debug_line, cur_funcname,
+				text, active_sprite, active_sprite);
 
   /* Translate text (before variable substitution) */
   char* translation = NULL;
