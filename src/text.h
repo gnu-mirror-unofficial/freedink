@@ -23,7 +23,10 @@
 #ifndef _TEXT_H
 #define _TEXT_H
 
+/* Create text sprites */
 extern int say_text_xy(char text[200], int mx, int my, int script);
 extern int say_text(char text[200], int h, int script);
+/* Draw text sprite */
+extern void text_draw(int h);
 
 #endif

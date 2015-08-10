@@ -51,7 +51,6 @@ extern /*bool*/int run_through_tag_list_talk(int h);
 extern void run_through_touch_damage_list(int h);
 
 extern int special_block(int block);
-extern void text_draw(int h);
 extern void CyclePalette();
 extern void up_cycle(void);
 

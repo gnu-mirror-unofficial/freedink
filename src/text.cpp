@@ -26,6 +26,7 @@
 #include "game_engine.h"
 #include "live_sprites_manager.h"
 #include "gfx.h"
+#include "gfx_fonts.h"
 #include "gfx_sprites.h"
 #include "dinkini.h" /* check_seq_status */
 #include "talk.h"
@@ -89,4 +90,113 @@ int say_text_xy(char* text, int mx, int my, int script)
 {
   int sprite_owner = 1000;
   return add_text_sprite(text, script, sprite_owner, mx, my);
+}
+
+
+/* Get sprite #h, grab its text and display it */
+void text_draw(int h) {
+	char crap[200];
+	char *cr;
+	rect rcRect;
+	int color = 0;
+	
+	if (spr[h].damage == -1) {
+		sprintf(crap, "%s", spr[h].text);
+		cr = &crap[0];
+		color = 14;
+		while( cr[0] == '`') {
+			//color code at top
+			if (cr[1] == '#') color = 13;
+			if (cr[1] == '1') color = 1;
+			if (cr[1] == '2') color = 2;
+			if (cr[1] == '3') color = 3;
+			if (cr[1] == '5') color = 5;
+			if (cr[1] == '6') color = 6;
+			if (cr[1] == '7') color = 7;
+			if (cr[1] == '8') color = 8;
+			if (cr[1] == '9') color = 9;
+			if (cr[1] == '0') color = 10;
+			if (cr[1] == '$') color = 14;
+			if (cr[1] == '%') color = 15;
+			
+			if (dversion >= 108) {
+			    //support for additional colors
+			    if (cr[1] == '@')
+					color = 12;
+			    if (cr[1] == '!')
+					color = 11;
+			}
+			
+			if (cr[1] == '4') color = 4;
+			cr = &cr[2];
+		}
+		
+		// Set size
+		if (spr[h].owner == 1000) {
+			rect_set(&rcRect, spr[h].x, spr[h].y,
+					 spr[h].x + 620, spr[h].y + 400);
+		} else {
+			rect_set(&rcRect, spr[h].x, spr[h].y,
+					 spr[h].x + 150, spr[h].y + 150);
+			if ((spr[h].x + 150) > 620)
+				rect_offset(&rcRect, ((spr[h].x+150)-620) - (((spr[h].x+150)-620) * 2), 0);
+		}
+	} else {
+		// Display damage points
+		sprintf(crap, "%d", spr[h].damage);
+		cr = &crap[0];
+		if (spr[h].brain_parm == 5000)
+			color = 14;
+		
+		if (spr[h].y < 0)
+			spr[h].y = 0;
+		rect_set(&rcRect, spr[h].x, spr[h].y,
+				 spr[h].x + 50, spr[h].y + 50);
+	}       
+	
+	
+	/* During a fadedown/fadeup, use white text to mimic v1.07 */
+	if (truecolor_fade_brightness < 256)
+		color = 15;
+	
+	
+	FONTS_SetTextColor(8, 14, 21);
+	if (spr[h].owner == 1200) {
+		//this text has no sprite, and doesn't want to be centered.
+		print_text_wrap(cr, &rcRect, 0, 0, FONT_DIALOG);
+		
+		rect_offset(&rcRect,-2,0);
+		print_text_wrap(cr, &rcRect, 0, 0, FONT_DIALOG);
+		
+		rect_offset(&rcRect,1,1);
+		print_text_wrap(cr, &rcRect, 0, 0, FONT_DIALOG);
+		
+		rect_offset(&rcRect,0,-2);
+		print_text_wrap(cr, &rcRect, 0, 0, FONT_DIALOG);
+	} else {
+		print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
+		
+		rect_offset(&rcRect,-2,0);
+		print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
+		
+		rect_offset(&rcRect,1,1);
+		print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
+		
+		rect_offset(&rcRect,0,-2);
+		print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
+	}
+	
+	rect_offset(&rcRect,0,1);
+	
+	// support for custom colors
+	if (color >= 1 && color <= 15)
+		FONTS_SetTextColorIndex(color);
+	else
+		FONTS_SetTextColor(255, 255, 255);
+	
+	if (spr[h].owner == 1200) {
+		print_text_wrap(cr, &rcRect, 0, 0, FONT_DIALOG);
+	} else {
+		print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
+	}
 }
