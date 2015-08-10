@@ -1871,276 +1871,235 @@ void draw_hard_tile(int x1, int y1, int tile)
  * 2 : return from ::logic()
  */
 int gui_logic(int h) {
-  rect box_crap,box_real;
-  int holdx;
-  int xx;
-  /*BOOL*/int cool;
-  rect  Rect;
+	rect box_crap,box_real;
+	int holdx;
+	int xx;
+	/*BOOL*/int cool;
+	rect  Rect;
 
-  if ((spr[h].seq == 0) || (mode == MODE_TILE_HARDNESS))
-		  {
-		    //if (mode == 7)
-		    if (mode == MODE_SPRITE_HARDNESS)
-		      {
+	if ((spr[h].seq == 0) || (mode == MODE_TILE_HARDNESS)) {
+		//if (mode == 7)
+		if (mode == MODE_SPRITE_HARDNESS) {
 			//editing a sprite, setting hard box and depth dot.
 			spr[1].pseq = 1;
 			spr[1].pframe = 1;
 
-			if (sjoy.button[EDITOR_ACTION_ESCAPE])
-			  {
-			    //they want out
-			    //mode = 5;
-			    mode = MODE_SPRITE_PICKER;
-			    draw96(0);
-			    spr[1].x = m5x;
-			    spr[1].y = m5y;
-			    spr[1].pseq = 10;
-			    spr[1].pframe = 5;
-			    spr[1].speed = 50;
-			    goto sp_edit_end;
+			if (sjoy.button[EDITOR_ACTION_ESCAPE]) {
+				//they want out
+				//mode = 5;
+				mode = MODE_SPRITE_PICKER;
+				draw96(0);
+				spr[1].x = m5x;
+				spr[1].y = m5y;
+				spr[1].pseq = 10;
+				spr[1].pframe = 5;
+				spr[1].speed = 50;
+				goto sp_edit_end;
 
-			  }
+			}
 
-			if (input_getscancodejustpressed(SDL_SCANCODE_TAB))
-			  {
+			if (input_getscancodejustpressed(SDL_SCANCODE_TAB)) {
 
-			    //they hit tab, lets toggle what mode they are in
-			    if (sp_mode == 0) sp_mode = 1; else if (sp_mode == 1) sp_mode = 2; else if (sp_mode == 2) sp_mode = 0;
+				//they hit tab, lets toggle what mode they are in
+				if (sp_mode == 0) sp_mode = 1; else if (sp_mode == 1) sp_mode = 2; else if (sp_mode == 2) sp_mode = 0;
 
 
-			  }
-			if (input_getcharjustpressed(SDLK_s))
-			  {
+			}
+			if (input_getcharjustpressed(SDLK_s)) {
 
-			    //they hit tab, lets toggle what mode they are in
-			    char death[150];
-			    char filename[10];
+				//they hit tab, lets toggle what mode they are in
+				char death[150];
+				char filename[10];
 
-			    sprintf(death, "SET_SPRITE_INFO %d %d %d %d %d %d %d %d\n",
-				    sp_seq,sp_frame, k[seq[sp_seq].frame[sp_frame]].xoffset,  k[seq[sp_seq].frame[sp_frame]].yoffset,
+				sprintf(death, "SET_SPRITE_INFO %d %d %d %d %d %d %d %d\n",
+						sp_seq,sp_frame, k[seq[sp_seq].frame[sp_frame]].xoffset,  k[seq[sp_seq].frame[sp_frame]].yoffset,
 
-				    k[seq[sp_seq].frame[sp_frame]].hardbox.left, k[seq[sp_seq].frame[sp_frame]].hardbox.top,
-				    k[seq[sp_seq].frame[sp_frame]].hardbox.right,k[seq[sp_seq].frame[sp_frame]].hardbox.bottom);
+						k[seq[sp_seq].frame[sp_frame]].hardbox.left, k[seq[sp_seq].frame[sp_frame]].hardbox.top,
+						k[seq[sp_seq].frame[sp_frame]].hardbox.right,k[seq[sp_seq].frame[sp_frame]].hardbox.bottom);
 
-			    strcpy(filename, "dink.ini");
-			    add_text(death,filename);
-			    EditorSoundPlayEffect( SOUND_JUMP );
-			  }
+				strcpy(filename, "dink.ini");
+				add_text(death,filename);
+				EditorSoundPlayEffect( SOUND_JUMP );
+			}
 
 
 			int modif = 1;
 			if (SDL_GetModState()&KMOD_SHIFT)
-			  modif += 9;
+				modif += 9;
 
 
-			if (sp_mode == 0)
-			  {
+			if (sp_mode == 0) {
 
-			    //ok, we are editing depth dot
+				//ok, we are editing depth dot
 
-			    if (SDL_GetModState()&KMOD_CTRL)
-			      {
-				if (input_getscancodejustpressed(SDL_SCANCODE_RIGHT))
-				  {
-				    k[seq[sp_seq].frame[sp_frame]].xoffset += modif;
-				    EditorSoundPlayEffect( SOUND_STOP );
-				  }
+				if (SDL_GetModState()&KMOD_CTRL) {
+					if (input_getscancodejustpressed(SDL_SCANCODE_RIGHT)) {
+						k[seq[sp_seq].frame[sp_frame]].xoffset += modif;
+						EditorSoundPlayEffect( SOUND_STOP );
+					}
 
-				if (input_getscancodejustpressed(SDL_SCANCODE_LEFT))
-				  {
+					if (input_getscancodejustpressed(SDL_SCANCODE_LEFT)) {
 
-				    k[seq[sp_seq].frame[sp_frame]].xoffset -= modif;
-				    EditorSoundPlayEffect( SOUND_STOP );
-				  }
-				if (input_getscancodejustpressed(SDL_SCANCODE_UP))
-				  {
-				    k[seq[sp_seq].frame[sp_frame]].yoffset -= modif;
-				    EditorSoundPlayEffect( SOUND_STOP );
-				  }
+						k[seq[sp_seq].frame[sp_frame]].xoffset -= modif;
+						EditorSoundPlayEffect( SOUND_STOP );
+					}
+					if (input_getscancodejustpressed(SDL_SCANCODE_UP)) {
+						k[seq[sp_seq].frame[sp_frame]].yoffset -= modif;
+						EditorSoundPlayEffect( SOUND_STOP );
+					}
 
-				if (input_getscancodejustpressed(SDL_SCANCODE_DOWN))
-				  {
-				    k[seq[sp_seq].frame[sp_frame]].yoffset += modif;
-				    EditorSoundPlayEffect( SOUND_STOP );
-				  }
+					if (input_getscancodejustpressed(SDL_SCANCODE_DOWN)) {
+						k[seq[sp_seq].frame[sp_frame]].yoffset += modif;
+						EditorSoundPlayEffect( SOUND_STOP );
+					}
 
-			      } else
+				} else {
+					if (sjoy.right) {
+						k[seq[sp_seq].frame[sp_frame]].xoffset +=  modif;
+						EditorSoundPlayEffect( SOUND_STOP );
+					}
 
-			      {
-				if (sjoy.right)
-				  {
-				    k[seq[sp_seq].frame[sp_frame]].xoffset +=  modif;
-				    EditorSoundPlayEffect( SOUND_STOP );
-				  }
+					if (sjoy.left) {
+						k[seq[sp_seq].frame[sp_frame]].xoffset -=  modif;
+						EditorSoundPlayEffect( SOUND_STOP );
+					}
+					if (sjoy.up) {
+						k[seq[sp_seq].frame[sp_frame]].yoffset -= modif;
+						EditorSoundPlayEffect( SOUND_STOP );
+					}
 
-				if (sjoy.left)
-				  {
-				    k[seq[sp_seq].frame[sp_frame]].xoffset -=  modif;
-				    EditorSoundPlayEffect( SOUND_STOP );
-				  }
-				if (sjoy.up)
-				  {
-				    k[seq[sp_seq].frame[sp_frame]].yoffset -= modif;
-				    EditorSoundPlayEffect( SOUND_STOP );
-				  }
-
-				if (sjoy.down)
-				  {
-				    k[seq[sp_seq].frame[sp_frame]].yoffset += modif;
-				    EditorSoundPlayEffect( SOUND_STOP );
-				  }
+					if (sjoy.down) {
+						k[seq[sp_seq].frame[sp_frame]].yoffset += modif;
+						EditorSoundPlayEffect( SOUND_STOP );
+					}
 
 
-			      }
+				}
 
-			  }
+			}
 
 
 
-			if (sp_mode == 2)
-			  {
+			if (sp_mode == 2) {
 
-			    //ok, we are top left hardness
+				//ok, we are top left hardness
 
-			    if (SDL_GetModState()&KMOD_CTRL)
-			      {
-				if (input_getscancodejustpressed(SDL_SCANCODE_RIGHT))
-				  {
-				    k[seq[sp_seq].frame[sp_frame]].hardbox.right += modif;
-				    EditorSoundPlayEffect( SOUND_STOP );
-				  }
+				if (SDL_GetModState()&KMOD_CTRL) {
+					if (input_getscancodejustpressed(SDL_SCANCODE_RIGHT)) {
+						k[seq[sp_seq].frame[sp_frame]].hardbox.right += modif;
+						EditorSoundPlayEffect( SOUND_STOP );
+					}
 
-				if (input_getscancodejustpressed(SDL_SCANCODE_LEFT))
-				  {
+					if (input_getscancodejustpressed(SDL_SCANCODE_LEFT)) {
 
-				    k[seq[sp_seq].frame[sp_frame]].hardbox.right -= modif;
-				    EditorSoundPlayEffect( SOUND_STOP );
-				  }
-				if (input_getscancodejustpressed(SDL_SCANCODE_UP))
-				  {
-				    k[seq[sp_seq].frame[sp_frame]].hardbox.bottom -= modif;
-				    EditorSoundPlayEffect( SOUND_STOP );
-				  }
+						k[seq[sp_seq].frame[sp_frame]].hardbox.right -= modif;
+						EditorSoundPlayEffect( SOUND_STOP );
+					}
+					if (input_getscancodejustpressed(SDL_SCANCODE_UP)) {
+						k[seq[sp_seq].frame[sp_frame]].hardbox.bottom -= modif;
+						EditorSoundPlayEffect( SOUND_STOP );
+					}
 
-				if (input_getscancodejustpressed(SDL_SCANCODE_DOWN))
-				  {
-				    k[seq[sp_seq].frame[sp_frame]].hardbox.bottom += modif;
-				    EditorSoundPlayEffect( SOUND_STOP );
-				  }
+					if (input_getscancodejustpressed(SDL_SCANCODE_DOWN)) {
+						k[seq[sp_seq].frame[sp_frame]].hardbox.bottom += modif;
+						EditorSoundPlayEffect( SOUND_STOP );
+					}
 
-			      } else
+				} else {
+					if (sjoy.right) {
+						k[seq[sp_seq].frame[sp_frame]].hardbox.right +=  modif;
+						EditorSoundPlayEffect( SOUND_STOP );
+					}
 
-			      {
-				if (sjoy.right)
-				  {
-				    k[seq[sp_seq].frame[sp_frame]].hardbox.right +=  modif;
-				    EditorSoundPlayEffect( SOUND_STOP );
-				  }
+					if (sjoy.left) {
+						k[seq[sp_seq].frame[sp_frame]].hardbox.right -=  modif;
+						EditorSoundPlayEffect( SOUND_STOP );
+					}
+					if (sjoy.up) {
+						k[seq[sp_seq].frame[sp_frame]].hardbox.bottom -= modif;
+						EditorSoundPlayEffect( SOUND_STOP );
+					}
 
-				if (sjoy.left)
-				  {
-				    k[seq[sp_seq].frame[sp_frame]].hardbox.right -=  modif;
-				    EditorSoundPlayEffect( SOUND_STOP );
-				  }
-				if (sjoy.up)
-				  {
-				    k[seq[sp_seq].frame[sp_frame]].hardbox.bottom -= modif;
-				    EditorSoundPlayEffect( SOUND_STOP );
-				  }
-
-				if (sjoy.down)
-				  {
-				    k[seq[sp_seq].frame[sp_frame]].hardbox.bottom += modif;
-				    EditorSoundPlayEffect( SOUND_STOP );
-				  }
+					if (sjoy.down) {
+						k[seq[sp_seq].frame[sp_frame]].hardbox.bottom += modif;
+						EditorSoundPlayEffect( SOUND_STOP );
+					}
 
 
-			      }
+				}
 
 
-			    if (k[seq[sp_seq].frame[sp_frame]].hardbox.right <= k[seq[sp_seq].frame[sp_frame]].hardbox.left)
-			      k[seq[sp_seq].frame[sp_frame]].hardbox.left = k[seq[sp_seq].frame[sp_frame]].hardbox.right -1;
+				if (k[seq[sp_seq].frame[sp_frame]].hardbox.right <= k[seq[sp_seq].frame[sp_frame]].hardbox.left)
+					k[seq[sp_seq].frame[sp_frame]].hardbox.left = k[seq[sp_seq].frame[sp_frame]].hardbox.right -1;
 
 
-			    if (k[seq[sp_seq].frame[sp_frame]].hardbox.bottom <= k[seq[sp_seq].frame[sp_frame]].hardbox.top)
-			      k[seq[sp_seq].frame[sp_frame]].hardbox.top = k[seq[sp_seq].frame[sp_frame]].hardbox.bottom -1;
+				if (k[seq[sp_seq].frame[sp_frame]].hardbox.bottom <= k[seq[sp_seq].frame[sp_frame]].hardbox.top)
+					k[seq[sp_seq].frame[sp_frame]].hardbox.top = k[seq[sp_seq].frame[sp_frame]].hardbox.bottom -1;
 
 
-			  }
+			}
 
 
-			if (sp_mode == 1)
-			  {
+			if (sp_mode == 1) {
 
-			    //ok, we are top left hardness
+				//ok, we are top left hardness
 
-			    if (SDL_GetModState()&KMOD_CTRL)
-			      {
-				if (input_getscancodejustpressed(SDL_SCANCODE_RIGHT))
-				  {
-				    k[seq[sp_seq].frame[sp_frame]].hardbox.left += modif;
-				    EditorSoundPlayEffect( SOUND_STOP );
-				  }
+				if (SDL_GetModState()&KMOD_CTRL) {
+					if (input_getscancodejustpressed(SDL_SCANCODE_RIGHT)) {
+						k[seq[sp_seq].frame[sp_frame]].hardbox.left += modif;
+						EditorSoundPlayEffect( SOUND_STOP );
+					}
 
-				if (input_getscancodejustpressed(SDL_SCANCODE_LEFT))
-				  {
+					if (input_getscancodejustpressed(SDL_SCANCODE_LEFT)) {
 
-				    k[seq[sp_seq].frame[sp_frame]].hardbox.left -= modif;
-				    EditorSoundPlayEffect( SOUND_STOP );
-				  }
-				if (input_getscancodejustpressed(SDL_SCANCODE_UP))
-				  {
-				    k[seq[sp_seq].frame[sp_frame]].hardbox.top -= modif;
-				    EditorSoundPlayEffect( SOUND_STOP );
-				  }
+						k[seq[sp_seq].frame[sp_frame]].hardbox.left -= modif;
+						EditorSoundPlayEffect( SOUND_STOP );
+					}
+					if (input_getscancodejustpressed(SDL_SCANCODE_UP)) {
+						k[seq[sp_seq].frame[sp_frame]].hardbox.top -= modif;
+						EditorSoundPlayEffect( SOUND_STOP );
+					}
 
-				if (input_getscancodejustpressed(SDL_SCANCODE_DOWN))
-				  {
-				    k[seq[sp_seq].frame[sp_frame]].hardbox.top += modif;
-				    EditorSoundPlayEffect( SOUND_STOP );
-				  }
+					if (input_getscancodejustpressed(SDL_SCANCODE_DOWN)) {
+						k[seq[sp_seq].frame[sp_frame]].hardbox.top += modif;
+						EditorSoundPlayEffect( SOUND_STOP );
+					}
 
-			      } else
+				} else {
+					if (sjoy.right) {
+						k[seq[sp_seq].frame[sp_frame]].hardbox.left +=  modif;
+						EditorSoundPlayEffect( SOUND_STOP );
+					}
 
-			      {
-				if (sjoy.right)
-				  {
-				    k[seq[sp_seq].frame[sp_frame]].hardbox.left +=  modif;
-				    EditorSoundPlayEffect( SOUND_STOP );
-				  }
+					if (sjoy.left) {
+						k[seq[sp_seq].frame[sp_frame]].hardbox.left -=  modif;
+						EditorSoundPlayEffect( SOUND_STOP );
+					}
+					if (sjoy.up) {
+						k[seq[sp_seq].frame[sp_frame]].hardbox.top -= modif;
+						EditorSoundPlayEffect( SOUND_STOP );
+					}
 
-				if (sjoy.left)
-				  {
-				    k[seq[sp_seq].frame[sp_frame]].hardbox.left -=  modif;
-				    EditorSoundPlayEffect( SOUND_STOP );
-				  }
-				if (sjoy.up)
-				  {
-				    k[seq[sp_seq].frame[sp_frame]].hardbox.top -= modif;
-				    EditorSoundPlayEffect( SOUND_STOP );
-				  }
-
-				if (sjoy.down)
-				  {
-				    k[seq[sp_seq].frame[sp_frame]].hardbox.top += modif;
-				    EditorSoundPlayEffect( SOUND_STOP );
-				  }
+					if (sjoy.down) {
+						k[seq[sp_seq].frame[sp_frame]].hardbox.top += modif;
+						EditorSoundPlayEffect( SOUND_STOP );
+					}
 
 
-			      }
+				}
 
 
-			    if (k[seq[sp_seq].frame[sp_frame]].hardbox.left >= k[seq[sp_seq].frame[sp_frame]].hardbox.right)
-			      k[seq[sp_seq].frame[sp_frame]].hardbox.right = k[seq[sp_seq].frame[sp_frame]].hardbox.left +1;
+				if (k[seq[sp_seq].frame[sp_frame]].hardbox.left >= k[seq[sp_seq].frame[sp_frame]].hardbox.right)
+					k[seq[sp_seq].frame[sp_frame]].hardbox.right = k[seq[sp_seq].frame[sp_frame]].hardbox.left +1;
 
 
-			    if (k[seq[sp_seq].frame[sp_frame]].hardbox.top >= k[seq[sp_seq].frame[sp_frame]].hardbox.bottom)
-			      k[seq[sp_seq].frame[sp_frame]].hardbox.bottom = k[seq[sp_seq].frame[sp_frame]].hardbox.bottom +1;
+				if (k[seq[sp_seq].frame[sp_frame]].hardbox.top >= k[seq[sp_seq].frame[sp_frame]].hardbox.bottom)
+					k[seq[sp_seq].frame[sp_frame]].hardbox.bottom = k[seq[sp_seq].frame[sp_frame]].hardbox.bottom +1;
 
 
 
 
-			  }
+			}
 
 
 
@@ -2160,321 +2119,286 @@ int gui_logic(int h) {
 
 
 
-			goto b1end;
+			return 0;
 
-		      }
+		}
 
 
-		    if (mode == MODE_SCREEN_SPRITES)
-		      {
+		if (mode == MODE_SCREEN_SPRITES) {
 			// place sprite
-			if ( (input_getcharjustpressed(SDLK_v)) )
-			  {
-			    in_master = INPUT_SCREEN_VISION; // Set screen vision?
-			  }
+			if ( (input_getcharjustpressed(SDLK_v)) ) {
+				in_master = INPUT_SCREEN_VISION; // Set screen vision?
+			}
 
 			int modif = 0;
 			if (SDL_GetModState()&KMOD_SHIFT)
-			  modif = 9;
+				modif = 9;
 
-			if (input_getcharjustpressed(SDLK_m))
-			  {
-			    if (sp_screenmatch)
-			      sp_screenmatch = /*false*/0;
-			    else
-			      sp_screenmatch = /*true*/1;
-			  }
-
-
-			if (SDL_GetModState()&KMOD_ALT) // alt
-			  {
-			    //alt is held down 87
-			    if (input_getcharjustpressed(SDLK_w))
-			      {
-				//pressed W
-				if (((spr[1].pseq == 10) && (spr[1].pframe == 8)))
-				  {
-                                    //a sprite is not chosen
-				    hold_warp_map = cur_map;
-				    hold_warp_x = spr[1].x;
-				    hold_warp_y= spr[1].y;
-				    EditorSoundPlayEffect(SOUND_JUMP);
-				  }
+			if (input_getcharjustpressed(SDLK_m)) {
+				if (sp_screenmatch)
+					sp_screenmatch = /*false*/0;
 				else
-				  {
-				    sp_warp_map = hold_warp_map ;
-				    sp_warp_x = hold_warp_x;
-				    sp_warp_y = hold_warp_y;
-				    EditorSoundPlayEffect(SOUND_JUMP);
-				  }
-			      }
-			  }
+					sp_screenmatch = /*true*/1;
+			}
+
+
+			if (SDL_GetModState()&KMOD_ALT) {
+				//alt is held down 87
+				if (input_getcharjustpressed(SDLK_w)) {
+					//pressed W
+					if (((spr[1].pseq == 10) && (spr[1].pframe == 8))) {
+						//a sprite is not chosen
+						hold_warp_map = cur_map;
+						hold_warp_x = spr[1].x;
+						hold_warp_y= spr[1].y;
+						EditorSoundPlayEffect(SOUND_JUMP);
+					}
+					else {
+						sp_warp_map = hold_warp_map ;
+						sp_warp_x = hold_warp_x;
+						sp_warp_y = hold_warp_y;
+						EditorSoundPlayEffect(SOUND_JUMP);
+					}
+				}
+			}
 
 			/**
 			 * Edit sprite properties
 			 */
-			if (!((spr[1].pseq == 10) && (spr[1].pframe == 8)))
-			  {
-			    //they are wheeling around a sprite
-			    if (spr[1].x > 1500) spr[1].x = 1500;
-			    if (spr[1].y > 1500) spr[1].y = 1500;
+			if (!((spr[1].pseq == 10) && (spr[1].pframe == 8))) {
+				//they are wheeling around a sprite
+				if (spr[1].x > 1500) spr[1].x = 1500;
+				if (spr[1].y > 1500) spr[1].y = 1500;
 
-			    if (spr[1].size > 1500) spr[1].size = 1500;
+				if (spr[1].size > 1500) spr[1].size = 1500;
 
-			    /* if (GetKeyboard(VK_OEM_4 /\* 219 *\/)) // '[' for US */
-			    if (input_getscancodestate(SDL_SCANCODE_PAGEDOWN) || input_getscancodestate(SDL_SCANCODE_LEFTBRACKET))
-			      spr[1].size -= 1+modif;
-			    /* if (GetKeyboard(VK_OEM_6 /\* 221 *\/)) // ']' for US */
-			    if (input_getscancodestate(SDL_SCANCODE_PAGEUP) || input_getscancodestate(SDL_SCANCODE_RIGHTBRACKET))
-			      spr[1].size += 1+modif;
+				/* if (GetKeyboard(VK_OEM_4 /\* 219 *\/)) // '[' for US */
+				if (input_getscancodestate(SDL_SCANCODE_PAGEDOWN) || input_getscancodestate(SDL_SCANCODE_LEFTBRACKET))
+					spr[1].size -= 1+modif;
+				/* if (GetKeyboard(VK_OEM_6 /\* 221 *\/)) // ']' for US */
+				if (input_getscancodestate(SDL_SCANCODE_PAGEUP) || input_getscancodestate(SDL_SCANCODE_RIGHTBRACKET))
+					spr[1].size += 1+modif;
 
 
-			    if (SDL_GetModState()&KMOD_SHIFT)
-			      {
-				//shift is being held down
-				if (input_getscancodestate(SDL_SCANCODE_1) || input_getscancodestate(SDL_SCANCODE_KP_1) || input_getscancodestate(SDL_SCANCODE_F1))  in_master = 11;
-				if (input_getscancodestate(SDL_SCANCODE_2) || input_getscancodestate(SDL_SCANCODE_KP_2) || input_getscancodestate(SDL_SCANCODE_F2))  in_master = 12;
-				if (input_getscancodestate(SDL_SCANCODE_3) || input_getscancodestate(SDL_SCANCODE_KP_3) || input_getscancodestate(SDL_SCANCODE_F3))  in_master = 13;
-				if (input_getscancodestate(SDL_SCANCODE_4) || input_getscancodestate(SDL_SCANCODE_KP_4) || input_getscancodestate(SDL_SCANCODE_F4))  in_master = 14;
-				if (input_getscancodestate(SDL_SCANCODE_5) || input_getscancodestate(SDL_SCANCODE_KP_5) || input_getscancodestate(SDL_SCANCODE_F5))  in_master = 15;
+				if (SDL_GetModState()&KMOD_SHIFT) {
+					//shift is being held down
+					if (input_getscancodestate(SDL_SCANCODE_1) || input_getscancodestate(SDL_SCANCODE_KP_1) || input_getscancodestate(SDL_SCANCODE_F1))  in_master = 11;
+					if (input_getscancodestate(SDL_SCANCODE_2) || input_getscancodestate(SDL_SCANCODE_KP_2) || input_getscancodestate(SDL_SCANCODE_F2))  in_master = 12;
+					if (input_getscancodestate(SDL_SCANCODE_3) || input_getscancodestate(SDL_SCANCODE_KP_3) || input_getscancodestate(SDL_SCANCODE_F3))  in_master = 13;
+					if (input_getscancodestate(SDL_SCANCODE_4) || input_getscancodestate(SDL_SCANCODE_KP_4) || input_getscancodestate(SDL_SCANCODE_F4))  in_master = 14;
+					if (input_getscancodestate(SDL_SCANCODE_5) || input_getscancodestate(SDL_SCANCODE_KP_5) || input_getscancodestate(SDL_SCANCODE_F5))  in_master = 15;
 
-				if (input_getscancodestate(SDL_SCANCODE_6) || input_getscancodestate(SDL_SCANCODE_KP_6) || input_getscancodestate(SDL_SCANCODE_F6))  in_master = 16;
-				if (input_getscancodestate(SDL_SCANCODE_7) || input_getscancodestate(SDL_SCANCODE_KP_7) || input_getscancodestate(SDL_SCANCODE_F7))  in_master = 17;
-				if (input_getscancodestate(SDL_SCANCODE_8) || input_getscancodestate(SDL_SCANCODE_KP_8) || input_getscancodestate(SDL_SCANCODE_F8))  in_master = 18;
-				if (input_getscancodestate(SDL_SCANCODE_9) || input_getscancodestate(SDL_SCANCODE_KP_9) || input_getscancodestate(SDL_SCANCODE_F9))  in_master = 19;
+					if (input_getscancodestate(SDL_SCANCODE_6) || input_getscancodestate(SDL_SCANCODE_KP_6) || input_getscancodestate(SDL_SCANCODE_F6))  in_master = 16;
+					if (input_getscancodestate(SDL_SCANCODE_7) || input_getscancodestate(SDL_SCANCODE_KP_7) || input_getscancodestate(SDL_SCANCODE_F7))  in_master = 17;
+					if (input_getscancodestate(SDL_SCANCODE_8) || input_getscancodestate(SDL_SCANCODE_KP_8) || input_getscancodestate(SDL_SCANCODE_F8))  in_master = 18;
+					if (input_getscancodestate(SDL_SCANCODE_9) || input_getscancodestate(SDL_SCANCODE_KP_9) || input_getscancodestate(SDL_SCANCODE_F9))  in_master = 19;
 
 
 
-			      }
-			    else if (SDL_GetModState()&KMOD_ALT)
-			      {
-				  //alt is being held down
-				  if (input_getscancodestate(SDL_SCANCODE_1) || input_getscancodestate(SDL_SCANCODE_KP_1) || input_getscancodestate(SDL_SCANCODE_F1))  in_master = 20;
-				  if (input_getscancodestate(SDL_SCANCODE_2) || input_getscancodestate(SDL_SCANCODE_KP_2) || input_getscancodestate(SDL_SCANCODE_F2))  in_master = 21;
-				  if (input_getscancodestate(SDL_SCANCODE_3) || input_getscancodestate(SDL_SCANCODE_KP_3) || input_getscancodestate(SDL_SCANCODE_F3))  in_master = 22;
-				  /*(getkeystate('4' /\* 52 *\/))  in_master = 14;
-				    if (getkeystate(53))  in_master = 15;
+				}
+				else if (SDL_GetModState()&KMOD_ALT) {
+					//alt is being held down
+					if (input_getscancodestate(SDL_SCANCODE_1) || input_getscancodestate(SDL_SCANCODE_KP_1) || input_getscancodestate(SDL_SCANCODE_F1))  in_master = 20;
+					if (input_getscancodestate(SDL_SCANCODE_2) || input_getscancodestate(SDL_SCANCODE_KP_2) || input_getscancodestate(SDL_SCANCODE_F2))  in_master = 21;
+					if (input_getscancodestate(SDL_SCANCODE_3) || input_getscancodestate(SDL_SCANCODE_KP_3) || input_getscancodestate(SDL_SCANCODE_F3))  in_master = 22;
+					/*(getkeystate('4' /\* 52 *\/))  in_master = 14;
+					  if (getkeystate(53))  in_master = 15;
 
-				    if (getkeystate(54))  in_master = 16;
-				    if (getkeystate(55))  in_master = 17;
-				    if (getkeystate(56))  in_master = 18;
-				    if (getkeystate(57))  in_master = 19;
+					  if (getkeystate(54))  in_master = 16;
+					  if (getkeystate(55))  in_master = 17;
+					  if (getkeystate(56))  in_master = 18;
+					  if (getkeystate(57))  in_master = 19;
 
-				  */
-			      }
-			    else
-			      {
-				  //shift is not being held down
-				  if (input_getscancodestate(SDL_SCANCODE_1) || input_getscancodestate(SDL_SCANCODE_KP_1) || input_getscancodestate(SDL_SCANCODE_F1)) in_master = 1;
-				  if (input_getscancodestate(SDL_SCANCODE_2) || input_getscancodestate(SDL_SCANCODE_KP_2) || input_getscancodestate(SDL_SCANCODE_F2)) in_master = 2;
-				  if (input_getscancodestate(SDL_SCANCODE_3) || input_getscancodestate(SDL_SCANCODE_KP_3) || input_getscancodestate(SDL_SCANCODE_F3)) in_master = 3;
-				  if (input_getscancodestate(SDL_SCANCODE_4) || input_getscancodestate(SDL_SCANCODE_KP_4) || input_getscancodestate(SDL_SCANCODE_F4)) in_master = 4;
-				  if (input_getscancodestate(SDL_SCANCODE_5) || input_getscancodestate(SDL_SCANCODE_KP_5) || input_getscancodestate(SDL_SCANCODE_F5)) in_master = 5;
-				  if (input_getscancodestate(SDL_SCANCODE_6) || input_getscancodestate(SDL_SCANCODE_KP_6) || input_getscancodestate(SDL_SCANCODE_F6)) in_master = 6;
-				  if (input_getscancodestate(SDL_SCANCODE_7) || input_getscancodestate(SDL_SCANCODE_KP_7) || input_getscancodestate(SDL_SCANCODE_F7)) in_master = 7;
-				  if (input_getscancodestate(SDL_SCANCODE_8) || input_getscancodestate(SDL_SCANCODE_KP_8) || input_getscancodestate(SDL_SCANCODE_F8)) in_master = 8;
-				  if (input_getscancodestate(SDL_SCANCODE_9) || input_getscancodestate(SDL_SCANCODE_KP_9) || input_getscancodestate(SDL_SCANCODE_F9)) in_master = 9;
-				  if (input_getscancodestate(SDL_SCANCODE_0) || input_getscancodestate(SDL_SCANCODE_KP_0) || input_getscancodestate(SDL_SCANCODE_F10)) in_master = 10;
-			      }
-
-
-			    if (input_getcharjustpressed(SDLK_s))
-			      {
-				smart_add();
-
-				draw_screen_editor();
-			      }
-
-			    if ( (sjoy.button[EDITOR_ACTION_RETURN]) | (mouse1) )
-			      {
-				smart_add();
-				draw_screen_editor();
-				spr[1].pseq = 10;
-				spr[1].pframe = 8;
-				spr[1].size = 100;
-				rect_set(&spr[1].alt,0,0,0,0);
-
-			      }
-
-			    if (input_getscancodejustpressed(SDL_SCANCODE_DELETE))
-			      {
-
-				spr[1].pseq = 10;
-				spr[1].pframe = 8;
-				spr[1].size = 100;
-				rect_set(&spr[1].alt,0,0,0,0);
-
-			      }
-
-			  }
-			else
-			  {
-			    //no sprite is currently selected
-
-			    int max_spr = 0;
-			    int jj;
-
-			    write_moves();
-
-
-
-			    for (jj=1; jj < 100; jj++)
-			      {
-				if ( cur_ed_screen.sprite[jj].active) if (cur_ed_screen.sprite[jj].vision == map_vision) max_spr++;
-			      }
-
-
-			    if (max_spr > 0)
-			      {
-
-				/* if (sjoy.keyjustpressed[VK_OEM_4 /\* 219 *\/]) // '[' for US */
-				if (input_getscancodejustpressed(SDL_SCANCODE_PAGEUP) || input_getscancodejustpressed(SDL_SCANCODE_LEFTBRACKET))
-				  {
-				    sp_cycle--;
-				    if (sp_cycle < 1)
-				      sp_cycle = max_spr;
-				  }
-
-				if (input_getscancodejustpressed(SDL_SCANCODE_PAGEDOWN) || input_getscancodejustpressed(SDL_SCANCODE_RIGHTBRACKET))
-				  {
-				    sp_cycle++;
-				    if (sp_cycle > max_spr)
-				      sp_cycle = 1;
-				  }
-
-
-
-			      }
-
-
-
-			    //Msg("Cycle is %d", sp_cycle);
-			    int realpic = 0;
-
-			    if (sp_cycle > 0)
-			      {
-				//lets draw a frame around the sprite we want
-				int dumbpic = 0;
-				int jh;
-				realpic = 0;
-				for (jh = 1; dumbpic != sp_cycle; jh++)
-				  {
-				    if (cur_ed_screen.sprite[jh].active)  if ( cur_ed_screen.sprite[jh].vision == map_vision)
-								  {
-								    dumbpic++;
-								    realpic = jh;
-								  }
-				    if (jh == 99) goto fail;
-
-				  }
-
-				last_sprite_added = realpic;
-
-
-/* 				ddbltfx.dwSize = sizeof(ddbltfx); */
-/* 				ddbltfx.dwFillColor = 235; */
-
-				int	sprite = add_sprite_dumb(cur_ed_screen.sprite[realpic].x,cur_ed_screen.sprite[realpic].y,0,
-								 cur_ed_screen.sprite[realpic].seq, cur_ed_screen.sprite[realpic].frame,
-								 cur_ed_screen.sprite[realpic].size);
-				rect_copy(&spr[sprite].alt , &cur_ed_screen.sprite[realpic].alt);
-				get_box(sprite, &box_crap, &box_real, skip_screen_clipping());
-
-
-
-
-				get_box(sprite, &box_crap, &box_real, skip_screen_clipping());
-				box_crap.bottom = box_crap.top + 5;
-/* 				ddrval = lpDDSBack->Blt(&box_crap ,NULL,NULL, DDBLT_COLORFILL| DDBLT_WAIT, &ddbltfx); */
-				// GFX
-				{
-				  SDL_Rect dst;
-				  dst.x = box_crap.left;
-				  dst.y = box_crap.top;
-				  dst.w = box_crap.right - box_crap.left;
-				  dst.h = 5;
-				  SDL_FillRect(GFX_lpDDSBack, &dst, SDL_MapRGB(GFX_lpDDSTwo->format, 33, 41, 16));
+					*/
+				}
+				else {
+					//shift is not being held down
+					if (input_getscancodestate(SDL_SCANCODE_1) || input_getscancodestate(SDL_SCANCODE_KP_1) || input_getscancodestate(SDL_SCANCODE_F1)) in_master = 1;
+					if (input_getscancodestate(SDL_SCANCODE_2) || input_getscancodestate(SDL_SCANCODE_KP_2) || input_getscancodestate(SDL_SCANCODE_F2)) in_master = 2;
+					if (input_getscancodestate(SDL_SCANCODE_3) || input_getscancodestate(SDL_SCANCODE_KP_3) || input_getscancodestate(SDL_SCANCODE_F3)) in_master = 3;
+					if (input_getscancodestate(SDL_SCANCODE_4) || input_getscancodestate(SDL_SCANCODE_KP_4) || input_getscancodestate(SDL_SCANCODE_F4)) in_master = 4;
+					if (input_getscancodestate(SDL_SCANCODE_5) || input_getscancodestate(SDL_SCANCODE_KP_5) || input_getscancodestate(SDL_SCANCODE_F5)) in_master = 5;
+					if (input_getscancodestate(SDL_SCANCODE_6) || input_getscancodestate(SDL_SCANCODE_KP_6) || input_getscancodestate(SDL_SCANCODE_F6)) in_master = 6;
+					if (input_getscancodestate(SDL_SCANCODE_7) || input_getscancodestate(SDL_SCANCODE_KP_7) || input_getscancodestate(SDL_SCANCODE_F7)) in_master = 7;
+					if (input_getscancodestate(SDL_SCANCODE_8) || input_getscancodestate(SDL_SCANCODE_KP_8) || input_getscancodestate(SDL_SCANCODE_F8)) in_master = 8;
+					if (input_getscancodestate(SDL_SCANCODE_9) || input_getscancodestate(SDL_SCANCODE_KP_9) || input_getscancodestate(SDL_SCANCODE_F9)) in_master = 9;
+					if (input_getscancodestate(SDL_SCANCODE_0) || input_getscancodestate(SDL_SCANCODE_KP_0) || input_getscancodestate(SDL_SCANCODE_F10)) in_master = 10;
 				}
 
-				get_box(sprite, &box_crap, &box_real, skip_screen_clipping());
-				box_crap.right = box_crap.left + 5;
-/* 				ddrval = lpDDSBack->Blt(&box_crap ,NULL,NULL, DDBLT_COLORFILL| DDBLT_WAIT, &ddbltfx); */
-				// GFX
-				{
-				  SDL_Rect dst;
-				  dst.x = box_crap.left;
-				  dst.y = box_crap.top;
-				  dst.w = 5;
-				  dst.h = box_crap.bottom - box_crap.top;
-				  SDL_FillRect(GFX_lpDDSBack, &dst, SDL_MapRGB(GFX_lpDDSTwo->format, 33, 41, 16));
+
+				if (input_getcharjustpressed(SDLK_s)) {
+					smart_add();
+
+					draw_screen_editor();
 				}
 
-				get_box(sprite, &box_crap, &box_real, skip_screen_clipping());
-				box_crap.left = box_crap.right - 5;
-/* 				ddrval = lpDDSBack->Blt(&box_crap ,NULL,NULL, DDBLT_COLORFILL| DDBLT_WAIT, &ddbltfx); */
-				// GFX
-				{
-				  SDL_Rect dst;
-				  dst.x = box_crap.right - 5;
-				  dst.y = box_crap.top;
-				  dst.w = 5;
-				  dst.h = box_crap.bottom - box_crap.top;
-				  SDL_FillRect(GFX_lpDDSBack, &dst, SDL_MapRGB(GFX_lpDDSTwo->format, 33, 41, 16));
+				if ( (sjoy.button[EDITOR_ACTION_RETURN]) | (mouse1) ) {
+					smart_add();
+					draw_screen_editor();
+					spr[1].pseq = 10;
+					spr[1].pframe = 8;
+					spr[1].size = 100;
+					rect_set(&spr[1].alt,0,0,0,0);
+
 				}
 
-				get_box(sprite, &box_crap, &box_real, skip_screen_clipping());
-				box_crap.top = box_crap.bottom - 5;
-/* 				ddrval = lpDDSBack->Blt(&box_crap ,NULL,NULL, DDBLT_COLORFILL| DDBLT_WAIT, &ddbltfx); */
-				// GFX
-				{
-				  SDL_Rect dst;
-				  dst.x = box_crap.left;
-				  dst.y = box_crap.bottom - 5;
-				  dst.w = box_crap.right - box_crap.left;
-				  dst.h = 5;
-				  SDL_FillRect(GFX_lpDDSBack, &dst, SDL_MapRGB(GFX_lpDDSTwo->format, 33, 41, 16));
+				if (input_getscancodejustpressed(SDL_SCANCODE_DELETE)) {
+
+					spr[1].pseq = 10;
+					spr[1].pframe = 8;
+					spr[1].size = 100;
+					rect_set(&spr[1].alt,0,0,0,0);
+
 				}
 
-				//	if (ddrval != DD_OK) dderror(ddrval);
+			} else {
+				//no sprite is currently selected
 
-				spr[sprite].active = /*false*/0;
+				int max_spr = 0;
+				int jj;
 
-			      }
-
-			  fail:
+				write_moves();
 
 
-			    if ( (sjoy.button[EDITOR_ACTION_RETURN]) | (mouse1))
-			      {
-				//pick up a sprite already placed by hitting enter
-				int uu;
 
-				for (uu = 100; uu > 0; uu--)
-				  {
-				    if ( cur_ed_screen.sprite[uu].active) if ( ( cur_ed_screen.sprite[uu].vision == 0) || (cur_ed_screen.sprite[uu].vision == map_vision))
-								  {
+				for (jj=1; jj < 100; jj++) {
+					if ( cur_ed_screen.sprite[jj].active) if (cur_ed_screen.sprite[jj].vision == map_vision) max_spr++;
+				}
 
-								    int	sprite = add_sprite_dumb(cur_ed_screen.sprite[uu].x,cur_ed_screen.sprite[uu].y,0,
-												 cur_ed_screen.sprite[uu].seq, cur_ed_screen.sprite[uu].frame,
-												 cur_ed_screen.sprite[uu].size);
-								    rect_copy(&spr[sprite].alt , &cur_ed_screen.sprite[uu].alt);
-								    get_box(sprite, &box_crap, &box_real, skip_screen_clipping());
-								    if (realpic > 0) goto spwarp;
-								    //Msg("Got sprite %d's info. X%d Y %d.",uu,box_crap.left,box_crap.right);
 
-								    if (inside_box(spr[1].x,spr[1].y,box_crap))
+				if (max_spr > 0) {
 
-								      {
+					/* if (sjoy.keyjustpressed[VK_OEM_4 /\* 219 *\/]) // '[' for US */
+					if (input_getscancodejustpressed(SDL_SCANCODE_PAGEUP) || input_getscancodejustpressed(SDL_SCANCODE_LEFTBRACKET)) {
+						sp_cycle--;
+						if (sp_cycle < 1)
+							sp_cycle = max_spr;
+					}
+
+					if (input_getscancodejustpressed(SDL_SCANCODE_PAGEDOWN) || input_getscancodejustpressed(SDL_SCANCODE_RIGHTBRACKET)) {
+						sp_cycle++;
+						if (sp_cycle > max_spr)
+							sp_cycle = 1;
+					}
+				}
+
+
+
+				//Msg("Cycle is %d", sp_cycle);
+				int realpic = 0;
+
+				if (sp_cycle > 0) {
+					//lets draw a frame around the sprite we want
+					int dumbpic = 0;
+					int jh;
+					realpic = 0;
+					for (jh = 1; dumbpic != sp_cycle; jh++) {
+						if (cur_ed_screen.sprite[jh].active)  if ( cur_ed_screen.sprite[jh].vision == map_vision) {
+								dumbpic++;
+								realpic = jh;
+							}
+						if (jh == 99) goto fail;
+
+					}
+
+					last_sprite_added = realpic;
+
+
+					/* ddbltfx.dwSize = sizeof(ddbltfx); */
+					/* ddbltfx.dwFillColor = 235; */
+
+					int	sprite = add_sprite_dumb(cur_ed_screen.sprite[realpic].x,cur_ed_screen.sprite[realpic].y,0,
+												 cur_ed_screen.sprite[realpic].seq, cur_ed_screen.sprite[realpic].frame,
+												 cur_ed_screen.sprite[realpic].size);
+					rect_copy(&spr[sprite].alt , &cur_ed_screen.sprite[realpic].alt);
+					get_box(sprite, &box_crap, &box_real, skip_screen_clipping());
+
+
+
+
+					get_box(sprite, &box_crap, &box_real, skip_screen_clipping());
+					box_crap.bottom = box_crap.top + 5;
+					/* ddrval = lpDDSBack->Blt(&box_crap ,NULL,NULL, DDBLT_COLORFILL| DDBLT_WAIT, &ddbltfx); */
+					// GFX
+					{
+						SDL_Rect dst;
+						dst.x = box_crap.left;
+						dst.y = box_crap.top;
+						dst.w = box_crap.right - box_crap.left;
+						dst.h = 5;
+						SDL_FillRect(GFX_lpDDSBack, &dst, SDL_MapRGB(GFX_lpDDSTwo->format, 33, 41, 16));
+					}
+
+					get_box(sprite, &box_crap, &box_real, skip_screen_clipping());
+					box_crap.right = box_crap.left + 5;
+					/* ddrval = lpDDSBack->Blt(&box_crap ,NULL,NULL, DDBLT_COLORFILL| DDBLT_WAIT, &ddbltfx); */
+					// GFX
+					{
+						SDL_Rect dst;
+						dst.x = box_crap.left;
+						dst.y = box_crap.top;
+						dst.w = 5;
+						dst.h = box_crap.bottom - box_crap.top;
+						SDL_FillRect(GFX_lpDDSBack, &dst, SDL_MapRGB(GFX_lpDDSTwo->format, 33, 41, 16));
+					}
+
+					get_box(sprite, &box_crap, &box_real, skip_screen_clipping());
+					box_crap.left = box_crap.right - 5;
+					/* ddrval = lpDDSBack->Blt(&box_crap ,NULL,NULL, DDBLT_COLORFILL| DDBLT_WAIT, &ddbltfx); */
+					// GFX
+					{
+						SDL_Rect dst;
+						dst.x = box_crap.right - 5;
+						dst.y = box_crap.top;
+						dst.w = 5;
+						dst.h = box_crap.bottom - box_crap.top;
+						SDL_FillRect(GFX_lpDDSBack, &dst, SDL_MapRGB(GFX_lpDDSTwo->format, 33, 41, 16));
+					}
+
+					get_box(sprite, &box_crap, &box_real, skip_screen_clipping());
+					box_crap.top = box_crap.bottom - 5;
+					/* ddrval = lpDDSBack->Blt(&box_crap ,NULL,NULL, DDBLT_COLORFILL| DDBLT_WAIT, &ddbltfx); */
+					// GFX
+					{
+						SDL_Rect dst;
+						dst.x = box_crap.left;
+						dst.y = box_crap.bottom - 5;
+						dst.w = box_crap.right - box_crap.left;
+						dst.h = 5;
+						SDL_FillRect(GFX_lpDDSBack, &dst, SDL_MapRGB(GFX_lpDDSTwo->format, 33, 41, 16));
+					}
+
+					// if (ddrval != DD_OK) dderror(ddrval);
+
+					spr[sprite].active = /*false*/0;
+
+				}
+
+			fail:
+				if ( (sjoy.button[EDITOR_ACTION_RETURN]) | (mouse1)) {
+					//pick up a sprite already placed by hitting enter
+					int uu;
+
+					for (uu = 100; uu > 0; uu--) {
+						if ( cur_ed_screen.sprite[uu].active) if ( ( cur_ed_screen.sprite[uu].vision == 0) || (cur_ed_screen.sprite[uu].vision == map_vision)) {
+
+								int	sprite = add_sprite_dumb(cur_ed_screen.sprite[uu].x,cur_ed_screen.sprite[uu].y,0,
+															 cur_ed_screen.sprite[uu].seq, cur_ed_screen.sprite[uu].frame,
+															 cur_ed_screen.sprite[uu].size);
+								rect_copy(&spr[sprite].alt , &cur_ed_screen.sprite[uu].alt);
+								get_box(sprite, &box_crap, &box_real, skip_screen_clipping());
+								if (realpic > 0) goto spwarp;
+								//Msg("Got sprite %d's info. X%d Y %d.",uu,box_crap.left,box_crap.right);
+
+								if (inside_box(spr[1].x,spr[1].y,box_crap)) {
 									//this is the sprite they want to edit, lets convert them into it
 									//						Msg("FOUND SPRITE!  It's %d, huh.",uu);
 
-									if ( 4 > 9)
-									  {
-									  spwarp:
-									    log_debug("Ah yeah, using %d!", realpic);
-									    uu = realpic;
-									  }
-
+									if (false) {
+									spwarp:
+										log_debug("Ah yeah, using %d!", realpic);
+										uu = realpic;
+									}
 
 									spr[1].x = cur_ed_screen.sprite[uu].x;
 									spr[1].y = cur_ed_screen.sprite[uu].y;
@@ -2518,260 +2442,227 @@ int gui_logic(int h) {
 									draw_screen_editor();
 									spr[sprite].active = /*false*/0;
 									break;
-								      }
-								    spr[sprite].active = /*false*/0;
+								}
+								spr[sprite].active = /*false*/0;
 
-								  }
-				  }
-
-
-			      }
+							}
+					}
 
 
-			    if ((SDL_GetModState()&KMOD_ALT) && (input_getscancodestate(SDL_SCANCODE_DELETE)))
-			      {
-				int ll;
-				for (ll = 1; ll < 100; ll++)
-				  {
-				    cur_ed_screen.sprite[ll].active = /*false*/0;
-				  }
-				draw_screen_editor();
-				rect_set(&spr[h].alt,0,0,0,0);
-			      }
-			  }
+				}
+
+
+				if ((SDL_GetModState()&KMOD_ALT) && (input_getscancodestate(SDL_SCANCODE_DELETE))) {
+					int ll;
+					for (ll = 1; ll < 100; ll++) {
+						cur_ed_screen.sprite[ll].active = /*false*/0;
+					}
+					draw_screen_editor();
+					rect_set(&spr[h].alt,0,0,0,0);
+				}
+			}
 
 			/** Trim a sprite **/
-			if (input_getcharstate(SDLK_z) || (input_getcharstate(SDLK_x)))
-			  {
-			    if ((spr[h].alt.right == 0) && (spr[h].alt.left == 0)
-				&& (spr[h].alt.top == 0) && (spr[h].alt.bottom == 0))
-			      rect_copy(&spr[h].alt, &k[getpic(h)].box);
-			  }
+			if (input_getcharstate(SDLK_z) || (input_getcharstate(SDLK_x))) {
+				if ((spr[h].alt.right == 0) && (spr[h].alt.left == 0)
+					&& (spr[h].alt.top == 0) && (spr[h].alt.bottom == 0))
+					rect_copy(&spr[h].alt, &k[getpic(h)].box);
+			}
 
-                        if (input_getcharstate(SDLK_z))
-			  {
+			if (input_getcharstate(SDLK_z)) {
 
-			    if (input_getscancodejustpressed(SDL_SCANCODE_RIGHT))
-			      {
-				spr[h].alt.left += spr[h].speed + modif;
-				EditorSoundPlayEffect( SOUND_STOP );
-			      }
+				if (input_getscancodejustpressed(SDL_SCANCODE_RIGHT)) {
+					spr[h].alt.left += spr[h].speed + modif;
+					EditorSoundPlayEffect( SOUND_STOP );
+				}
 
-			    if (input_getscancodejustpressed(SDL_SCANCODE_LEFT))
-			      {
-				spr[h].alt.left -= spr[h].speed +modif;
-				EditorSoundPlayEffect( SOUND_STOP );
-			      }
-			    if (input_getscancodejustpressed(SDL_SCANCODE_DOWN))
-			      {
-				spr[h].alt.top += spr[h].speed + modif;
-				EditorSoundPlayEffect( SOUND_STOP );
-			      }
+				if (input_getscancodejustpressed(SDL_SCANCODE_LEFT)) {
+					spr[h].alt.left -= spr[h].speed +modif;
+					EditorSoundPlayEffect( SOUND_STOP );
+				}
+				if (input_getscancodejustpressed(SDL_SCANCODE_DOWN)) {
+					spr[h].alt.top += spr[h].speed + modif;
+					EditorSoundPlayEffect( SOUND_STOP );
+				}
 
-			    if (input_getscancodejustpressed(SDL_SCANCODE_UP))
-			      {
-				spr[h].alt.top -= spr[h].speed + modif;
-				EditorSoundPlayEffect( SOUND_STOP );
-			      }
+				if (input_getscancodejustpressed(SDL_SCANCODE_UP)) {
+					spr[h].alt.top -= spr[h].speed + modif;
+					EditorSoundPlayEffect( SOUND_STOP );
+				}
 
 
-			    if (spr[h].alt.top < 0) spr[h].alt.top = 0;
-			    if (spr[h].alt.left < 0) spr[h].alt.left = 0;
-			    goto b1end;
-			  }
+				if (spr[h].alt.top < 0) spr[h].alt.top = 0;
+				if (spr[h].alt.left < 0) spr[h].alt.left = 0;
+				return 0;
+			}
 
 
 
-			if (input_getcharstate(SDLK_x))
-			  {
-			    if (input_getscancodejustpressed(SDL_SCANCODE_RIGHT))
-			      {
-				spr[h].alt.right += spr[h].speed + modif;
-				EditorSoundPlayEffect( SOUND_STOP );
-			      }
+			if (input_getcharstate(SDLK_x)) {
+				if (input_getscancodejustpressed(SDL_SCANCODE_RIGHT)) {
+					spr[h].alt.right += spr[h].speed + modif;
+					EditorSoundPlayEffect( SOUND_STOP );
+				}
 
-			    if (input_getscancodejustpressed(SDL_SCANCODE_LEFT))
-			      {
-				spr[h].alt.right -= spr[h].speed +modif;
-				EditorSoundPlayEffect( SOUND_STOP );
-			      }
-			    if (input_getscancodejustpressed(SDL_SCANCODE_DOWN))
-			      {
-				spr[h].alt.bottom += spr[h].speed + modif;
-				EditorSoundPlayEffect( SOUND_STOP );
-			      }
-			    if (input_getscancodejustpressed(SDL_SCANCODE_UP))
-			      {
-				spr[h].alt.bottom -= spr[h].speed + modif;
-				EditorSoundPlayEffect( SOUND_STOP );
+				if (input_getscancodejustpressed(SDL_SCANCODE_LEFT)) {
+					spr[h].alt.right -= spr[h].speed +modif;
+					EditorSoundPlayEffect( SOUND_STOP );
+				}
+				if (input_getscancodejustpressed(SDL_SCANCODE_DOWN)) {
+					spr[h].alt.bottom += spr[h].speed + modif;
+					EditorSoundPlayEffect( SOUND_STOP );
+				}
+				if (input_getscancodejustpressed(SDL_SCANCODE_UP)) {
+					spr[h].alt.bottom -= spr[h].speed + modif;
+					EditorSoundPlayEffect( SOUND_STOP );
 
-				//	Msg("Bottom is %d..",spr[h].alt.bottom);
+					//	Msg("Bottom is %d..",spr[h].alt.bottom);
 
-			      }
-			    if (spr[h].alt.bottom > k[getpic(h)].box.bottom) spr[h].alt.bottom = k[getpic(h)].box.bottom;
-			    if (spr[h].alt.right > k[getpic(h)].box.right) spr[h].alt.right = k[getpic(h)].box.right;
+				}
+				if (spr[h].alt.bottom > k[getpic(h)].box.bottom) spr[h].alt.bottom = k[getpic(h)].box.bottom;
+				if (spr[h].alt.right > k[getpic(h)].box.right) spr[h].alt.right = k[getpic(h)].box.right;
 
-			    goto b1end;
+				return 0;
 
-			  }
+			}
 
 
 			if (spr[1].size < 1)
-			  spr[1].size = 1;
+				spr[1].size = 1;
 
 			/* Precise positionning: move the sprite just
 			   1 pixel left/right/up/down, then don't do
 			   move until an arrow key is released and
 			   pressed again. */
-			if (SDL_GetModState()&KMOD_CTRL)
-			  {
-			    if (input_getscancodejustpressed(SDL_SCANCODE_RIGHT))
-			      {
+			if (SDL_GetModState()&KMOD_CTRL) {
+				if (input_getscancodejustpressed(SDL_SCANCODE_RIGHT)) {
 				
-				sp_cycle = 0;
+					sp_cycle = 0;
 				
-				spr[h].x += spr[h].speed + modif;
-				EditorSoundPlayEffect( SOUND_STOP );
-			      }
-			    
-			    if (input_getscancodejustpressed(SDL_SCANCODE_LEFT))
-			      {
-				spr[h].x -= spr[h].speed +modif;
-				EditorSoundPlayEffect( SOUND_STOP );
-				sp_cycle = 0;
-			      }
-			    if (input_getscancodejustpressed(SDL_SCANCODE_UP))
-			      {
-				spr[h].y -= spr[h].speed + modif;
-				EditorSoundPlayEffect( SOUND_STOP );
-				sp_cycle = 0;
-			      }
-			    
-			    if (input_getscancodejustpressed(SDL_SCANCODE_DOWN))
-			      {
-				spr[h].y += spr[h].speed + modif;
-				EditorSoundPlayEffect( SOUND_STOP );
-				sp_cycle = 0;
-			      }
-			    
-			  }
-			else
-			  {
-			    if (sjoy.right)
-			      {
-				spr[h].x += spr[h].speed + modif;
-				EditorSoundPlayEffect( SOUND_STOP );
-				sp_cycle = 0;
-			      }
+					spr[h].x += spr[h].speed + modif;
+					EditorSoundPlayEffect( SOUND_STOP );
+				}
+				
+				if (input_getscancodejustpressed(SDL_SCANCODE_LEFT)) {
+					spr[h].x -= spr[h].speed +modif;
+					EditorSoundPlayEffect( SOUND_STOP );
+					sp_cycle = 0;
+				}
+				if (input_getscancodejustpressed(SDL_SCANCODE_UP)) {
+					spr[h].y -= spr[h].speed + modif;
+					EditorSoundPlayEffect( SOUND_STOP );
+					sp_cycle = 0;
+				}
+				
+				if (input_getscancodejustpressed(SDL_SCANCODE_DOWN)) {
+					spr[h].y += spr[h].speed + modif;
+					EditorSoundPlayEffect( SOUND_STOP );
+					sp_cycle = 0;
+				}
+				
+			} else {
+				if (sjoy.right) {
+					spr[h].x += spr[h].speed + modif;
+					EditorSoundPlayEffect( SOUND_STOP );
+					sp_cycle = 0;
+				}
 
-			    if (sjoy.left)
-			      {
-				spr[h].x -= spr[h].speed +modif;
-				EditorSoundPlayEffect( SOUND_STOP );
-				sp_cycle = 0;
-			      }
-			    if (sjoy.up)
-			      {
-				spr[h].y -= spr[h].speed + modif;
-				EditorSoundPlayEffect( SOUND_STOP );
-				sp_cycle = 0;
-			      }
+				if (sjoy.left) {
+					spr[h].x -= spr[h].speed +modif;
+					EditorSoundPlayEffect( SOUND_STOP );
+					sp_cycle = 0;
+				}
+				if (sjoy.up) {
+					spr[h].y -= spr[h].speed + modif;
+					EditorSoundPlayEffect( SOUND_STOP );
+					sp_cycle = 0;
+				}
 
-			    if (sjoy.down)
-			      {
-				spr[h].y += spr[h].speed + modif;
-				EditorSoundPlayEffect( SOUND_STOP );
-				sp_cycle = 0;
+				if (sjoy.down) {
+					spr[h].y += spr[h].speed + modif;
+					EditorSoundPlayEffect( SOUND_STOP );
+					sp_cycle = 0;
 
-			      }
+				}
 
 
-			  }
+			}
 
 
 
 
 
-			if (  (sjoy.button[EDITOR_ACTION_ESCAPE]) )
-			  {
-			    //return to edit mode or drop sprite, depending..
-			    if (((spr[1].pseq == 10) && (spr[1].pframe == 8))  )
+			if (  (sjoy.button[EDITOR_ACTION_ESCAPE]) ) {
+				//return to edit mode or drop sprite, depending..
+				if (((spr[1].pseq == 10) && (spr[1].pframe == 8))  ) {
 
-			      {
+					rect_set(&spr[1].alt,0,0,0,0);
 
+					spr[1].size = 100;
+					mode = MODE_SCREEN_TILES;
+					spr[1].x = m4x;
+					spr[1].y = m4y;
+					spr[1].seq = 3;
+					spr[1].speed = 50;
+				} else {
+					smart_add();
+					draw_screen_editor();
+					rect_set(&spr[1].alt,0,0,0,0);
+
+					spr[1].pseq = 10;
+					spr[1].pframe = 8;
+					spr[1].size = 100;
+
+				}
+			}
+
+
+			if (input_getcharjustpressed(SDLK_e)) {
+				//they hit E, go to sprite picker
 				rect_set(&spr[1].alt,0,0,0,0);
 
 				spr[1].size = 100;
-				mode = MODE_SCREEN_TILES;
-				spr[1].x = m4x;
-				spr[1].y = m4y;
+				//mode = 5;
+				mode = MODE_SPRITE_PICKER;
+				m6x = spr[h].x;
+				m6y = spr[h].y;
+				spr[h].x = m5x;
+				spr[h].y = m5y;
+
 				spr[1].seq = 3;
 				spr[1].speed = 50;
-			      } else
-			      {
-				smart_add();
-				draw_screen_editor();
-				rect_set(&spr[1].alt,0,0,0,0);
+				if (sp_seq == 0) draw15(sp_picker); else draw96(sp_frame);
+				goto sp_edit_end;
 
-				spr[1].pseq = 10;
-				spr[1].pframe = 8;
+			}
+			if (sjoy.button[EDITOR_ACTION_TAB]) {
+				//they hit tab, return to tile edit mode
+				if (  !((spr[1].pseq == 10) && (spr[1].pframe == 8))  ) {
+					smart_add();
+					rect_set(&spr[1].alt,0,0,0,0);
+
+					draw_screen_editor();
+				}
 				spr[1].size = 100;
+				mode = MODE_SCREEN_TILES;
+				spr[h].x = m4x;
+				spr[h].y = m4y;
 
-			      }
-			  }
+				spr[1].seq = 3;
+				spr[1].speed = 50;
+				//	if (sp_seq == 0) draw15(); else draw96();
+				goto sp_edit_end;
 
-
-			if (input_getcharjustpressed(SDLK_e))
-			  {
-			    //they hit E, go to sprite picker
-			    rect_set(&spr[1].alt,0,0,0,0);
-
-			    spr[1].size = 100;
-			    //mode = 5;
-			    mode = MODE_SPRITE_PICKER;
-			    m6x = spr[h].x;
-			    m6y = spr[h].y;
-			    spr[h].x = m5x;
-			    spr[h].y = m5y;
-
-			    spr[1].seq = 3;
-			    spr[1].speed = 50;
-			    if (sp_seq == 0) draw15(sp_picker); else draw96(sp_frame);
-			    goto sp_edit_end;
-
-			  }
-			if (sjoy.button[EDITOR_ACTION_TAB])
-			  {
-			    //they hit tab, return to tile edit mode
-			    if (    !((spr[1].pseq == 10) && (spr[1].pframe == 8))  )
-
-			      {
-				smart_add();
-				rect_set(&spr[1].alt,0,0,0,0);
-
-				draw_screen_editor();
-			      }
-			    spr[1].size = 100;
-			    mode = MODE_SCREEN_TILES;
-			    spr[h].x = m4x;
-			    spr[h].y = m4y;
-
-			    spr[1].seq = 3;
-			    spr[1].speed = 50;
-			    //	if (sp_seq == 0) draw15(); else draw96();
-			    goto sp_edit_end;
-
-			  }
+			}
 
 
-			goto b1end;
+			return 0;
 
-		      }
+		}
 
 
-		    if ( (mode == MODE_SCREEN_TILES)
-			 && (sjoy.button[EDITOR_ACTION_TAB]))
-		      {
+		if ( (mode == MODE_SCREEN_TILES)
+			 && (sjoy.button[EDITOR_ACTION_TAB])) {
 
 			//they chose sprite picker mode
 			//lsm_kill_all_nonlive_sprites();
@@ -2793,188 +2684,169 @@ int gui_logic(int h) {
 			//if (sp_seq == 0)
 			//	draw15(); else draw96();
 
-		      } else
+		} else if (mode == MODE_SPRITE_PICKER) {
+			//picking a sprite
+			if (sp_seq != 0) {
+				//they are in select sprite phase 2
+
+				if (input_getcharjustpressed(SDLK_e)) {
+					//they want to 'edit' the sprite
+					mode = MODE_SPRITE_HARDNESS;
+					m5x = spr[h].x;
+					m5y = spr[h].y;
+
+					//lets blank the screen
+					/* ZeroMemory(&ddbltfx, sizeof(ddbltfx)); */
+					/* ddbltfx.dwSize = sizeof( ddbltfx); */
+					/* ddbltfx.dwFillColor = 255; */
+					/* crap = lpDDSTwo->Blt(NULL ,NULL,NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx); */
+					// GFX
+					SDL_FillRect(GFX_lpDDSTwo, NULL, SDL_MapRGB(GFX_lpDDSTwo->format, 255, 255, 255));
+
+					holdx = (spr[1].x / 50);
+					int holdy = (spr[1].y / 50)+1;
+					holdx = holdx * 8;
+					if (seq[sp_seq].frame[holdx + holdy] == 0) goto sp_fin;
+
+					add_sprite_dumb(320,200 , 0,sp_seq,holdx + holdy,100 );
+
+					sp_frame = holdx + holdy;
+					spr[1].pseq = 10;
+					spr[1].pframe = 8;
 
 
-
-
-
-
-		      if (mode == MODE_SPRITE_PICKER)
-			{
-			  //picking a sprite
-			  if (sp_seq != 0)
-			    {
-			      //they are in select sprite phase 2
-
-			      if (input_getcharjustpressed(SDLK_e))
-				{
-				  //they want to 'edit' the sprite
-				  mode = MODE_SPRITE_HARDNESS;
-				  m5x = spr[h].x;
-				  m5y = spr[h].y;
-
-				  //lets blank the screen
-/* 				  ZeroMemory(&ddbltfx, sizeof(ddbltfx)); */
-/* 				  ddbltfx.dwSize = sizeof( ddbltfx); */
-/* 				  ddbltfx.dwFillColor = 255; */
-/* 				  crap = lpDDSTwo->Blt(NULL ,NULL,NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx); */
-				  // GFX
-				  SDL_FillRect(GFX_lpDDSTwo, NULL, SDL_MapRGB(GFX_lpDDSTwo->format, 255, 255, 255));
-
-				  holdx = (spr[1].x / 50);
-				  int holdy = (spr[1].y / 50)+1;
-				  holdx = holdx * 8;
-				  if (seq[sp_seq].frame[holdx + holdy] == 0) goto sp_fin;
-
-				  add_sprite_dumb(320,200 , 0,sp_seq,holdx + holdy,100 );
-
-				  sp_frame = holdx + holdy;
-				  spr[1].pseq = 10;
-				  spr[1].pframe = 8;
-
-
-				  spr[1].speed = 1;
-				  goto sp_edit_end;
+					spr[1].speed = 1;
+					goto sp_edit_end;
 
 				}
 
-			      if ((sjoy.button[EDITOR_ACTION_ESCAPE]))
-				{
+				if ((sjoy.button[EDITOR_ACTION_ESCAPE])) {
 
 
-				  //returning to main sprite picker mode
-				  sp_seq = 0;
+					//returning to main sprite picker mode
+					sp_seq = 0;
 
-				  draw15(sp_picker);
-				  spr[h].x = m5ax;
-				  spr[h].y = m5ay;
+					draw15(sp_picker);
+					spr[h].x = m5ax;
+					spr[h].y = m5ay;
 
-				  goto sp_edit_end;
+					goto sp_edit_end;
 				}
 
-			      if (sjoy.button[EDITOR_ACTION_TAB])
-				{
-				  //leave to screen editor
+				if (sjoy.button[EDITOR_ACTION_TAB]) {
+					//leave to screen editor
 				sp_fin:
-				  m5x = spr[h].x;
-				  m5y = spr[h].y;
+					m5x = spr[h].x;
+					m5y = spr[h].y;
 
-				  draw_screen_editor();
-				  spr[h].x = m6x;
-				  spr[h].y = m6y;
+					draw_screen_editor();
+					spr[h].x = m6x;
+					spr[h].y = m6y;
 
-				  spr[1].pseq = 10;
-				  spr[1].pframe = 8;
+					spr[1].pseq = 10;
+					spr[1].pframe = 8;
 
-				  spr[h].speed = 1;
-				  mode = MODE_SCREEN_SPRITES;
-				  goto sp_edit_end;
-
-				}
-
-			      if (sjoy.button[EDITOR_ACTION_RETURN])
-				{
-
-				  // go to mode 6, sprite placement
-				  m5x = spr[h].x;
-				  m5y = spr[h].y;
-
-
-				  holdx = (spr[1].x / 50);
-				  int holdy = (spr[1].y / 50)+1;
-				  holdx = holdx * 8;
-				  if (seq[sp_seq].frame[holdx + holdy] == 0) goto sp_fin;
-				  spr[1].pseq = sp_seq;
-				  spr[1].pframe = holdx + holdy;
-				  sp_frame = holdx + holdy;
-				  draw_screen_editor();
-				  spr[h].x = m6x;
-				  spr[h].y = m6y;
-				  mode = MODE_SCREEN_SPRITES;
-				  spr[h].speed = 1;
-				  goto sp_edit_end;
+					spr[h].speed = 1;
+					mode = MODE_SCREEN_SPRITES;
+					goto sp_edit_end;
 
 				}
 
+				if (sjoy.button[EDITOR_ACTION_RETURN]) {
 
-			      goto sp_edit_end;
-			    }
+					// go to mode 6, sprite placement
+					m5x = spr[h].x;
+					m5y = spr[h].y;
 
 
-			  if (sjoy.button[EDITOR_ACTION_TAB] || sjoy.button[EDITOR_ACTION_ESCAPE])
-			    {
+					holdx = (spr[1].x / 50);
+					int holdy = (spr[1].y / 50)+1;
+					holdx = holdx * 8;
+					if (seq[sp_seq].frame[holdx + holdy] == 0) goto sp_fin;
+					spr[1].pseq = sp_seq;
+					spr[1].pframe = holdx + holdy;
+					sp_frame = holdx + holdy;
+					draw_screen_editor();
+					spr[h].x = m6x;
+					spr[h].y = m6y;
+					mode = MODE_SCREEN_SPRITES;
+					spr[h].speed = 1;
+					goto sp_edit_end;
 
-			      //exit to main editor
-			      /*m5x = spr[h].x;
+				}
+
+
+				goto sp_edit_end;
+			}
+
+
+			if (sjoy.button[EDITOR_ACTION_TAB] || sjoy.button[EDITOR_ACTION_ESCAPE]) {
+
+				//exit to main editor
+				/*m5x = spr[h].x;
+				  m5y = spr[h].y;
+				  draw_screen_editor();
+				  spr[h].x = m4x;
+				  spr[h].y = m4y;
+				  mode = 3;
+				  return 0;
+				*/
+				m5x = spr[h].x;
 				m5y = spr[h].y;
+
 				draw_screen_editor();
-				spr[h].x = m4x;
-				spr[h].y = m4y;
-				mode = 3;
-				goto b1end;
-			      */
-			      m5x = spr[h].x;
-			      m5y = spr[h].y;
+				spr[h].x = m6x;
+				spr[h].y = m6y;
+				spr[h].pseq = 10;
+				spr[h].pframe = 8;
 
-			      draw_screen_editor();
-			      spr[h].x = m6x;
-			      spr[h].y = m6y;
-			      spr[h].pseq = 10;
-			      spr[h].pframe = 8;
-
-			      spr[h].speed = 1;
-			      mode = MODE_SCREEN_SPRITES;
-			      goto b1end;
-			      //goto sp_edit_end;
-
-			    }
-
-			  /* if (sjoy.keyjustpressed[VK_OEM_4 /\* 219 *\/]) // '[' for US */
-			  if (input_getscancodejustpressed(SDL_SCANCODE_PAGEUP) || input_getscancodejustpressed(SDL_SCANCODE_LEFTBRACKET))
-			    {
-			      if (sp_picker > 95) sp_picker -= 96; else
-				{
-				  sp_picker = (4 * 96);
-				}
-			      draw15(sp_picker);
-			    }
-			    /* if (sjoy.keyjustpressed[VK_OEM_6 /\* 221 *\/]) // ']' for US */
-			  if (input_getscancodejustpressed(SDL_SCANCODE_PAGEDOWN) || input_getscancodejustpressed(SDL_SCANCODE_RIGHTBRACKET))
-			    {
-			      if (sp_picker < 400) sp_picker += 96;
-			      draw15(sp_picker);
-			    }
-
-			  if (sjoy.button[EDITOR_ACTION_RETURN])
-			    {
-
-			      //they chose a catagory, switch to phase 2, it will know cuz sp_seq > 0.
-			      holdx = (spr[1].x / 50);
-			      int holdy = (spr[1].y / 50)+1;
-			      holdx = holdx * 8;
-			      m5ax = spr[1].x;
-			      m5ay = spr[1].y;
-			      spr[1].x = 0;
-			      spr[1].y = 0;
-			      sp_seq = sp_get(sp_picker+ (holdx + holdy));
-			      //	Msg("Sp_seq is %d",sp_seq);
-			      draw96(0);
-
-			    }
-
+				spr[h].speed = 1;
+				mode = MODE_SCREEN_SPRITES;
+				return 0;
+				//goto sp_edit_end;
 
 			}
-		  sp_edit_end:
+
+			/* if (sjoy.keyjustpressed[VK_OEM_4 /\* 219 *\/]) // '[' for US */
+			if (input_getscancodejustpressed(SDL_SCANCODE_PAGEUP) || input_getscancodejustpressed(SDL_SCANCODE_LEFTBRACKET)) {
+				if (sp_picker > 95) sp_picker -= 96; else {
+					sp_picker = (4 * 96);
+				}
+				draw15(sp_picker);
+			}
+			/* if (sjoy.keyjustpressed[VK_OEM_6 /\* 221 *\/]) // ']' for US */
+			if (input_getscancodejustpressed(SDL_SCANCODE_PAGEDOWN) || input_getscancodejustpressed(SDL_SCANCODE_RIGHTBRACKET)) {
+				if (sp_picker < 400) sp_picker += 96;
+				draw15(sp_picker);
+			}
+
+			if (sjoy.button[EDITOR_ACTION_RETURN]) {
+
+				//they chose a catagory, switch to phase 2, it will know cuz sp_seq > 0.
+				holdx = (spr[1].x / 50);
+				int holdy = (spr[1].y / 50)+1;
+				holdx = holdx * 8;
+				m5ax = spr[1].x;
+				m5ay = spr[1].y;
+				spr[1].x = 0;
+				spr[1].y = 0;
+				sp_seq = sp_get(sp_picker+ (holdx + holdy));
+				//	Msg("Sp_seq is %d",sp_seq);
+				draw96(0);
+
+			}
+
+
+		}
+	sp_edit_end:
 
 
 
 
-		    if (mode == MODE_SCREEN_TILES) draw_current();
+		if (mode == MODE_SCREEN_TILES) draw_current();
 
 
-		    if (mode == MODE_INIT)
-		      {
+		if (mode == MODE_INIT) {
 
 			spr[h].seq = 2;
 			spr[h].seq_orig = 2;
@@ -2984,182 +2856,156 @@ int gui_logic(int h) {
 			spr[2].active = /*FALSE*/0;
 			spr[3].active = /*FALSE*/0;
 			spr[4].active = /*FALSE*/0;
-		      }
+		}
 
-		    if (mode == MODE_INIT) goto b1end;
-
-
+		if (mode == MODE_INIT) return 0;
 
 
-		    //mode equals 4, they are in hardness edit mode, so lets do this thang
-
-		    if (mode == MODE_TILE_HARDNESS)
-		      {
-			if (spr[h].seq == 0)
-			  {
-			    if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_RIGHT)))
-			      {
-				spr[h].seq = 4;
-				spr[h].frame = 1;
-				if (selx < 8) selx++;
-				goto b1fun;
-			      }
-
-			    if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_LEFT)))
-			      {
-				spr[h].seq = 4;
-				spr[h].frame = 1;
-				if (selx > 1) selx--;
-				goto b1fun;
-			      }
-
-			    if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_UP)))
-			      {
-				spr[h].seq = 4;
-				spr[h].frame = 1;
-				if (sely > 1) sely--;
-				goto b1fun;
-			      }
-
-			    if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_DOWN)))
-			      {
-				spr[h].seq = 4;
-				spr[h].frame = 1;
-				if (sely <  8) sely++;
-				goto b1fun;
-			      }
 
 
-			    if (sjoy.right)
-			      {
-				spr[h].x += 9;
-				spr[h].seq = 4;
-				spr[h].frame = 1;
-				EditorSoundPlayEffect(SOUND_STOP);
-			      }
-			    if (sjoy.left)
-			      {
-				spr[h].x -= 9;
-				spr[h].seq = 4;
-				spr[h].frame = 1;
-				EditorSoundPlayEffect( SOUND_STOP );
-			      }
-			    if (sjoy.up)
-			      {
-				spr[h].y -= 9;
-				spr[h].seq = 4;
-				spr[h].frame = 1;
-				EditorSoundPlayEffect( SOUND_STOP );
-			      }
-			    if (sjoy.down)
-			      {
-				spr[h].y += 9;
-				spr[h].seq = 4;
-				spr[h].frame = 1;
-				EditorSoundPlayEffect( SOUND_STOP );
-			      }
-			  }
+		//mode equals 4, they are in hardness edit mode, so lets do this thang
+
+		if (mode == MODE_TILE_HARDNESS) {
+			if (spr[h].seq == 0) {
+				if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_RIGHT))) {
+					spr[h].seq = 4;
+					spr[h].frame = 1;
+					if (selx < 8) selx++;
+					goto b1fun;
+				}
+
+				if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_LEFT))) {
+					spr[h].seq = 4;
+					spr[h].frame = 1;
+					if (selx > 1) selx--;
+					goto b1fun;
+				}
+
+				if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_UP))) {
+					spr[h].seq = 4;
+					spr[h].frame = 1;
+					if (sely > 1) sely--;
+					goto b1fun;
+				}
+
+				if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_DOWN))) {
+					spr[h].seq = 4;
+					spr[h].frame = 1;
+					if (sely <  8) sely++;
+					goto b1fun;
+				}
 
 
-		      b1fun:
+				if (sjoy.right) {
+					spr[h].x += 9;
+					spr[h].seq = 4;
+					spr[h].frame = 1;
+					EditorSoundPlayEffect(SOUND_STOP);
+				}
+				if (sjoy.left) {
+					spr[h].x -= 9;
+					spr[h].seq = 4;
+					spr[h].frame = 1;
+					EditorSoundPlayEffect( SOUND_STOP );
+				}
+				if (sjoy.up) {
+					spr[h].y -= 9;
+					spr[h].seq = 4;
+					spr[h].frame = 1;
+					EditorSoundPlayEffect( SOUND_STOP );
+				}
+				if (sjoy.down) {
+					spr[h].y += 9;
+					spr[h].seq = 4;
+					spr[h].frame = 1;
+					EditorSoundPlayEffect( SOUND_STOP );
+				}
+			}
+
+
+		b1fun:
 
 			//make sure they didn't go past the boundrys
-			if (mode != 1)
-			  {
+			if (mode != 1) {
 
-			    if (spr[h].x + (9 * (selx -1))> 95+441) spr[h].x = (95+441) - (9 * (selx-1));
-			    if (spr[h].x < 95) spr[h].x = 95;
-			    if (spr[h].y < 0) spr[h].y = 0;
-			    if (spr[h].y + (9 * (sely -1))> 441) spr[h].y = 441 - (9 * (sely-1));
-			  }
+				if (spr[h].x + (9 * (selx -1))> 95+441) spr[h].x = (95+441) - (9 * (selx-1));
+				if (spr[h].x < 95) spr[h].x = 95;
+				if (spr[h].y < 0) spr[h].y = 0;
+				if (spr[h].y + (9 * (sely -1))> 441) spr[h].y = 441 - (9 * (sely-1));
+			}
 
 			//change a piece to hard
-			if (input_getcharstate(SDLK_z))
-			  {
-			    int y;
-			    for (y = 0; y < sely; y++)
-			      {
-				int x;
-				for (x = 0; x < selx; x++)
-				  {
-				    hmap.htile[hard_tile].hm[((spr[h].x) + (x*9) - 95) / 9][(spr[h].y + (y *9)) / 9] = 1;
+			if (input_getcharstate(SDLK_z)) {
+				int y;
+				for (y = 0; y < sely; y++) {
+					int x;
+					for (x = 0; x < selx; x++) {
+						hmap.htile[hard_tile].hm[((spr[h].x) + (x*9) - 95) / 9][(spr[h].y + (y *9)) / 9] = 1;
 
-				  }
-			      }
-			  }
+					}
+				}
+			}
 
 
 			//change a piece to soft
-			if (input_getcharstate(SDLK_x))
-			  {
-			    int y;
-			    for (y = 0; y < sely; y++)
-			      {
-				int x;
-				for (x = 0; x < selx; x++)
-				  {
-				    hmap.htile[hard_tile].hm[((spr[h].x) + (x*9) - 95) / 9][(spr[h].y + (y *9)) / 9] = 0;
+			if (input_getcharstate(SDLK_x)) {
+				int y;
+				for (y = 0; y < sely; y++) {
+					int x;
+					for (x = 0; x < selx; x++) {
+						hmap.htile[hard_tile].hm[((spr[h].x) + (x*9) - 95) / 9][(spr[h].y + (y *9)) / 9] = 0;
 
-				  }
-			      }
-			  }
+					}
+				}
+			}
 
 
-			if ( (input_getcharstate(SDLK_a)) && (SDL_GetModState()&KMOD_ALT ) )
-			  {
-			    //change ALL to 'low hard'
-			    change_tile(hard_tile, 2);
-			    log_debug("Changing whole tile to 2");
+			if ( (input_getcharstate(SDLK_a)) && (SDL_GetModState()&KMOD_ALT ) ) {
+				//change ALL to 'low hard'
+				change_tile(hard_tile, 2);
+				log_debug("Changing whole tile to 2");
 
-			    return 2;
-			  }
+				return 2;
+			}
 
-			if ( (input_getcharstate(SDLK_s)) && (SDL_GetModState()&KMOD_ALT ) )
-			  {
-			    //change ALL to 'low hard'
-			    change_tile(hard_tile, 3);
-			    log_debug("Chaning whole tile to 3");
+			if ( (input_getcharstate(SDLK_s)) && (SDL_GetModState()&KMOD_ALT ) ) {
+				//change ALL to 'low hard'
+				change_tile(hard_tile, 3);
+				log_debug("Chaning whole tile to 3");
 
-			    return 2;
-			  }
-			if ( (input_getcharstate(SDLK_x)) && (SDL_GetModState()&KMOD_ALT ) )
-			  {
-			    //change ALL to 'low hard'
-			    change_tile(hard_tile, 1);
-			    log_debug("Changing whole tile to 1");
+				return 2;
+			}
+			if ( (input_getcharstate(SDLK_x)) && (SDL_GetModState()&KMOD_ALT ) ) {
+				//change ALL to 'low hard'
+				change_tile(hard_tile, 1);
+				log_debug("Changing whole tile to 1");
 
-			    return 2;
-			  }
+				return 2;
+			}
 
 
-                        if (input_getcharstate(SDLK_a))
-			  {
-			    int y;
-			    for (y = 0; y < sely; y++)
-			      {
-				int x;
-				for (x = 0; x < selx; x++)
-				  {
-				    hmap.htile[hard_tile].hm[((spr[h].x) + (x*9) - 95) / 9][(spr[h].y + (y *9)) / 9] = 2;
+			if (input_getcharstate(SDLK_a)) {
+				int y;
+				for (y = 0; y < sely; y++) {
+					int x;
+					for (x = 0; x < selx; x++) {
+						hmap.htile[hard_tile].hm[((spr[h].x) + (x*9) - 95) / 9][(spr[h].y + (y *9)) / 9] = 2;
 
-				  }
-			      }
+					}
+				}
 
-			  }
-                        if (input_getcharstate(SDLK_s))
-			  {
-			    int y;
-			    for (y = 0; y < sely; y++)
-			      {
-				int x;
-				for (x = 0; x < selx; x++)
-				  {
-				    hmap.htile[hard_tile].hm[((spr[h].x) + (x*9) - 95) / 9][(spr[h].y + (y *9)) / 9] = 3;
+			}
+			if (input_getcharstate(SDLK_s)) {
+				int y;
+				for (y = 0; y < sely; y++) {
+					int x;
+					for (x = 0; x < selx; x++) {
+						hmap.htile[hard_tile].hm[((spr[h].x) + (x*9) - 95) / 9][(spr[h].y + (y *9)) / 9] = 3;
 
-				  }
-			      }
+					}
+				}
 
-			  }
+			}
 
 
 			//update frame with current hard blocks, slow
@@ -3167,209 +3013,190 @@ int gui_logic(int h) {
 			draw_hard();
 
 			if (sjoy.button[EDITOR_ACTION_ESCAPE] == 1
-			    || sjoy.button[EDITOR_ACTION_RETURN] == 1)
-			  {
-			    //quit hardness edit
+				|| sjoy.button[EDITOR_ACTION_RETURN] == 1) {
+				//quit hardness edit
 
-			    spr[h].seq = 3;
-			    spr[h].seq_orig = 3;
+				spr[h].seq = 3;
+				spr[h].seq_orig = 3;
 
-			    if (last_modereal == 8)
-			      {
-				//return to alt hardness editor
+				if (last_modereal == 8) {
+					//return to alt hardness editor
+					draw_screen_editor();
+					last_modereal = 0;
+					spr[h].x = m4x;
+					spr[h].y = m4y;
+
+					selx = 1;
+					sely = 1;
+
+					mode = MODE_SCREEN_HARDNESS_INIT;
+					return 2;
+				}
+
+				if (last_mode > 0) {
+					loadtile(last_mode);
+					selx = 1;
+					sely = 1;
+					return 0;
+				}
+				fill_whole_hard();
+
 				draw_screen_editor();
-				last_modereal = 0;
 				spr[h].x = m4x;
 				spr[h].y = m4y;
-
+				mode = MODE_SCREEN_TILES;
 				selx = 1;
 				sely = 1;
+			}
 
-				mode = MODE_SCREEN_HARDNESS_INIT;
-				return 2;
-			      }
-
-			    if (last_mode > 0)
-			      {
-				loadtile(last_mode);
-				selx = 1;
-				sely = 1;
-				goto b1end;
-			      }
-			    fill_whole_hard();
-
-			    draw_screen_editor();
-			    spr[h].x = m4x;
-			    spr[h].y = m4y;
-			    mode = MODE_SCREEN_TILES;
-			    selx = 1;
-			    sely = 1;
-			  }
-
-			goto b1end;
-		      }
+			return 0;
+		}
 
 
-		    //THEY WANT TO EDIT HARDNESS
+		//THEY WANT TO EDIT HARDNESS
 
-		    if ( (input_getcharjustpressed(SDLK_b)) )
-		      {
+		if ( (input_getcharjustpressed(SDLK_b)) ) {
 			in_master = 31;
 
 
-		      }
+		}
 
-		    if ( (input_getcharjustpressed(SDLK_v)) )
-		      {
+		if ( (input_getcharjustpressed(SDLK_v)) ) {
 			in_master = INPUT_SCREEN_VISION;
-		      }
+		}
 
 
 
-		    if (((mode == MODE_SCREEN_TILES) && (sjoy.button[EDITOR_ACTION_RETURN]))
-			|| ((mode == MODE_TILE_PICKER) && (input_getscancodestate(SDL_SCANCODE_SPACE))))
-
-		      {
+		if (((mode == MODE_SCREEN_TILES) && (sjoy.button[EDITOR_ACTION_RETURN]))
+			|| ((mode == MODE_TILE_PICKER) && (input_getscancodestate(SDL_SCANCODE_SPACE)))) {
 
 			if (mode == MODE_SCREEN_TILES)
-			  cur_tile = cur_ed_screen.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].square_full_idx0;
+				cur_tile = cur_ed_screen.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].square_full_idx0;
 
-			if (mode == MODE_TILE_PICKER)
-			  {
-			    cur_tile = (((spr[1].y+1)*12) / 50)+(spr[1].x / 50);
-			    cur_tile += (cur_tileset * 128) - 128;
-			  }
+			if (mode == MODE_TILE_PICKER) {
+				cur_tile = (((spr[1].y+1)*12) / 50)+(spr[1].x / 50);
+				cur_tile += (cur_tileset * 128) - 128;
+			}
 
 			lsm_kill_all_nonlive_sprites();
 			draw_current();
 
-			if (cur_tile > 0)
-			  {
-			    if (hmap.btile_default[cur_tile] == 0)
-			      {
-				int j;
-				for (j = 1; j < 799; j++)
-				  {
-				    if (hmap.htile[j].used == /*FALSE*/0)
-				      {
-					hmap.btile_default[cur_tile] = j;
-					hmap.htile[j].used = /*TRUE*/1;
-				    	hard_tile = j;
-					goto tilesel;
-				      }
-				  }
-			      }
-			    else
-			      hard_tile = hmap.btile_default[cur_tile];
+			if (cur_tile > 0) {
+				if (hmap.btile_default[cur_tile] == 0) {
+					int j;
+					for (j = 1; j < 799; j++) {
+						if (hmap.htile[j].used == /*FALSE*/0) {
+							hmap.btile_default[cur_tile] = j;
+							hmap.htile[j].used = /*TRUE*/1;
+							hard_tile = j;
+							goto tilesel;
+						}
+					}
+				}
+				else
+					hard_tile = hmap.btile_default[cur_tile];
 
-			  tilesel:
-			    xx = cur_tile % 128;
-/* 			    Rect.left = (xx * 50- (xx / 12) * 600); */
-/* 			    Rect.top = (xx / 12) * 50; */
-/* 			    Rect.right = Rect.left + 50; */
-/* 			    Rect.bottom = Rect.top + 50; */
+			tilesel:
+				xx = cur_tile % 128;
+				/* Rect.left = (xx * 50- (xx / 12) * 600); */
+				/* Rect.top = (xx / 12) * 50; */
+				/* Rect.right = Rect.left + 50; */
+				/* Rect.bottom = Rect.top + 50; */
 
-/* 			    crapRec.top = 0; */
-/* 			    crapRec.left = 95; */
-/* 			    crapRec.bottom = 450; */
-/* 			    crapRec.right = 95+450; */
+				/* crapRec.top = 0; */
+				/* crapRec.left = 95; */
+				/* crapRec.bottom = 450; */
+				/* crapRec.right = 95+450; */
 
-/* 			    ZeroMemory(&ddbltfx, sizeof(ddbltfx)); */
-/* 			    ddbltfx.dwSize = sizeof( ddbltfx); */
+				/* ZeroMemory(&ddbltfx, sizeof(ddbltfx)); */
+				/* ddbltfx.dwSize = sizeof( ddbltfx); */
 
-			    spr[1].seq = 0;
-			    spr[1].pseq = 10;
-			    spr[1].pframe = 1;
+				spr[1].seq = 0;
+				spr[1].pseq = 10;
+				spr[1].pframe = 1;
 
 
 
-			    // Display the given tile square fullscreen, for hardness editing
-/* 			    lpDDSTwo->Blt(&crapRec , tiles[cool+1], */
-/* 					  &Rect, DDBLT_DDFX | DDBLT_WAIT,&ddbltfx ); */
-			    // GFX
-			    /* Generic scaling */
-			    /* Not perfectly accurate yet: move a 200% sprite to the
-			       border of the screen to it is clipped: it's scaled size
-			       will slighly vary. Maybe we need to clip the source zone
-			       before scaling it.. */
-			    {
-			      SDL_Rect src, dst;
-			      src.x = (xx % 12) * 50;
-			      src.y = (xx / 12) * 50;
-			      src.w = 50;
-			      src.h = 50;
-			      dst.x = 95;
-			      dst.y = 0;
-			      dst.w = 450;
-			      dst.h = 450;
-			      
-			      cool = cur_tile / 128;
-			      gfx_blit_stretch(gfx_tiles[cool+1], &src, GFX_lpDDSTwo, &dst);
-			    }
+				// Display the given tile square fullscreen, for hardness editing
+				/* lpDDSTwo->Blt(&crapRec , tiles[cool+1], */
+				/*               &Rect, DDBLT_DDFX | DDBLT_WAIT,&ddbltfx ); */
+				// GFX
+				/* Generic scaling */
+				/* Not perfectly accurate yet: move a 200% sprite to the
+				   border of the screen to it is clipped: it's scaled size
+				   will slighly vary. Maybe we need to clip the source zone
+				   before scaling it.. */
+				{
+					SDL_Rect src, dst;
+					src.x = (xx % 12) * 50;
+					src.y = (xx / 12) * 50;
+					src.w = 50;
+					src.h = 50;
+					dst.x = 95;
+					dst.y = 0;
+					dst.w = 450;
+					dst.h = 450;
+				  
+					cool = cur_tile / 128;
+					gfx_blit_stretch(gfx_tiles[cool+1], &src, GFX_lpDDSTwo, &dst);
+				}
 
-			    m4x = spr[h].x;
-			    m4y = spr[h].y;
+				m4x = spr[h].x;
+				m4y = spr[h].y;
 
-			    spr[1].x = 95;
-			    spr[1].y = 0;
-			    selx = 1;
-			    sely = 1;
+				spr[1].x = 95;
+				spr[1].y = 0;
+				selx = 1;
+				sely = 1;
 
-			    mode = MODE_TILE_HARDNESS;
-			  }
-		      }
+				mode = MODE_TILE_HARDNESS;
+			}
+		}
 
 
-		    if ((mode == MODE_TILE_PICKER) || (mode == MODE_SCREEN_TILES))
-		      {
+		if ((mode == MODE_TILE_PICKER) || (mode == MODE_SCREEN_TILES)) {
 			//resizing the box
 
-			if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_RIGHT)) )
-			  {
-			    spr[h].seq = 3;
-			    spr[h].seq_orig = 3;
-			    if (selx < 8) selx++;
-			    goto b1end;
-			  }
+			if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_RIGHT)) ) {
+				spr[h].seq = 3;
+				spr[h].seq_orig = 3;
+				if (selx < 8) selx++;
+				return 0;
+			}
 
-			if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_LEFT)) )
-			  {
-			    spr[h].seq = 3;
-			    spr[h].seq_orig = 3;
-			    if (selx > 1) selx--;
-			    goto b1end;
+			if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_LEFT)) ) {
+				spr[h].seq = 3;
+				spr[h].seq_orig = 3;
+				if (selx > 1) selx--;
+				return 0;
 
-			  }
+			}
 
-			if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_UP)) )
-			  {
-			    spr[h].seq = 3;
-			    spr[h].seq_orig = 3;
-			    if (sely > 1) sely--;
-			    goto b1end;
-			  }
+			if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_UP)) ) {
+				spr[h].seq = 3;
+				spr[h].seq_orig = 3;
+				if (sely > 1) sely--;
+				return 0;
+			}
 
-			if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_DOWN)) )
-			  {
-			    spr[h].seq = 3;
-			    spr[h].seq_orig = 3;
-			    if (sely <  8) sely++;
-			    goto b1end;
-			  }
+			if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_DOWN)) ) {
+				spr[h].seq = 3;
+				spr[h].seq_orig = 3;
+				if (sely <  8) sely++;
+				return 0;
+			}
 
-		      }
+		}
 
 
-		    if (input_getscancodestate(SDL_SCANCODE_RIGHT))
-		      {
+		if (input_getscancodestate(SDL_SCANCODE_RIGHT)) {
 			spr[h].x += spr[h].speed;
 			spr[h].seq = spr[h].seq_orig;
 			EditorSoundPlayEffect( SOUND_STOP );
-		      }
+		}
 
 
-		    if ((input_getcharstate(SDLK_s)) && (mode == MODE_SCREEN_TILES))
-		      {
+		if ((input_getcharstate(SDLK_s)) && (mode == MODE_SCREEN_TILES)) {
 			int y;
 			spr[h].seq = 3;
 			spr[h].seq_orig = 3;
@@ -3378,36 +3205,32 @@ int gui_logic(int h) {
 
 			cur_ed_screen.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].square_full_idx0 = cur_tile;
 
-			for (y = 0; y < sely; y++)
-			  {
-			    int x;
-			    for (x = 0; x < selx; x++)
-			      {
-				holdx = (((spr[1].y+1)*12) / 50)+(spr[1].x / 50);
-				holdx += (y * 12);
-				holdx += x;
-				cur_ed_screen.t[holdx].square_full_idx0 = (cur_tile + (y * 12) + x);
+			for (y = 0; y < sely; y++) {
+				int x;
+				for (x = 0; x < selx; x++) {
+					holdx = (((spr[1].y+1)*12) / 50)+(spr[1].x / 50);
+					holdx += (y * 12);
+					holdx += x;
+					cur_ed_screen.t[holdx].square_full_idx0 = (cur_tile + (y * 12) + x);
 
-			      }
-			  }
+				}
+			}
 
 			draw_screen_editor();
-		      }
+		}
 
 
 
-		    if ((input_getcharstate(SDLK_c)) && (mode == MODE_SCREEN_TILES))
-		      {
+		if ((input_getcharstate(SDLK_c)) && (mode == MODE_SCREEN_TILES)) {
 			spr[h].seq = 3;
 			spr[h].seq_orig = 3;
 			//SoundPlayEffect( SOUND_JUMP );
 			cur_tile = cur_ed_screen.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].square_full_idx0;
 			draw_screen_editor();
-		      }
+		}
 
-		    /* Tile selection */
-		    if (mode == MODE_SCREEN_TILES || mode == MODE_TILE_PICKER)
-		      {
+		/* Tile selection */
+		if (mode == MODE_SCREEN_TILES || mode == MODE_TILE_PICKER) {
 			int unit = 0, tile_no = 0;
 			if (input_getscancodestate(SDL_SCANCODE_1) || input_getscancodestate(SDL_SCANCODE_KP_1) || input_getscancodestate(SDL_SCANCODE_F1)) unit = 1;
 			if (input_getscancodestate(SDL_SCANCODE_2) || input_getscancodestate(SDL_SCANCODE_KP_2) || input_getscancodestate(SDL_SCANCODE_F2)) unit = 2;
@@ -3422,29 +3245,28 @@ int gui_logic(int h) {
 
 			tile_no = unit;
 			if (SDL_GetModState()&KMOD_SHIFT)
-			  tile_no = 10 + unit;
+				tile_no = 10 + unit;
 			if (SDL_GetModState()&KMOD_CTRL)
-			  tile_no = 20 + unit;
+				tile_no = 20 + unit;
 			if (SDL_GetModState()&KMOD_ALT)
-			  tile_no = 30 + unit;
+				tile_no = 30 + unit;
 
 			if (unit > 0) /* make sure one key was pressed */
-			  loadtile(tile_no);
+				loadtile(tile_no);
 
 			/* Exception: tile #41 = Alt+[top-left key below escape] */
 			if (SDL_GetModState()&KMOD_ALT
-			    && input_getscancodestate(SDL_SCANCODE_GRAVE))
-			  loadtile(41);
+				&& input_getscancodestate(SDL_SCANCODE_GRAVE))
+				loadtile(41);
 			/* alternatives */
 			if (input_getscancodestate(SDL_SCANCODE_F11) || input_getscancodestate(SDL_SCANCODE_KP_PERIOD))
-			  loadtile(41);
-		      }
+				loadtile(41);
+		}
 
-		    //if ( (GetKeyboard(48)) && ( (mode == 3) | (mode ==2)) ) loadtile(11);
+		//if ( (GetKeyboard(48)) && ( (mode == 3) | (mode ==2)) ) loadtile(11);
 
 
-		    if ((sjoy.button[EDITOR_ACTION_RETURN]) && (mode == MODE_TILE_PICKER))
-		      {
+		if ((sjoy.button[EDITOR_ACTION_RETURN]) && (mode == MODE_TILE_PICKER)) {
 			// cut to map editer from tile selection
 			spr[h].seq = 3;
 			spr[h].seq_orig = 3;
@@ -3460,12 +3282,11 @@ int gui_logic(int h) {
 			spr[h].speed = 50;
 			draw_screen_editor();
 			last_mode = 0;
-		      }
+		}
 
 
 
-		    if (sjoy.button[EDITOR_ACTION_ESCAPE] && (mode == MODE_TILE_PICKER))
-		      {
+		if (sjoy.button[EDITOR_ACTION_ESCAPE] && (mode == MODE_TILE_PICKER)) {
 			// cut to map editer from tile selection
 			spr[h].seq = 3;
 			spr[h].seq_orig = 3;
@@ -3479,19 +3300,17 @@ int gui_logic(int h) {
 			mode = MODE_SCREEN_TILES;
 			draw_screen_editor();
 			last_mode = 0;
-			goto b1end;
-		      }
+			return 0;
+		}
 
 
-		    if ( (input_getscancodejustpressed(SDL_SCANCODE_SPACE))  && (mode == MODE_MINIMAP))
-		      {
+		if ( (input_getscancodejustpressed(SDL_SCANCODE_SPACE))  && (mode == MODE_MINIMAP)) {
 			//make_map_tiny();
 			draw_screen_tiny = 0;
 
-		      }
+		}
 
-		    if ( (input_getcharjustpressed(SDLK_l))  && (mode == MODE_MINIMAP))
-		      {
+		if ( (input_getcharjustpressed(SDLK_l))  && (mode == MODE_MINIMAP)) {
 
 			//if (g_map.loc[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)] != 0)
 			//{
@@ -3499,97 +3318,87 @@ int gui_logic(int h) {
 			in_master = INPUT_MINIMAP_LOAD;
 			//}
 
-		      }
+		}
 
 
-		    if ( (input_getscancodejustpressed(SDL_SCANCODE_ESCAPE)) && (mode == MODE_MINIMAP))
-		      {
+		if ( (input_getscancodejustpressed(SDL_SCANCODE_ESCAPE)) && (mode == MODE_MINIMAP)) {
 			g_map.load();
 			draw_minimap();
 			buf_mode = /*false*/0;
 
-		      }
+		}
 
 
-		    if ( (input_getcharjustpressed(SDLK_m)) && (mode == MODE_MINIMAP))
-		      {
+		if ( (input_getcharjustpressed(SDLK_m)) && (mode == MODE_MINIMAP)) {
 			//set music # for this block
 			in_int = &g_map.music[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)];
 			in_master = INPUT_SCREEN_MIDI;
-		      }
+		}
 
-		    if ( (input_getcharjustpressed(SDLK_s)) && (mode == MODE_MINIMAP))
-		      {
+		if ( (input_getcharjustpressed(SDLK_s)) && (mode == MODE_MINIMAP)) {
 			//set music # for this block
 			in_int = &g_map.indoor[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)];
 			in_master = INPUT_SCREEN_TYPE;
-		      }
+		}
 
-		    if ( (input_getcharjustpressed(SDLK_q)) && (mode == MODE_MINIMAP))
-		      {
+		if ( (input_getcharjustpressed(SDLK_q)) && (mode == MODE_MINIMAP)) {
 			save_hard();
 			log_info("Info saved.");
 			SDL_Event ev;
 			ev.type = SDL_QUIT;
 			SDL_PushEvent(&ev);
 			return 2;
-		      }
+		}
 
-		    if ( (sjoy.button[EDITOR_ACTION_RETURN]) && (mode == MODE_MINIMAP))
-		      {
+		if ( (sjoy.button[EDITOR_ACTION_RETURN]) && (mode == MODE_MINIMAP)) {
 
-			if (buf_mode)
-			  {
-			    //lets replace this screen
+			if (buf_mode) {
+				//lets replace this screen
 
-			    buf_mode = /*false*/0;
+				buf_mode = /*false*/0;
 
 
-			    if (!load_screen_buf(buffmap.loc[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)]))
-			      {
+				if (!load_screen_buf(buffmap.loc[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)])) {
+					draw_minimap();
+					sjoy.button[EDITOR_ACTION_RETURN] = /*false*/0;
+					return 2;
+				}
+
+
+				g_map.load();
+
+				if (g_map.loc[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)] == 0) {
+
+					(
+					 g_map.loc[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)]) = add_new_map();
+					//wrongo, let's add the map
+
+					//draw_minimap();
+
+
+				}
+
+				g_map.indoor[buf_map] = buffmap.indoor[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)];
+				g_map.music[buf_map] = buffmap.music[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)];
+
+				editor_save_screen(g_map.loc[buf_map]);
+
+				g_map.save();
 				draw_minimap();
-				sjoy.button[EDITOR_ACTION_RETURN] = /*false*/0;
 				return 2;
-			      }
-
-
-			    g_map.load();
-
-			    if (g_map.loc[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)] == 0)
-			      {
-
-				(
-				 g_map.loc[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)]) = add_new_map();
-				//wrongo, let's add the map
-
-				//draw_minimap();
-
-
-			      }
-
-			    g_map.indoor[buf_map] = buffmap.indoor[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)];
-			    g_map.music[buf_map] = buffmap.music[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)];
-
-			    editor_save_screen(g_map.loc[buf_map]);
-
-			    g_map.save();
-			    draw_minimap();
-			    return 2;
-			  }
+			}
 
 			g_map.load();
 
 			cur_map = (((spr[1].y+1)*32) / 20)+(spr[1].x / 20);
-			if (g_map.loc[cur_map] == 0)
-			  {
-			    //new map screen
-			    g_map.loc[cur_map] = add_new_map();
-			    g_map.save();
-			  }
-			else
-			  {
-			    editor_load_screen(g_map.loc[cur_map]);
-			  }
+			if (g_map.loc[cur_map] == 0) {
+				//new map screen
+				g_map.loc[cur_map] = add_new_map();
+				g_map.save();
+			}
+			else {
+				editor_load_screen(g_map.loc[cur_map]);
+			}
 
 			spr[h].seq = 3;
 			spr[h].seq_orig = 3;
@@ -3608,89 +3417,79 @@ int gui_logic(int h) {
 
 			spr[h].speed = 50;
 			draw_screen_editor();
-		      }
+		}
 
 
 
-		    /* Cycle the current tile square (displayed at the bottom-right) */
-		    if ((mode == MODE_SCREEN_TILES)
-			&& (input_getscancodestate(SDL_SCANCODE_PAGEUP) || input_getscancodestate(SDL_SCANCODE_MINUS)))
-		      {
+		/* Cycle the current tile square (displayed at the bottom-right) */
+		if ((mode == MODE_SCREEN_TILES)
+			&& (input_getscancodestate(SDL_SCANCODE_PAGEUP) || input_getscancodestate(SDL_SCANCODE_MINUS))) {
 			spr[h].seq = 3;
 			spr[h].seq_orig = 3;
 			cur_tile--;
 			if (cur_tile < 0) cur_tile = 0;
-		      }
-		    if ((mode == MODE_SCREEN_TILES)
-			&& (input_getscancodestate(SDL_SCANCODE_PAGEDOWN) || input_getscancodestate(SDL_SCANCODE_EQUALS)))
-		      {
+		}
+		if ((mode == MODE_SCREEN_TILES)
+			&& (input_getscancodestate(SDL_SCANCODE_PAGEDOWN) || input_getscancodestate(SDL_SCANCODE_EQUALS))) {
 			spr[h].seq = 3;
 			spr[h].seq_orig = 3;
 
 			cur_tile++;
 			//if (cur_tile > 127) cur_tile = 127;
-		      }
+		}
 
 
-		    if ((mode == MODE_SCREEN_TILES) && (input_getcharjustpressed(SDLK_h)))
-		      {
+		if ((mode == MODE_SCREEN_TILES) && (input_getcharjustpressed(SDLK_h))) {
 			//start althard mode
 
 			mode = MODE_SCREEN_HARDNESS_INIT;
 			return 1; // goto skip_draw;
-		      }
+		}
 
-		    if (mode == MODE_SCREEN_HARDNESS)
-		      {
+		if (mode == MODE_SCREEN_HARDNESS) {
 			//mode for it
-			if (input_getscancodejustpressed(SDL_SCANCODE_ESCAPE))
-			  {
-			    //exit mode 8
-			    mode = MODE_SCREEN_TILES;
-			    spr[h].seq = 3;
-			    spr[h].seq_orig = 3;
-			    draw_screen_editor();
-			    goto b1end;
-			  }
+			if (input_getscancodejustpressed(SDL_SCANCODE_ESCAPE)) {
+				//exit mode 8
+				mode = MODE_SCREEN_TILES;
+				spr[h].seq = 3;
+				spr[h].seq_orig = 3;
+				draw_screen_editor();
+				return 0;
+			}
 
 			/* if (sjoy.keyjustpressed[/\* VK_OEM_4 *\/ 219]) // '[' for US */
-			if (input_getscancodejustpressed(SDL_SCANCODE_PAGEUP) || input_getscancodejustpressed(SDL_SCANCODE_LEFTBRACKET))
-			  {
-			    hard_tile--;
-			    if (hard_tile < 0) hard_tile = 799;
-			  }
+			if (input_getscancodejustpressed(SDL_SCANCODE_PAGEUP) || input_getscancodejustpressed(SDL_SCANCODE_LEFTBRACKET)) {
+				hard_tile--;
+				if (hard_tile < 0) hard_tile = 799;
+			}
 			/* if (sjoy.keyjustpressed[/\* VK_OEM_6 *\/ 221]) // ']' for US */
-			if (input_getscancodejustpressed(SDL_SCANCODE_PAGEDOWN) || input_getscancodejustpressed(SDL_SCANCODE_RIGHTBRACKET))
-			  {
-			    hard_tile++;
-			    if (hard_tile > 799) hard_tile = 0;
-			  }
+			if (input_getscancodejustpressed(SDL_SCANCODE_PAGEDOWN) || input_getscancodejustpressed(SDL_SCANCODE_RIGHTBRACKET)) {
+				hard_tile++;
+				if (hard_tile > 799) hard_tile = 0;
+			}
 
-			if (input_getcharjustpressed(SDLK_c))
-			  {
-			    //copy tile hardness from current block
-			    hard_tile = realhard(xy2screentile(spr[1].x, spr[1].y));
-			  }
+			if (input_getcharjustpressed(SDLK_c)) {
+				//copy tile hardness from current block
+				hard_tile = realhard(xy2screentile(spr[1].x, spr[1].y));
+			}
 
-			if (input_getcharjustpressed(SDLK_s))
-			  {
-			    //stamp tile hardness to selected
-			    cur_ed_screen.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].althard = hard_tile;
-			    draw_screen_editor();
-			    mode = MODE_SCREEN_HARDNESS_INIT;
+			if (input_getcharjustpressed(SDLK_s)) {
+				//stamp tile hardness to selected
+				cur_ed_screen.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].althard = hard_tile;
+				draw_screen_editor();
+				mode = MODE_SCREEN_HARDNESS_INIT;
 
-			    return 2;
-			  }
+				return 2;
+			}
 
-			if (input_getscancodejustpressed(SDL_SCANCODE_DELETE))
-			  {
-			    //stamp tile hardness to selected
-			    cur_ed_screen.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].althard = 0;
-			    draw_screen_editor();
-			    mode = MODE_SCREEN_HARDNESS_INIT;
+			if (input_getscancodejustpressed(SDL_SCANCODE_DELETE)) {
+				//stamp tile hardness to selected
+				cur_ed_screen.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].althard = 0;
+				draw_screen_editor();
+				mode = MODE_SCREEN_HARDNESS_INIT;
 
-			    return 2;
-			  }
+				return 2;
+			}
 
 			/* Display the hard tile in the clipboard */
 			char crapa[20];
@@ -3699,68 +3498,66 @@ int gui_logic(int h) {
 
 			draw_hard_tile(spr[1].x,spr[1].y, hard_tile);
 
-			if (input_getscancodejustpressed(SDL_SCANCODE_RETURN))
-			  {
-			    //they want to edit this alt hardness, let's do it
-			    cur_tile = cur_ed_screen.t[xy2screentile(spr[1].x, spr[1].y)].square_full_idx0;
+			if (input_getscancodejustpressed(SDL_SCANCODE_RETURN)) {
+				//they want to edit this alt hardness, let's do it
+				cur_tile = cur_ed_screen.t[xy2screentile(spr[1].x, spr[1].y)].square_full_idx0;
 
-			    xx = cur_tile - (cool * 128);
-			    Rect.left = spr[1].x+20;
-			    Rect.top = spr[1].y;
-			    Rect.right = Rect.left + 50;
-			    Rect.bottom = Rect.top + 50;
+				xx = cur_tile - (cool * 128);
+				Rect.left = spr[1].x+20;
+				Rect.top = spr[1].y;
+				Rect.right = Rect.left + 50;
+				Rect.bottom = Rect.top + 50;
 
-/*			    crapRec.top = 0; */
-/*			    crapRec.left = 95; */
-/*			    crapRec.bottom = 450; */
-/*			    crapRec.right = 95+450; */
+				/* crapRec.top = 0; */
+				/* crapRec.left = 95; */
+				/* crapRec.bottom = 450; */
+				/* crapRec.right = 95+450; */
 
-/* 			    ZeroMemory(&ddbltfx, sizeof(ddbltfx)); */
-/* 			    ddbltfx.dwSize = sizeof( ddbltfx); */
-			    spr[1].seq = 0;
-			    spr[1].pseq = 10;
-			    spr[1].pframe = 1;
+				/* ZeroMemory(&ddbltfx, sizeof(ddbltfx)); */
+				/* ddbltfx.dwSize = sizeof( ddbltfx); */
+				spr[1].seq = 0;
+				spr[1].pseq = 10;
+				spr[1].pframe = 1;
 
 
-/* 			    lpDDSTwo->Blt(&crapRec , lpDDSBack, */
-/* 					  &Rect, DDBLT_DDFX | DDBLT_WAIT,&ddbltfx ); */
-			    // GFX
-			    /* In this particular case, we're scaling
-			       the whole screen backbuffer by 900%
-			       just to scale a single 50x50 square of
-			       it... */
-			    {
-			      SDL_Rect src, dst;
-			      src.x = spr[1].x+20;
-			      src.y = spr[1].y;
-			      src.w = 50;
-			      src.h = 50;
-			      dst.x = 95;
-			      dst.y = 0;
-			      dst.w = 450;
-			      dst.h = 450;
-			      gfx_blit_stretch(GFX_lpDDSBack, &src, GFX_lpDDSTwo, &dst);
-			    }
+				/* lpDDSTwo->Blt(&crapRec , lpDDSBack, */
+				/*               &Rect, DDBLT_DDFX | DDBLT_WAIT,&ddbltfx ); */
+				// GFX
+				/* In this particular case, we're scaling
+				   the whole screen backbuffer by 900%
+				   just to scale a single 50x50 square of
+				   it... */
+				{
+					SDL_Rect src, dst;
+					src.x = spr[1].x+20;
+					src.y = spr[1].y;
+					src.w = 50;
+					src.h = 50;
+					dst.x = 95;
+					dst.y = 0;
+					dst.w = 450;
+					dst.h = 450;
+					gfx_blit_stretch(GFX_lpDDSBack, &src, GFX_lpDDSTwo, &dst);
+				}
 
-			    m4x = spr[h].x;
-			    m4y = spr[h].y;
+				m4x = spr[h].x;
+				m4y = spr[h].y;
 
-			    spr[1].x = 95;
-			    spr[1].y = 0;
-			    selx = 1;
-			    sely = 1;
+				spr[1].x = 95;
+				spr[1].y = 0;
+				selx = 1;
+				sely = 1;
 
-			    mode = MODE_TILE_HARDNESS;
+				mode = MODE_TILE_HARDNESS;
 
-			    hmap.htile[hard_tile].used = /*true*/1;
-			    last_modereal = 8;
-			  }
-		      }
+				hmap.htile[hard_tile].used = /*true*/1;
+				last_modereal = 8;
+			}
+		}
 
-		    if ((mode == MODE_SCREEN_TILES)
+		if ((mode == MODE_SCREEN_TILES)
 			&& (SDL_GetModState()&KMOD_ALT)
-			&& input_getcharjustpressed(SDLK_x))
-		      {
+			&& input_getcharjustpressed(SDLK_x)) {
 			spr[h].seq = 2;
 			spr[h].seq_orig = 2;
 			m3x = spr[h].x;
@@ -3773,10 +3570,9 @@ int gui_logic(int h) {
 			draw_minimap();
 			lsm_kill_all_nonlive_sprites();
 			return 2;
-		      }
+		}
 
-		    if ((mode == MODE_SCREEN_TILES) && (sjoy.button[EDITOR_ACTION_ESCAPE]))
-		      {
+		if ((mode == MODE_SCREEN_TILES) && (sjoy.button[EDITOR_ACTION_ESCAPE])) {
 			// jump to map selector selector from map mode
 			editor_save_screen(g_map.loc[cur_map]);
 			spr[h].seq = 2;
@@ -3793,72 +3589,61 @@ int gui_logic(int h) {
 			draw_minimap();
 			lsm_kill_all_nonlive_sprites();
 			return 2;
-		      }
+		}
 
 
-		    if (input_getscancodestate(SDL_SCANCODE_LEFT))
-		      {
+		if (input_getscancodestate(SDL_SCANCODE_LEFT)) {
 			spr[h].x -= spr[h].speed;
 			spr[h].seq = spr[h].seq_orig;
 			EditorSoundPlayEffect(SOUND_STOP);
-		      }
+		}
 
-		    if (input_getscancodestate(SDL_SCANCODE_DOWN))
-		      {
+		if (input_getscancodestate(SDL_SCANCODE_DOWN)) {
 			spr[h].y += spr[h].speed;
 			spr[h].seq = spr[h].seq_orig;
 			EditorSoundPlayEffect(SOUND_STOP);
-		      }
+		}
 
-		    if (input_getscancodestate(SDL_SCANCODE_UP))
-		      {
+		if (input_getscancodestate(SDL_SCANCODE_UP)) {
 			spr[h].y -= spr[h].speed;
 			spr[h].seq = spr[h].seq_orig;
 			EditorSoundPlayEffect(SOUND_STOP);
-		      }
+		}
 
-		    if (spr[h].speed < 1)
-		      spr[h].speed = 1;
-		    if (spr[h].y > (y - k[getpic(h)].box.bottom))
-		      spr[h].y = y - k[getpic(h)].box.bottom;
-		    if (spr[h].x > (x - k[getpic(h)].box.right))
-		      spr[h].x = x - k[getpic(h)].box.right;
-		    if (spr[h].x < 0)
-		      spr[h].x = 0;
-		    if (spr[h].y < 0)
-		      spr[h].y = 0;
+		if (spr[h].speed < 1)
+			spr[h].speed = 1;
+		if (spr[h].y > (y - k[getpic(h)].box.bottom))
+			spr[h].y = y - k[getpic(h)].box.bottom;
+		if (spr[h].x > (x - k[getpic(h)].box.right))
+			spr[h].x = x - k[getpic(h)].box.right;
+		if (spr[h].x < 0)
+			spr[h].x = 0;
+		if (spr[h].y < 0)
+			spr[h].y = 0;
 
-		    // end human brain (1)
+		// end human brain (1)
 
 
-		    if ((mode == MODE_TILE_PICKER) || (mode == MODE_SCREEN_TILES)
-			|| (mode == MODE_SPRITE_PICKER) || (mode == MODE_SCREEN_HARDNESS))
-		      {
-			if ((selx * 50 + spr[1].x) > 600)
-			  {
-			    spr[1].x = 600 - (selx * 50);
-			  }
-		      }
+		if ((mode == MODE_TILE_PICKER) || (mode == MODE_SCREEN_TILES)
+			|| (mode == MODE_SPRITE_PICKER) || (mode == MODE_SCREEN_HARDNESS)) {
+			if ((selx * 50 + spr[1].x) > 600) {
+				spr[1].x = 600 - (selx * 50);
+			}
+		}
 
-		    if ((mode == MODE_TILE_PICKER))
-		      {
-			if ((sely * 50 + spr[1].y) > 450)
-			  {
-			    spr[1].y = 450 - (sely * 50);
-			  }
-		      }
-		    if ((mode == MODE_SCREEN_TILES) || (mode == MODE_SPRITE_PICKER)
-			|| (mode == MODE_SCREEN_HARDNESS))
-		      {
-			if ((sely * 50 + spr[1].y) > 400)
-			  {
-			    spr[1].y = 400 - (sely * 50);
-			  }
-		      }
-
-		  b1end:;
-		  } //end if seq is 0
-  return 0;
+		if ((mode == MODE_TILE_PICKER)) {
+			if ((sely * 50 + spr[1].y) > 450) {
+				spr[1].y = 450 - (sely * 50);
+			}
+		}
+		if ((mode == MODE_SCREEN_TILES) || (mode == MODE_SPRITE_PICKER)
+			|| (mode == MODE_SCREEN_HARDNESS)) {
+			if ((sely * 50 + spr[1].y) > 400) {
+				spr[1].y = 400 - (sely * 50);
+			}
+		}
+	} //end if seq is 0
+	return 0;
 }
 
 /**
@@ -4225,7 +4010,7 @@ void AppFreeDinkedit::logic(void)
       lsm_kill_all_nonlive_sprites();
       place_sprites();
 
-      /*	draw_screen_editor();
+      /* draw_screen_editor();
 
 
 		rcRect.top = 0;
