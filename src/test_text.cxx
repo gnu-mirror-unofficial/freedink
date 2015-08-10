@@ -75,11 +75,14 @@ public:
 		text_draw(4);
 
 		// Crash tests
-		
-		// TS_ASSERT_EQUALS(say_text("Hello", 1200, 0), 5);
-		// text_draw(5);
 
-		// TS_ASSERT_EQUALS(say_text("Hello", 100000, 0), 6);
-		// text_draw(6);
+		TS_ASSERT_EQUALS(say_text("Hello1000", 1000, 0), 5);
+		text_draw(5);
+
+		TS_ASSERT_EQUALS(say_text("Hello1200", 1200, 0), 6);
+		text_draw(6);
+
+		TS_ASSERT_EQUALS(say_text("Hello100000", 100000, 0), 7);
+		text_draw(7);
 	}
 };

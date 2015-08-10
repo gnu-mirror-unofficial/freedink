@@ -61,29 +61,33 @@ int add_text_sprite(char* text, int script, int sprite_owner, int mx, int my)
   return tsprite;
 }
 
-int say_text(char* text, int sprite_owner, int script)
-{
-  int tsprite;
-  if (sprite_owner == 1000)
-    tsprite = add_text_sprite(text, script, 1000, 100, 100);
-  else
-    tsprite = add_text_sprite(text, script, sprite_owner,
-			      spr[sprite_owner].x, spr[sprite_owner].y);
-  
-  if (tsprite == 0)
-    return 0;
-  
-  //set X offset for text, using strength var since it's unused
-  spr[tsprite].strength = 75;
-  check_seq_status(spr[spr[tsprite].owner].seq);
-  spr[tsprite].defense = ( ( k[getpic(spr[tsprite].owner)].box.bottom
-			     - k[getpic(spr[tsprite].owner)].yoffset )
-			   + 100 );
-  
-  spr[tsprite].x = spr[spr[tsprite].owner].x - spr[tsprite].strength;
-  spr[tsprite].y = spr[spr[tsprite].owner].y - spr[tsprite].defense;
-  
-  return tsprite;
+int say_text(char* text, int sprite_owner, int script) {
+	int tsprite;
+	if (sprite_owner == 1000)
+		tsprite = add_text_sprite(text, script, 1000, 100, 100);
+	else if (lsm_isValidSprite(sprite_owner))
+		tsprite = add_text_sprite(text, script, sprite_owner,
+								  spr[sprite_owner].x, spr[sprite_owner].y);
+	else
+		tsprite = add_text_sprite(text, script, sprite_owner, 100, 100);
+	
+	if (tsprite == 0)
+		return 0;
+	
+	//set X offset for text, using strength var since it's unused
+	spr[tsprite].strength = 75;
+	if (lsm_isValidSprite(sprite_owner)) {
+		check_seq_status(spr[sprite_owner].seq);
+		int gfx_id = getpic(sprite_owner);
+		if (gfx_id >= 0 && gfx_id < MAX_SPRITES)
+			spr[tsprite].defense = (k[gfx_id].box.bottom - k[gfx_id].yoffset) + 100;
+		else
+			spr[tsprite].defense = 100;
+		
+		spr[tsprite].x = spr[sprite_owner].x - spr[tsprite].strength;
+		spr[tsprite].y = spr[sprite_owner].y - spr[tsprite].defense;
+	}
+	return tsprite;
 }
 
 int say_text_xy(char* text, int mx, int my, int script)
