@@ -3931,7 +3931,7 @@ void AppFreeDinkedit::logic(void)
 		k[seq[3].frame[1]].xoffset = -20;
 		greba = 20;
 	      }
-	    if (mode == MODE_TILE_PICKER)
+	    if (mode == MODE_TILE_PICKER || mode == MODE_SPRITE_PICKER)
 	      {
 		//pick a tile, needs no offset
 		k[seq[3].frame[1]].xoffset = 0;
