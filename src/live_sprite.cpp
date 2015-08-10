@@ -84,3 +84,15 @@ void check_sprite_status(int h)
                 }
         }
 }
+
+void live_sprite_set_kill_start(int h, Uint32 thisTickCount) {
+	//inc delay, used by "skip" by all sprites
+	/* 				box_crap = k[getpic(h)].box; */
+	if (spr[h].kill_ttl > 0 && spr[h].kill_start == 0) {
+		spr[h].kill_start = thisTickCount;
+	}
+}
+
+bool live_sprite_is_expired(int h, Uint32 thisTickCount) {
+	return spr[h].kill_ttl > 0 && (spr[h].kill_start + spr[h].kill_ttl < thisTickCount);
+}

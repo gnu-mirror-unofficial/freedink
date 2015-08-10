@@ -42,6 +42,7 @@
 #include "EditorMap.h"
 #include "editor_screen.h"
 #include "live_screen.h"
+#include "live_sprite.h"
 #include "freedink.h"
 #include "brains.h"
 #include "gfx.h"
@@ -756,28 +757,13 @@ void updateFrame()
 				spr[h].skiptimer++;
 				//inc delay, used by "skip" by all sprites
 /* 				box_crap = k[getpic(h)].box; */
-				if (spr[h].kill_ttl > 0)
-				{
-					if (spr[h].kill_start == 0) spr[h].kill_start = thisTickCount;
-					if (spr[h].kill_start + spr[h].kill_ttl < thisTickCount)
-					{
-						
-						spr[h].active = /*false*/0;
-						//          Msg("Killing sprite %d.", h);
-						
-						get_last_sprite();
-						if (spr[h].callback > 0) 
-						{
-							//	Msg("Callback running script %d.", spr[h].script);
-							
-							run_script(spr[h].callback);
-							
-							
-						}
-						
-						
-					}
-					
+
+				live_sprite_set_kill_start(h, thisTickCount);
+				if (live_sprite_is_expired(h, thisTickCount)) {
+					spr[h].active = /*false*/0;
+					get_last_sprite();
+					if (spr[h].callback > 0)
+						run_script(spr[h].callback);
 				}
 				
 				if (spr[h].timer > 0)
