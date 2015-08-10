@@ -71,8 +71,8 @@ struct sp
   int exp;
   int gold;
   int base_die;
-  int kill;
-  Uint32 kill_timer;
+  int kill_ttl; /* time to live */
+  Uint32 kill_start; /* birth */
   int script_num;
   char text[200];
   int owner; /* if text sprite, sprite that is saying it */

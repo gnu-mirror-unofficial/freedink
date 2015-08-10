@@ -478,7 +478,7 @@ void dc_sp_y(int script, int* yield, int* preturnint, int sprite, int sparg)
 void dc_sp_kill(int script, int* yield, int* preturnint, int sprite, int sparg)
 {
   STOP_IF_BAD_SPRITE(sprite);
-  spr[sprite].kill = sparg;
+  spr[sprite].kill_ttl = sparg;
 }
 
 void dc_sp_editor_num(int script, int* yield, int* preturnint, int sprite)

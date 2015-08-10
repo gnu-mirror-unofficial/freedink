@@ -79,7 +79,7 @@ public:
 		TS_ASSERT_EQUALS(spr[3].owner, 2);
 		TS_ASSERT_EQUALS(spr[3].script, 123);
 		TS_ASSERT_EQUALS(spr[3].damage, -1);
-		TS_ASSERT_EQUALS(spr[3].kill, 2700);
+		TS_ASSERT_EQUALS(spr[3].kill_ttl, 2700);
 		text_draw(3);
 		
 		TS_ASSERT_EQUALS(say_text("Hello", 2, 0), 4);

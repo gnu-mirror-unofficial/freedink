@@ -363,7 +363,7 @@ void draw_damage(int h)
 	spr[crap2].hard = 1;
 	spr[crap2].brain_parm = h;  
 	spr[crap2].my = -1;
-	spr[crap2].kill = 1000;
+	spr[crap2].kill_ttl = 1000;
 	spr[crap2].dir = 8;
 	spr[crap2].damage = spr[h].damage;
 }

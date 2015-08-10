@@ -206,7 +206,7 @@ void add_exp_force(int num, int source_sprite)
       spr[crap2].hard = 1;
       spr[crap2].brain_parm = 5000;
       spr[crap2].my = -1;
-      spr[crap2].kill = 1000;
+      spr[crap2].kill_ttl = 1000;
       spr[crap2].dir = 8;
       spr[crap2].damage = num;
       

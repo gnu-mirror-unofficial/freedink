@@ -756,10 +756,10 @@ void updateFrame()
 				spr[h].skiptimer++;
 				//inc delay, used by "skip" by all sprites
 /* 				box_crap = k[getpic(h)].box; */
-				if (spr[h].kill > 0)
+				if (spr[h].kill_ttl > 0)
 				{
-					if (spr[h].kill_timer == 0) spr[h].kill_timer = thisTickCount;
-					if (spr[h].kill_timer + spr[h].kill < thisTickCount)
+					if (spr[h].kill_start == 0) spr[h].kill_start = thisTickCount;
+					if (spr[h].kill_start + spr[h].kill_ttl < thisTickCount)
 					{
 						
 						spr[h].active = /*false*/0;

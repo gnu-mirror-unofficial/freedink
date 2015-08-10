@@ -49,9 +49,9 @@ int add_text_sprite(char* text, int script, int sprite_owner, int mx, int my)
   spr[tsprite].text[200-1] = '\0';
 
   *plast_text = tsprite;
-  spr[tsprite].kill = strlen(text) * TEXT_TIMER;
-  if (spr[tsprite].kill < TEXT_MIN)
-    spr[tsprite].kill = TEXT_MIN;
+  spr[tsprite].kill_ttl = strlen(text) * TEXT_TIMER;
+  if (spr[tsprite].kill_ttl < TEXT_MIN)
+    spr[tsprite].kill_ttl = TEXT_MIN;
   spr[tsprite].damage = -1;
   spr[tsprite].owner = sprite_owner;
   spr[tsprite].hard = 1;

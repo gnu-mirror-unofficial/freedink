@@ -92,7 +92,7 @@ public:
 		spr[2].hard = 1;
 		spr[2].brain_parm = 1;
 		spr[2].my = -1;
-		spr[2].kill = 1000;
+		spr[2].kill_ttl = 1000;
 		spr[2].dir = 8;
 		spr[2].damage = 10;
 		text_brain(2);

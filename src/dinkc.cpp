@@ -830,6 +830,11 @@ void kill_callbacks_owned_by_script(int script)
 }
 
 
+/**
+ * Free resources used by this script.
+ * 
+ * Caution: this makes references from spr[].script dangling
+ */
 void kill_script(int k)
 {
   if (rinfo[k] != NULL)
