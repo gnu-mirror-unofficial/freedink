@@ -65,7 +65,7 @@ public:
 		TS_ASSERT_EQUALS(last_sprite_created, 1);
 		TS_ASSERT_EQUALS(spr[2].active, 0);
 	}
-	void test_sprite_live_not_killed_dont_ask_me_why_though() {
+	void test_say_stop_xy_survive_a_screen_change() {
 		TS_ASSERT_EQUALS(spr[2].active, 0);
 		TS_ASSERT_EQUALS(add_sprite(0, 0, 0, 0, 0), 1);
 		
