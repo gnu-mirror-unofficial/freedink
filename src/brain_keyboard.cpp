@@ -231,7 +231,7 @@ void human_brain(int h)
 	      if (spr[jj].brain == 8 && spr[jj].script == play.last_talk)
 		{
 		  //this sprite owns its freeze
-		  spr[jj].kill_start = 1;
+		  spr[jj].kill_ttl = 1;
 		  //force the message to be over
 		}
 	    }
