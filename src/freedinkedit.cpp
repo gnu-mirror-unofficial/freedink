@@ -249,7 +249,7 @@ void draw_minimap(void);
 /* void dderror(HRESULT hErr); */
 
 static bool skip_screen_clipping() {
-  return (mode == 1 || mode == 5) && draw_screen_tiny < 1;
+	return (mode == MODE_MINIMAP || mode == MODE_SPRITE_PICKER) && draw_screen_tiny < 1;
 }
 
 void draw_sprite(SDL_Surface *GFX_lpdest, int h)
