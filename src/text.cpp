@@ -146,10 +146,10 @@ void text_draw(int h) {
 				rect_offset(&rcRect, ((spr[h].x+150)-620) - (((spr[h].x+150)-620) * 2), 0);
 		}
 	} else {
-		// Display damage points
+		// Display damage/experience points
 		sprintf(crap, "%d", spr[h].damage);
 		cr = &crap[0];
-		if (spr[h].brain_parm == 5000)
+		if (spr[h].brain_parm == 5000) // experience
 			color = 14;
 		
 		if (spr[h].y < 0)

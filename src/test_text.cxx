@@ -35,14 +35,24 @@ int last_text = 0;
 int* plast_text = &last_text;
 int dversion = 108;
 
-void FONTS_SetTextColor(unsigned char, unsigned char, unsigned char) {}
-void FONTS_SetTextColorIndex(int) {}
+static int g_colorIndex = 0;
+static Uint8 g_r = 0;
+static Uint8 g_g = 0;
+static Uint8 g_b = 0;
+void FONTS_SetTextColor(Uint8 r, Uint8 g, Uint8 b) {
+  g_r = r;
+  g_g = g;
+  g_b = b;
+}
+void FONTS_SetTextColorIndex(int color) {
+  g_colorIndex = color;
+}
 int print_text_wrap(char*, rect*, int, int, FONT_TYPE) { return 0; }
 int gfx_fonts_init(void) { return 1; }
 void gfx_fonts_init_colors() {}
 void gfx_fonts_quit() {}
 
-double truecolor_fade_brightness = 256;
+double truecolor_fade_brightness;
 int truecolor = 1;
 SDL_Surface* GFX_lpDDSTrick2;
 SDL_Color GFX_real_pal[256];
@@ -54,6 +64,7 @@ class TestText : public CxxTest::TestSuite {
 public:
 	void setUp() {
 		live_sprites_manager_init();
+		truecolor_fade_brightness = 256;
 	}
 	void tearDown() {
 	}
@@ -84,5 +95,38 @@ public:
 
 		TS_ASSERT_EQUALS(say_text("Hello100000", 100000, 0), 7);
 		text_draw(7);
+	}
+
+	void test_fade() {
+		TS_ASSERT_EQUALS(add_sprite(0, 0, 0, 0, 0), 1);
+		TS_ASSERT_EQUALS(add_text_sprite("Fading", 0, 1, 0, 0), 2);
+		text_draw(2);
+		TS_ASSERT_EQUALS(g_colorIndex, 14);
+		TS_ASSERT_EQUALS(add_text_sprite("`2Fading", 0, 1, 0, 0), 3);
+		text_draw(3);
+		TS_ASSERT_EQUALS(g_colorIndex, 2);
+		
+		truecolor_fade_brightness = 0;
+		text_draw(2);
+		TS_ASSERT_EQUALS(g_colorIndex, 15);
+		text_draw(3);
+		TS_ASSERT_EQUALS(g_colorIndex, 15);
+	}
+
+	void test_damage_experience() {
+		TS_ASSERT_EQUALS(add_sprite(0, 0, 0, 0, 0), 1);
+		TS_ASSERT_EQUALS(add_sprite(100,100,8,0,0), 2);
+		spr[2].damage = 10;
+		
+		spr[2].brain_parm = 1;
+		text_draw(2);
+		TS_ASSERT_EQUALS(g_r, 255);
+		TS_ASSERT_EQUALS(g_g, 255);
+		TS_ASSERT_EQUALS(g_b, 255);
+
+		spr[2].brain_parm = 5000;
+		spr[2].damage = 10;
+		text_draw(2);
+		TS_ASSERT_EQUALS(g_colorIndex, 14);
 	}
 };

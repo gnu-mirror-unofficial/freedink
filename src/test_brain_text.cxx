@@ -84,4 +84,18 @@ public:
 		text_brain(3);
 		TS_ASSERT_EQUALS(spr[3].x, 0);
 	}
+
+	void test_damage_experience() {
+		TS_ASSERT_EQUALS(add_sprite(0, 0, 0, 0, 0), 1);
+		TS_ASSERT_EQUALS(add_sprite(100,100,8,0,0), 2);
+		spr[2].speed = 1;
+		spr[2].hard = 1;
+		spr[2].brain_parm = 1;
+		spr[2].my = -1;
+		spr[2].kill = 1000;
+		spr[2].dir = 8;
+		spr[2].damage = 10;
+		text_brain(2);
+		TS_ASSERT_EQUALS(spr[2].y, 99);
+	}
 };

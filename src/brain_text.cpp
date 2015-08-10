@@ -4,7 +4,7 @@
 void text_brain(int h)
 {
 	if (!lsm_isValidSprite(h)
-		|| (spr[h].owner != 1000 && !lsm_isValidSprite(spr[h].owner)))
+		|| (spr[h].owner != 0 && spr[h].owner != 1000 && !lsm_isValidSprite(spr[h].owner)))
 		return;
 
 	if (  (spr[h].damage == -1) && (spr[h].owner != 1000))
