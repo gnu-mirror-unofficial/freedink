@@ -120,7 +120,7 @@ if HAVE_TESTS
 check_PROGRAMS = test_str_util test_io_util TestEditorMap	\
 	test_editor_screen test_dinkini test_dinkc		\
 	test_dinkc_bindings test_live_sprites_manager		\
-	test_brain_text test_integration
+	test_brain_text test_text test_integration
 .cxx.cpp:
 	$(CXXTESTGEN) --error-printer --include test_sdl_workaround.h -o $@ $<
 EXTRA_DIST += test_sdl_workaround.h
@@ -185,6 +185,9 @@ test_brain_text_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	meminfo.h savegame.cpp savegame.h status.cpp status.h		\
 	talk.cpp talk.h text.cpp text.h update_frame.cpp		\
 	test_brain_text.cpp
+test_text_SOURCES = test_text.cpp text.cpp live_sprites_manager.cpp	\
+	dinkini.cpp live_sprite.cpp rect.cpp gfx_sprites.cpp		\
+	str_util.cpp io_util.cpp fastfile.cpp paths.cpp msgbox.cpp
 test_integration_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	brain_bounce.cpp brain_button.cpp brain_diagonal.cpp		\
 	brain_duck.cpp brain_keyboard.cpp brain_lateral.cpp		\

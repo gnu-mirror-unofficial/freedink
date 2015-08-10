@@ -25,11 +25,11 @@
 
 #include "game_engine.h"
 #include "live_sprites_manager.h"
+#include "dinkini.h" /* check_seq_status */
 #include "gfx.h"
 #include "gfx_fonts.h"
 #include "gfx_sprites.h"
-#include "dinkini.h" /* check_seq_status */
-#include "talk.h"
+#include "text.h"
 #include "log.h"
 
 #define TEXT_MIN 2700
