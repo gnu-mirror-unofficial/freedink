@@ -1863,193 +1863,21 @@ void draw_hard_tile(int x1, int y1, int tile)
     }
 }
 
-
 /**
- * updateFrame
- *
- * Decide what needs to be blitted next, wait for flip to complete,
- * then flip the buffers.
+ * Move out brain==1 here
+ * Return:
+ * 0 : continue
+ * 1 : goto skip_draw
+ * 2 : return from ::logic()
  */
-unsigned long thisTickCount; /* FIXME: for process_animated_tiles, make it local */
-void AppFreeDinkedit::logic(void)
-{
-  //    static DWORD        lastTickCount[4] = {0,0,0,0};
-  //    static int          currentFrame[3] = {0,0,0};
-  //  char buffer[20];
-  rect                rcRect;
-  rect  Rect;
-/*   rect rcRectSrc; */
-/*   rect rcRectDest; */
+int gui_logic(int h) {
   rect box_crap,box_real;
-/*   POINT p; */
-  char msg[500];
-  char buff[200];
-  //	DWORD               delay[4] = {0, 0, 0, 20};
-/*   HDC         hdc; */
-  int in_crap2 = 0;
-  int                 holdx;
-  //PALETTEENTRY        pe[256];
-/*   HRESULT             ddrval; */
+  int holdx;
   int xx;
-/*   DDBLTFX     ddbltfx; */
   /*BOOL*/int cool;
-  /*BOOL*/int bs[MAX_SPRITES_AT_ONCE];
+  rect  Rect;
 
-  int rank[MAX_SPRITES_AT_ONCE];
-  int highest_sprite;
-
-  int jj;
-
-  SDL_framerateDelay(&framerate_manager);
-
-  // Decide which frame will be blitted next
-  thisTickCount = SDL_GetTicks();
-  strcpy(buff,"Nothing");
-  check_joystick();
-  //Scrawl_OnMouseInput();
-  rcRect.left = 0;
-  rcRect.top = 0;
-  rcRect.right = x;
-  rcRect.bottom = y;
-
-  if (draw_screen_tiny != -1)
-    {
-
-    tiny_again:
-      if (draw_screen_tiny  == 769)
-	{
-	  draw_screen_tiny = -1;
-	  lsm_kill_all_nonlive_sprites();
-	  //all done
-	} else
-	{
-
-
-	  draw_screen_tiny++;
-
-	  copy_front_to_two();
-
-
-	  if (g_map.loc[draw_screen_tiny] != 0)
-	    {
-	      //a map exists here
-	      editor_load_screen(g_map.loc[draw_screen_tiny]);
-	      //map loaded, lets display it
-	      draw_screen_editor();
-
-	      goto pass_flip;
-	    } else goto tiny_again;
-
-
-
-	}
-
-    }
-
-
-/*   while( 1 ) */
-/*     { */
-/*       ddrval = lpDDSBack->BltFast( 0, 0, lpDDSTwo, */
-/* 				   &rcRect, DDBLTFAST_NOCOLORKEY | DDBLTFAST_WAIT); */
-      // GFX
-      SDL_BlitSurface(GFX_lpDDSTwo, NULL, GFX_lpDDSBack, NULL);
-
-
-/*       if( ddrval == DD_OK ) */
-/*         { */
-/* 	  break; */
-/*         } */
-/*       if( ddrval == DDERR_SURFACELOST ) */
-/*         { */
-/* 	  ddrval = restoreAll(); */
-/* 	  if( ddrval != DD_OK ) */
-/*             { */
-/* 	      return; */
-/*             } */
-/*         } */
-/*       if( ddrval != DDERR_WASSTILLDRAWING ) */
-/*         { */
-/* 	  return; */
-/*         } */
-
-/*     } */
-
- pass_flip:
-
-  memset(&bs,0,sizeof(bs));
-
-  int	max_s = 105;
-
-  //max_sprites_at_once;
-
-  /*for (int r2 = 1; r2 < max_sprites_at_once; r2++)
-    {
-    if (spr[r2].active) max_s = r2+1;
-    }
-  */
-  int height;
-
-
-
-  spr[1].que = 20000;
-  if (mode == MODE_SCREEN_SPRITES) if (   ! ((spr[1].pseq == 10) && (spr[1].pframe == 8)) ) spr[1].que = sp_que;
-
-  if (!in_enabled)
-    {
-      int r1;
-    for (r1 = 1; r1 < max_s+1; r1++)
-      {
-	int h1;
-	highest_sprite = 22024; //more than it could ever be
-
-	rank[r1] = 0;
-
-	for (h1 = 1; h1 < max_s+1; h1++)
-	  {
-	    if (spr[h1].active)
-	      {
-		if (bs[h1] == /*FALSE*/0)
-		  {
-		    //Msg( "Ok,  %d is %d", h1,(spr[h1].y + k[spr[h1].pic].yoffset) );
-		    if (spr[h1].que != 0) height = spr[h1].que; else height = spr[h1].y;
-		    if ( height < highest_sprite )
-		      {
-			highest_sprite = height;
-			rank[r1] = h1;
-		      }
-
-		  }
-
-	      }
-
-	  }
-	if (rank[r1] != 0)
-	  bs[rank[r1]] = /*TRUE*/1;
-      }
-    }
-
-
-
-
-
-  if (!in_enabled)
-
-    for (jj = 1; jj < max_s; jj++)
-      {
-
-	int h = rank[jj];
-	//Msg("Studying %d.,",h);
-
-	if (spr[h].active)
-	  {
-
-	    //        Msg("Sprite %d is active.",h);
-
-	    int greba = 0;
-
-	    if (spr[h].brain == 1)
-	      {
-		if ((spr[h].seq == 0) || (mode == MODE_TILE_HARDNESS))
+  if ((spr[h].seq == 0) || (mode == MODE_TILE_HARDNESS))
 		  {
 		    //if (mode == 7)
 		    if (mode == MODE_SPRITE_HARDNESS)
@@ -3283,7 +3111,7 @@ void AppFreeDinkedit::logic(void)
 			    change_tile(hard_tile, 2);
 			    log_debug("Changing whole tile to 2");
 
-			    return;
+			    return 2;
 			  }
 
 			if ( (input_getcharstate(SDLK_s)) && (SDL_GetModState()&KMOD_ALT ) )
@@ -3292,7 +3120,7 @@ void AppFreeDinkedit::logic(void)
 			    change_tile(hard_tile, 3);
 			    log_debug("Chaning whole tile to 3");
 
-			    return;
+			    return 2;
 			  }
 			if ( (input_getcharstate(SDLK_x)) && (SDL_GetModState()&KMOD_ALT ) )
 			  {
@@ -3300,7 +3128,7 @@ void AppFreeDinkedit::logic(void)
 			    change_tile(hard_tile, 1);
 			    log_debug("Changing whole tile to 1");
 
-			    return;
+			    return 2;
 			  }
 
 
@@ -3358,8 +3186,7 @@ void AppFreeDinkedit::logic(void)
 				sely = 1;
 
 				mode = MODE_SCREEN_HARDNESS_INIT;
-				return;
-				//goto skip_draw;
+				return 2;
 			      }
 
 			    if (last_mode > 0)
@@ -3705,7 +3532,7 @@ void AppFreeDinkedit::logic(void)
 			SDL_Event ev;
 			ev.type = SDL_QUIT;
 			SDL_PushEvent(&ev);
-			return;
+			return 2;
 		      }
 
 		    if ( (sjoy.button[EDITOR_ACTION_RETURN]) && (mode == MODE_MINIMAP))
@@ -3722,7 +3549,7 @@ void AppFreeDinkedit::logic(void)
 			      {
 				draw_minimap();
 				sjoy.button[EDITOR_ACTION_RETURN] = /*false*/0;
-				return;
+				return 2;
 			      }
 
 
@@ -3747,7 +3574,7 @@ void AppFreeDinkedit::logic(void)
 
 			    g_map.save();
 			    draw_minimap();
-			    return;
+			    return 2;
 			  }
 
 			g_map.load();
@@ -3810,7 +3637,7 @@ void AppFreeDinkedit::logic(void)
 			//start althard mode
 
 			mode = MODE_SCREEN_HARDNESS_INIT;
-			goto skip_draw;
+			return 1; // goto skip_draw;
 		      }
 
 		    if (mode == MODE_SCREEN_HARDNESS)
@@ -3852,7 +3679,7 @@ void AppFreeDinkedit::logic(void)
 			    draw_screen_editor();
 			    mode = MODE_SCREEN_HARDNESS_INIT;
 
-			    return;
+			    return 2;
 			  }
 
 			if (input_getscancodejustpressed(SDL_SCANCODE_DELETE))
@@ -3862,7 +3689,7 @@ void AppFreeDinkedit::logic(void)
 			    draw_screen_editor();
 			    mode = MODE_SCREEN_HARDNESS_INIT;
 
-			    return;
+			    return 2;
 			  }
 
 			/* Display the hard tile in the clipboard */
@@ -3945,7 +3772,7 @@ void AppFreeDinkedit::logic(void)
 			g_map.load();
 			draw_minimap();
 			lsm_kill_all_nonlive_sprites();
-			return;
+			return 2;
 		      }
 
 		    if ((mode == MODE_SCREEN_TILES) && (sjoy.button[EDITOR_ACTION_ESCAPE]))
@@ -3965,7 +3792,7 @@ void AppFreeDinkedit::logic(void)
 			g_map.load();
 			draw_minimap();
 			lsm_kill_all_nonlive_sprites();
-			return;
+			return 2;
 		      }
 
 
@@ -4031,6 +3858,195 @@ void AppFreeDinkedit::logic(void)
 
 		  b1end:;
 		  } //end if seq is 0
+  return 0;
+}
+
+/**
+ * updateFrame
+ *
+ * Decide what needs to be blitted next, wait for flip to complete,
+ * then flip the buffers.
+ */
+unsigned long thisTickCount; /* FIXME: for process_animated_tiles, make it local */
+void AppFreeDinkedit::logic(void)
+{
+  //    static DWORD        lastTickCount[4] = {0,0,0,0};
+  //    static int          currentFrame[3] = {0,0,0};
+  //  char buffer[20];
+  rect                rcRect;
+/*   rect rcRectSrc; */
+/*   rect rcRectDest; */
+  rect box_crap,box_real;
+/*   POINT p; */
+  char msg[500];
+  char buff[200];
+  //	DWORD               delay[4] = {0, 0, 0, 20};
+/*   HDC         hdc; */
+  int in_crap2 = 0;
+  //PALETTEENTRY        pe[256];
+/*   HRESULT             ddrval; */
+/*   DDBLTFX     ddbltfx; */
+  /*BOOL*/int bs[MAX_SPRITES_AT_ONCE];
+
+  int rank[MAX_SPRITES_AT_ONCE];
+  int highest_sprite;
+
+  int jj;
+
+  SDL_framerateDelay(&framerate_manager);
+
+  // Decide which frame will be blitted next
+  thisTickCount = SDL_GetTicks();
+  strcpy(buff,"Nothing");
+  check_joystick();
+  //Scrawl_OnMouseInput();
+  rcRect.left = 0;
+  rcRect.top = 0;
+  rcRect.right = x;
+  rcRect.bottom = y;
+
+  if (draw_screen_tiny != -1)
+    {
+
+    tiny_again:
+      if (draw_screen_tiny  == 769)
+	{
+	  draw_screen_tiny = -1;
+	  lsm_kill_all_nonlive_sprites();
+	  //all done
+	} else
+	{
+
+
+	  draw_screen_tiny++;
+
+	  copy_front_to_two();
+
+
+	  if (g_map.loc[draw_screen_tiny] != 0)
+	    {
+	      //a map exists here
+	      editor_load_screen(g_map.loc[draw_screen_tiny]);
+	      //map loaded, lets display it
+	      draw_screen_editor();
+
+	      goto pass_flip;
+	    } else goto tiny_again;
+
+
+
+	}
+
+    }
+
+
+/*   while( 1 ) */
+/*     { */
+/*       ddrval = lpDDSBack->BltFast( 0, 0, lpDDSTwo, */
+/* 				   &rcRect, DDBLTFAST_NOCOLORKEY | DDBLTFAST_WAIT); */
+      // GFX
+      SDL_BlitSurface(GFX_lpDDSTwo, NULL, GFX_lpDDSBack, NULL);
+
+
+/*       if( ddrval == DD_OK ) */
+/*         { */
+/* 	  break; */
+/*         } */
+/*       if( ddrval == DDERR_SURFACELOST ) */
+/*         { */
+/* 	  ddrval = restoreAll(); */
+/* 	  if( ddrval != DD_OK ) */
+/*             { */
+/* 	      return; */
+/*             } */
+/*         } */
+/*       if( ddrval != DDERR_WASSTILLDRAWING ) */
+/*         { */
+/* 	  return; */
+/*         } */
+
+/*     } */
+
+ pass_flip:
+
+  memset(&bs,0,sizeof(bs));
+
+  int	max_s = 105;
+
+  //max_sprites_at_once;
+
+  /*for (int r2 = 1; r2 < max_sprites_at_once; r2++)
+    {
+    if (spr[r2].active) max_s = r2+1;
+    }
+  */
+  int height;
+
+
+
+  spr[1].que = 20000;
+  if (mode == MODE_SCREEN_SPRITES) if (   ! ((spr[1].pseq == 10) && (spr[1].pframe == 8)) ) spr[1].que = sp_que;
+
+  if (!in_enabled)
+    {
+      int r1;
+    for (r1 = 1; r1 < max_s+1; r1++)
+      {
+	int h1;
+	highest_sprite = 22024; //more than it could ever be
+
+	rank[r1] = 0;
+
+	for (h1 = 1; h1 < max_s+1; h1++)
+	  {
+	    if (spr[h1].active)
+	      {
+		if (bs[h1] == /*FALSE*/0)
+		  {
+		    //Msg( "Ok,  %d is %d", h1,(spr[h1].y + k[spr[h1].pic].yoffset) );
+		    if (spr[h1].que != 0) height = spr[h1].que; else height = spr[h1].y;
+		    if ( height < highest_sprite )
+		      {
+			highest_sprite = height;
+			rank[r1] = h1;
+		      }
+
+		  }
+
+	      }
+
+	  }
+	if (rank[r1] != 0)
+	  bs[rank[r1]] = /*TRUE*/1;
+      }
+    }
+
+
+
+
+
+  if (!in_enabled)
+
+    for (jj = 1; jj < max_s; jj++)
+      {
+
+	int h = rank[jj];
+	//Msg("Studying %d.,",h);
+
+	if (spr[h].active)
+	  {
+
+	    //        Msg("Sprite %d is active.",h);
+
+	    int greba = 0;
+
+	    if (spr[h].brain == 1)
+	      {
+			  int state = gui_logic(h);
+			  if (state == 1)
+				  goto skip_draw;
+			  else if (state == 2)
+				  return;
 	      } //real end of human brain
 
 
