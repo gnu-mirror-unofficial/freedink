@@ -18,7 +18,7 @@ method. To try it out:
 
 - Project > Properties
   - C/C++ Build
-    - Build command: make -j4
+    - Build command (optional): bash -c "make -j4 && make check || cat src/test-suite.log"
     - Build directory: ${workspace_loc:/FreeDink}/native
   - C/C++ General
     - Paths and Symbols
