@@ -165,30 +165,16 @@ void text_draw(int h) {
 	
 	
 	FONTS_SetTextColor(8, 14, 21);
-	if (spr[h].owner == 1200) {
-		//this text has no sprite, and doesn't want to be centered.
-		print_text_wrap(cr, &rcRect, 0, 0, FONT_DIALOG);
-		
-		rect_offset(&rcRect,-2,0);
-		print_text_wrap(cr, &rcRect, 0, 0, FONT_DIALOG);
-		
-		rect_offset(&rcRect,1,1);
-		print_text_wrap(cr, &rcRect, 0, 0, FONT_DIALOG);
-		
-		rect_offset(&rcRect,0,-2);
-		print_text_wrap(cr, &rcRect, 0, 0, FONT_DIALOG);
-	} else {
-		print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
-		
-		rect_offset(&rcRect,-2,0);
-		print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
-		
-		rect_offset(&rcRect,1,1);
-		print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
-		
-		rect_offset(&rcRect,0,-2);
-		print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
-	}
+	print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
+	
+	rect_offset(&rcRect,-2,0);
+	print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
+	
+	rect_offset(&rcRect,1,1);
+	print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
+	
+	rect_offset(&rcRect,0,-2);
+	print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
 	
 	rect_offset(&rcRect,0,1);
 	
