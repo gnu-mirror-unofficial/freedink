@@ -84,6 +84,8 @@ extern int gfx_blit_stretch(SDL_Surface *src, SDL_Rect *src_rect, SDL_Surface *d
 extern void flip_it(void);
 extern void gfx_toggle_fullscreen(void);
 extern void gfx_log_meminfo(void);
+extern void gfx_vlineRGB(SDL_Surface* s, Sint16 x, Sint16 y1, Sint16 y2, Uint8 r, Uint8 g, Uint8 b);
+extern void gfx_hlineRGB(SDL_Surface* s, Sint16 x1, Sint16 x2, Sint16 y, Uint8 r, Uint8 g, Uint8 b);
 extern void draw_box(rect box, int color);
 extern void fill_screen(int num);
 extern void copy_bmp(char* name);

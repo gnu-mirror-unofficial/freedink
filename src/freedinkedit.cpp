@@ -41,6 +41,7 @@
 #include <getopt.h>
 
 #include "SDL.h"
+#include "SDL2_gfxPrimitives.h"
 #include "SDL2_rotozoom.h"
 #include "SDL2_framerate.h"
 
@@ -951,52 +952,10 @@ return(0);
    sequences' 50x50 previews */
 static void draw_sprite_picker_grid(void)
 {
-/*   DDBLTFX ddbltfx; */
-/*   RECT box_crap; */
-
-/*   ZeroMemory(&ddbltfx, sizeof(ddbltfx)); */
-/*   ddbltfx.dwSize = sizeof(ddbltfx); */
-
-  /* Draw vertical lines */
-  int x2, x3;
-  for (x2 = 1; x2 <= 12; x2++)
-    {
-/*       ddbltfx.dwFillColor = 120; */
-
-/*       box_crap.top = 0; */
-/*       box_crap.bottom = 400; */
-/*       box_crap.left = (x2*50) -1; */
-/*       box_crap.right = box_crap.left+1; */
-
-/*       ddrval = lpDDSTwo->Blt(&box_crap ,NULL, NULL, DDBLT_COLORFILL|DDBLT_WAIT, &ddbltfx); */
-      // GFX
-      {
-	SDL_Rect dst = {12345, 0, 12345, 400};
-	dst.x = x2*50 - 1;
-	dst.w = 1;
-	SDL_FillRect(GFX_lpDDSTwo, &dst, SDL_MapRGB(GFX_lpDDSTwo->format, 123, 132, 99));
-      }
-    }
-
-  /* Draw horizontal lines */
-  for (x3 = 1; x3 <= 8; x3++)
-    {
-/*       ddbltfx.dwFillColor = 120; */
-
-/*       box_crap.top = (50 * x3)-1; */
-/*       box_crap.bottom = box_crap.top +1; */
-/*       box_crap.left = 0; */
-/*       box_crap.right = 600; */
-
-/*       ddrval = lpDDSTwo->Blt(&box_crap ,NULL, NULL, DDBLT_COLORFILL|DDBLT_WAIT, &ddbltfx); */
-      // GFX
-      {
-	SDL_Rect dst = {0, 12345, 600, 12345};
-	dst.y = x3*50 - 1;
-	dst.h = 1;
-	SDL_FillRect(GFX_lpDDSTwo, &dst, SDL_MapRGB(GFX_lpDDSTwo->format, 123, 132, 99));
-      }
-    }
+	for (int x = 1; x <= 12; x++)
+		gfx_vlineRGB(GFX_lpDDSTwo, x*50-1, 0,400, 123,132,99);
+	for (int y = 1; y <= 8; y++)
+		gfx_hlineRGB(GFX_lpDDSTwo, 0,600, y*50-1, 123,132,99);
 }
 
 /* Main sprite selection screen - display a page of the sequence
