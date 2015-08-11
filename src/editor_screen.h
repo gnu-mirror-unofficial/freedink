@@ -31,7 +31,7 @@
 #define MAX_SPRITES_EDITOR 99
 
 
-struct sprite_placement
+struct editor_sprite
 {
   int x, y;
   int seq, frame, type;  /* DinkC: editor_seq, editor_frame, editor_type */
@@ -68,7 +68,7 @@ struct editor_screen_tilerefs
 struct editor_screen
 {
   struct editor_screen_tilerefs t[12*8+1]; // 97 background tile refs
-  struct sprite_placement sprite[100+1];
+  struct editor_sprite sprite[100+1];
   char script[20+1]; /* script to run when entering the script */
   char ts_script_id; /* script to run when entering the script (pre-loaded for testsuite) */
 };
