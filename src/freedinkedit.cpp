@@ -3870,27 +3870,24 @@ void AppFreeDinkedit::logic(void)
 	    // end robot(2)
 
 
-
+	    // Cursor speed through game-compatible, 3-frames seq
 	    if (spr[h].seq > 0)
 	      {
 		if (spr[h].frame < 1)
 		  {
-		    // new anim
+		    // Cursor change
 		    spr[h].pseq = spr[h].seq;
 		    spr[h].pframe = 1;
 
 		    spr[h].frame = 1;
 		    spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[1]);
-		  } else
+		  }
+		else
 		  {
 		    // not new anim
-
 		    //is it time?
-
 		    if (thisTickCount > spr[h].delay)
 		      {
-
-
 			spr[h].frame++;
 			spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[spr[h].frame]);
 
@@ -3903,7 +3900,6 @@ void AppFreeDinkedit::logic(void)
 			    spr[h].pseq = spr[h].seq;
 			    spr[h].pframe = spr[h].frame;
 			    spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[spr[h].frame]);
-
 			  }
 
 			if (seq[spr[h].seq].frame[spr[h].frame] == 0)
@@ -3913,13 +3909,8 @@ void AppFreeDinkedit::logic(void)
 
 			    spr[h].frame = 0;
 			    spr[h].seq = 0;
-
-
 			  }
-
-
 		      }
-
 		  }
 	      }
 
