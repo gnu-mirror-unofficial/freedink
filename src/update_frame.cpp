@@ -64,8 +64,6 @@
 static Uint32 fps_lasttick = 0;
 static int frames = 0;
 static int fps = 0;
-static /*bool*/int turn_on_plane = /*FALSE*/0;
-static /*bool*/int plane_process = /*TRUE*/1;
 static unsigned long mold;
 
 /* Fills 'struct seth_joy sjoy' with the current keyboard and/or
@@ -697,16 +695,8 @@ void updateFrame()
 	if (process_downcycle) CyclePalette();
 	
 	
-	if (plane_process)
-	  {
-	    max_s = last_sprite_created;
-	    screen_rank_game_sprites(rank);
-	  }
-	else
-	  {
-	    //not processing planes
-	    max_s = MAX_SPRITES_AT_ONCE;
-	  }
+	max_s = last_sprite_created;
+	screen_rank_game_sprites(rank);
 	
 	//Blit from Two, which holds the base scene.
 	SDL_BlitSurface(GFX_lpDDSTwo, NULL, GFX_lpDDSBack, NULL);
@@ -735,10 +725,7 @@ void updateFrame()
 	{
 		//h  = 1;
 		int h = 0;
-		if (plane_process)
-		  h = rank[j];
-		else
-		  h = j;
+		h = rank[j];
 		//Msg( "Ok, rank %d is %d", j,h);
 		
 		if (h > 0) 
@@ -1134,9 +1121,9 @@ past:
 	      }
 	    if (mode == 3)
 	      {
-		sprintf(msg, "Sprites: %d  FPS: %d  Plane_process: %d"
-			" Moveman X%d X%d: %d Y%d Y%d Map %d",
-			last_sprite_created, fps/*_show*/, plane_process,
+		sprintf(msg, "Sprites: %d  FPS: %d"
+			"  Moveman X%d X%d: %d Y%d Y%d Map %d",
+			last_sprite_created, fps/*_show*/,
 			spr[1].lpx[0], spr[1].lpy[0], spr[1].moveman,
 			spr[1].lpx[1], spr[1].lpy[1], *pplayer_map);
 	      }
@@ -1166,10 +1153,7 @@ past:
 	for (int j2 = 0; j2 <= max_s; j2++)
 	  {
 	    int h = 0;
-	    if (plane_process)
-	      h = rank[j2];
-	    else
-	      h = j2;
+	    h = rank[j2];
 	    if (h > 0 && spr[h].active && spr[h].brain == 8)
 	      text_draw(h);
 	  }
@@ -1185,7 +1169,5 @@ flip:
 
 	if (!abort_this_flip)
 		flip_it(); 
-	
-	if (turn_on_plane) plane_process = /*TRUE*/1;
 	
 } /* updateFrame */
