@@ -185,7 +185,7 @@ int load_screen_to(const char* path, const int num, struct editor_screen* screen
       
       int j = 0;
       for (j = 0; j < 5; j++)
-	screen->sprite[i].buff[j] = read_lsb_int(f);
+	read_lsb_int(f);
     }
   // offset 30204
   
@@ -303,7 +303,7 @@ void save_screen(const char* path, const int num)
 
 	  int j = 0;
 	  for (j = 0; j < 5; j++)
-	    write_lsb_int(cur_ed_screen.sprite[i].buff[j], f);
+	    write_lsb_int(0, f);
 	}
       // offset 30204
       

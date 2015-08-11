@@ -37,10 +37,10 @@ struct sprite_placement
   int seq, frame, type;  /* DinkC: editor_seq, editor_frame, editor_type */
   int size;
   BOOL_1BYTE active;
-  int rotation, special, brain;
+  int special, brain;
   
   char script[13+1]; /* attached DinkC script */
-  int speed, base_walk, base_idle, base_attack, base_hit, timer, que;
+  int speed, base_walk, base_idle, base_attack, timer, que;
   int hard;
   rect alt; /* trim left/top/right/bottom */
   int is_warp;
@@ -49,8 +49,11 @@ struct sprite_placement
   int warp_y;
   int parm_seq;
   
-  int base_die, gold, hitpoints, strength, defense, exp, sound, vision, nohit, touch_damage;
-  int buff[5];
+  int base_die, hitpoints, strength, defense, exp, sound, vision, nohit, touch_damage;
+
+  int rotation; /* unused */
+  int base_hit; /* default spr[].base_hit, unused but exported to undocumented sp_base_hit() */
+  int gold; /* default spr[].gold; unused but exported to sp_gold() */
 };
 
 
