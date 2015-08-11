@@ -767,7 +767,7 @@ void dc_say_stop(int script, int* yield, int* preturnint, char* text, int active
   int sprite = say_text_from_dc(text, active_sprite, script);
   *preturnint = sprite;
 
-  spr[sprite].callback = script;
+  spr[sprite].say_stop_callback = script;
   play.last_talk = script;
   //Msg("Sprite %d marked callback true.", sprite);
     
@@ -788,7 +788,7 @@ void dc_say_stop_npc(int script, int* yield, int* preturnint, char* text, int ac
   kill_returning_stuff(script);
 
   int sprite = say_text_from_dc(text, active_sprite, script);
-  spr[sprite].callback = script;
+  spr[sprite].say_stop_callback = script;
     
   *yield = 1;
 }
@@ -798,7 +798,7 @@ void dc_say_stop_xy(int script, int* yield, int* preturnint, char* text, int x, 
   kill_returning_stuff(script);
 
   int sprite = say_text_xy_from_dc(text, x, y, script);
-  spr[sprite].callback = script;
+  spr[sprite].say_stop_callback = script;
   spr[sprite].live = /*true*/1;
   play.last_talk = script;
   *yield = 1;

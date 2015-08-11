@@ -1102,10 +1102,10 @@ void kill_returning_stuff(int script)
   for (i = 1; i <= last_sprite_created; i++)
     {
       // TODO: move out so we don't depend on 'spr'
-      if (spr[i].active && spr[i].brain == 8 && spr[i].callback == script)
+      if (spr[i].active && spr[i].brain == 8 && spr[i].say_stop_callback == script)
 	{
 	  log_debug("Killed sprites callback command");
-	  spr[i].callback = 0;
+	  spr[i].say_stop_callback = 0;
 	}
     }
 }

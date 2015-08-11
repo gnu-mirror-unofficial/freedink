@@ -762,8 +762,8 @@ void updateFrame()
 				if (live_sprite_is_expired(h, thisTickCount)) {
 					spr[h].active = /*false*/0;
 					get_last_sprite();
-					if (spr[h].callback > 0)
-						run_script(spr[h].callback);
+					if (spr[h].say_stop_callback > 0)
+						run_script(spr[h].say_stop_callback);
 				}
 				
 				if (spr[h].timer > 0)
