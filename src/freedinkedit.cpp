@@ -81,20 +81,23 @@
 */
 
 /* Use constants for readability */
-#define MODE_MINIMAP 1
-#define MODE_TILE_PICKER 2
-#define MODE_SPRITE_PICKER 5
+enum editor_mode {
+	EDITOR_MODE_INIT,
 
-#define MODE_SCREEN_TILES 3
-#define MODE_SCREEN_SPRITES 6
-#define MODE_SCREEN_HARDNESS 8
-#define MODE_SCREEN_HARDNESS_INIT 9
+	EDITOR_MODE_MINIMAP,
 
-#define MODE_TILE_HARDNESS 4
-#define MODE_SPRITE_HARDNESS 7
+	EDITOR_MODE_TILE_PICKER,
+	EDITOR_MODE_SPRITE_PICKER,
 
-#define MODE_INIT 0
-static int g_editorMode = MODE_INIT;
+	EDITOR_MODE_SCREEN_TILES,
+	EDITOR_MODE_SCREEN_SPRITES,
+	EDITOR_MODE_SCREEN_HARDNESS,
+	EDITOR_MODE_SCREEN_HARDNESS_INIT,
+
+	EDITOR_MODE_TILE_HARDNESS,
+	EDITOR_MODE_SPRITE_HARDNESS,
+};
+static enum editor_mode g_editorMode = EDITOR_MODE_INIT;
 
 #define INPUT_MINIMAP_LOAD  30
 #define INPUT_SCREEN_VISION 32
@@ -249,7 +252,7 @@ void draw_minimap(void);
 /* void dderror(HRESULT hErr); */
 
 static bool skip_screen_clipping() {
-	return (g_editorMode == MODE_MINIMAP || g_editorMode == MODE_SPRITE_PICKER) && draw_screen_tiny < 1;
+	return (g_editorMode == EDITOR_MODE_MINIMAP || g_editorMode == EDITOR_MODE_SPRITE_PICKER) && draw_screen_tiny < 1;
 }
 
 void draw_sprite(SDL_Surface *GFX_lpdest, int h)
@@ -893,17 +896,17 @@ void loadtile(int tileset)
 
   spr[1].seq = 3; spr[1].seq_orig = 3;
   //  if (mode == 3)
-  if (g_editorMode == MODE_SCREEN_TILES)
+  if (g_editorMode == EDITOR_MODE_SCREEN_TILES)
     {
       m3x = spr[1].x; m3y = spr[1].y;
-      spr[1].x = m2x; spr[1].y = m2y; g_editorMode = 2;
+      spr[1].x = m2x; spr[1].y = m2y; g_editorMode = EDITOR_MODE_TILE_PICKER;
       spr[1].speed = 50;
     }
 
   //  if (mode == 4)
-  if (g_editorMode == MODE_TILE_HARDNESS)
+  if (g_editorMode == EDITOR_MODE_TILE_HARDNESS)
     {
-      spr[1].x = m2x; spr[1].y = m2y; g_editorMode = 2;
+      spr[1].x = m2x; spr[1].y = m2y; g_editorMode = EDITOR_MODE_TILE_PICKER;
       spr[1].speed = 50;
     }
 
@@ -1877,9 +1880,9 @@ int gui_logic(int h) {
 	/*BOOL*/int cool;
 	rect  Rect;
 
-	if ((spr[h].seq == 0) || (g_editorMode == MODE_TILE_HARDNESS)) {
+	if ((spr[h].seq == 0) || (g_editorMode == EDITOR_MODE_TILE_HARDNESS)) {
 		//if (mode == 7)
-		if (g_editorMode == MODE_SPRITE_HARDNESS) {
+		if (g_editorMode == EDITOR_MODE_SPRITE_HARDNESS) {
 			//editing a sprite, setting hard box and depth dot.
 			spr[1].pseq = 1;
 			spr[1].pframe = 1;
@@ -1887,7 +1890,7 @@ int gui_logic(int h) {
 			if (sjoy.button[EDITOR_ACTION_ESCAPE]) {
 				//they want out
 				//mode = 5;
-				g_editorMode = MODE_SPRITE_PICKER;
+				g_editorMode = EDITOR_MODE_SPRITE_PICKER;
 				draw96(0);
 				spr[1].x = m5x;
 				spr[1].y = m5y;
@@ -2124,7 +2127,7 @@ int gui_logic(int h) {
 		}
 
 
-		if (g_editorMode == MODE_SCREEN_SPRITES) {
+		if (g_editorMode == EDITOR_MODE_SCREEN_SPRITES) {
 			// place sprite
 			if ( (input_getcharjustpressed(SDLK_v)) ) {
 				in_master = INPUT_SCREEN_VISION; // Set screen vision?
@@ -2599,7 +2602,7 @@ int gui_logic(int h) {
 					rect_set(&spr[1].alt,0,0,0,0);
 
 					spr[1].size = 100;
-					g_editorMode = MODE_SCREEN_TILES;
+					g_editorMode = EDITOR_MODE_SCREEN_TILES;
 					spr[1].x = m4x;
 					spr[1].y = m4y;
 					spr[1].seq = 3;
@@ -2623,7 +2626,7 @@ int gui_logic(int h) {
 
 				spr[1].size = 100;
 				//mode = 5;
-				g_editorMode = MODE_SPRITE_PICKER;
+				g_editorMode = EDITOR_MODE_SPRITE_PICKER;
 				m6x = spr[h].x;
 				m6y = spr[h].y;
 				spr[h].x = m5x;
@@ -2644,7 +2647,7 @@ int gui_logic(int h) {
 					draw_screen_editor();
 				}
 				spr[1].size = 100;
-				g_editorMode = MODE_SCREEN_TILES;
+				g_editorMode = EDITOR_MODE_SCREEN_TILES;
 				spr[h].x = m4x;
 				spr[h].y = m4y;
 
@@ -2661,14 +2664,14 @@ int gui_logic(int h) {
 		}
 
 
-		if ( (g_editorMode == MODE_SCREEN_TILES)
+		if ( (g_editorMode == EDITOR_MODE_SCREEN_TILES)
 			 && (sjoy.button[EDITOR_ACTION_TAB])) {
 
 			//they chose sprite picker mode
 			//lsm_kill_all_nonlive_sprites();
 
 
-			g_editorMode = MODE_SCREEN_SPRITES;
+			g_editorMode = EDITOR_MODE_SCREEN_SPRITES;
 
 			spr[1].pseq = 10;
 			spr[1].pframe = 8;
@@ -2684,14 +2687,14 @@ int gui_logic(int h) {
 			//if (sp_seq == 0)
 			//	draw15(); else draw96();
 
-		} else if (g_editorMode == MODE_SPRITE_PICKER) {
+		} else if (g_editorMode == EDITOR_MODE_SPRITE_PICKER) {
 			//picking a sprite
 			if (sp_seq != 0) {
 				//they are in select sprite phase 2
 
 				if (input_getcharjustpressed(SDLK_e)) {
 					//they want to 'edit' the sprite
-					g_editorMode = MODE_SPRITE_HARDNESS;
+					g_editorMode = EDITOR_MODE_SPRITE_HARDNESS;
 					m5x = spr[h].x;
 					m5y = spr[h].y;
 
@@ -2747,7 +2750,7 @@ int gui_logic(int h) {
 					spr[1].pframe = 8;
 
 					spr[h].speed = 1;
-					g_editorMode = MODE_SCREEN_SPRITES;
+					g_editorMode = EDITOR_MODE_SCREEN_SPRITES;
 					goto sp_edit_end;
 
 				}
@@ -2769,7 +2772,7 @@ int gui_logic(int h) {
 					draw_screen_editor();
 					spr[h].x = m6x;
 					spr[h].y = m6y;
-					g_editorMode = MODE_SCREEN_SPRITES;
+					g_editorMode = EDITOR_MODE_SCREEN_SPRITES;
 					spr[h].speed = 1;
 					goto sp_edit_end;
 
@@ -2801,7 +2804,7 @@ int gui_logic(int h) {
 				spr[h].pframe = 8;
 
 				spr[h].speed = 1;
-				g_editorMode = MODE_SCREEN_SPRITES;
+				g_editorMode = EDITOR_MODE_SCREEN_SPRITES;
 				return 0;
 				//goto sp_edit_end;
 
@@ -2843,29 +2846,29 @@ int gui_logic(int h) {
 
 
 
-		if (g_editorMode == MODE_SCREEN_TILES) draw_current();
+		if (g_editorMode == EDITOR_MODE_SCREEN_TILES) draw_current();
 
 
-		if (g_editorMode == MODE_INIT) {
+		if (g_editorMode == EDITOR_MODE_INIT) {
 
 			spr[h].seq = 2;
 			spr[h].seq_orig = 2;
 			draw_minimap();
 			spr[1].que = 20000;
-			g_editorMode = MODE_MINIMAP;
+			g_editorMode = EDITOR_MODE_MINIMAP;
 			spr[2].active = /*FALSE*/0;
 			spr[3].active = /*FALSE*/0;
 			spr[4].active = /*FALSE*/0;
 		}
 
-		if (g_editorMode == MODE_INIT) return 0;
+		if (g_editorMode == EDITOR_MODE_INIT) return 0;
 
 
 
 
 		//mode equals 4, they are in hardness edit mode, so lets do this thang
 
-		if (g_editorMode == MODE_TILE_HARDNESS) {
+		if (g_editorMode == EDITOR_MODE_TILE_HARDNESS) {
 			if (spr[h].seq == 0) {
 				if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_RIGHT))) {
 					spr[h].seq = 4;
@@ -3029,7 +3032,7 @@ int gui_logic(int h) {
 					selx = 1;
 					sely = 1;
 
-					g_editorMode = MODE_SCREEN_HARDNESS_INIT;
+					g_editorMode = EDITOR_MODE_SCREEN_HARDNESS_INIT;
 					return 2;
 				}
 
@@ -3044,7 +3047,7 @@ int gui_logic(int h) {
 				draw_screen_editor();
 				spr[h].x = m4x;
 				spr[h].y = m4y;
-				g_editorMode = MODE_SCREEN_TILES;
+				g_editorMode = EDITOR_MODE_SCREEN_TILES;
 				selx = 1;
 				sely = 1;
 			}
@@ -3067,13 +3070,13 @@ int gui_logic(int h) {
 
 
 
-		if (((g_editorMode == MODE_SCREEN_TILES) && (sjoy.button[EDITOR_ACTION_RETURN]))
-			|| ((g_editorMode == MODE_TILE_PICKER) && (input_getscancodestate(SDL_SCANCODE_SPACE)))) {
+		if (((g_editorMode == EDITOR_MODE_SCREEN_TILES) && (sjoy.button[EDITOR_ACTION_RETURN]))
+			|| ((g_editorMode == EDITOR_MODE_TILE_PICKER) && (input_getscancodestate(SDL_SCANCODE_SPACE)))) {
 
-			if (g_editorMode == MODE_SCREEN_TILES)
+			if (g_editorMode == EDITOR_MODE_SCREEN_TILES)
 				cur_tile = cur_ed_screen.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].square_full_idx0;
 
-			if (g_editorMode == MODE_TILE_PICKER) {
+			if (g_editorMode == EDITOR_MODE_TILE_PICKER) {
 				cur_tile = (((spr[1].y+1)*12) / 50)+(spr[1].x / 50);
 				cur_tile += (cur_tileset * 128) - 128;
 			}
@@ -3149,12 +3152,12 @@ int gui_logic(int h) {
 				selx = 1;
 				sely = 1;
 
-				g_editorMode = MODE_TILE_HARDNESS;
+				g_editorMode = EDITOR_MODE_TILE_HARDNESS;
 			}
 		}
 
 
-		if ((g_editorMode == MODE_TILE_PICKER) || (g_editorMode == MODE_SCREEN_TILES)) {
+		if ((g_editorMode == EDITOR_MODE_TILE_PICKER) || (g_editorMode == EDITOR_MODE_SCREEN_TILES)) {
 			//resizing the box
 
 			if ((SDL_GetModState()&KMOD_SHIFT) && (input_getscancodestate(SDL_SCANCODE_RIGHT)) ) {
@@ -3196,7 +3199,7 @@ int gui_logic(int h) {
 		}
 
 
-		if ((input_getcharstate(SDLK_s)) && (g_editorMode == MODE_SCREEN_TILES)) {
+		if ((input_getcharstate(SDLK_s)) && (g_editorMode == EDITOR_MODE_SCREEN_TILES)) {
 			int y;
 			spr[h].seq = 3;
 			spr[h].seq_orig = 3;
@@ -3221,7 +3224,7 @@ int gui_logic(int h) {
 
 
 
-		if ((input_getcharstate(SDLK_c)) && (g_editorMode == MODE_SCREEN_TILES)) {
+		if ((input_getcharstate(SDLK_c)) && (g_editorMode == EDITOR_MODE_SCREEN_TILES)) {
 			spr[h].seq = 3;
 			spr[h].seq_orig = 3;
 			//SoundPlayEffect( SOUND_JUMP );
@@ -3230,7 +3233,7 @@ int gui_logic(int h) {
 		}
 
 		/* Tile selection */
-		if (g_editorMode == MODE_SCREEN_TILES || g_editorMode == MODE_TILE_PICKER) {
+		if (g_editorMode == EDITOR_MODE_SCREEN_TILES || g_editorMode == EDITOR_MODE_TILE_PICKER) {
 			int unit = 0, tile_no = 0;
 			if (input_getscancodestate(SDL_SCANCODE_1) || input_getscancodestate(SDL_SCANCODE_KP_1) || input_getscancodestate(SDL_SCANCODE_F1)) unit = 1;
 			if (input_getscancodestate(SDL_SCANCODE_2) || input_getscancodestate(SDL_SCANCODE_KP_2) || input_getscancodestate(SDL_SCANCODE_F2)) unit = 2;
@@ -3266,7 +3269,7 @@ int gui_logic(int h) {
 		//if ( (GetKeyboard(48)) && ( (mode == 3) | (mode ==2)) ) loadtile(11);
 
 
-		if ((sjoy.button[EDITOR_ACTION_RETURN]) && (g_editorMode == MODE_TILE_PICKER)) {
+		if ((sjoy.button[EDITOR_ACTION_RETURN]) && (g_editorMode == EDITOR_MODE_TILE_PICKER)) {
 			// cut to map editer from tile selection
 			spr[h].seq = 3;
 			spr[h].seq_orig = 3;
@@ -3278,7 +3281,7 @@ int gui_logic(int h) {
 			spr[h].x = m3x;
 			spr[h].y = m3y;
 
-			g_editorMode = MODE_SCREEN_TILES;
+			g_editorMode = EDITOR_MODE_SCREEN_TILES;
 			spr[h].speed = 50;
 			draw_screen_editor();
 			last_mode = 0;
@@ -3286,7 +3289,7 @@ int gui_logic(int h) {
 
 
 
-		if (sjoy.button[EDITOR_ACTION_ESCAPE] && (g_editorMode == MODE_TILE_PICKER)) {
+		if (sjoy.button[EDITOR_ACTION_ESCAPE] && (g_editorMode == EDITOR_MODE_TILE_PICKER)) {
 			// cut to map editer from tile selection
 			spr[h].seq = 3;
 			spr[h].seq_orig = 3;
@@ -3297,20 +3300,20 @@ int gui_logic(int h) {
 			spr[h].x = m3x;
 			spr[h].y = m3y;
 
-			g_editorMode = MODE_SCREEN_TILES;
+			g_editorMode = EDITOR_MODE_SCREEN_TILES;
 			draw_screen_editor();
 			last_mode = 0;
 			return 0;
 		}
 
 
-		if ( (input_getscancodejustpressed(SDL_SCANCODE_SPACE))  && (g_editorMode == MODE_MINIMAP)) {
+		if ( (input_getscancodejustpressed(SDL_SCANCODE_SPACE))  && (g_editorMode == EDITOR_MODE_MINIMAP)) {
 			//make_map_tiny();
 			draw_screen_tiny = 0;
 
 		}
 
-		if ( (input_getcharjustpressed(SDLK_l))  && (g_editorMode == MODE_MINIMAP)) {
+		if ( (input_getcharjustpressed(SDLK_l))  && (g_editorMode == EDITOR_MODE_MINIMAP)) {
 
 			//if (g_map.loc[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)] != 0)
 			//{
@@ -3321,7 +3324,7 @@ int gui_logic(int h) {
 		}
 
 
-		if ( (input_getscancodejustpressed(SDL_SCANCODE_ESCAPE)) && (g_editorMode == MODE_MINIMAP)) {
+		if ( (input_getscancodejustpressed(SDL_SCANCODE_ESCAPE)) && (g_editorMode == EDITOR_MODE_MINIMAP)) {
 			g_map.load();
 			draw_minimap();
 			buf_mode = /*false*/0;
@@ -3329,19 +3332,19 @@ int gui_logic(int h) {
 		}
 
 
-		if ( (input_getcharjustpressed(SDLK_m)) && (g_editorMode == MODE_MINIMAP)) {
+		if ( (input_getcharjustpressed(SDLK_m)) && (g_editorMode == EDITOR_MODE_MINIMAP)) {
 			//set music # for this block
 			in_int = &g_map.music[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)];
 			in_master = INPUT_SCREEN_MIDI;
 		}
 
-		if ( (input_getcharjustpressed(SDLK_s)) && (g_editorMode == MODE_MINIMAP)) {
+		if ( (input_getcharjustpressed(SDLK_s)) && (g_editorMode == EDITOR_MODE_MINIMAP)) {
 			//set music # for this block
 			in_int = &g_map.indoor[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)];
 			in_master = INPUT_SCREEN_TYPE;
 		}
 
-		if ( (input_getcharjustpressed(SDLK_q)) && (g_editorMode == MODE_MINIMAP)) {
+		if ( (input_getcharjustpressed(SDLK_q)) && (g_editorMode == EDITOR_MODE_MINIMAP)) {
 			save_hard();
 			log_info("Info saved.");
 			SDL_Event ev;
@@ -3350,7 +3353,7 @@ int gui_logic(int h) {
 			return 2;
 		}
 
-		if ( (sjoy.button[EDITOR_ACTION_RETURN]) && (g_editorMode == MODE_MINIMAP)) {
+		if ( (sjoy.button[EDITOR_ACTION_RETURN]) && (g_editorMode == EDITOR_MODE_MINIMAP)) {
 
 			if (buf_mode) {
 				//lets replace this screen
@@ -3413,7 +3416,7 @@ int gui_logic(int h) {
 			spr[h].y = m3y;
 
 
-			g_editorMode = MODE_SCREEN_TILES;
+			g_editorMode = EDITOR_MODE_SCREEN_TILES;
 
 			spr[h].speed = 50;
 			draw_screen_editor();
@@ -3422,14 +3425,14 @@ int gui_logic(int h) {
 
 
 		/* Cycle the current tile square (displayed at the bottom-right) */
-		if ((g_editorMode == MODE_SCREEN_TILES)
+		if ((g_editorMode == EDITOR_MODE_SCREEN_TILES)
 			&& (input_getscancodestate(SDL_SCANCODE_PAGEUP) || input_getscancodestate(SDL_SCANCODE_MINUS))) {
 			spr[h].seq = 3;
 			spr[h].seq_orig = 3;
 			cur_tile--;
 			if (cur_tile < 0) cur_tile = 0;
 		}
-		if ((g_editorMode == MODE_SCREEN_TILES)
+		if ((g_editorMode == EDITOR_MODE_SCREEN_TILES)
 			&& (input_getscancodestate(SDL_SCANCODE_PAGEDOWN) || input_getscancodestate(SDL_SCANCODE_EQUALS))) {
 			spr[h].seq = 3;
 			spr[h].seq_orig = 3;
@@ -3439,18 +3442,18 @@ int gui_logic(int h) {
 		}
 
 
-		if ((g_editorMode == MODE_SCREEN_TILES) && (input_getcharjustpressed(SDLK_h))) {
+		if ((g_editorMode == EDITOR_MODE_SCREEN_TILES) && (input_getcharjustpressed(SDLK_h))) {
 			//start althard mode
 
-			g_editorMode = MODE_SCREEN_HARDNESS_INIT;
+			g_editorMode = EDITOR_MODE_SCREEN_HARDNESS_INIT;
 			return 1; // goto skip_draw;
 		}
 
-		if (g_editorMode == MODE_SCREEN_HARDNESS) {
+		if (g_editorMode == EDITOR_MODE_SCREEN_HARDNESS) {
 			//mode for it
 			if (input_getscancodejustpressed(SDL_SCANCODE_ESCAPE)) {
 				//exit mode 8
-				g_editorMode = MODE_SCREEN_TILES;
+				g_editorMode = EDITOR_MODE_SCREEN_TILES;
 				spr[h].seq = 3;
 				spr[h].seq_orig = 3;
 				draw_screen_editor();
@@ -3477,7 +3480,7 @@ int gui_logic(int h) {
 				//stamp tile hardness to selected
 				cur_ed_screen.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].althard = hard_tile;
 				draw_screen_editor();
-				g_editorMode = MODE_SCREEN_HARDNESS_INIT;
+				g_editorMode = EDITOR_MODE_SCREEN_HARDNESS_INIT;
 
 				return 2;
 			}
@@ -3486,7 +3489,7 @@ int gui_logic(int h) {
 				//stamp tile hardness to selected
 				cur_ed_screen.t[(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)].althard = 0;
 				draw_screen_editor();
-				g_editorMode = MODE_SCREEN_HARDNESS_INIT;
+				g_editorMode = EDITOR_MODE_SCREEN_HARDNESS_INIT;
 
 				return 2;
 			}
@@ -3548,14 +3551,14 @@ int gui_logic(int h) {
 				selx = 1;
 				sely = 1;
 
-				g_editorMode = MODE_TILE_HARDNESS;
+				g_editorMode = EDITOR_MODE_TILE_HARDNESS;
 
 				hmap.htile[hard_tile].used = /*true*/1;
 				last_modereal = 8;
 			}
 		}
 
-		if ((g_editorMode == MODE_SCREEN_TILES)
+		if ((g_editorMode == EDITOR_MODE_SCREEN_TILES)
 			&& (SDL_GetModState()&KMOD_ALT)
 			&& input_getcharjustpressed(SDLK_x)) {
 			spr[h].seq = 2;
@@ -3564,7 +3567,7 @@ int gui_logic(int h) {
 			m3y = spr[h].y;
 			spr[h].x = m1x;
 			spr[h].y = m1y;
-			g_editorMode = MODE_MINIMAP;
+			g_editorMode = EDITOR_MODE_MINIMAP;
 			spr[h].speed = 20;
 			g_map.load();
 			draw_minimap();
@@ -3572,7 +3575,7 @@ int gui_logic(int h) {
 			return 2;
 		}
 
-		if ((g_editorMode == MODE_SCREEN_TILES) && (sjoy.button[EDITOR_ACTION_ESCAPE])) {
+		if ((g_editorMode == EDITOR_MODE_SCREEN_TILES) && (sjoy.button[EDITOR_ACTION_ESCAPE])) {
 			// jump to map selector selector from map mode
 			editor_save_screen(g_map.loc[cur_map]);
 			spr[h].seq = 2;
@@ -3583,7 +3586,7 @@ int gui_logic(int h) {
 			//Msg("m1y is %d, math is %d",m1y, (20 * (m1y / 20)) < m1y);
 			spr[h].x = m1x;
 			spr[h].y = m1y;
-			g_editorMode = 1;
+			g_editorMode = EDITOR_MODE_MINIMAP;
 			spr[h].speed = 20;
 			g_map.load();
 			draw_minimap();
@@ -3624,20 +3627,20 @@ int gui_logic(int h) {
 		// end human brain (1)
 
 
-		if ((g_editorMode == MODE_TILE_PICKER) || (g_editorMode == MODE_SCREEN_TILES)
-			|| (g_editorMode == MODE_SPRITE_PICKER) || (g_editorMode == MODE_SCREEN_HARDNESS)) {
+		if ((g_editorMode == EDITOR_MODE_TILE_PICKER) || (g_editorMode == EDITOR_MODE_SCREEN_TILES)
+			|| (g_editorMode == EDITOR_MODE_SPRITE_PICKER) || (g_editorMode == EDITOR_MODE_SCREEN_HARDNESS)) {
 			if ((selx * 50 + spr[1].x) > 600) {
 				spr[1].x = 600 - (selx * 50);
 			}
 		}
 
-		if ((g_editorMode == MODE_TILE_PICKER)) {
+		if ((g_editorMode == EDITOR_MODE_TILE_PICKER)) {
 			if ((sely * 50 + spr[1].y) > 450) {
 				spr[1].y = 450 - (sely * 50);
 			}
 		}
-		if ((g_editorMode == MODE_SCREEN_TILES) || (g_editorMode == MODE_SPRITE_PICKER)
-			|| (g_editorMode == MODE_SCREEN_HARDNESS)) {
+		if ((g_editorMode == EDITOR_MODE_SCREEN_TILES) || (g_editorMode == EDITOR_MODE_SPRITE_PICKER)
+			|| (g_editorMode == EDITOR_MODE_SCREEN_HARDNESS)) {
 			if ((sely * 50 + spr[1].y) > 400) {
 				spr[1].y = 400 - (sely * 50);
 			}
@@ -3769,7 +3772,7 @@ void AppFreeDinkedit::logic(void)
 
 
   spr[1].que = 20000;
-  if (g_editorMode == MODE_SCREEN_SPRITES) if (   ! ((spr[1].pseq == 10) && (spr[1].pframe == 8)) ) spr[1].que = sp_que;
+  if (g_editorMode == EDITOR_MODE_SCREEN_SPRITES) if (   ! ((spr[1].pseq == 10) && (spr[1].pframe == 8)) ) spr[1].que = sp_que;
 
   if (!in_enabled)
     {
@@ -3915,13 +3918,13 @@ void AppFreeDinkedit::logic(void)
 	      }
 
 
-	    if (g_editorMode == MODE_SCREEN_TILES)
+	    if (g_editorMode == EDITOR_MODE_SCREEN_TILES)
 	      {
 		//need offset to look right
 		k[seq[3].frame[1]].xoffset = -20;
 		greba = 20;
 	      }
-	    if (g_editorMode == MODE_TILE_PICKER || g_editorMode == MODE_SPRITE_PICKER)
+	    if (g_editorMode == EDITOR_MODE_TILE_PICKER || g_editorMode == EDITOR_MODE_SPRITE_PICKER)
 	      {
 		//pick a tile, needs no offset
 		k[seq[3].frame[1]].xoffset = 0;
@@ -3929,7 +3932,7 @@ void AppFreeDinkedit::logic(void)
 	      }
 
 	    //		if (  !(( h == 1) & (mode == 9)) )
-	    if (!((h == 1) && (g_editorMode == MODE_SCREEN_HARDNESS_INIT)))
+	    if (!((h == 1) && (g_editorMode == EDITOR_MODE_SCREEN_HARDNESS_INIT)))
 	      {
 		if (draw_screen_tiny == -1)
 		  draw_sprite(GFX_lpDDSBack, h);
@@ -3942,7 +3945,7 @@ void AppFreeDinkedit::logic(void)
 	  skip_draw:
 	    if (spr[h].brain == 1)
 	      {
-		if (g_editorMode == MODE_SCREEN_TILES || g_editorMode == MODE_TILE_PICKER)
+		if (g_editorMode == EDITOR_MODE_SCREEN_TILES || g_editorMode == EDITOR_MODE_TILE_PICKER)
 		  {
 		    /* Draw the tile squares selector, an expandable
 		       array of white non-filled squares */
@@ -3966,7 +3969,7 @@ void AppFreeDinkedit::logic(void)
 		  }
 
 
-		if ((g_editorMode == MODE_TILE_HARDNESS))
+		if ((g_editorMode == EDITOR_MODE_TILE_HARDNESS))
 		  {
 		    /* Display the current "pencil"/square to draw hardness with */
 		    int yy;
@@ -3992,9 +3995,9 @@ void AppFreeDinkedit::logic(void)
       }
 
 
-  if (g_editorMode == MODE_SCREEN_HARDNESS_INIT)
+  if (g_editorMode == EDITOR_MODE_SCREEN_HARDNESS_INIT)
     {
-      g_editorMode = MODE_SCREEN_HARDNESS;
+      g_editorMode = EDITOR_MODE_SCREEN_HARDNESS;
 
       fill_whole_hard();
       lsm_kill_all_nonlive_sprites();
@@ -4040,10 +4043,10 @@ void AppFreeDinkedit::logic(void)
 
       //	TextOut(hdc,0,0, msg,lstrlen(msg));
       //	   if (mode == 0) strcpy(msg,"");
-      if (g_editorMode == MODE_INIT)
+      if (g_editorMode == EDITOR_MODE_INIT)
 	strcpy(msg,"");
 
-      if (g_editorMode == MODE_MINIMAP)
+      if (g_editorMode == EDITOR_MODE_MINIMAP)
 	{
 	  if (20 * (spr[1].y / 20) != spr[1].y)
 	    {
@@ -4056,7 +4059,7 @@ void AppFreeDinkedit::logic(void)
 		  (((spr[1].y+1)*32) / 20)+(spr[1].x / 20));
 /* 		  g_map.loc[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20) ]); */
 	}
-      if (g_editorMode == MODE_SCREEN_TILES)
+      if (g_editorMode == EDITOR_MODE_SCREEN_TILES)
 	{
 	  //((x-1) - (x / 12))*50, (x / 12) * 50,
 	  sprintf(msg,
@@ -4067,20 +4070,20 @@ void AppFreeDinkedit::logic(void)
 /* 		  cur_tile, */
 /* 		  cur_ed_screen.t[crap].num); */
 	}
-      if (g_editorMode == MODE_TILE_PICKER)
+      if (g_editorMode == EDITOR_MODE_TILE_PICKER)
 	sprintf(msg,
 		"Map # %d - Current tile # %d - ENTER to choose, SPACE to edit hardness.",
 		g_editorMode,
 		cur_map);
 /* 		(((spr[1].y+1)*12) / 50)+(spr[1].x / 50)); */
-      if (g_editorMode == MODE_TILE_HARDNESS)
+      if (g_editorMode == EDITOR_MODE_TILE_HARDNESS)
 	{
 	  sprintf(msg, "X:%d Y:%d: Density index %d  Z to harden, X to soften, A for low-hard, S for ???.\n"
 		  "Alt+X/A/S to fill hardness. Shift+direction for larger brush. ENTER or ESC to exit.",
 		  (spr[1].x / 9) -9,(spr[1].y / 9) +1, hard_tile);
 	}
 
-      if (g_editorMode == MODE_SPRITE_PICKER)
+      if (g_editorMode == EDITOR_MODE_SPRITE_PICKER)
 	{
 
 	  if (sp_seq == 0)
@@ -4096,7 +4099,7 @@ void AppFreeDinkedit::logic(void)
 	    }
 	}
 
-      if (g_editorMode == MODE_SCREEN_SPRITES)
+      if (g_editorMode == EDITOR_MODE_SCREEN_SPRITES)
 	{
 
 	  char crap7[80];
@@ -4115,7 +4118,7 @@ void AppFreeDinkedit::logic(void)
 	}
 
 
-      if (g_editorMode == MODE_SPRITE_HARDNESS)
+      if (g_editorMode == EDITOR_MODE_SPRITE_HARDNESS)
 	{
 
 
@@ -4155,7 +4158,7 @@ void AppFreeDinkedit::logic(void)
 	}
 
 
-      if (g_editorMode == MODE_SCREEN_HARDNESS)
+      if (g_editorMode == EDITOR_MODE_SCREEN_HARDNESS)
 	{
 	  int screentile = xy2screentile(spr[1].x, spr[1].y);
 	  int sourcetile = cur_ed_screen.t[screentile].square_full_idx0;
@@ -4191,7 +4194,7 @@ void AppFreeDinkedit::logic(void)
 
       rcRect.left = 0;
       rcRect.top = 400;
-      if (g_editorMode == MODE_TILE_HARDNESS) rcRect.top = 450;
+      if (g_editorMode == EDITOR_MODE_TILE_HARDNESS) rcRect.top = 450;
       rcRect.right = 590;
       rcRect.bottom = 480;
       if (show_display)
@@ -4207,7 +4210,7 @@ void AppFreeDinkedit::logic(void)
 /*     } /\* GetDC(&hdc) *\/ */
 
 
-  if ((g_editorMode == MODE_MINIMAP))
+  if ((g_editorMode == EDITOR_MODE_MINIMAP))
     {
       if (input_getcharjustpressed(SDLK_z))
 	{
@@ -4217,7 +4220,7 @@ void AppFreeDinkedit::logic(void)
     }
 
 
-  if ( (g_editorMode == MODE_SCREEN_SPRITES) | (g_editorMode == MODE_SCREEN_TILES) )
+  if ( (g_editorMode == EDITOR_MODE_SCREEN_SPRITES) | (g_editorMode == EDITOR_MODE_SCREEN_TILES) )
     {
       /* Show sprites info */
       if (input_getcharstate(SDLK_i))
@@ -4294,7 +4297,7 @@ void AppFreeDinkedit::logic(void)
 	}
 
     }
-  if (g_editorMode == MODE_SPRITE_HARDNESS)
+  if (g_editorMode == EDITOR_MODE_SPRITE_HARDNESS)
     {
 /*       ddbltfx.dwSize = sizeof(ddbltfx); */
 /*       ddbltfx.dwFillColor = 230; */
@@ -4487,7 +4490,7 @@ void AppFreeDinkedit::logic(void)
       else
 	{
 	  /* Redraw last mode */
-	  if (g_editorMode == MODE_MINIMAP)
+	  if (g_editorMode == EDITOR_MODE_MINIMAP)
 	    {
 	      if (old_command == INPUT_MINIMAP_LOAD)
 		draw_minimap_buff();
@@ -4730,7 +4733,7 @@ void AppFreeDinkedit::init()
   if (sound_on)
     load_editor_sounds();
 
-  g_editorMode = MODE_INIT;
+  g_editorMode = EDITOR_MODE_INIT;
   cur_tile = 1;
   
   playl = 20;
@@ -4773,7 +4776,7 @@ void AppFreeDinkedit::input(SDL_Event* ev) {
       && isprint(ev->text.text[0]))
     sprintf(in_temp + strlen(in_temp), "%c", ev->text.text[0]);
 
-  if (g_editorMode == MODE_SCREEN_SPRITES)
+  if (g_editorMode == EDITOR_MODE_SCREEN_SPRITES)
     freedinkedit_update_cursor_position(ev);
 }
 
