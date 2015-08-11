@@ -985,6 +985,21 @@ char* read_next_line(int script)
     }
 }
 
+void kill_scripts_with_inactive_sprites() {
+	for (int i = 1; i < MAX_SCRIPTS; i++) {
+		if (rinfo[i] != NULL) {
+			// TODO: move out so we don't depend on 'spr'
+			if (rinfo[i]->sprite > 0 && rinfo[i]->sprite != 1000
+					&& spr[rinfo[i]->sprite].active == /*false*/0) {
+				//kill this script, owner is dead
+				log_debug("Killing script %s, owner sprite %d is dead.",
+						rinfo[i]->name, rinfo[i]->sprite);
+				kill_script(i);
+			}
+		}
+	}
+}
+
 /**
  * Run callbacks, order by index. Sets the activation delay if
  * necessary. Kill obsolete callbacks along the way.
@@ -998,23 +1013,8 @@ char* read_next_line(int script)
 void process_callbacks(void)
 {
   Uint32 now = game_GetTicks();
-  int i, k;
-
-  for (i = 1; i < MAX_SCRIPTS; i++)
-    {
-      if (rinfo[i] != NULL)
-	{
-	  // TODO: move out so we don't depend on 'spr'
-	  if (rinfo[i]->sprite > 0 && rinfo[i]->sprite != 1000 && spr[rinfo[i]->sprite].active == /*false*/0)
-	    {
-	      //kill this script, owner is dead
-	      log_debug("Killing script %s, owner sprite %d is dead.", rinfo[i]->name, rinfo[i]->sprite);
-	      kill_script(i);
-	    }
-	}
-    }
   
-  for (k = 1; k < MAX_CALLBACKS; k++)
+  for (int k = 1; k < MAX_CALLBACKS; k++)
     {
       if (callback[k].active)
 	{

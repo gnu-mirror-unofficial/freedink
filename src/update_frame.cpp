@@ -1181,6 +1181,7 @@ past:
 	if (talk.active) talk_process();
 	
 	
+	kill_scripts_with_inactive_sprites();
 	process_callbacks();
 	
 flip:

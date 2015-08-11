@@ -119,6 +119,7 @@ extern int add_callback(char name[20], int n1, int n2, int script);
 extern void kill_callback(int cb);
 extern void kill_callbacks_owned_by_script(int script);
 extern void kill_script(int k);
+extern void kill_scripts_with_inactive_sprites();
 extern void kill_all_scripts_for_real(void);
 extern char* read_next_line(int script);
 extern void process_callbacks(void);
