@@ -442,8 +442,10 @@ void strip_beginning_spaces(char *str)
 	      if (rinfo[script]->sprite != 1000)
 		{
 		  // TODO: move out so we don't depend on 'spr'
+		  // reset move/move_stop moves
 		  spr[rinfo[script]->sprite].move_active = 0;
 		  if (dversion >= 108)
+			// also reinit move_nohard as in brain.cpp:done_move
 		    spr[rinfo[script]->sprite].move_nohard = 0;
 		}
 	      rinfo[script]->skipnext = /*false*/0;
