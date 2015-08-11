@@ -585,10 +585,6 @@ void updateFrame()
     
 
   
-  lastTickCount = thisTickCount;
-  thisTickCount = game_GetTicks();
-	
-	
       {
 	//Use to test at 30 fps
 	//Sleep(66);
@@ -617,6 +613,7 @@ void updateFrame()
 	SDL_framerateDelay(&framerate_manager);
 
 
+    lastTickCount = thisTickCount;
 	thisTickCount = game_GetTicks();
 
 	fps_final = thisTickCount - lastTickCount;
@@ -1182,7 +1179,7 @@ past:
 	
 	
 	kill_scripts_with_inactive_sprites();
-	process_callbacks();
+	process_callbacks(thisTickCount);
 	
 flip:
 

@@ -122,7 +122,7 @@ extern void kill_script(int k);
 extern void kill_scripts_with_inactive_sprites();
 extern void kill_all_scripts_for_real(void);
 extern char* read_next_line(int script);
-extern void process_callbacks(void);
+extern void process_callbacks(Uint32 now);
 extern int lookup_var(char* variable, int scope);
 extern void make_int(char* name, int value, int scope, int script);
 extern void var_equals(char name[20], char newname[20], char math, int script, char rest[200]);

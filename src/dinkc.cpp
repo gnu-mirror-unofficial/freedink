@@ -1010,10 +1010,8 @@ void kill_scripts_with_inactive_sprites() {
  * callbacks, but implemented differently (spr[x].callback, processed
  * in updateFrame()).
  **/
-void process_callbacks(void)
+void process_callbacks(Uint32 now)
 {
-  Uint32 now = game_GetTicks();
-  
   for (int k = 1; k < MAX_CALLBACKS; k++)
     {
       if (callback[k].active)
