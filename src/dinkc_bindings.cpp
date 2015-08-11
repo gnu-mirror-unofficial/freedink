@@ -452,7 +452,7 @@ void dc_sp_target(int script, int* yield, int* preturnint, int sprite, int sparg
 void dc_sp_timing(int script, int* yield, int* preturnint, int sprite, int sparg)
 {
   RETURN_NEG_IF_BAD_SPRITE(sprite);
-  *preturnint = change_sprite(sprite, sparg, &spr[sprite].timer);
+  *preturnint = change_sprite(sprite, sparg, &spr[sprite].timing);
 }
 
 void dc_sp_touch_damage(int script, int* yield, int* preturnint, int sprite, int sparg)

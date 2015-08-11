@@ -114,7 +114,7 @@ void AppFreeDink::init() {
 
 	//Activate dink, but don't really turn him on
 	//spr[1].active = TRUE;
-	spr[1].timer = 33;
+	spr[1].timing = 33;
 	
 	// ** SETUP **
 	last_sprite_created = 1;

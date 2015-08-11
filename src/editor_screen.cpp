@@ -153,7 +153,7 @@ int load_screen_to(const char* path, const int num, struct editor_screen* screen
       screen->sprite[i].base_idle = read_lsb_int(f);
       screen->sprite[i].base_attack = read_lsb_int(f);
       screen->sprite[i].base_hit = read_lsb_int(f);
-      screen->sprite[i].timer = read_lsb_int(f);
+      screen->sprite[i].timing = read_lsb_int(f);
       screen->sprite[i].que = read_lsb_int(f);
       screen->sprite[i].hard = read_lsb_int(f);
       // offset 124
@@ -271,7 +271,7 @@ void save_screen(const char* path, const int num)
 	  write_lsb_int(cur_ed_screen.sprite[i].base_idle, f);
 	  write_lsb_int(cur_ed_screen.sprite[i].base_attack, f);
 	  write_lsb_int(cur_ed_screen.sprite[i].base_hit, f);
-	  write_lsb_int(cur_ed_screen.sprite[i].timer, f);
+	  write_lsb_int(cur_ed_screen.sprite[i].timing, f);
 	  write_lsb_int(cur_ed_screen.sprite[i].que, f);
 	  write_lsb_int(cur_ed_screen.sprite[i].hard, f);
 	  // offset 124

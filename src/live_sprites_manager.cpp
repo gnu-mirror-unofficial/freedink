@@ -64,7 +64,7 @@ int add_sprite(int x1, int y, int brain,int pseq, int pframe )
                         spr[x].seq = 0;
                         if (x > last_sprite_created)
                                 last_sprite_created = x;
-                        spr[x].timer = 33;
+                        spr[x].timing = 33;
                         spr[x].wait = 0;
                         spr[x].lpx[0] = 0;
                         spr[x].lpy[0] = 0;
@@ -134,7 +134,7 @@ int add_sprite_dumb(int x1, int y, int brain,int pseq, int pframe,int size )
                         if (x > last_sprite_created)
                                 last_sprite_created = x;
 
-                        spr[x].timer = 0;
+                        spr[x].timing = 0;
                         spr[x].wait = 0;
                         spr[x].lpx[0] = 0;
                         spr[x].lpy[0] = 0;

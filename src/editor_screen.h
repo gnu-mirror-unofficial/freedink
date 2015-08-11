@@ -40,7 +40,7 @@ struct editor_sprite
   int special, brain;
   
   char script[13+1]; /* attached DinkC script */
-  int speed, base_walk, base_idle, base_attack, timer, que;
+  int speed, base_walk, base_idle, base_attack, timing, que;
   int hard;
   rect alt; /* trim left/top/right/bottom */
   int is_warp;

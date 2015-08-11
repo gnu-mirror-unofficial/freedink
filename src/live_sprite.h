@@ -47,7 +47,7 @@ struct sp
   /*BOOL*/int active;
   int attrib;
   unsigned long wait;
-  int timer;
+  int timing;
   int skip;
   int skiptimer;
   int size;

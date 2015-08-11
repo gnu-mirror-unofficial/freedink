@@ -82,7 +82,7 @@ void duck_brain(int h)
 		
 		spr[h].base_walk = 110;
 		spr[h].speed = 1;
-		spr[h].timer = 0;
+		spr[h].timing = 0;
 		spr[h].wait = 0;
 		spr[h].frame = 0;
 		

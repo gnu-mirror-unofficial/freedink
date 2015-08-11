@@ -750,11 +750,11 @@ void updateFrame()
 						run_script(spr[h].say_stop_callback);
 				}
 				
-				if (spr[h].timer > 0)
+				if (spr[h].timing > 0)
 				{
 					if (thisTickCount > spr[h].wait)
 					{
-						spr[h].wait = thisTickCount + spr[h].timer;
+						spr[h].wait = thisTickCount + spr[h].timing;
 						
 					}else
 					{
@@ -1011,7 +1011,7 @@ past:
 		/* init_mouse(hWndMain); */
 		/* g_pMouse->Acquire(); */
 		
-		spr[1].timer = 0;
+		spr[1].timing = 0;
 		spr[1].brain = 1;
 		spr[1].hard = 1;
 		spr[1].pseq = 2;

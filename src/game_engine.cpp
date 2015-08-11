@@ -477,7 +477,7 @@ void game_place_sprites()
 	      spr[sprite].base_attack = cur_ed_screen.sprite[j].base_attack;
 	      spr[sprite].base_hit = cur_ed_screen.sprite[j].base_hit;
 	      spr[sprite].hard = cur_ed_screen.sprite[j].hard;
-	      spr[sprite].timer = cur_ed_screen.sprite[j].timer;
+	      spr[sprite].timing = cur_ed_screen.sprite[j].timing;
 	      spr[sprite].que = cur_ed_screen.sprite[j].que;
 	      
 	      

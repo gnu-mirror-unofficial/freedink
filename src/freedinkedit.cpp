@@ -1133,7 +1133,7 @@ void sp_add( void )
 			cur_ed_screen.sprite[j].base_idle = sp_base_idle;
 			cur_ed_screen.sprite[j].base_attack = sp_base_attack;
 			cur_ed_screen.sprite[j].base_hit = sp_base_hit;
-			cur_ed_screen.sprite[j].timer = sp_timer;
+			cur_ed_screen.sprite[j].timing = sp_timer;
 			cur_ed_screen.sprite[j].que = sp_que;
 			cur_ed_screen.sprite[j].hard = sp_hard;
 			cur_ed_screen.sprite[j].is_warp = sp_is_warp;
@@ -2413,7 +2413,7 @@ int gui_logic(int h) {
 									sp_base_idle = cur_ed_screen.sprite[uu].base_idle;
 									sp_base_attack = cur_ed_screen.sprite[uu].base_attack;
 									sp_base_hit = cur_ed_screen.sprite[uu].base_hit;
-									sp_timer = cur_ed_screen.sprite[uu].timer;
+									sp_timer = cur_ed_screen.sprite[uu].timing;
 									sp_que = cur_ed_screen.sprite[uu].que;
 									sp_seq = cur_ed_screen.sprite[uu].seq;
 									sp_hard = cur_ed_screen.sprite[uu].hard;

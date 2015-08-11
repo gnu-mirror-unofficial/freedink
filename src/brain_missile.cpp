@@ -16,7 +16,7 @@ void make_missile(int x1, int y1, int dir, int speed, int seq, int frame, int st
 	int crap = add_sprite(x1,y1,11,seq,frame);
 	spr[crap].speed = speed;
 	spr[crap].seq = seq;
-	spr[crap].timer = 0;
+	spr[crap].timing = 0;
 	spr[crap].strength = strength;
 	spr[crap].flying = /*true*/1;
 	changedir(dir, crap, 430);
