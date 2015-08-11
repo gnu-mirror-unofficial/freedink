@@ -149,16 +149,14 @@ void gfx_tiles_draw_screen()
 }
         
 /* Game-specific: animate background (water, fire, ...) */        
-void process_animated_tiles(void)
+void process_animated_tiles(Uint32 thisTickCount)
 {
-  int flip;
-	
   // Water:
   if (water_timer < thisTickCount)
     {
 
       water_timer = thisTickCount + (rand() % 2000);
-      flip = rand() % 2;
+      int flip = rand() % 2;
 		
       int x = 0;
       for (; x < 96; x++)

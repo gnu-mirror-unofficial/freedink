@@ -42,7 +42,7 @@ extern SDL_Surface *gfx_tiles[GFX_TILES_NB_SETS + 1];
 extern void tiles_load_default(void);
 extern void tiles_load_slot(char* relpath, int slot);
 extern void tiles_unload_all(void);
-extern void process_animated_tiles(void);
+extern void process_animated_tiles(Uint32 thisTickCount);
 extern void gfx_tiles_draw_screen();
 extern void gfx_tiles_draw(int srctileset_idx0, int srctile_square_idx0, int dsttile_square_idx0);
 

@@ -674,7 +674,7 @@ void updateFrame()
 		
 		
 		update_sound();
-		process_animated_tiles();
+		process_animated_tiles(thisTickCount);
 	}
 	
 	

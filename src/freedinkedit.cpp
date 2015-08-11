@@ -3652,7 +3652,6 @@ int gui_logic(int h) {
  * Decide what needs to be blitted next, wait for flip to complete,
  * then flip the buffers.
  */
-unsigned long thisTickCount; /* FIXME: for process_animated_tiles, make it local */
 void AppFreeDinkedit::logic(void)
 {
   //    static DWORD        lastTickCount[4] = {0,0,0,0};
@@ -3681,7 +3680,7 @@ void AppFreeDinkedit::logic(void)
   SDL_framerateDelay(&framerate_manager);
 
   // Decide which frame will be blitted next
-  thisTickCount = SDL_GetTicks();
+  Uint32 thisTickCount = SDL_GetTicks();
   strcpy(buff,"Nothing");
   check_joystick();
   //Scrawl_OnMouseInput();
