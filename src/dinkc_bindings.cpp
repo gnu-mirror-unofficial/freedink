@@ -848,6 +848,7 @@ void dc_kill_cur_item(int script, int* yield, int* preturnint)
   *preturnint = 0;
   kill_cur_item();
   *yield = 1;
+  /* unlike documented, this stops script execution, even in 1.08 */
 }
 
 void dc_kill_cur_magic(int script, int* yield, int* preturnint)
@@ -855,6 +856,7 @@ void dc_kill_cur_magic(int script, int* yield, int* preturnint)
   *preturnint = 0;
   kill_cur_magic();
   *yield = 1;
+  /* unlike documented, this stops script execution, even in 1.08 */
 }
 
 void dc_draw_status(int script, int* yield, int* preturnint)
