@@ -78,7 +78,7 @@ struct sp
   int owner; /* if text sprite, sprite that is saying it */
   int script;
   int sound;
-  int callback;
+  int callback; /* callback from a say_stop*() DinkC function */
   int freeze;
   /*bool*/int move_active;
   int move_script;

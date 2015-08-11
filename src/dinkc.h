@@ -108,7 +108,7 @@ extern int magic_script;
 
 extern void dinkc_init();
 extern void dinkc_quit();
-extern int load_script(char* filename, int sprite, /*bool*/int set_sprite);
+extern int load_script(char* filename, int sprite);
 extern int dinkc_execute_one_liner(char* line);
 extern void strip_beginning_spaces(char *str);
 extern /*bool*/int locate(int script, char* proc_lookup);

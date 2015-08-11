@@ -509,11 +509,13 @@ void dc_sp_script(int script, int* yield, int* preturnint, int sprite, char* dcs
       return;
     }
   kill_scripts_owned_by(sprite);
-  if (load_script(dcscript, sprite, /*true*/1) == 0)
+  int new_script = load_script(dcscript, sprite);
+  if (new_script == 0)
     {
       *preturnint = 0;
       return;
     }
+  spr[sprite].script = new_script;
 
   int tempreturn = 0;
   if (sprite != 1000)
@@ -865,7 +867,7 @@ void dc_arm_weapon(int script, int* yield, int* preturnint)
   if (weapon_script != 0 && locate(weapon_script, "DISARM"))
     run_script(weapon_script);
 
-  weapon_script = load_script(play.item[*pcur_weapon - 1].name, 1000, /*false*/0);
+  weapon_script = load_script(play.item[*pcur_weapon - 1].name, 1000);
   if (locate(weapon_script, "ARM"))
     run_script(weapon_script);
 }
@@ -875,7 +877,7 @@ void dc_arm_magic(int script, int* yield, int* preturnint)
   if (magic_script != 0 && locate(magic_script, "DISARM"))
     run_script(magic_script);
     
-  magic_script = load_script(play.mitem[*pcur_magic - 1].name, 1000, /*false*/0);
+  magic_script = load_script(play.mitem[*pcur_magic - 1].name, 1000);
   if (locate(magic_script, "ARM"))
     run_script(magic_script);
 }
@@ -1219,7 +1221,7 @@ void dc_move(int script, int* yield, int* preturnint,
 void dc_spawn(int script, int* yield, int* preturnint,
 	     char* dcscript)
 {
-  int mysc = load_script(dcscript, 1000, /*true*/1);
+  int mysc = load_script(dcscript, 1000);
   if (mysc == 0)
     {
       *preturnint = 0;

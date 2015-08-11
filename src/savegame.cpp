@@ -282,7 +282,7 @@
   
   time(&time_start);
   
-  int script = load_script("main", 0, /*true*/1);
+  int script = load_script("main", 0);
   locate(script, "main");
   run_script(script);
   //lets attach our vars to the scripts
@@ -301,10 +301,10 @@
 	}
       else
 	{
-	  weapon_script = load_script(play.item[*pcur_weapon - 1].name, 1000, /*false*/0);
+	  weapon_script = load_script(play.item[*pcur_weapon - 1].name, 1000);
 	  if (locate(weapon_script, "DISARM"))
 	    run_script(weapon_script);
-	  weapon_script = load_script(play.item[*pcur_weapon - 1].name, 1000, /*false*/0);
+	  weapon_script = load_script(play.item[*pcur_weapon - 1].name, 1000);
 	  if (locate(weapon_script, "ARM"))
 	    run_script(weapon_script);
 	}
@@ -320,10 +320,10 @@
       else
 	{
 	  
-	  magic_script = load_script(play.mitem[*pcur_magic - 1].name, 1000, /*false*/0);
+	  magic_script = load_script(play.mitem[*pcur_magic - 1].name, 1000);
 	  if (locate(magic_script, "DISARM"))
 	    run_script(magic_script);
-	  magic_script = load_script(play.mitem[*pcur_magic - 1].name, 1000, /*false*/0);
+	  magic_script = load_script(play.mitem[*pcur_magic - 1].name, 1000);
 	  if (locate(magic_script, "ARM"))
 	    run_script(magic_script);
 	}

@@ -124,7 +124,7 @@ void game_restart()
   memset(&screen_hitmap, 0, sizeof(screen_hitmap));
   input_set_default_buttons();
 
-  mainscript = load_script("main", 0, /*true*/1);
+  mainscript = load_script("main", 0);
 
   locate(mainscript, "main");
   run_script(mainscript);
@@ -533,7 +533,7 @@ void game_place_sprites()
 	      //does it need a script loaded?
 	      if (strlen(cur_ed_screen.sprite[j].script) > 1)
 		{
-		  spr[sprite].script = load_script(cur_ed_screen.sprite[j].script, sprite, /*true*/1);
+		  spr[sprite].script = load_script(cur_ed_screen.sprite[j].script, sprite);
 		}
 	    }
 	  //Msg("I just made sprite %d because rank[%d] told me to..",sprite,j);
@@ -664,7 +664,7 @@ void draw_screen_game(void)
   if (cur_ed_screen.ts_script_id > 0)
     script_id = cur_ed_screen.ts_script_id;
   else if (strlen(cur_ed_screen.script) > 1)
-    script_id = load_script(cur_ed_screen.script,0, /*true*/1);
+    script_id = load_script(cur_ed_screen.script, 0);
                         
   if (script_id > 0)
     {

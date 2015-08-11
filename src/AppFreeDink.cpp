@@ -121,7 +121,7 @@ void AppFreeDink::init() {
 	set_mode(0);
 
 	//lets run our init script
-	int script = load_script("main", 0, /*true*/1);
+	int script = load_script("main", 0);
 	locate(script, "main");
 	run_script(script);
 

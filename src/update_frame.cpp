@@ -1060,7 +1060,7 @@ past:
 		
 		
 		
-		int scr = load_script("START",1000, /*true*/1);
+		int scr = load_script("START", 1000);
 		if (locate(scr, "MAIN") == /*false*/0)
 		{
 			log_error("Can't locate MAIN in script START!");

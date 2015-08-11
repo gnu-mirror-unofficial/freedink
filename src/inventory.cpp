@@ -56,7 +56,7 @@ void add_item(char* name, int mseq, int mframe, enum item_type type)
 	      play.item[i].name[sizeof(play.item[i].name)-1] = '\0';
 	      play.item[i].active = 1;
 	      
-	      int crap1 = load_script(play.item[i].name, 1000, /*false*/0);
+	      int crap1 = load_script(play.item[i].name, 1000);
 	      if (locate(crap1, "PICKUP"))
 		run_script(crap1);
 	      
@@ -79,7 +79,7 @@ void add_item(char* name, int mseq, int mframe, enum item_type type)
 	      play.mitem[i].name[sizeof(play.mitem[i].name)-1] = '\0';
 	      play.mitem[i].active = 1;
 	      
-	      int crap = load_script(play.mitem[i].name, 1000, /*false*/0);
+	      int crap = load_script(play.mitem[i].name, 1000);
 	      if (locate(crap, "PICKUP"))
 		run_script(crap);
 	      
@@ -98,7 +98,7 @@ void kill_cur_item()
 	{
 	  if (weapon_script != 0 && locate(weapon_script, "DISARM"))
 	    run_script(weapon_script);
-	  weapon_script = load_script(play.item[*pcur_weapon - 1].name, 0, /*false*/0);
+	  weapon_script = load_script(play.item[*pcur_weapon - 1].name, 0);
 	  play.item[*pcur_weapon - 1].active = 0;
 	  *pcur_weapon = 0;
 	  if (weapon_script != 0 && locate(weapon_script, "HOLDINGDROP"))
@@ -145,7 +145,7 @@ void kill_item_script(char* name)
       weapon_script = 0;
     }
 
-  int script = load_script(play.item[select].name, 0, /*false*/0);
+  int script = load_script(play.item[select].name, 0);
   play.item[select].active = /*false*/0;
 
   if (locate(script, "DROP"))
@@ -187,7 +187,7 @@ void kill_mitem_script(char* name)
       magic_script = 0;
     }
   
-  int script = load_script(play.mitem[select].name, 0, /*false*/0);
+  int script = load_script(play.mitem[select].name, 0);
   play.mitem[select].active = 0;
 
   if (locate(script, "DROP"))
@@ -205,7 +205,7 @@ void kill_cur_magic()
 	{
 	  if (magic_script != 0 && locate(magic_script, "DISARM"))
 	    run_script(magic_script);
-	  magic_script = load_script(play.mitem[*pcur_magic - 1].name, 0, /*false*/0);
+	  magic_script = load_script(play.mitem[*pcur_magic - 1].name, 0);
 	  play.mitem[*pcur_magic - 1].active = /*false*/0;
 	  *pcur_magic = 0;
 	  
@@ -347,7 +347,7 @@ void process_item()
 
 	      //load weapons script
 	      *pcur_weapon = play.curitem + 1;
-	      weapon_script = load_script(play.item[*pcur_weapon - 1].name, 1000, /*false*/0);
+	      weapon_script = load_script(play.item[*pcur_weapon - 1].name, 1000);
 	      if (locate(weapon_script, "ARM"))
 		run_script(weapon_script);
 	      if (locate(weapon_script, "ARMMOVIE"))
@@ -414,7 +414,7 @@ void process_item()
 		}
 	      //load magics script
 	      *pcur_magic = play.curitem + 1;
-	      magic_script = load_script(play.mitem[*pcur_magic - 1].name, 1000, /*false*/0);
+	      magic_script = load_script(play.mitem[*pcur_magic - 1].name, 1000);
 	      if (locate(magic_script, "ARM"))
 		run_script(magic_script);
 	      if (locate(magic_script, "ARMMOVIE"))

@@ -496,7 +496,7 @@ void update_status_all(void)
                         *pexper -= next;
                         fexp = 0;
 
-                        script = load_script("lraise", 1, /*false*/0);
+                        script = load_script("lraise", 1);
                         if (locate(script, "raise")) run_script(script);
                 }
         }
@@ -592,7 +592,7 @@ void update_status_all(void)
 
         if (flife < 1)
         {
-                script = load_script("dinfo", 1000, /*false*/0);
+                script = load_script("dinfo", 1000);
                 if (locate(script, "die")) run_script(script);
         }
 

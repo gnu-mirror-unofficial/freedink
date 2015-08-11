@@ -322,7 +322,7 @@ static FILE* locate_script(char* script_name, int* compressed) {
  * Load script from 'filename', save it in the first available script
  * slot, attach to game sprite #'sprite' if 'set_sprite' is 1.
  **/
-int load_script(char* script_name, int sprite, /*bool*/int set_sprite)
+int load_script(char* script_name, int sprite)
 {
   // Locate script
   int compressed = 0;
@@ -364,10 +364,6 @@ int load_script(char* script_name, int sprite, /*bool*/int set_sprite)
     }
 
   rinfo[script]->sprite = sprite;
-
-  // TODO: move out so we don't depend on 'spr'
-  if (set_sprite && sprite != 0 && sprite != 1000)
-    spr[sprite].script = script;
 
   return script;
 }
@@ -1102,7 +1098,7 @@ void kill_returning_stuff(int script)
 	}
     }
 
-  // callbacks from say_*()
+  // callbacks from say*()
   for (i = 1; i <= last_sprite_created; i++)
     {
       // TODO: move out so we don't depend on 'spr'
@@ -2552,7 +2548,7 @@ process_line(int script, char *s, /*bool*/int doelse)
 	  get_parms(ev[0], script, h, p);
 	  if (strlen(slist[0]) > 0 && strlen(slist[1]) > 0)
 	    {
-	      int myscript1 = load_script(slist[0], rinfo[script]->sprite, 0);
+	      int myscript1 = load_script(slist[0], rinfo[script]->sprite);
 	      if (myscript1 == 0)
 		{
 		  log_error("[DinkC] external: Couldn't find %s.c (for procedure %s)",
@@ -2587,7 +2583,7 @@ process_line(int script, char *s, /*bool*/int doelse)
       if (strchr (h, '(') != NULL)
 	{
 	  //lets attempt to run a procedure
-	  int myscript = load_script (rinfo[script]->name, rinfo[script]->sprite, 0);
+	  int myscript = load_script (rinfo[script]->name, rinfo[script]->sprite);
 	  h += strlen(ev[0]);
 	  int p[20] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 	  get_parms(ev[0], script, h, p);
@@ -2619,7 +2615,7 @@ process_line(int script, char *s, /*bool*/int doelse)
 		    
 		  if (compare(play.func[i].func, ev[0]))
 		    {
-		      myscript = load_script(play.func[i].file, rinfo[script]->sprite, 0);
+		      myscript = load_script(play.func[i].file, rinfo[script]->sprite);
 		      rinfo[myscript]->arg1 = nlist[0];
 		      rinfo[myscript]->arg2 = nlist[1];
 		      rinfo[myscript]->arg3 = nlist[2];
@@ -2672,7 +2668,7 @@ process_line(int script, char *s, /*bool*/int doelse)
 	  int p[20] = {2,2,0,0,0,0,0,0,0,0};
 	  if (get_parms(ev[0], script, h, p))
 	    {
-	      int myscript1 = load_script(slist[0], rinfo[script]->sprite, /*false*/0);
+	      int myscript1 = load_script(slist[0], rinfo[script]->sprite);
 	      if (myscript1 == 0)
 		{
 		  log_error("[DinkC] external: Couldn't find %s.c (for procedure %s)", slist[0], slist[1]);
@@ -2704,7 +2700,7 @@ process_line(int script, char *s, /*bool*/int doelse)
 	{
 	  //lets attempt to run a procedure
 	  char* proc = separate_string(h, 1, '(');
-	  int myscript = load_script(rinfo[script]->name, rinfo[script]->sprite, /*false*/0);
+	  int myscript = load_script(rinfo[script]->name, rinfo[script]->sprite);
 
 	  if (locate(myscript, proc))
 	    {

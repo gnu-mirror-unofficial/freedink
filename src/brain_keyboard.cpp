@@ -268,7 +268,7 @@ void human_brain(int h)
 	  if (dversion >= 108)
 	    {
 	      // addition of 'not talking to anything' script
-	      int sc = load_script ("dnotalk", 0, /*false*/0);
+	      int sc = load_script ("dnotalk", 0);
 	      if (sc != 0 && locate (sc, "MAIN"))
 		{
 		  run_script (sc);
@@ -342,7 +342,7 @@ void human_brain(int h)
 	      sprintf(scriptname, "key-%d", code);
 	      but_timer = thisTickCount+200;
 	      
-	      int script = load_script(scriptname, 1, /*false*/0);
+	      int script = load_script(scriptname, 1);
 	      if (locate(script, "MAIN"))
 		{
 		  run_script(script);
@@ -377,7 +377,7 @@ void human_brain(int h)
 	  {
 	    char script_filename[6+2+1]; // 'button' + '7'..'10' + '\0' (no '.c')
 	    sprintf(script_filename, "button%d", actions_script[i]);
-	    int mycrap = load_script(script_filename, 1, /*false*/0);
+	    int mycrap = load_script(script_filename, 1);
 	    if (locate(mycrap, "MAIN"))
 	      run_script(mycrap);
 	    goto b1end;
@@ -395,7 +395,7 @@ void human_brain(int h)
 	  if (dversion >= 108)
 	    {
 	      // addition of 'no magic' script
-	      int sc = load_script ("dnomagic", 0, /*false*/0);
+	      int sc = load_script ("dnomagic", 0);
 	      if (sc != 0 && locate (sc, "MAIN"))
 		{
 		  run_script (sc);
@@ -430,7 +430,7 @@ shootm:
       if (dversion >= 108)
 	{
 	  // addition of 'enter key/inventory' script
-	  int sc = load_script ("button4", 0, /*false*/0);
+	  int sc = load_script ("button4", 0);
 	  if (sc != 0 && locate (sc, "MAIN"))
 	    {
 	      run_script (sc);
@@ -447,7 +447,7 @@ shootm:
     {
       if (!showb.active && !bow.active && !talk.active)
 	{
-	  int sc = load_script("escape", 1000, /*false*/0);
+	  int sc = load_script("escape", 1000);
 	  if (sc != 0 && locate(sc, "MAIN"))
 	    run_script(sc);
 	  return;
