@@ -8,6 +8,7 @@
 #include "AppFreeDink.h"
 #include "bgm.h"
 #include "dinkc_console.h"
+#include "dinkc_console_renderer.h"
 #include "game_engine.h"
 #include "live_sprites_manager.h"
 #include "editor_screen.h"
@@ -166,6 +167,12 @@ void AppFreeDink::input(SDL_Event* ev) {
 
 void AppFreeDink::logic() {
 	updateFrame();
+
+	/* Renderers */
+	dinkc_console_renderer_render();
+
+	if (!abort_this_flip)
+		flip_it();
 }
 
 /**

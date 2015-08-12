@@ -54,7 +54,6 @@
 #include "bgm.h"
 #include "log.h"
 #include "rect.h"
-#include "dinkc_console.h"
 #include "input.h"
 #include "sfx.h"
 #include "text.h"
@@ -1137,19 +1136,6 @@ past:
 	      }
 	  }
 
-        /* Console */
-        if (console_active == 1)
-        {
-	  char* line = dinkc_console_get_cur_line();
-	  FONTS_SetTextColor(0, 0, 0);
-	  print_text_wrap_debug(line, 20, 380);
-
-	  char retval[20+1];
-	  sprintf(retval, "%d", dinkc_console_get_last_retval());
-	  FONTS_SetTextColor(255, 0, 0);
-	  print_text_wrap_debug(retval, 20, 360);
-	}
-
 	for (int j2 = 0; j2 <= max_s; j2++)
 	  {
 	    int h = 0;
@@ -1166,8 +1152,5 @@ past:
 	process_callbacks(thisTickCount);
 	
 flip:
-
-	if (!abort_this_flip)
-		flip_it(); 
-	
+	;
 } /* updateFrame */
