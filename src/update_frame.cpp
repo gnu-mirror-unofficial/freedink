@@ -204,10 +204,6 @@ void check_joystick()
     }
 }
 
-void game_choice_process() {
-	game_choice_logic();
-	game_choice_renderer_render();
-}
 
 void updateFrame()
 {
@@ -325,7 +321,6 @@ void updateFrame()
 		return;
 	}
 	
-	
 	if (transition_in_progress) 
 	  {
 	    if (transition(fps_final)) /* transition not finished */
@@ -351,7 +346,8 @@ void updateFrame()
 	if (stop_entire_game == 1)
 	{
 		if (game_choice.active) {
-			game_choice_process();
+			game_choice_logic();
+			game_choice_renderer_render();
 		} else {
 			stop_entire_game = 0;
 			
@@ -759,8 +755,8 @@ past:
 	  }
     
     
-	if (game_choice.active) game_choice_process();
-	
+	game_choice_logic(); // after brain_keyboard(), otherwise choice triggers Attack
+	game_choice_renderer_render();
 	
 	kill_scripts_with_inactive_sprites();
 	process_callbacks(thisTickCount);

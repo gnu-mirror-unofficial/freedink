@@ -61,6 +61,9 @@ void game_choice_clear()
 }
 
 void game_choice_logic() {
+	if (!game_choice.active)
+		return;
+
 	int talk_hold = game_choice.cur;
 	if (sjoy.rightd)
 		game_choice.cur++;

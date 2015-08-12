@@ -14,6 +14,9 @@
 #include "game_engine.h"
 
 void game_choice_renderer_render() {
+	if (!game_choice.active)
+		return;
+
 	int sx = 184;
 	int x_depth = 335;
 
