@@ -58,8 +58,8 @@ freedink_SOURCES = $(COMMON_OBJS) AppFreeDink.cpp AppFreeDink.h		\
 	dinkc_bindings.cpp dinkc_bindings.h dinkc.cpp dinkc.h		\
 	dinkc_console.cpp dinkc_console.h dinkc_console_renderer.cpp	\
 	dinkc_console_renderer.h debug.cpp debug.h debug_renderer.cpp	\
-	debug_renderer.h game_engine.cpp game_engine.h			\
-	game_choice.cpp game_choice.h game_state.cpp game_state.h	\
+	debug_renderer.h game_choice.cpp game_choice.h			\
+	game_engine.cpp game_engine.h game_state.cpp game_state.h	\
 	i18n.cpp i18n.h inventory.cpp inventory.h meminfo.cpp		\
 	meminfo.h savegame.cpp savegame.h status.cpp status.h		\
 	text.cpp text.h

@@ -25,9 +25,7 @@
 #include "SDL.h"
 #include "log.h"
 #include "game_engine.h" /* play */
-#include "dinkini.h" /* check_seq_status */
 #include "gfx_fonts.h"
-#include "gfx_sprites.h" /* GFX_k */
 #include "input.h"
 #include "sfx.h"
 
@@ -60,4 +58,135 @@ void game_choice_clear()
 {
   memset(&game_choice, 0, sizeof(game_choice));
   play.mouse = 0;
+}
+
+void game_choice_logic() {
+	int sx = 184;
+	int x_depth = 335;
+	game_choice.choices_y = 94;
+
+	int sy_hold, sy_ho;
+	int y_hold = 0, y_ho;
+	if (game_choice.newy != -5000)
+		game_choice.choices_y = game_choice.newy;
+
+	sy_hold = game_choice.choices_y;
+	sy_ho = game_choice.choices_y;
+
+
+	int talk_hold = game_choice.cur;
+	if (sjoy.rightd)
+		game_choice.cur++;
+	if (sjoy.downd)
+		game_choice.cur++;
+	if (sjoy.upd)
+		game_choice.cur--;
+	if (sjoy.leftd)
+		game_choice.cur--;
+
+	if (play.mouse > 20) {
+		game_choice.cur++;
+		play.mouse = 0;
+	}
+	
+	if (play.mouse < -20) {
+		game_choice.cur--;
+		play.mouse = 0;
+	}
+
+	if (talk_hold != game_choice.cur) {
+		if (game_choice.cur >= game_choice.cur_view)
+			if (game_choice.cur <= game_choice.cur_view_end)
+				SoundPlayEffect(11, 22050,0,0,0);
+	}
+	
+	//tabulate distance needed by text, LORDII experience helped here
+	{
+		int i = game_choice.cur_view;
+		for (; i < game_choice.last; i++) {
+			rect rcRect;
+			rect_set(&rcRect, sx,y_hold, 463,x_depth+100);
+			/* Don't print, only check the height in pixel: */
+			y_hold = print_text_wrap(game_choice.line[i], &rcRect, 1,
+									 1, FONT_DIALOG);
+			sy_hold += y_hold;
+			
+			if (sy_hold > x_depth) {
+				game_choice.cur_view_end = i-1;
+				goto death;
+			}
+		}
+		
+		game_choice.cur_view_end = i;
+	}
+
+	if (game_choice.cur_view == 1 && game_choice.cur_view_end == game_choice.last) {
+		// Small enough to fit on one screen, lets center it!
+		game_choice.choices_y += ((x_depth - sy_hold) / 2) - 20;
+	}
+	
+ death:
+	if (game_choice.cur > game_choice.last) {
+		SoundPlayEffect(11, 22050,0,0,0);
+		game_choice.cur = 1;
+	}
+	if (game_choice.cur < 1) {
+		SoundPlayEffect(11, 22050,0,0,0);
+		game_choice.cur = game_choice.last;
+	}
+
+	if (game_choice.cur > game_choice.cur_view_end) {
+		game_choice.cur_view = game_choice.cur;
+		game_choice.page ++;
+		goto fin;
+	}
+
+	if (game_choice.cur < game_choice.cur_view) {
+		int fake_page;
+		game_choice.cur_view = 1;
+		game_choice.page--;
+		log_info("Page backed to %d.", game_choice.page);
+		fake_page = 1;
+		int i = 1;
+		for (; i < game_choice.last; i++) {
+			rect rcRect;
+			rect_set(&rcRect, sx,sy_ho, 463,x_depth);
+			
+			/* Don't print, only check the height in pixel: */
+			y_ho = print_text_wrap(game_choice.line[i], &rcRect, 1, 1, FONT_DIALOG);
+			sy_ho += y_ho;
+			if (sy_ho > x_depth) {
+				fake_page++;
+				sy_ho = game_choice.choices_y+ y_ho;
+			}
+			if (fake_page == game_choice.page) {
+				game_choice.cur_view = i;
+				game_choice.cur_view_end = game_choice.cur;
+				goto fin;
+			}
+		}
+		game_choice.cur_view_end = i;
+	}
+
+ fin:
+	// Prepare arrow animation
+	if (game_choice.timer < thisTickCount) {
+		game_choice.curf++;
+		game_choice.timer = thisTickCount+100;
+	}
+	if (game_choice.curf == 0) game_choice.curf = 1;
+	if (game_choice.curf > 7) game_choice.curf = 1;
+
+	// Return to script on choice
+	if (sjoy.button[ACTION_ATTACK] || mouse1) {
+		mouse1 = /*false*/0;
+		game_choice_stop();
+		*presult = game_choice.line_return[game_choice.cur];
+		SoundPlayEffect(17, 22050,0,0,0);
+		
+		if (game_choice.script != 0) {
+			//we need to continue a script
+			run_script(game_choice.script);
+		}
+	}
 }

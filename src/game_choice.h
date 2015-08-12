@@ -28,27 +28,36 @@
 /* Talk choices */
 #define TALK_TITLE_BUFSIZ 3000
 #define TALK_LINE_BUFSIZ 101
-struct game_choice_struct
-{
-  char line[21][TALK_LINE_BUFSIZ];  /* dialog choices */
-  int line_return[21]; /* return this number if chosen */
-  char buffer[TALK_TITLE_BUFSIZ];   /* title */
-  int cur;
-  int last;
-  /*bool*/int active;
-  int cur_view;
-  int cur_view_end;
-  int page;
-  int script;
-  int offset;
-  int newy;
-  int color;
-  int curf;
-  Uint32 timer;
+struct game_choice_struct {
+	/*bool*/int active;
+	int script;
+	
+	char buffer[TALK_TITLE_BUFSIZ];   /* title */
+	int color;
+	
+	char line[21][TALK_LINE_BUFSIZ];  /* dialog choices */
+	int line_return[21]; /* return this number if chosen */
+
+	int cur;
+	int last;
+	
+	int cur_view;
+	int cur_view_end;
+	int page;
+	
+	int newy;
+	int choices_y;
+	
+	int curf;
+	Uint32 timer;
 };
+
+
 extern struct game_choice_struct game_choice;
 extern void game_choice_start(int script, int nb_choices);
 extern void game_choice_stop();
 extern void game_choice_clear();
+
+extern void game_choice_logic();
 
 #endif
