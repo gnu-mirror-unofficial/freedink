@@ -61,19 +61,6 @@ void game_choice_clear()
 }
 
 void game_choice_logic() {
-	int sx = 184;
-	int x_depth = 335;
-	game_choice.choices_y = 94;
-
-	int sy_hold, sy_ho;
-	int y_hold = 0, y_ho;
-	if (game_choice.newy != -5000)
-		game_choice.choices_y = game_choice.newy;
-
-	sy_hold = game_choice.choices_y;
-	sy_ho = game_choice.choices_y;
-
-
 	int talk_hold = game_choice.cur;
 	if (sjoy.rightd)
 		game_choice.cur++;
@@ -93,6 +80,19 @@ void game_choice_logic() {
 		game_choice.cur--;
 		play.mouse = 0;
 	}
+
+ begin:
+	// TODO: move out view logic to renderer
+	int sx = 184;
+	int x_depth = 335;
+	game_choice.choices_y = 94;
+
+	int sy_hold, y_hold = 0;
+	if (game_choice.newy != -5000)
+		game_choice.choices_y = game_choice.newy;
+
+	sy_hold = game_choice.choices_y;
+
 
 	if (talk_hold != game_choice.cur) {
 		if (game_choice.cur >= game_choice.cur_view)
@@ -137,38 +137,16 @@ void game_choice_logic() {
 
 	if (game_choice.cur > game_choice.cur_view_end) {
 		game_choice.cur_view = game_choice.cur;
-		game_choice.page ++;
-		goto fin;
+		game_choice.page++;
+		goto begin;
 	}
-
 	if (game_choice.cur < game_choice.cur_view) {
-		int fake_page;
 		game_choice.cur_view = 1;
 		game_choice.page--;
-		log_info("Page backed to %d.", game_choice.page);
-		fake_page = 1;
-		int i = 1;
-		for (; i < game_choice.last; i++) {
-			rect rcRect;
-			rect_set(&rcRect, sx,sy_ho, 463,x_depth);
-			
-			/* Don't print, only check the height in pixel: */
-			y_ho = print_text_wrap(game_choice.line[i], &rcRect, 1, 1, FONT_DIALOG);
-			sy_ho += y_ho;
-			if (sy_ho > x_depth) {
-				fake_page++;
-				sy_ho = game_choice.choices_y+ y_ho;
-			}
-			if (fake_page == game_choice.page) {
-				game_choice.cur_view = i;
-				game_choice.cur_view_end = game_choice.cur;
-				goto fin;
-			}
-		}
-		game_choice.cur_view_end = i;
+		goto begin;
 	}
 
- fin:
+
 	// Prepare arrow animation
 	if (game_choice.timer < thisTickCount) {
 		game_choice.curf++;
