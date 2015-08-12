@@ -58,10 +58,11 @@ freedink_SOURCES = $(COMMON_OBJS) AppFreeDink.cpp AppFreeDink.h		\
 	dinkc_bindings.cpp dinkc_bindings.h dinkc.cpp dinkc.h		\
 	dinkc_console.cpp dinkc_console.h dinkc_console_renderer.cpp	\
 	dinkc_console_renderer.h debug.cpp debug.h debug_renderer.cpp	\
-	debug_renderer.h game_engine.cpp game_engine.h game_state.cpp	\
-	game_state.h i18n.cpp i18n.h inventory.cpp inventory.h		\
-	meminfo.cpp meminfo.h savegame.cpp savegame.h status.cpp	\
-	status.h talk.cpp talk.h text.cpp text.h
+	debug_renderer.h game_engine.cpp game_engine.h			\
+	game_choice.cpp game_choice.h game_state.cpp game_state.h	\
+	i18n.cpp i18n.h inventory.cpp inventory.h meminfo.cpp		\
+	meminfo.h savegame.cpp savegame.h status.cpp status.h		\
+	text.cpp text.h
 freedinkedit_SOURCES = $(COMMON_OBJS) AppFreeDinkedit.h	\
 	freedinkedit.cpp
 nodist_freedink_SOURCES = $(WOERES)
@@ -135,10 +136,10 @@ TestEditorMap_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	brain_repeat.cpp brain_scale.cpp brain_shadow.cpp		\
 	brain_text.cpp dinkc_bindings.cpp dinkc_bindings.h dinkc.cpp	\
 	dinkc.h dinkc_console.cpp dinkc_console.h freedink.cpp		\
-	game_engine.cpp game_engine.h game_state.cpp game_state.h	\
-	i18n.cpp i18n.h inventory.cpp inventory.h meminfo.cpp		\
-	meminfo.h savegame.cpp savegame.h status.cpp status.h		\
-	talk.cpp talk.h text.cpp text.h update_frame.cpp		\
+	game_engine.cpp game_engine.h game_choice.cpp game_choice.h	\
+	game_state.cpp game_state.h i18n.cpp i18n.h inventory.cpp	\
+	inventory.h meminfo.cpp meminfo.h savegame.cpp savegame.h	\
+	status.cpp status.h text.cpp text.h update_frame.cpp		\
 	TestEditorMap.cpp
 test_dinkini_SOURCES = dinkini.cpp rect.cpp gfx_sprites.cpp		\
 	fastfile.cpp str_util.cpp io_util.cpp msgbox.cpp paths.cpp	\
@@ -153,10 +154,10 @@ test_editor_screen_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	brain_repeat.cpp brain_scale.cpp brain_shadow.cpp		\
 	brain_text.cpp dinkc_bindings.cpp dinkc_bindings.h dinkc.cpp	\
 	dinkc.h dinkc_console.cpp dinkc_console.h freedink.cpp		\
-	game_engine.cpp game_engine.h game_state.cpp game_state.h	\
-	i18n.cpp i18n.h inventory.cpp inventory.h meminfo.cpp		\
-	meminfo.h savegame.cpp savegame.h status.cpp status.h		\
-	talk.cpp talk.h text.cpp text.h update_frame.cpp		\
+	game_engine.cpp game_engine.h game_choice.cpp game_choice.h	\
+	game_state.cpp game_state.h i18n.cpp i18n.h inventory.cpp	\
+	inventory.h meminfo.cpp meminfo.h savegame.cpp savegame.h	\
+	status.cpp status.h text.cpp text.h update_frame.cpp		\
 	test_editor_screen.cpp
 test_dinkc_bindings_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	brain_bounce.cpp brain_button.cpp brain_diagonal.cpp		\
@@ -166,10 +167,10 @@ test_dinkc_bindings_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	brain_repeat.cpp brain_scale.cpp brain_shadow.cpp		\
 	brain_text.cpp dinkc_bindings.cpp dinkc_bindings.h dinkc.cpp	\
 	dinkc.h dinkc_console.cpp dinkc_console.h freedink.cpp		\
-	game_engine.cpp game_engine.h game_state.cpp game_state.h	\
-	i18n.cpp i18n.h inventory.cpp inventory.h meminfo.cpp		\
-	meminfo.h savegame.cpp savegame.h status.cpp status.h		\
-	talk.cpp talk.h text.cpp text.h update_frame.cpp		\
+	game_choice.cpp game_choice.h game_engine.cpp game_engine.h	\
+	game_state.cpp game_state.h i18n.cpp i18n.h inventory.cpp	\
+	inventory.h meminfo.cpp meminfo.h savegame.cpp savegame.h	\
+	status.cpp status.h text.cpp text.h update_frame.cpp		\
 	test_dinkc_bindings.cpp
 test_live_sprites_manager_SOURCES = live_sprites_manager.cpp rect.cpp	\
 	test_live_sprites_manager.cpp
@@ -181,10 +182,10 @@ test_brain_text_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	brain_repeat.cpp brain_scale.cpp brain_shadow.cpp		\
 	brain_text.cpp dinkc_bindings.cpp dinkc_bindings.h dinkc.cpp	\
 	dinkc.h dinkc_console.cpp dinkc_console.h freedink.cpp		\
-	game_engine.cpp game_engine.h game_state.cpp game_state.h	\
-	i18n.cpp i18n.h inventory.cpp inventory.h meminfo.cpp		\
-	meminfo.h savegame.cpp savegame.h status.cpp status.h		\
-	talk.cpp talk.h text.cpp text.h update_frame.cpp		\
+	game_choice.cpp game_choice.h game_engine.cpp game_engine.h	\
+	game_state.cpp game_state.h i18n.cpp i18n.h inventory.cpp	\
+	inventory.h meminfo.cpp meminfo.h savegame.cpp savegame.h	\
+	status.cpp status.h text.cpp text.h update_frame.cpp		\
 	test_brain_text.cpp
 test_text_SOURCES = test_text.cpp text.cpp live_sprites_manager.cpp	\
 	dinkini.cpp live_sprite.cpp rect.cpp gfx_sprites.cpp		\
@@ -197,10 +198,10 @@ test_integration_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	brain_repeat.cpp brain_scale.cpp brain_shadow.cpp		\
 	brain_text.cpp dinkc_bindings.cpp dinkc_bindings.h dinkc.cpp	\
 	dinkc.h dinkc_console.cpp dinkc_console.h freedink.cpp		\
-	game_engine.cpp game_engine.h game_state.cpp game_state.h	\
-	i18n.cpp i18n.h inventory.cpp inventory.h meminfo.cpp		\
-	meminfo.h savegame.cpp savegame.h status.cpp status.h		\
-	talk.cpp talk.h text.cpp text.h update_frame.cpp		\
+	game_engine.cpp game_engine.h game_choice.cpp game_choice.h	\
+	game_state.cpp game_state.h i18n.cpp i18n.h inventory.cpp	\
+	inventory.h meminfo.cpp meminfo.h savegame.cpp savegame.h	\
+	status.cpp status.h text.cpp text.h update_frame.cpp		\
 	test_integration.cpp
 # Tests to run
 TESTS = $(check_PROGRAMS)

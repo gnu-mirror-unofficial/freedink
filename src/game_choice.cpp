@@ -21,8 +21,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "talk.h"
-
+#include "game_choice.h"
 #include "SDL.h"
 #include "log.h"
 #include "game_engine.h" /* play */

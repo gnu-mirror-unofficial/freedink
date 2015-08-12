@@ -28,9 +28,9 @@
 #include "gfx.h" /* GFX_lpDDSBack */
 #include "gfx_sprites.h" /* draw_status_all, GFX_k */
 #include "dinkini.h" /* check_seq_status */
+#include "game_choice.h" /* talk.active */
 #include "input.h"
 #include "sfx.h"
-#include "talk.h" /* talk.active */
 #include "update_frame.h" /* talk_process */
 #include "status.h" /* draw_status_all */
 

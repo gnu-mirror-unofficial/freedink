@@ -34,7 +34,7 @@ int dversion = 107;
 struct player_info play;
 #include "live_sprites_manager.h"
 struct sp spr[MAX_SPRITES_AT_ONCE];
-#include "talk.h"
+#include "game_choice.h"
 struct talk_struct talk;
 int last_sprite_created;
 int input_get_button_action(int button_index) { return -1; }

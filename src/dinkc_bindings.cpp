@@ -60,7 +60,7 @@
 #include "i18n.h"
 #include "inventory.h" /* add_item, ITEM_*, kill_item_script,
 			  kill_mitem_script, kill_cur_magic */
-#include "talk.h" /* talk, talk_clear */
+#include "game_choice.h" /* talk, talk_clear */
 #include "status.h"
 #include "text.h"
 #include "savegame.h"

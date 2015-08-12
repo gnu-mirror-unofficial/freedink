@@ -31,7 +31,7 @@
 #include "dinkini.h" /* check_seq_status */
 #include "live_sprites_manager.h"
 #include "sfx.h"
-#include "talk.h"
+#include "game_choice.h"
 #include "editor_screen.h" /* spr */
 
 #include "game_engine.h" /* show_inventory */

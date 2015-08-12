@@ -56,7 +56,7 @@
 #include "EditorMap.h"
 #include "meminfo.h"
 #include "dinkc_console.h"
-#include "talk.h"
+#include "game_choice.h"
 #include "text.h"
 
 

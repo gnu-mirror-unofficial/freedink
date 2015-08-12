@@ -1,3 +1,4 @@
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -13,7 +14,7 @@
 #include "input.h"
 #include "live_sprites_manager.h"
 #include "sfx.h"
-#include "talk.h"
+#include "game_choice.h"
 #include "gfx_sprites.h"
 #include "text.h"
 #include "bgm.h"

@@ -1,3 +1,4 @@
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -18,7 +19,7 @@
 #include "input.h"
 #include "log.h"
 #include "sfx.h"
-#include "talk.h"
+#include "game_choice.h"
 #include "update_frame.h"
 
 #include "SDL.h"

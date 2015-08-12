@@ -55,7 +55,7 @@
 #include "input.h"
 #include "sfx.h"
 #include "text.h"
-#include "talk.h"
+#include "game_choice.h"
 #include "status.h"
 
 /* For printing strings in process_talk */

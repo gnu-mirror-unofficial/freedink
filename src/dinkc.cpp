@@ -44,7 +44,7 @@
 #include "str_util.h"
 #include "log.h"
 #include "editor_screen.h"
-#include "talk.h"
+#include "game_choice.h"
 #include "i18n.h"
 
 /* store current procedure arguments expanded values of type 'int' (see get_parms) */
