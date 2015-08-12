@@ -9,6 +9,7 @@
 #include "bgm.h"
 #include "dinkc_console.h"
 #include "dinkc_console_renderer.h"
+#include "debug_renderer.h"
 #include "game_engine.h"
 #include "live_sprites_manager.h"
 #include "editor_screen.h"
@@ -169,6 +170,7 @@ void AppFreeDink::logic() {
 	updateFrame();
 
 	/* Renderers */
+	debug_renderer_render();
 	dinkc_console_renderer_render();
 
 	if (!abort_this_flip)

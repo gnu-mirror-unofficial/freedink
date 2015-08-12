@@ -46,8 +46,6 @@
 #include "freedink.h"
 #include "brains.h"
 #include "gfx.h"
-/* For printing strings in debug mode */
-#include "gfx_fonts.h"
 #include "gfx_sprites.h"
 #include "gfx_tiles.h"
 #include "dinkini.h"
@@ -59,6 +57,9 @@
 #include "text.h"
 #include "talk.h"
 #include "status.h"
+
+/* For printing strings in process_talk */
+#include "gfx_fonts.h"
 
 static Uint32 fps_lasttick = 0;
 static int frames = 0;
@@ -565,7 +566,6 @@ void updateFrame()
   frames++;
   
 
-  char msg[100];
   int move_result ;
     
   int max_s;
@@ -1104,38 +1104,6 @@ past:
 		
 	}
 	
-	
-	if (debug_mode)
-	  {
-	    FONTS_SetTextColor(200, 200, 200);
-	    if (mode == 0) strcpy(msg,"");
-	    if (mode == 1)
-	      {
-		int x;
-		sprintf(msg,"X is %d y is %d  FPS: %d", spr[1].x, spr[1].y, fps);
-		//let's add the key info to it.
-		for (x = 0; x < 256; x++)
-		  if (input_getcharstate(x))
-		    sprintf(msg + strlen(msg), " (Key %i)", x);
-	      }
-	    if (mode == 3)
-	      {
-		sprintf(msg, "Sprites: %d  FPS: %d"
-			"  Moveman X%d X%d: %d Y%d Y%d Map %d",
-			last_sprite_created, fps/*_show*/,
-			spr[1].lpx[0], spr[1].lpy[0], spr[1].moveman,
-			spr[1].lpx[1], spr[1].lpy[1], *pplayer_map);
-	      }
-	    
-	    print_text_wrap_debug(msg, 0, 0);
-	    if (strlen(last_debug) > 0)
-	      {
-		//let's also draw this...
-		strcpy(msg, last_debug);
-		print_text_wrap_debug(msg, 0, 20);
-	      }
-	  }
-
 	for (int j2 = 0; j2 <= max_s; j2++)
 	  {
 	    int h = 0;
