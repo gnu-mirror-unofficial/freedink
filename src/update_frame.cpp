@@ -61,9 +61,6 @@
 /* For printing strings in process_talk */
 #include "gfx_fonts.h"
 
-static Uint32 fps_lasttick = 0;
-static int frames = 0;
-static int fps = 0;
 static unsigned long mold;
 
 /* Fills 'struct seth_joy sjoy' with the current keyboard and/or
@@ -555,16 +552,6 @@ void talk_process()
 void updateFrame()
 {
   check_joystick();
-
-  /* Refresh frame counter twice per second */
-  if ((SDL_GetTicks() - fps_lasttick) > 500)
-    {
-      fps = frames * (1000/500);
-      frames = 0;
-      fps_lasttick = SDL_GetTicks();
-    }
-  frames++;
-  
 
   int move_result ;
     
