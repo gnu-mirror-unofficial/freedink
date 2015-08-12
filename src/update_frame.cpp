@@ -266,6 +266,8 @@ void updateFrame()
 	base_timing = fps_final / 3;
 	if (base_timing < 4)
 	  base_timing = 4;
+
+	{
 	int junk3;
 	
 	//redink1 added these changes to set Dink's speed correctly, even on fast machines.
@@ -292,25 +294,27 @@ void updateFrame()
 	}
 	spr[1].speed = junk3;
       }
-	
+    }
 	
 	if (showb.active)
 	{
 		process_show_bmp();
 		return;
 	}
-	
+
+	// Things to do every 1/10th second
 	if (thisTickCount > mold+100)
 	{
 		mold = thisTickCount;
+		
 		if (bow.active) bow.hitme = /*true*/1;
+		
 		if (*pupdate_status == 1) update_status_all();
 		
-		
 		update_sound();
+		
 		process_animated_tiles(thisTickCount);
 	}
-	
 	
 	if (show_inventory)
 	{
@@ -318,13 +322,10 @@ void updateFrame()
 		return;
 	}
 	
-	if (transition_in_progress) 
-	  {
-	    if (transition(fps_final)) /* transition not finished */
-	      goto flip;
-	    else
-	      return;
-	  }
+	if (transition_in_progress) {
+		transition(fps_final);
+		return;
+	}
 	
 	
 	/* Fade to black, etc. */
@@ -352,8 +353,7 @@ void updateFrame()
 			draw_status_all();
 			
 		}
-		goto flip;
-		
+		return;
 	}
 	
 	
@@ -757,7 +757,4 @@ past:
 	
 	kill_scripts_with_inactive_sprites();
 	process_callbacks(thisTickCount);
-	
-flip:
-	;
 } /* updateFrame */
