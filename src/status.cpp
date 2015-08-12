@@ -478,7 +478,7 @@ void update_status_all(void)
         }
 
         if (*pexper != fexp
-	    && ((talk.active == 0 && show_inventory == 0 && spr[1].freeze == 0)
+	    && ((game_choice.active == 0 && show_inventory == 0 && spr[1].freeze == 0)
 		|| fexp + 10 < fraise))
 
         {

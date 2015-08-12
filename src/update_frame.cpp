@@ -204,7 +204,7 @@ void check_joystick()
 }
 
 
-void talk_process()
+void game_choice_process()
 {
   int px = 48, py = 44;
 
@@ -221,8 +221,8 @@ void talk_process()
   rect rcRect;
   int i;
   int x_depth = 335;
-  if (talk.newy != -5000)
-    sy = talk.newy;
+  if (game_choice.newy != -5000)
+    sy = game_choice.newy;
 
   sy_hold = sy;
   sy_ho = sy;
@@ -265,29 +265,29 @@ void talk_process()
   }
 
 
-  int talk_hold = talk.cur;
-  if (sjoy.rightd) talk.cur++;
-  if (sjoy.downd) talk.cur++;
-  if (sjoy.upd) talk.cur--;
-  if (sjoy.leftd) talk.cur--;
+  int talk_hold = game_choice.cur;
+  if (sjoy.rightd) game_choice.cur++;
+  if (sjoy.downd) game_choice.cur++;
+  if (sjoy.upd) game_choice.cur--;
+  if (sjoy.leftd) game_choice.cur--;
 
   if (play.mouse > 20)
     {
-      talk.cur++;
+      game_choice.cur++;
       play.mouse = 0;
     }
 
   if (play.mouse < -20)
     {
-      talk.cur--;
+      game_choice.cur--;
       play.mouse = 0;
     }
 
 
-  if (talk_hold != talk.cur)
+  if (talk_hold != game_choice.cur)
     {
-      if (talk.cur >= talk.cur_view)
-	if (talk.cur <= talk.cur_view_end)
+      if (game_choice.cur >= game_choice.cur_view)
+	if (game_choice.cur <= game_choice.cur_view_end)
 	  SoundPlayEffect(11, 22050,0,0,0);
     }
 
@@ -302,12 +302,12 @@ void talk_process()
 
 
       /* Print dialog title, if any */
-      if (strlen(talk.buffer) > 0)
+      if (strlen(game_choice.buffer) > 0)
 	{
 	  rect_set(&rcRect, sx, 94, 463, 400);
 	  /* if using an explicit "set_y" after "choice_start()": */
-	  if (talk.newy != -5000)
-	    rcRect.bottom = talk.newy + 15;
+	  if (game_choice.newy != -5000)
+	    rcRect.bottom = game_choice.newy + 15;
 
 /* 	  SetTextColor(hdc,RGB(8,14,21)); */
 	  // FONTS
@@ -315,14 +315,14 @@ void talk_process()
 /* 	  DrawText(hdc,talk.buffer,strlen(talk.buffer),&rcRect,DT_VCENTER | DT_CENTER | DT_WORDBREAK); */
 	  // FONTS
 	  //printf("(%dx%d)x(%dx%d)\n", rcRect.left, rcRect.top, rcRect.right, rcRect.bottom);
-	  print_text_wrap(talk.buffer, &rcRect, 1, 0, FONT_DIALOG);
+	  print_text_wrap(game_choice.buffer, &rcRect, 1, 0, FONT_DIALOG);
 
 
 	   /* Same of in text_draw, except for #1 and default */
 	   // FONTS:
 	   // support for custom colors
-	   if (talk.color >= 1 && talk.color <= 15)
-	     FONTS_SetTextColorIndex(talk.color);
+	   if (game_choice.color >= 1 && game_choice.color <= 15)
+	     FONTS_SetTextColorIndex(game_choice.color);
 	   else
 	     {
 	       if (dversion >= 108)
@@ -334,7 +334,7 @@ void talk_process()
 	  rect_offset(&rcRect, 1, 1);
 /* 	  DrawText(hdc,talk.buffer,strlen(talk.buffer),&rcRect,DT_VCENTER | DT_CENTER | DT_WORDBREAK);	 */
 	  // FONTS
-	  print_text_wrap(talk.buffer, &rcRect, 1, 0, FONT_DIALOG);
+	  print_text_wrap(game_choice.buffer, &rcRect, 1, 0, FONT_DIALOG);
 
 /* 	  SetTextColor(hdc,RGB(8,14,21)); */
 	  // FONTS
@@ -346,13 +346,13 @@ void talk_process()
 
       //tabulate distance needed by text, LORDII experience helped here
       //recal:
-      for (i = talk.cur_view; i < talk.last; i++)
+      for (i = game_choice.cur_view; i < game_choice.last; i++)
 	{
 	  rect_set(&rcRect,sx,y_hold,463,x_depth+100);
 /* 	  y_hold = DrawText(hdc,talk.line[i],lstrlen(talk.line[i]),&rcRect,DT_CALCRECT | DT_CENTER | DT_WORDBREAK); */
 	  // FONTS
 	  /* Don't print, only check the height in pixel: */
-	  y_hold = print_text_wrap(talk.line[i], &rcRect, 1, 1, FONT_DIALOG);
+	  y_hold = print_text_wrap(game_choice.line[i], &rcRect, 1, 1, FONT_DIALOG);
 	  sy_hold += y_hold;
 
 	  //Msg("Sy_hold = %d (%d)", sy_hold,i);
@@ -360,32 +360,32 @@ void talk_process()
 	  if (sy_hold > x_depth)
 	    {
 
-	      talk.cur_view_end = i-1;
+	      game_choice.cur_view_end = i-1;
 	      //Msg("Sy is over, sp cur_view is %d ", talk.cur_view_end);
 	      goto death;
 	    }
 	}
 
-      talk.cur_view_end = i;
+      game_choice.cur_view_end = i;
 
-      if (talk.cur_view == 1 && talk.cur_view_end == talk.last)
+      if (game_choice.cur_view == 1 && game_choice.cur_view_end == game_choice.last)
 	{
 	  //Msg("Small enough to fit on one screen, lets center it!");
 	  sy += ( (x_depth - sy_hold) / 2) - 20;
 	}
     death:
-      if (talk.cur > talk.last)
+      if (game_choice.cur > game_choice.last)
 	{
 	  SoundPlayEffect(11, 22050,0,0,0);
 
-	  talk.cur = 1;
+	  game_choice.cur = 1;
 
 	}
-      if (talk.cur < 1)
+      if (game_choice.cur < 1)
 	{
 	  SoundPlayEffect(11, 22050,0,0,0);
 
-	  talk.cur = talk.last;
+	  game_choice.cur = game_choice.last;
 	}
 
 
@@ -395,11 +395,11 @@ void talk_process()
 	//total options too large for page, lets scroll
 
 
-	if (talk.cur > talk.cur_view_end)
+	if (game_choice.cur > game_choice.cur_view_end)
 	  {
 	    //     Msg("advancing page:  talkcur is %d, changing cur_view to same", talk.cur, talk.cur_view);
-	    talk.cur_view = talk.cur;
-	    talk.page ++;
+	    game_choice.cur_view = game_choice.cur;
+	    game_choice.page ++;
 
 	    // Msg("Page advanced to %d. (cur_end is %d, cur is %d)", talk.page,talk.cur_view_end, talk.cur);
 	    goto fin;
@@ -407,24 +407,24 @@ void talk_process()
 
 
 
-	if (talk.cur < talk.cur_view)
+	if (game_choice.cur < game_choice.cur_view)
 	  {
 	    //	Msg("Turning back the clock from page %d..", talk.page);
 
-	    talk.cur_view = 1;
+	    game_choice.cur_view = 1;
 	    // talk.cur = 1;
 
-	    talk.page--;
-	    log_info("Page backed to %d.", talk.page);
+	    game_choice.page--;
+	    log_info("Page backed to %d.", game_choice.page);
 	    fake_page = 1;
-	    for (i = 1; i < talk.last; i++)
+	    for (i = 1; i < game_choice.last; i++)
 	      {
 		rect_set(&rcRect,sx,sy_ho,463,x_depth);
 
 /* 		y_ho = DrawText(hdc,talk.line[i],lstrlen(talk.line[i]),&rcRect,DT_CALCRECT | DT_CENTER | DT_WORDBREAK); */
 		// FONTS
 		/* Don't print, only check the height in pixel: */
-		y_ho = print_text_wrap(talk.line[i], &rcRect, 1, 1, FONT_DIALOG);
+		y_ho = print_text_wrap(game_choice.line[i], &rcRect, 1, 1, FONT_DIALOG);
 		sy_ho += y_ho;
 		//Msg("adding y_yo %d.. (on %d)", y_ho,i);
 		if (sy_ho > x_depth)
@@ -438,10 +438,10 @@ void talk_process()
 		    sy_ho = sy+ y_ho;
 		    //Msg("Does fake page (%d) match desired page (%d) %d", fake_page, talk.page, i);
 		  }
-		if (fake_page == talk.page)
+		if (fake_page == game_choice.page)
 		  {
-		    talk.cur_view = i;
-		    talk.cur_view_end = talk.cur;
+		    game_choice.cur_view = i;
+		    game_choice.cur_view_end = game_choice.cur;
 		    //Msg("Going to fin with end being %d, and.cur being %d.  View is %d.",
 		    //		   talk.cur_view_end, talk.cur, talk.cur_view);
 		    goto fin;
@@ -449,7 +449,7 @@ void talk_process()
 
 		//         Msg("Second: Sy is over, sp cur_view is %d", talk.cur_view_end);
 	      }
-	    talk.cur_view_end = i;
+	    game_choice.cur_view_end = i;
 	  }
       }
 
@@ -457,7 +457,7 @@ void talk_process()
 
       //	 talk.cur_view_end = talk.last;
 
-      for ( i = talk.cur_view; i <= talk.cur_view_end; i++)
+      for ( i = game_choice.cur_view; i <= game_choice.cur_view_end; i++)
 	{
 	  //lets figure out where to draw this line
 
@@ -467,14 +467,14 @@ void talk_process()
 	  FONTS_SetTextColor(8, 14, 21);
 /* 	  DrawText(hdc,talk.line[i],lstrlen(talk.line[i]),&rcRect, DT_CENTER | DT_WORDBREAK); */
 	  // FONTS
-	  print_text_wrap(talk.line[i], &rcRect, 1, 0, FONT_DIALOG);
+	  print_text_wrap(game_choice.line[i], &rcRect, 1, 0, FONT_DIALOG);
 	  rect_offset(&rcRect, -2, -2);
 /* 	  DrawText(hdc,talk.line[i],lstrlen(talk.line[i]),&rcRect,DT_CENTER | DT_WORDBREAK); */
 	  // FONTS
-	  print_text_wrap(talk.line[i], &rcRect, 1, 0, FONT_DIALOG);
+	  print_text_wrap(game_choice.line[i], &rcRect, 1, 0, FONT_DIALOG);
 
 	  rect_offset(&rcRect, 1, 1);
-	  if (i == talk.cur)
+	  if (i == game_choice.cur)
 	    {
 	      curyl = sy-4;
 	      curyr = sy-4;
@@ -491,7 +491,7 @@ void talk_process()
 	    }
 /* 	  y_last = DrawText(hdc,talk.line[i],lstrlen(talk.line[i]),&rcRect,DT_CENTER | DT_WORDBREAK); */
 	  // FONTS
-	  y_last = print_text_wrap(talk.line[i], &rcRect, 1, 0, FONT_DIALOG);
+	  y_last = print_text_wrap(game_choice.line[i], &rcRect, 1, 0, FONT_DIALOG);
 	  sy += y_last;
 	}
 
@@ -499,16 +499,16 @@ void talk_process()
       //	   dum =  GetTextFace(hdc,100,shit) ;
 /*       lpDDSBack->ReleaseDC(hdc); */
 
-      if (talk.timer < thisTickCount)
+      if (game_choice.timer < thisTickCount)
 	{
-	  talk.curf++;
-	  talk.timer = thisTickCount+100;
+	  game_choice.curf++;
+	  game_choice.timer = thisTickCount+100;
 	}
 
 
-      if (talk.curf == 0) talk.curf = 1;
+      if (game_choice.curf == 0) game_choice.curf = 1;
 
-      if (talk.curf > 7) talk.curf = 1;
+      if (game_choice.curf > 7) game_choice.curf = 1;
 /*     again4: */
 /*       ddrval = lpDDSBack->BltFast( curxl, curyl, k[seq[456].frame[talk.curf]].k, */
 /* 				   &k[seq[456].frame[talk.curf]].box  , DDBLTFAST_SRCCOLORKEY  ); */
@@ -517,7 +517,7 @@ void talk_process()
       {
 	SDL_Rect dst;
 	dst.x = curxl; dst.y = curyl;
-	SDL_BlitSurface(GFX_k[seq[456].frame[talk.curf]].k, NULL, GFX_backbuffer, &dst);
+	SDL_BlitSurface(GFX_k[seq[456].frame[game_choice.curf]].k, NULL, GFX_backbuffer, &dst);
       }
 
 /*     again5: */
@@ -528,7 +528,7 @@ void talk_process()
       {
 	SDL_Rect dst;
 	dst.x = curxr; dst.y = curyr;
-	SDL_BlitSurface(GFX_k[seq[457].frame[talk.curf]].k, NULL, GFX_backbuffer, &dst);
+	SDL_BlitSurface(GFX_k[seq[457].frame[game_choice.curf]].k, NULL, GFX_backbuffer, &dst);
       }
 /*   } */
 
@@ -536,14 +536,14 @@ void talk_process()
   if ((sjoy.button[ACTION_ATTACK]) | (mouse1))
     {
       mouse1 = /*false*/0;
-      talk_stop();
-      *presult = talk.line_return[talk.cur];
+      game_choice_stop();
+      *presult = game_choice.line_return[game_choice.cur];
       SoundPlayEffect(17, 22050,0,0,0);
 
-      if (talk.script != 0)
+      if (game_choice.script != 0)
 	{
 	  //we need to continue a script
-	  run_script(talk.script);
+	  run_script(game_choice.script);
 
 	}
     }
@@ -690,7 +690,7 @@ void updateFrame()
 	
 	if (stop_entire_game == 1)
 	{
-		if (talk.active) talk_process();
+		if (game_choice.active) game_choice_process();
 		
 		else
 		{
@@ -1100,7 +1100,7 @@ past:
 	  }
     
     
-	if (talk.active) talk_process();
+	if (game_choice.active) game_choice_process();
 	
 	
 	kill_scripts_with_inactive_sprites();

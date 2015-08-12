@@ -216,7 +216,7 @@ void human_brain(int h)
   if (spr[h].nocontrol)
     return;
 	
-  if (talk.active)
+  if (game_choice.active)
     goto freeze;
 	
   if (spr[h].freeze)
@@ -446,7 +446,7 @@ shootm:
   
   if (sjoy.button[ACTION_MENU] == 1)
     {
-      if (!showb.active && !bow.active && !talk.active)
+      if (!showb.active && !bow.active && !game_choice.active)
 	{
 	  int sc = load_script("escape", 1000);
 	  if (sc != 0 && locate(sc, "MAIN"))

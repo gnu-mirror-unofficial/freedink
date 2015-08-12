@@ -28,7 +28,7 @@
 /* Talk choices */
 #define TALK_TITLE_BUFSIZ 3000
 #define TALK_LINE_BUFSIZ 101
-struct talk_struct
+struct game_choice_struct
 {
   char line[21][TALK_LINE_BUFSIZ];  /* dialog choices */
   int line_return[21]; /* return this number if chosen */
@@ -46,9 +46,9 @@ struct talk_struct
   int curf;
   Uint32 timer;
 };
-extern struct talk_struct talk;
-extern void talk_start(int script, int nb_choices);
-extern void talk_stop();
-extern void talk_clear();
+extern struct game_choice_struct game_choice;
+extern void game_choice_start(int script, int nb_choices);
+extern void game_choice_stop();
+extern void game_choice_clear();
 
 #endif

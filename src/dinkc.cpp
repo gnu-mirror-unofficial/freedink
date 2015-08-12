@@ -1539,15 +1539,15 @@ void int_prepare(char* line, int script)
 
 /**
  * Process DinkC dialog choice stanza
- * Globals: talk, talk_start, talk_clear, i18n_translate
+ * Globals: game_choice, game_choice_start, game_choice_clear, i18n_translate
  */
-/*bool*/int talk_get(int script)
+/*bool*/int dinkc_get_choices(int script)
 {
   char* line = NULL;
-  int cur = 1;
+  int cur = 1;  // TODO: make it stay <= 20
   int retnum = 0;
-  talk_clear();
-  talk.newy = -5000;
+  game_choice_clear();
+  game_choice.newy = -5000;
   while(1)
     {
     redo:
@@ -1563,7 +1563,7 @@ void int_prepare(char* line, int script)
         {
 	  free(word);
 	  word = get_word(line, 2);
-	  talk.newy = atol(word);
+	  game_choice.newy = atol(word);
 	  free(word);
 	  free(line);
 	  goto redo;
@@ -1573,7 +1573,7 @@ void int_prepare(char* line, int script)
         {
 	  free(word);
 	  word = get_word(line, 2);
-	  talk.color = atol(word);
+	  game_choice.color = atol(word);
 	  free(word);
 	  free(line);
 	  goto redo;
@@ -1607,8 +1607,8 @@ morestuff:
 		  
 		  if (compare(directive, "title_end"))
 		    {
-		      replace_norealloc("\n\n\n\n", "\n \n", talk.buffer);
-		      replace_norealloc("\n\n", "\n", talk.buffer);
+		      replace_norealloc("\n\n\n\n", "\n \n", game_choice.buffer);
+		      replace_norealloc("\n\n", "\n", game_choice.buffer);
 		      free(directive);
 		      free(line);
 		      goto redo;
@@ -1620,12 +1620,12 @@ morestuff:
 	      /* Translate text (before variable substitution) */
 	      char* translation = i18n_translate(rinfo[script]->name, rinfo[script]->debug_line, line);
 	      decipher_string(&translation, script);
-	      int cur_len = strlen(talk.buffer);
-	      strncat(talk.buffer, translation, TALK_TITLE_BUFSIZ - 1 - cur_len - 1);
+	      int cur_len = strlen(game_choice.buffer);
+	      strncat(game_choice.buffer, translation, TALK_TITLE_BUFSIZ - 1 - cur_len - 1);
 	      free(translation);
 	      /* put '\n' back */
-	      strcat(talk.buffer, "\n");
-	      talk.buffer[TALK_TITLE_BUFSIZ-1] = '\0';
+	      strcat(game_choice.buffer, "\n");
+	      game_choice.buffer[TALK_TITLE_BUFSIZ-1] = '\0';
 	      free(line);
 	    }
 	  
@@ -1644,7 +1644,7 @@ morestuff:
 	      free(line);
 	      return /*false*/0;
 	    }
-	  talk_start(script, cur-1);
+	  game_choice_start(script, cur-1);
 	  free(directive);
 	  free(line);
 	  return /*true*/1;
@@ -1710,18 +1710,18 @@ morestuff:
 	  decipher_savegame = retnum;
 	  decipher_string(&translation, script);
 	  decipher_savegame = 0;
-	  strncpy(talk.line[cur], translation, TALK_LINE_BUFSIZ-1);
-	  talk.line[cur][TALK_LINE_BUFSIZ-1] = '\0';
+	  strncpy(game_choice.line[cur], translation, TALK_LINE_BUFSIZ-1);
+	  game_choice.line[cur][TALK_LINE_BUFSIZ-1] = '\0';
 	  free(translation);
 	}
       else
 	{
 	  /* Handle empty text separately because _("") has a special
 	     meaning (returns .mo meta-data). */
-	  strcpy(talk.line[cur], "");
+	  strcpy(game_choice.line[cur], "");
 	}
       free(text);
-      talk.line_return[cur] = retnum;
+      game_choice.line_return[cur] = retnum;
       cur++;
       free(line);
     }
@@ -2223,7 +2223,7 @@ process_line(int script, char *s, /*bool*/int doelse)
   if (compare(ev[0], "choice_start"))
     {
       kill_text_owned_by(1);
-      if (talk_get(script))
+      if (dinkc_get_choices(script))
 	{
 	  // Question(s) gathered successfully
 	  PL_RETURN(DCPS_YIELD);

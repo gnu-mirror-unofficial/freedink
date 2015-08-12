@@ -1,5 +1,5 @@
 /**
- * Talk interface for DinkC
+ * Game choice interface for DinkC
 
  * Copyright (C) 1997, 1998, 1999, 2002, 2003  Seth A. Robinson
  * Copyright (C) 2005, 2007, 2008, 2009, 2010, 2012, 2014, 2015  Sylvain Beucler
@@ -26,31 +26,29 @@
 #include "log.h"
 #include "game_engine.h" /* play */
 #include "dinkini.h" /* check_seq_status */
-#include "gfx.h" /* GFX_lpDDSBack */
 #include "gfx_fonts.h"
 #include "gfx_sprites.h" /* GFX_k */
 #include "input.h"
 #include "sfx.h"
 
-struct talk_struct talk;
+struct game_choice_struct game_choice;
 
-void talk_start(int script, int nb_choices) {
-  talk.last = nb_choices;
-  talk.cur = 1;
-  talk.active = /*true*/1;
-  talk.page = 1;
-  talk.cur_view = 1;
-  talk.script = script;
+void game_choice_start(int script, int nb_choices) {
+  game_choice.last = nb_choices;
+  game_choice.cur = 1;
+  game_choice.active = /*true*/1;
+  game_choice.page = 1;
+  game_choice.cur_view = 1;
+  game_choice.script = script;
 
   int ret = SDL_SetRelativeMouseMode(SDL_TRUE);
   if (ret == -1)
     log_error("Relative mouse positionning not supported on this platform.");
   // TODO INPUT: relative mode is messed with pen tablets
-
 }
 
-void talk_stop() {
-  talk.active = /*false*/0;
+void game_choice_stop() {
+  game_choice.active = /*false*/0;
   SDL_SetRelativeMouseMode(SDL_FALSE);
   // Avoid spurious mouse events in case when we set relative mouse
   // mode back and forth in a single frame during talk_stop/talk_start
@@ -58,8 +56,8 @@ void talk_stop() {
   SDL_PumpEvents();
 }
 
-void talk_clear()
+void game_choice_clear()
 {
-  memset(&talk, 0, sizeof(talk));
+  memset(&game_choice, 0, sizeof(game_choice));
   play.mouse = 0;
 }

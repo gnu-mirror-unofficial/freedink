@@ -35,12 +35,12 @@ struct player_info play;
 #include "live_sprites_manager.h"
 struct sp spr[MAX_SPRITES_AT_ONCE];
 #include "game_choice.h"
-struct talk_struct talk;
+struct game_choice_struct game_choice;
 int last_sprite_created;
 int input_get_button_action(int button_index) { return -1; }
-void talk_start(int script, int nb_choices) {}
-void talk_clear() {}
-void talk_process() {}
+void game_choice_start(int script, int nb_choices) {}
+void game_choice_clear() {}
+void game_choice_process() {}
 void kill_text_owned_by(int sprite) {}
 Uint32 game_GetTicks(void) {return 0; }
 

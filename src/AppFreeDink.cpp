@@ -58,7 +58,7 @@ void freedink_update_mouse(SDL_Event* ev) {
 			if (spr[1].y < 0) spr[1].y = 0;
 		}
 	
-	if (talk.active)
+	if (game_choice.active)
 		freedink_update_mouse_text_choice(ev->motion.xrel, ev->motion.yrel);
 }
 
