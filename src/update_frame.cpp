@@ -650,18 +650,9 @@ past:
 	{
 	  get_frame = 0;
 	  transition_in_progress = 1;
-
-	  // GFX
-	  {
-	    SDL_Rect src, dst;
-	    src.x = playl;
-	    src.y = 0;
-	    src.w = 620 - playl;
-	    src.h = 400;
-	    dst.x = dst.y = 0;
-	    SDL_BlitSurface(GFX_backbuffer, &src, GFX_tmp2, &dst);
-	  }
-	  
+	  SDL_Rect src = { playl, 0, 620 - playl, 400 };
+	  SDL_BlitSurface(GFX_backbuffer, &src, GFX_tmp2, NULL);
+	  abort_this_flip = 1;
 	  return;
 	}
 	
