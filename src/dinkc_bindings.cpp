@@ -1179,7 +1179,7 @@ void dc_push_active(int script, int* yield, int* preturnint, int dink_can_push_p
 void dc_stop_entire_game(int script, int* yield, int* preturnint, int stop_p)
 {
   stop_entire_game = stop_p;
-  SDL_BlitSurface(GFX_lpDDSBack, NULL, GFX_lpDDSTwo, NULL);
+  SDL_BlitSurface(GFX_backbuffer, NULL, GFX_background, NULL);
 }
 
 

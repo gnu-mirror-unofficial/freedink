@@ -54,7 +54,7 @@ void gfx_fonts_quit() {}
 
 double truecolor_fade_brightness;
 int truecolor = 1;
-SDL_Surface* GFX_lpDDSTrick2;
+SDL_Surface* GFX_tmp2;
 SDL_Color GFX_real_pal[256];
 extern int PlayMidi(char *sFileName) { return 1; }
 extern SDL_Surface* load_bmp_from_fp(FILE* in) { return NULL; }

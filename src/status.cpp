@@ -71,7 +71,7 @@ static int draw_num(int mseq, char* nums, int mx, int my)
 	  // GFX
 	  {
 	    SDL_Rect dst = {mx+length, my};
-	    gfx_blit_nocolorkey(GFX_k[seq[mseq].frame[rnum]].k, NULL, GFX_lpDDSTwo, &dst);
+	    gfx_blit_nocolorkey(GFX_k[seq[mseq].frame[rnum]].k, NULL, GFX_background, &dst);
 	  }
 	}
       else
@@ -82,7 +82,7 @@ static int draw_num(int mseq, char* nums, int mx, int my)
 	  // GFX
 	  {
 	    SDL_Rect dst = {mx+length, my};
-	    SDL_BlitSurface(GFX_k[seq[mseq].frame[rnum]].k, NULL, GFX_lpDDSTwo, &dst);
+	    SDL_BlitSurface(GFX_k[seq[mseq].frame[rnum]].k, NULL, GFX_background, &dst);
 	  }
 	}
 
@@ -191,7 +191,7 @@ void draw_bar(int life, int seqman)
 		src.w = GFX_k[seq[seqman].frame[rnum]].k->w * (rem * 10) / 100;
 		src.h = GFX_k[seq[seqman].frame[rnum]].k->h;
 		dst.x = curx; dst.y = cury;
-		gfx_blit_nocolorkey(GFX_k[seq[seqman].frame[rnum]].k, &src, GFX_lpDDSTwo, &dst);
+		gfx_blit_nocolorkey(GFX_k[seq[seqman].frame[rnum]].k, &src, GFX_background, &dst);
 	      }
 	    }
 	  //are we done?
@@ -213,7 +213,7 @@ void draw_bar(int life, int seqman)
 	    SDL_Rect dst;
 	    dst.x = curx;
 	    dst.y = cury;
-	    gfx_blit_nocolorkey(GFX_k[seq[seqman].frame[rnum]].k, NULL, GFX_lpDDSTwo, &dst);
+	    gfx_blit_nocolorkey(GFX_k[seq[seqman].frame[rnum]].k, NULL, GFX_background, &dst);
 	  }
 
 	  //if (ddrval != DD_OK) dderror(ddrval);
@@ -246,7 +246,7 @@ void draw_icons()
       check_seq_status(play.item[*pcur_weapon - 1].seq);
       SDL_Rect dst = {557, 413};
       SDL_BlitSurface(GFX_k[seq[play.item[*pcur_weapon - 1].seq].frame[play.item[*pcur_weapon - 1].frame]].k, NULL,
-		      GFX_lpDDSTwo, &dst);
+		      GFX_background, &dst);
     }
 
   if (*pcur_magic >= 1 && *pcur_magic <= NB_MITEMS && play.mitem[*pcur_magic - 1].active)
@@ -255,7 +255,7 @@ void draw_icons()
       check_seq_status(play.mitem[*pcur_magic - 1].seq);
       SDL_Rect dst = {153, 413};
       SDL_BlitSurface(GFX_k[seq[play.mitem[*pcur_magic - 1].seq].frame[play.mitem[*pcur_magic - 1].frame]].k, NULL,
-		      GFX_lpDDSTwo, &dst);
+		      GFX_background, &dst);
     }
 }
 
@@ -287,7 +287,7 @@ void draw_virtical(int percent, int mx, int my, int mseq, int mframe)
     src.h = GFX_k[seq[mseq].frame[mframe]].k->h * percent / 100;
     dst.x = mx;
     dst.y = my;
-    gfx_blit_nocolorkey(GFX_k[seq[mseq].frame[mframe]].k, &src, GFX_lpDDSTwo, &dst);
+    gfx_blit_nocolorkey(GFX_k[seq[mseq].frame[mframe]].k, &src, GFX_background, &dst);
   }
 }
 
@@ -313,7 +313,7 @@ void draw_virt2(int percent, int mx, int my, int mseq, int mframe)
     src.w = GFX_k[seq[mseq].frame[mframe]].k->w;
     src.h = GFX_k[seq[mseq].frame[mframe]].k->h * percent / 100;
     dst.x = mx; dst.y = my;
-    gfx_blit_nocolorkey(GFX_k[seq[mseq].frame[mframe]].k, &src, GFX_lpDDSTwo, &dst);
+    gfx_blit_nocolorkey(GFX_k[seq[mseq].frame[mframe]].k, &src, GFX_background, &dst);
   }
 }
 
@@ -340,7 +340,7 @@ void draw_hor(int percent, int mx, int my, int mseq, int mframe)
     src.w = GFX_k[seq[mseq].frame[mframe]].k->w * percent / 100;
     src.h = GFX_k[seq[mseq].frame[mframe]].k->h;
     dst.x = mx; dst.y = my;
-    gfx_blit_nocolorkey(GFX_k[seq[mseq].frame[mframe]].k, &src, GFX_lpDDSTwo, &dst);
+    gfx_blit_nocolorkey(GFX_k[seq[mseq].frame[mframe]].k, &src, GFX_background, &dst);
   }
 }
 
@@ -369,7 +369,7 @@ void draw_hor2(int percent, int mx, int my, int mseq, int mframe)
     src.h = GFX_k[seq[mseq].frame[mframe]].k->h;
     dst.x = mx;
     dst.y = my;
-    gfx_blit_nocolorkey(GFX_k[seq[mseq].frame[mframe]].k, &src, GFX_lpDDSTwo, &dst);
+    gfx_blit_nocolorkey(GFX_k[seq[mseq].frame[mframe]].k, &src, GFX_background, &dst);
   }
 }
 
@@ -406,7 +406,7 @@ void draw_status_all(void)
   // GFX
   {
     SDL_Rect src = {0, 0, 640, 80}, dst = {0, 400};
-    gfx_blit_nocolorkey(GFX_k[seq[180].frame[3]].k, &src, GFX_lpDDSTwo, &dst);
+    gfx_blit_nocolorkey(GFX_k[seq[180].frame[3]].k, &src, GFX_background, &dst);
   }
 
 /*   rcRect.left = 0; */
@@ -424,8 +424,8 @@ void draw_status_all(void)
   // GFX
   {
     SDL_Rect src = {0, 0, 20, 400}, dst1 = {0, 0}, dst2 = {620, 0};
-    gfx_blit_nocolorkey(GFX_k[seq[180].frame[1]].k, &src, GFX_lpDDSTwo, &dst1);
-    gfx_blit_nocolorkey(GFX_k[seq[180].frame[2]].k, &src, GFX_lpDDSTwo, &dst2);
+    gfx_blit_nocolorkey(GFX_k[seq[180].frame[1]].k, &src, GFX_background, &dst1);
+    gfx_blit_nocolorkey(GFX_k[seq[180].frame[2]].k, &src, GFX_background, &dst2);
   }
 
   fraise = next_raise();
@@ -454,9 +454,9 @@ void draw_status_all(void)
  * Draw screen lateral bar, with screenlock skin
  */
 void drawscreenlock() {
-	gfx_blit_nocolorkey(GFX_k[seq[423].frame[9]].k, NULL, GFX_lpDDSBack, NULL);
+	gfx_blit_nocolorkey(GFX_k[seq[423].frame[9]].k, NULL, GFX_backbuffer, NULL);
     SDL_Rect dst = {620, 0};
-    gfx_blit_nocolorkey(GFX_k[seq[423].frame[10]].k, NULL, GFX_lpDDSBack, &dst);
+    gfx_blit_nocolorkey(GFX_k[seq[423].frame[10]].k, NULL, GFX_backbuffer, &dst);
 }
 
 

@@ -447,7 +447,7 @@ void game_place_sprites()
 	      check_sprite_status_full(sprite);
 
 	      if (cur_ed_screen.sprite[j].type == 0)
-		draw_sprite_game(GFX_lpDDSTwo, sprite);
+		draw_sprite_game(GFX_background, sprite);
 	      
 	      if (spr[sprite].hard == 0)
 		{
@@ -572,7 +572,7 @@ void game_place_sprites_background()
 					   cur_ed_screen.sprite[j].size);
 
 	      check_sprite_status_full(sprite);
-	      draw_sprite_game(GFX_lpDDSTwo, sprite);
+	      draw_sprite_game(GFX_background, sprite);
 	      spr[sprite].active = 0;
 	    }
 	}
@@ -712,7 +712,7 @@ static void draw_wait()
       {
 	SDL_Rect dst = { 232, 0, -1, -1 };
 	SDL_BlitSurface(GFX_k[seq[423].frame[please_wait_toggle_frame]].k, NULL,
-			GFX_lpDDSBack, &dst);
+			GFX_backbuffer, &dst);
 	flip_it();
       }
     if (please_wait_toggle_frame == 7)

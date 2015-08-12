@@ -26,7 +26,7 @@ void one_time_brain(int h)
 	
 	if (spr[h].seq == 0)
 	{
-	  draw_sprite_game(GFX_lpDDSTwo, h);
+	  draw_sprite_game(GFX_background, h);
 		spr[h].active = /*false*/0;			
 		return;
 	}

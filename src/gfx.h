@@ -52,10 +52,10 @@ enum gfx_windowed_state
 
 extern int truecolor;
 extern /*bool*/int windowed;
-extern SDL_Surface *GFX_lpDDSBack;
-extern SDL_Surface *GFX_lpDDSTrick;
-extern SDL_Surface *GFX_lpDDSTrick2;
-extern SDL_Surface *GFX_lpDDSTwo;
+extern SDL_Surface *GFX_backbuffer;
+extern SDL_Surface *GFX_tmp1;
+extern SDL_Surface *GFX_tmp2;
+extern SDL_Surface *GFX_background;
 extern SDL_Window* window;
 extern SDL_Renderer* renderer;
 extern SDL_Texture* render_texture;

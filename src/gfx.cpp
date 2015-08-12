@@ -47,8 +47,7 @@
 /* Is the screen depth more than 8bit? */
 int truecolor = 0;
 
-SDL_Surface *GFX_lpDDSBack = NULL; /* Backbuffer and link to physical
-				      screen*/
+SDL_Surface *GFX_backbuffer = NULL; /* Backbuffer */
 
 /* GFX_lpDDSTwo: holds the base scene */
 /* Rationale attempt :*/
@@ -64,16 +63,16 @@ SDL_Surface *GFX_lpDDSBack = NULL; /* Backbuffer and link to physical
 /* After the background is done, all the other operations are applied
    on lpDDSBack, the double buffer which is directly used by the
    physical screen. */
-SDL_Surface *GFX_lpDDSTwo = NULL;
+SDL_Surface *GFX_background = NULL;
 
 /* Beuc: apparently used for the scrolling screen transition and more
    generaly as temporary buffers. Only used by the game, not the
    editor. */
 /* Used in freedink.cpp only + as a local/independent temporary buffer
    in show_bmp&copy_bmp&process_show_bmp&load_sprite* */
-SDL_Surface *GFX_lpDDSTrick = NULL;
+SDL_Surface *GFX_tmp1 = NULL;
 /* Used in freedink.cpp and update_frame.cpp */
-SDL_Surface *GFX_lpDDSTrick2 = NULL;
+SDL_Surface *GFX_tmp2 = NULL;
 
 /* Main window and associated renderer */
 SDL_Window* window = NULL;
@@ -182,7 +181,6 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
 
   /* Window configuration */
   {
-    // TODO SDL2: add transparency
     SDL_Surface *icon = NULL;
     if ((icon = IMG_ReadXPMFromArray(freedink_xpm)) == NULL)
       {
@@ -205,10 +203,10 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
       SDL_PixelFormatEnumToMasks(SDL_PIXELFORMAT_RGB888, &bpp,
 				 &Rmask, &Gmask, &Bmask, &Amask);
     }
-    GFX_lpDDSBack = SDL_CreateRGBSurface(0, 640, 480, bpp,
+    GFX_backbuffer = SDL_CreateRGBSurface(0, 640, 480, bpp,
       Rmask, Gmask, Bmask, Amask);
     log_info("Main buffer: %s %d-bit R=0x%08x G=0x%08x B=0x%08x A=0x%08x",
-	     SDL_GetPixelFormatName(GFX_lpDDSBack->format->format),
+	     SDL_GetPixelFormatName(GFX_backbuffer->format->format),
 	     bpp, Rmask, Gmask, Bmask, Amask);
   }
 
@@ -242,7 +240,7 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
   }
 
 
-  /* Default palette (may be used by early init error messages) */
+  /* Default palette */
   gfx_palette_reset();
 
   /* Create and set the physical palette */
@@ -260,7 +258,7 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
      the buffer's palette again, so we're sure there isn't any
      conversion even if we change the screen palette: */
   if (!truecolor) {
-    SDL_SetPaletteColors(GFX_lpDDSBack->format->palette, GFX_real_pal, 0, 256);
+    SDL_SetPaletteColors(GFX_backbuffer->format->palette, GFX_real_pal, 0, 256);
 
     Uint32 render_texture_format;
     SDL_QueryTexture(render_texture, &render_texture_format, NULL, NULL, NULL);
@@ -270,9 +268,9 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
     rgba_screen = SDL_CreateRGBSurface(0, 640, 480, bpp,
       Rmask, Gmask, Bmask, Amask);
   }
-  GFX_lpDDSTwo    = SDL_ConvertSurface(GFX_lpDDSBack, GFX_lpDDSBack->format, 0);
-  GFX_lpDDSTrick  = SDL_ConvertSurface(GFX_lpDDSBack, GFX_lpDDSBack->format, 0);
-  GFX_lpDDSTrick2 = SDL_ConvertSurface(GFX_lpDDSBack, GFX_lpDDSBack->format, 0);
+  GFX_background    = SDL_ConvertSurface(GFX_backbuffer, GFX_backbuffer->format, 0);
+  GFX_tmp1  = SDL_ConvertSurface(GFX_backbuffer, GFX_backbuffer->format, 0);
+  GFX_tmp2 = SDL_ConvertSurface(GFX_backbuffer, GFX_backbuffer->format, 0);
 
   /* Display splash picture, as early as possible */
   {
@@ -293,13 +291,13 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
 	/* Copy splash to the background buffer so that D-Mod can
 	   start an effect from it (e.g. Pilgrim Quest's burning
 	   splash screen effect) */
-	if (SDL_BlitSurface(splash, NULL, GFX_lpDDSTwo, NULL) < 0)
+	if (SDL_BlitSurface(splash, NULL, GFX_background, NULL) < 0)
 	  log_error("Error blitting splash to temp buffer");
 	SDL_FreeSurface(splash);
       }
     
     /* Copy splash screen (again) to the screen during loading time */
-    if (SDL_BlitSurface(GFX_lpDDSTwo, NULL, GFX_lpDDSBack, NULL) < 0)
+    if (SDL_BlitSurface(GFX_background, NULL, GFX_backbuffer, NULL) < 0)
       log_error("Error blitting splash to back buffer");
 
     flip_it();
@@ -347,15 +345,15 @@ void gfx_quit()
   tiles_unload_all();
   sprites_unload();
   
-  if (GFX_lpDDSBack   != NULL) SDL_FreeSurface(GFX_lpDDSBack);
-  if (GFX_lpDDSTwo    != NULL) SDL_FreeSurface(GFX_lpDDSTwo);
-  if (GFX_lpDDSTrick  != NULL) SDL_FreeSurface(GFX_lpDDSTrick);
-  if (GFX_lpDDSTrick2 != NULL) SDL_FreeSurface(GFX_lpDDSTrick2);
+  if (GFX_backbuffer   != NULL) SDL_FreeSurface(GFX_backbuffer);
+  if (GFX_background    != NULL) SDL_FreeSurface(GFX_background);
+  if (GFX_tmp1  != NULL) SDL_FreeSurface(GFX_tmp1);
+  if (GFX_tmp2 != NULL) SDL_FreeSurface(GFX_tmp2);
 
-  GFX_lpDDSBack = NULL;
-  GFX_lpDDSTwo = NULL;
-  GFX_lpDDSTrick = NULL;
-  GFX_lpDDSTrick2 = NULL;
+  GFX_backbuffer = NULL;
+  GFX_background = NULL;
+  GFX_tmp1 = NULL;
+  GFX_tmp2 = NULL;
 
   init_state = GFX_NOT_INITIALIZED;
   SDL_QuitSubSystem(SDL_INIT_VIDEO);
@@ -395,7 +393,7 @@ static SDL_Surface* load_bmp_internal(char *filename, SDL_RWops *rw, int from_me
 	 the Dink palette (the one from the .bmp) to the
 	 'DX-bug-messed' Dink palette (GFX_real_pal with overwritten
 	 indexes 0 and 255). */
-      SDL_Surface *converted = SDL_ConvertSurface(image, GFX_lpDDSTrick2->format, 0);
+      SDL_Surface *converted = SDL_ConvertSurface(image, GFX_tmp2->format, 0);
 
       /* TODO: the following is probably unnecessary, I think that's
 	 exactly what SDL_DisplayFormat does: convert the surface to
@@ -557,22 +555,22 @@ void flip_it(void)
     gfx_fade_apply(truecolor_fade_brightness);
 
   /* Convert to destination buffer format */
-  SDL_Surface* source = GFX_lpDDSBack;
+  SDL_Surface* source = GFX_backbuffer;
   if (!truecolor) {
     /* Convert 8-bit buffer for truecolor texture upload */
-    source = rgba_screen;
+	  source = rgba_screen;
 
     /* Use "physical" screen palette */
     SDL_Color pal_copy[256];
     SDL_Color pal_phys[256];
-    memcpy(pal_copy, GFX_lpDDSBack->format->palette->colors, sizeof(pal_copy));
+    memcpy(pal_copy, GFX_backbuffer->format->palette->colors, sizeof(pal_copy));
     gfx_palette_get_phys(pal_phys);
-    SDL_SetPaletteColors(GFX_lpDDSBack->format->palette, pal_phys, 0, 256);
+    SDL_SetPaletteColors(GFX_backbuffer->format->palette, pal_phys, 0, 256);
 
-    if (SDL_BlitSurface(GFX_lpDDSBack, NULL, rgba_screen, NULL) < 0) {
+    if (SDL_BlitSurface(GFX_backbuffer, NULL, rgba_screen, NULL) < 0) {
       log_error("ERROR: 8-bit->truecolor conversion failed: %s", SDL_GetError());
     }
-    SDL_SetPaletteColors(GFX_lpDDSBack->format->palette, pal_copy, 0, 256);
+    SDL_SetPaletteColors(GFX_backbuffer->format->palette, pal_copy, 0, 256);
   }
 
   SDL_UpdateTexture(render_texture, NULL, source->pixels, source->pitch);
@@ -598,7 +596,7 @@ void gfx_log_meminfo()
 
   {
     int sum = 0;
-    sum = GFX_lpDDSBack->h * GFX_lpDDSBack->pitch;
+    sum = GFX_backbuffer->h * GFX_backbuffer->pitch;
     log_debug("GFX screen = %8d", sum);
     total += sum;
   }
@@ -606,11 +604,11 @@ void gfx_log_meminfo()
   {
     int sum = 0;
     SDL_Surface* s = NULL;
-    s = GFX_lpDDSTwo;
+    s = GFX_background;
     sum += s->h * s->pitch;
-    s = GFX_lpDDSTrick;
+    s = GFX_tmp1;
     sum += s->h * s->pitch;
-    s = GFX_lpDDSTrick2;
+    s = GFX_tmp2;
     sum += s->h * s->pitch;
     log_debug("GFX buf    = %8d", sum);
     total += sum;
@@ -650,11 +648,11 @@ void gfx_log_meminfo()
 
 void gfx_vlineRGB(SDL_Surface* s, Sint16 x, Sint16 y1, Sint16 y2, Uint8 r, Uint8 g, Uint8 b) {
 	SDL_Rect dst = { x, y1, 1, y2-y1 };
-	SDL_FillRect(GFX_lpDDSTwo, &dst, SDL_MapRGB(s->format, r, g, b));
+	SDL_FillRect(GFX_background, &dst, SDL_MapRGB(s->format, r, g, b));
 }
 void gfx_hlineRGB(SDL_Surface* s, Sint16 x1, Sint16 x2, Sint16 y, Uint8 r, Uint8 g, Uint8 b) {
 	SDL_Rect dst = { x1, y, x2-x1, 1 };
-	SDL_FillRect(GFX_lpDDSTwo, &dst, SDL_MapRGB(s->format, r, g, b));
+	SDL_FillRect(GFX_background, &dst, SDL_MapRGB(s->format, r, g, b));
 }
 
 void draw_box(rect box, int color)
@@ -671,7 +669,7 @@ void draw_box(rect box, int color)
     dst.x = box.left; dst.y = box.top;
     dst.w = box.right - box.left;
     dst.h = box.bottom - box.top;
-    SDL_FillRect(GFX_lpDDSBack, &dst, color);
+    SDL_FillRect(GFX_backbuffer, &dst, color);
   }
 }
 
@@ -680,9 +678,9 @@ void fill_screen(int num)
   /* Warning: palette indexes 0 and 255 are hard-coded
      to black and white (cf. gfx_palette.c). */
   if (!truecolor)
-    SDL_FillRect(GFX_lpDDSTwo, NULL, num);
+    SDL_FillRect(GFX_background, NULL, num);
   else
-    SDL_FillRect(GFX_lpDDSTwo, NULL, SDL_MapRGB(GFX_lpDDSTwo->format,
+    SDL_FillRect(GFX_background, NULL, SDL_MapRGB(GFX_background->format,
 						GFX_real_pal[num].r,
 						GFX_real_pal[num].g,
 						GFX_real_pal[num].b));
@@ -727,7 +725,7 @@ void copy_bmp(char* name)
       SDL_SetPaletteColors(image->format->palette, GFX_real_pal, 0, 256);
     }
 
-  SDL_BlitSurface(image, NULL, GFX_lpDDSTwo, NULL);
+  SDL_BlitSurface(image, NULL, GFX_background, NULL);
   SDL_FreeSurface(image);
 
   abort_this_flip = /*true*/1;
@@ -765,7 +763,7 @@ void show_bmp(char* name, int script)
       SDL_SetPaletteColors(image->format->palette, GFX_real_pal, 0, 256);
     }
 
-  SDL_BlitSurface(image, NULL, GFX_lpDDSTrick, NULL);
+  SDL_BlitSurface(image, NULL, GFX_tmp1, NULL);
   SDL_FreeSurface(image);
 
   // After show_bmp(), and before the flip_it() call in updateFrame(),

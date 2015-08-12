@@ -271,7 +271,7 @@ void load_sprite_pak(char seq_path_prefix[100], int seq_no, int delay, int xoffs
 	  SDL_SetColorKey(GFX_k[myslot].k, SDL_TRUE, 255);
 	  SDL_SetSurfaceRLE(GFX_k[myslot].k, 1);
 	  /* Force RLE encoding now to save memory space */
-	  SDL_BlitSurface(GFX_k[myslot].k, NULL, GFX_lpDDSTrick2, NULL);
+	  SDL_BlitSurface(GFX_k[myslot].k, NULL, GFX_tmp2, NULL);
 	}
       else
 	{
@@ -285,7 +285,7 @@ void load_sprite_pak(char seq_path_prefix[100], int seq_no, int delay, int xoffs
 	  SDL_SetColorKey(GFX_k[myslot].k, SDL_TRUE, 0);
 	  SDL_SetSurfaceRLE(GFX_k[myslot].k, 1);
 	  /* Force RLE encoding now to save memory space */
-	  SDL_BlitSurface(GFX_k[myslot].k, NULL, GFX_lpDDSTrick2, NULL);
+	  SDL_BlitSurface(GFX_k[myslot].k, NULL, GFX_tmp2, NULL);
 	}
       
       if (truecolor)
@@ -507,7 +507,7 @@ void load_sprites(char seq_path_prefix[100], int seq_no, int delay, int xoffset,
 
       /* Force RLE encoding now to save memory space */
       SDL_SetSurfaceRLE(GFX_k[myslot].k, 1);
-      SDL_BlitSurface(GFX_k[myslot].k, NULL, GFX_lpDDSTrick2, NULL);
+      SDL_BlitSurface(GFX_k[myslot].k, NULL, GFX_tmp2, NULL);
       /* Note: there is definitely a performance improvement when
 	 using RLEACCEL under truecolor mode (~80%CPU -> 70%CPU) */
 

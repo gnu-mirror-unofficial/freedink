@@ -451,7 +451,7 @@ bool transition(int fps_final)
 		src.h = 400;
 		dst.x = 20 + move_counter;
 		dst.y = 0;
-		SDL_BlitSurface(GFX_lpDDSTrick, &src, GFX_lpDDSBack, &dst);
+		SDL_BlitSurface(GFX_tmp1, &src, GFX_backbuffer, &dst);
 		
 		src.x = 600 - move_counter;
 		src.y = 0;
@@ -459,7 +459,7 @@ bool transition(int fps_final)
 		src.h = 400;
 		dst.x = 20;
 		dst.y = 0;
-		SDL_BlitSurface(GFX_lpDDSTrick2, &src, GFX_lpDDSBack, &dst);
+		SDL_BlitSurface(GFX_tmp2, &src, GFX_backbuffer, &dst);
 		
 		if (move_counter >= 595) {
 			transition_in_progress = 0;
@@ -483,7 +483,7 @@ bool transition(int fps_final)
 		src.h = 400;
 		dst.x = 20;
 		dst.y = 0;
-		SDL_BlitSurface(GFX_lpDDSTrick, &src, GFX_lpDDSBack, &dst);
+		SDL_BlitSurface(GFX_tmp1, &src, GFX_backbuffer, &dst);
 		
 		src.x = 0;
 		src.y = 0;
@@ -491,7 +491,7 @@ bool transition(int fps_final)
 		src.h = 400;
 		dst.x = 620 - move_counter;
 		dst.y = 0;
-		SDL_BlitSurface(GFX_lpDDSTrick2, &src, GFX_lpDDSBack, &dst);
+		SDL_BlitSurface(GFX_tmp2, &src, GFX_backbuffer, &dst);
 		
 		if (move_counter >= 595) {
 			transition_in_progress = 0;
@@ -515,7 +515,7 @@ bool transition(int fps_final)
 		src.h = 400 - move_counter;
 		dst.x = 20;
 		dst.y = move_counter;
-		SDL_BlitSurface(GFX_lpDDSTrick, &src, GFX_lpDDSBack, &dst);
+		SDL_BlitSurface(GFX_tmp1, &src, GFX_backbuffer, &dst);
 		
 		src.x = 0;
 		src.y = 400 - move_counter;
@@ -523,7 +523,7 @@ bool transition(int fps_final)
 		src.h = move_counter;
 		dst.x = 20;
 		dst.y = 0;
-		SDL_BlitSurface(GFX_lpDDSTrick2, &src, GFX_lpDDSBack, &dst);
+		SDL_BlitSurface(GFX_tmp2, &src, GFX_backbuffer, &dst);
 		
 		if (move_counter >= 398) {
 			transition_in_progress = 0;
@@ -547,7 +547,7 @@ bool transition(int fps_final)
 		src.h = 400 - move_counter;
 		dst.x = 20;
 		dst.y = 0;
-		SDL_BlitSurface(GFX_lpDDSTrick, &src, GFX_lpDDSBack, &dst);
+		SDL_BlitSurface(GFX_tmp1, &src, GFX_backbuffer, &dst);
 		
 		src.x = 0;
 		src.y = 0;
@@ -555,7 +555,7 @@ bool transition(int fps_final)
 		src.h = move_counter;
 		dst.x = 20;
 		dst.y = 400 - move_counter;
-		SDL_BlitSurface(GFX_lpDDSTrick2, &src, GFX_lpDDSBack, &dst);
+		SDL_BlitSurface(GFX_tmp2, &src, GFX_backbuffer, &dst);
 		
 		if (move_counter >= 398) {
 			transition_in_progress = 0;
@@ -579,7 +579,7 @@ void grab_trick(int dir) {
 	src.w = 620 - playl;
 	src.h = 400;
 	dst.x = dst.y = 0;
-	SDL_BlitSurface(GFX_lpDDSBack, &src, GFX_lpDDSTrick, &dst);
+	SDL_BlitSurface(GFX_backbuffer, &src, GFX_tmp1, &dst);
 	
 	move_screen = dir;
 	move_counter = 0;

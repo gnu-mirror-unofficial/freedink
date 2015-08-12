@@ -241,7 +241,7 @@ void talk_process()
   {
     SDL_Rect dst;
     dst.x = px; dst.y = py;
-    SDL_BlitSurface(GFX_k[seq[30].frame[2]].k, NULL, GFX_lpDDSBack, &dst);
+    SDL_BlitSurface(GFX_k[seq[30].frame[2]].k, NULL, GFX_backbuffer, &dst);
   }
 
 /*  again2:	 */
@@ -252,7 +252,7 @@ void talk_process()
   {
     SDL_Rect dst;
     dst.x = px + 169; dst.y = py + 42;
-    SDL_BlitSurface(GFX_k[seq[30].frame[3]].k, NULL, GFX_lpDDSBack, &dst);
+    SDL_BlitSurface(GFX_k[seq[30].frame[3]].k, NULL, GFX_backbuffer, &dst);
   }
 
 /*  again3: */
@@ -263,7 +263,7 @@ void talk_process()
   {
     SDL_Rect dst;
     dst.x = px+169+180; dst.y = py+1;
-    if (SDL_BlitSurface(GFX_k[seq[30].frame[4]].k, NULL, GFX_lpDDSBack, &dst) < 0)
+    if (SDL_BlitSurface(GFX_k[seq[30].frame[4]].k, NULL, GFX_backbuffer, &dst) < 0)
       log_error("Could not draw sprite %d: %s", seq[30].frame[4], SDL_GetError());
   }
 
@@ -520,7 +520,7 @@ void talk_process()
       {
 	SDL_Rect dst;
 	dst.x = curxl; dst.y = curyl;
-	SDL_BlitSurface(GFX_k[seq[456].frame[talk.curf]].k, NULL, GFX_lpDDSBack, &dst);
+	SDL_BlitSurface(GFX_k[seq[456].frame[talk.curf]].k, NULL, GFX_backbuffer, &dst);
       }
 
 /*     again5: */
@@ -531,7 +531,7 @@ void talk_process()
       {
 	SDL_Rect dst;
 	dst.x = curxr; dst.y = curyr;
-	SDL_BlitSurface(GFX_k[seq[457].frame[talk.curf]].k, NULL, GFX_lpDDSBack, &dst);
+	SDL_BlitSurface(GFX_k[seq[457].frame[talk.curf]].k, NULL, GFX_backbuffer, &dst);
       }
 /*   } */
 
@@ -699,7 +699,7 @@ void updateFrame()
 	screen_rank_game_sprites(rank);
 	
 	//Blit from Two, which holds the base scene.
-	SDL_BlitSurface(GFX_lpDDSTwo, NULL, GFX_lpDDSBack, NULL);
+	SDL_BlitSurface(GFX_background, NULL, GFX_backbuffer, NULL);
 	
 	
 	if (stop_entire_game == 1)
@@ -997,7 +997,7 @@ animate:
 
 past:
 				check_seq_status(spr[h].seq);
-				draw_sprite_game(GFX_lpDDSBack, h);
+				draw_sprite_game(GFX_backbuffer, h);
 }
 } /* for 0->max_s */
 
@@ -1090,7 +1090,7 @@ past:
 	    src.w = 620 - playl;
 	    src.h = 400;
 	    dst.x = dst.y = 0;
-	    SDL_BlitSurface(GFX_lpDDSBack, &src, GFX_lpDDSTrick2, &dst);
+	    SDL_BlitSurface(GFX_backbuffer, &src, GFX_tmp2, &dst);
 	  }
 	  
 	  return;

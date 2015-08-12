@@ -367,7 +367,7 @@ print_text (TTF_Font * font, char *str, int x, int y, int w, SDL_Color /*&*/colo
         pal.colors = tmppal;
       fmt.palette = &pal;
       Uint32 phys_index = SDL_MapRGB(&fmt, color.r, color.g, color.b);
-      SDL_GetRGB(phys_index, GFX_lpDDSBack->format, &(color.r), &(color.g), &(color.b));
+      SDL_GetRGB(phys_index, GFX_backbuffer->format, &(color.r), &(color.g), &(color.b));
     }
 
   /* Transparent, low quality - closest to the original engine. */
@@ -417,7 +417,7 @@ print_text (TTF_Font * font, char *str, int x, int y, int w, SDL_Color /*&*/colo
   src.x = src.y = 0;
   src.w = w; // truncate text if outside the box
   src.h = tmp->h;
-  SDL_BlitSurface(tmp, &src, GFX_lpDDSBack, &dst);
+  SDL_BlitSurface(tmp, &src, GFX_backbuffer, &dst);
 
   SDL_FreeSurface (tmp);
 }
@@ -635,7 +635,7 @@ print_text_wrap_debug(char *text, int x, int y)
 
       SDL_Rect dst = {x, y + res_height, -1, -1};
       SDL_Surface *rendered_text = TTF_RenderUTF8_Shaded(system_font, pline, text_color, bgcolor);
-      SDL_BlitSurface(rendered_text, NULL, GFX_lpDDSBack, &dst);
+      SDL_BlitSurface(rendered_text, NULL, GFX_backbuffer, &dst);
       SDL_FreeSurface(rendered_text);
 
       res_height += lineskip;

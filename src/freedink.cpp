@@ -812,8 +812,8 @@ void process_warp_man(void)
       if ((!truecolor && process_count > 5)
 	  || (truecolor && truecolor_fade_brightness <= 180))
 	{
-	  SDL_FillRect(GFX_lpDDSBack, NULL,
-		       SDL_MapRGB(GFX_lpDDSBack->format, 0, 0, 0));
+	  SDL_FillRect(GFX_backbuffer, NULL,
+		       SDL_MapRGB(GFX_backbuffer->format, 0, 0, 0));
 	  flip_it();
 	  
 	  process_count = 0;
@@ -846,7 +846,7 @@ void process_show_bmp( void )
   // but we want to display the shiny mark on the map below. Besides,
   // after show_bmp(), other parts of the code drew sprites on
   // lpDDSBack, so we need to regenerate it anyway.
-  SDL_BlitSurface(GFX_lpDDSTrick, NULL, GFX_lpDDSBack, NULL);
+  SDL_BlitSurface(GFX_tmp1, NULL, GFX_backbuffer, NULL);
   
   if (showb.showdot)
     {
@@ -862,7 +862,7 @@ void process_show_bmp( void )
       // convert map# to a (x,y) position on a FreeDinkedit minimap
       dst.x = (x % 32) * 20;
       dst.y = (x / 32) * 20;
-      SDL_BlitSurface(GFX_k[seq[mseq].frame[mframe]].k, NULL, GFX_lpDDSBack, &dst);
+      SDL_BlitSurface(GFX_k[seq[mseq].frame[mframe]].k, NULL, GFX_backbuffer, &dst);
     }
   
   

@@ -131,7 +131,7 @@ void gfx_tiles_draw(int srctileset_idx0, int srctile_square_idx0, int dsttile_sq
   dst.x = GFX_PLAY_LEFT + dsttile_x * GFX_TILES_SQUARE_SIZE;
   dst.y = GFX_PLAY_TOP  + dsttile_y * GFX_TILES_SQUARE_SIZE;
 
-  SDL_BlitSurface(gfx_tiles[srctileset_idx0 + 1], &src, GFX_lpDDSTwo, &dst);
+  SDL_BlitSurface(gfx_tiles[srctileset_idx0 + 1], &src, GFX_background, &dst);
 }
 
 /**

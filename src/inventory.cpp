@@ -270,7 +270,7 @@ static void draw_item(int item_idx0, enum item_type type, int mseq, int mframe)
     }
   SDL_Rect dst;
   dst.x = mx; dst.y = my;
-  SDL_BlitSurface(GFX_k[seq[mseq].frame[mframe]].k, NULL, GFX_lpDDSBack, &dst);
+  SDL_BlitSurface(GFX_k[seq[mseq].frame[mframe]].k, NULL, GFX_backbuffer, &dst);
 }
 
 
@@ -279,12 +279,12 @@ static void draw_item(int item_idx0, enum item_type type, int mseq, int mframe)
  */
 void process_item()
 {
-  SDL_BlitSurface(GFX_lpDDSTwo, NULL, GFX_lpDDSBack, NULL);
+  SDL_BlitSurface(GFX_background, NULL, GFX_backbuffer, NULL);
 	
   check_seq_status(423);
   //lets blit the main screen over it
   SDL_Rect dst = {20, 0};
-  SDL_BlitSurface(GFX_k[seq[423].frame[1]].k, NULL, GFX_lpDDSBack, &dst);
+  SDL_BlitSurface(GFX_k[seq[423].frame[1]].k, NULL, GFX_backbuffer, &dst);
 
   //draw all currently owned items; magic
   {

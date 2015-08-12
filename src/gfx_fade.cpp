@@ -38,7 +38,7 @@ static unsigned short **cache = NULL;
  */
 void gfx_fade_init()
 {
-  SDL_Surface *screen = GFX_lpDDSBack;
+  SDL_Surface *screen = GFX_backbuffer;
 
   if (screen->format->BitsPerPixel != 15
       && screen->format->BitsPerPixel != 16)
@@ -101,7 +101,7 @@ void gfx_fade_quit()
 
 void gfx_fade_apply(int brightness)
 {
-  SDL_Surface *screen = GFX_lpDDSBack;
+  SDL_Surface *screen = GFX_backbuffer;
   SDL_LockSurface(screen);
   /* Check SDL_blit.h in the SDL source code for guidance */
   switch (screen->format->BitsPerPixel)
