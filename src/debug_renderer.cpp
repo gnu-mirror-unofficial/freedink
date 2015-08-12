@@ -1,3 +1,7 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "debug_renderer.h"
 #include "debug.h"
 #include "game_state.h"
@@ -6,10 +10,6 @@
 #include "input.h"
 #include "gfx_fonts.h"
 #include "log.h"
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
 
 void debug_renderer_render() {
 	if (debug_mode)

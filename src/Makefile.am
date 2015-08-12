@@ -59,6 +59,7 @@ freedink_SOURCES = $(COMMON_OBJS) AppFreeDink.cpp AppFreeDink.h		\
 	dinkc_console.cpp dinkc_console.h dinkc_console_renderer.cpp	\
 	dinkc_console_renderer.h debug.cpp debug.h debug_renderer.cpp	\
 	debug_renderer.h game_choice.cpp game_choice.h			\
+	game_choice_renderer.cpp game_choice_renderer.h			\
 	game_engine.cpp game_engine.h game_state.cpp game_state.h	\
 	i18n.cpp i18n.h inventory.cpp inventory.h meminfo.cpp		\
 	meminfo.h savegame.cpp savegame.h status.cpp status.h		\
@@ -139,8 +140,7 @@ TestEditorMap_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	game_engine.cpp game_engine.h game_choice.cpp game_choice.h	\
 	game_state.cpp game_state.h i18n.cpp i18n.h inventory.cpp	\
 	inventory.h meminfo.cpp meminfo.h savegame.cpp savegame.h	\
-	status.cpp status.h text.cpp text.h update_frame.cpp		\
-	TestEditorMap.cpp
+	status.cpp status.h text.cpp text.h TestEditorMap.cpp
 test_dinkini_SOURCES = dinkini.cpp rect.cpp gfx_sprites.cpp		\
 	fastfile.cpp str_util.cpp io_util.cpp msgbox.cpp paths.cpp	\
 	log.cpp test_dinkini.cpp
@@ -157,8 +157,7 @@ test_editor_screen_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	game_engine.cpp game_engine.h game_choice.cpp game_choice.h	\
 	game_state.cpp game_state.h i18n.cpp i18n.h inventory.cpp	\
 	inventory.h meminfo.cpp meminfo.h savegame.cpp savegame.h	\
-	status.cpp status.h text.cpp text.h update_frame.cpp		\
-	test_editor_screen.cpp
+	status.cpp status.h text.cpp text.h test_editor_screen.cpp
 test_dinkc_bindings_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	brain_bounce.cpp brain_button.cpp brain_diagonal.cpp		\
 	brain_duck.cpp brain_keyboard.cpp brain_lateral.cpp		\
@@ -170,8 +169,7 @@ test_dinkc_bindings_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	game_choice.cpp game_choice.h game_engine.cpp game_engine.h	\
 	game_state.cpp game_state.h i18n.cpp i18n.h inventory.cpp	\
 	inventory.h meminfo.cpp meminfo.h savegame.cpp savegame.h	\
-	status.cpp status.h text.cpp text.h update_frame.cpp		\
-	test_dinkc_bindings.cpp
+	status.cpp status.h text.cpp text.h test_dinkc_bindings.cpp
 test_live_sprites_manager_SOURCES = live_sprites_manager.cpp rect.cpp	\
 	test_live_sprites_manager.cpp
 test_brain_text_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
@@ -185,8 +183,7 @@ test_brain_text_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	game_choice.cpp game_choice.h game_engine.cpp game_engine.h	\
 	game_state.cpp game_state.h i18n.cpp i18n.h inventory.cpp	\
 	inventory.h meminfo.cpp meminfo.h savegame.cpp savegame.h	\
-	status.cpp status.h text.cpp text.h update_frame.cpp		\
-	test_brain_text.cpp
+	status.cpp status.h text.cpp text.h test_brain_text.cpp
 test_text_SOURCES = test_text.cpp text.cpp live_sprites_manager.cpp	\
 	dinkini.cpp live_sprite.cpp rect.cpp gfx_sprites.cpp		\
 	str_util.cpp io_util.cpp fastfile.cpp paths.cpp msgbox.cpp
@@ -201,8 +198,7 @@ test_integration_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	game_engine.cpp game_engine.h game_choice.cpp game_choice.h	\
 	game_state.cpp game_state.h i18n.cpp i18n.h inventory.cpp	\
 	inventory.h meminfo.cpp meminfo.h savegame.cpp savegame.h	\
-	status.cpp status.h text.cpp text.h update_frame.cpp		\
-	test_integration.cpp
+	status.cpp status.h text.cpp text.h test_integration.cpp
 # Tests to run
 TESTS = $(check_PROGRAMS)
 endif

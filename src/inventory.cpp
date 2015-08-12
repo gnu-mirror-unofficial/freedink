@@ -461,9 +461,6 @@ void process_item()
 	    }
 	}
     }
-  // TODO: what is this doing here?
-  if (game_choice.active)
-    game_choice_process();
   
   //a special process callbacks for just stuff that was created in this mode? 
   // process_callbacks_special();
