@@ -454,8 +454,8 @@ void update_play_changes( void )
 
 
 /**
- * Load screen sprites: draw sprites on background buffer, ordered by queue
- * and configure the others (sounds, scripts, etc.).
+ * Load screen sprites: draw background sprites, ordered by queue and
+ * configure the others (sounds, scripts, etc.).
  *
  * Also cf. game_place_sprites_background(...) and editor's
  * place_sprites(...).

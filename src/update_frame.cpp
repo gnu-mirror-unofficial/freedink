@@ -637,8 +637,9 @@ past:
 	/* Screen transition? */
 	if (spr[1].active && spr[1].brain == 1) {
 	  if (did_player_cross_screen()) {
-	    /* let's restart and draw the next screen,
-	       did_player_cross_screen->grab_trick() screenshot'd the current one */
+		  /* let's restart and draw the next screen,
+	       did_player_cross_screen->grab_trick() screenshot'd the current one
+		   and drew base background, just need to place the active sprites */
 	    get_frame = 1;
 	    goto trigger_start;
 	  }
