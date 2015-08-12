@@ -169,6 +169,7 @@ void AppFreeDink::input(SDL_Event* ev) {
 }
 
 void AppFreeDink::logic() {
+	SDL_framerateDelay(&framerate_manager);
 	debug_logic();
 	updateFrame();
 

@@ -132,6 +132,52 @@ void game_restart()
   attach();
 }
 
+
+void game_compute_speed() {
+	//Use to test at 30 fps
+	//Sleep(66);
+	
+    lastTickCount = thisTickCount;
+	thisTickCount = game_GetTicks();
+	
+	fps_final = thisTickCount - lastTickCount;
+	
+	//redink1 changed to 12-12 from 10-15... maybe work better on faster computers?
+	if (fps_final < 12)
+		fps_final = 12;
+	if (fps_final > 68)
+		fps_final = 68;
+
+
+	base_timing = fps_final / 3;
+	if (base_timing < 4)
+		base_timing = 4;
+
+
+	int new_dinkspeed;
+	
+	//redink1 added these changes to set Dink's speed correctly,
+	//even on fast machines.
+	//new_dinkspeed = (fps_average / dinkspeed) -  (fps_average / 8);
+	if (dinkspeed <= 0)
+		new_dinkspeed = 0;
+	else if (dinkspeed == 1)
+		new_dinkspeed = 12;
+	else if (dinkspeed == 2)
+		new_dinkspeed = 6;
+	else if (dinkspeed == 3)
+		new_dinkspeed = 3;
+	else
+		new_dinkspeed = 1;
+	
+	//redink1... weird bug, only do this for normal mode, as it
+	//breaks mouse support
+	//if (mode == 2)
+	new_dinkspeed *= (base_timing / 4);
+	
+	spr[1].speed = new_dinkspeed;
+}
+
 /**
  * Fake SDL_GetTicks if the player is in high-speed mode.  Make sure
  * you call it once per frame.

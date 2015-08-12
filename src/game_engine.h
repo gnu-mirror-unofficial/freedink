@@ -96,6 +96,7 @@ extern void game_init(int version);
 extern void game_quit();
 extern void game_restart();
 
+extern void game_compute_speed();
 extern Uint32 game_GetTicks(void);
 extern void game_set_high_speed(void);
 extern void game_set_normal_speed(void);
