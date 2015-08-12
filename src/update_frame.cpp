@@ -297,9 +297,6 @@ void updateFrame()
 	if (showb.active)
 	{
 		process_show_bmp();
-		if (!abort_this_flip)
-		  flip_it();
-		
 		return;
 	}
 	
