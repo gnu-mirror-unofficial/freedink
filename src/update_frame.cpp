@@ -208,10 +208,9 @@ void check_joystick()
  * Play live sprite sequence.
  *
  * Globals:
- * - push handling: dink_base_push, sjoy, play.push_dir, play.push_active
  * - special/hit handling: run_through_tag_list
  */
-void spr_animate_push_hit(int h, Uint32 thisTickCount) {
+void spr_animate_hit(int h, Uint32 thisTickCount) {
 	if (spr[h].reverse) {
 		//reverse instructions
 		if (spr[h].seq > 0) {
@@ -245,16 +244,6 @@ void spr_animate_push_hit(int h, Uint32 thisTickCount) {
 						spr[h].seq_orig = spr[h].seq;
 						spr[h].seq = 0;
 						spr[h].nocontrol = /*false*/0;
-
-						if (h == 1 && in_this_base(spr[h].seq_orig, dink_base_push)) {
-							play.push_active = false;
-							if (play.push_dir == 2) if (sjoy.down) play.push_active = true;
-							if (play.push_dir == 4) if (sjoy.left) play.push_active = true;
-							if (play.push_dir == 6) if (sjoy.right) play.push_active = true;
-							if (play.push_dir == 8) if (sjoy.up) play.push_active = true;
-
-							return;
-						}
 					}
 
 					if (spr[h].seq > 0 && seq[spr[h].seq].special[spr[h].frame] == 1) {
@@ -307,16 +296,6 @@ void spr_animate_push_hit(int h, Uint32 thisTickCount) {
 						spr[h].seq_orig = spr[h].seq;
 						spr[h].seq = 0;
 						spr[h].nocontrol = /*false*/0;
-
-						if (h == 1 && in_this_base(spr[h].seq_orig, dink_base_push)) {
-							play.push_active = false;
-							if (play.push_dir == 2) if (sjoy.down) play.push_active = true;
-							if (play.push_dir == 4) if (sjoy.left) play.push_active = true;
-							if (play.push_dir == 6) if (sjoy.right) play.push_active = true;
-							if (play.push_dir == 8) if (sjoy.up) play.push_active = true;
-
-							return;
-						}
 					}
 
 					if (spr[h].seq > 0 && seq[spr[h].seq].special[spr[h].frame] == 1) {
@@ -480,7 +459,7 @@ void updateFrame() {
 			special_block(move_result - 100);
 		
 		
-		spr_animate_push_hit(h, thisTickCount);
+		spr_animate_hit(h, thisTickCount);
 
 
 	past:
