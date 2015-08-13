@@ -23,7 +23,7 @@
 /**
  * Check whether planned new position (x1,y1) is solid
  * 
- * Does something weird when hard value is > 100??
+ * If hard value is > 100, warp using info from editor sprite #(100-value)
  * 
  * TODO: factor out with 'get_hard'; beware of 'return' semantic
  */
@@ -45,7 +45,7 @@ unsigned char get_hard_play(int x1, int y1)
   int value =  screen_hitmap[x1][y1];
   if (value > 100 && cur_ed_screen.sprite[value-100].is_warp != 0)
     {
-      flub_mode = value;
+      warp_editor_sprite = value;
       value = 0;
     }
   return(value);
@@ -570,9 +570,8 @@ shootm:
   crap = check_if_move_is_legal(h);
   if (crap != 0)
     {
-      // TODO: crap-100 may be negative...
-      if (cur_ed_screen.sprite[crap-100].is_warp != 0)
-	flub_mode = crap;
+	  if (crap > 100 && cur_ed_screen.sprite[crap-100].is_warp != 0)
+	warp_editor_sprite = crap;
 		  
       //hit something, can we move around it?
 		  

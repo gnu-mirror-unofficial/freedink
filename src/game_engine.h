@@ -88,7 +88,7 @@ extern int base_timing;
 extern int keep_mouse;
 extern int mode;
 
-extern int flub_mode;
+extern int warp_editor_sprite;
 extern int show_inventory;
 
 

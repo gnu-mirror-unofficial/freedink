@@ -54,7 +54,7 @@ int dversion = 108;
 int walk_off_screen = /*false*/0;
 
 int show_inventory = 0; // display inventory?
-int flub_mode = -500;
+int warp_editor_sprite = -500;
 
 int stop_entire_game;
 

@@ -343,10 +343,10 @@ void updateFrame() {
 	animate:
 		move_result = check_if_move_is_legal(h);
 		
-		if (flub_mode != -500) {
-			log_debug("move result is %d", flub_mode);
-			move_result = flub_mode;
-			flub_mode = -500;
+		if (warp_editor_sprite != -500) {
+			log_debug("move result is %d", warp_editor_sprite);
+			move_result = warp_editor_sprite;
+			warp_editor_sprite = -500;
 		}
 		
 		if (spr[h].brain == 1
