@@ -205,36 +205,32 @@ void check_joystick()
 }
 
 
-void updateFrame()
-{
-  check_joystick();
-
-  int move_result ;
-    
-  int max_s;
-  int rank[MAX_SPRITES_AT_ONCE];
-
-  abort_this_flip = /*false*/0;
-
+void updateFrame() {
+	check_joystick();
 	
-  /* This run prepares a screen transition (when Dink runs to the border) */
-  /*bool*/int get_frame = /*false*/0;
-
-  /* Screen transition preparation start point */
- trigger_start:
+	int move_result ;
     
+	int max_s;
+	int rank[MAX_SPRITES_AT_ONCE];
+	
+	abort_this_flip = /*false*/0;
+	
+	
+	/* This run prepares a screen transition (when Dink runs to the border) */
+	/*bool*/int get_frame = /*false*/0;
+	
+	/* Screen transition preparation start point */
+ trigger_start:
+	
+	game_compute_speed();
 
-  game_compute_speed();
-
-	if (showb.active)
-	{
+	if (showb.active) {
 		process_show_bmp();
 		return;
 	}
 
 	// Things to do every 1/10th second
-	if (thisTickCount > mold+100)
-	{
+	if (thisTickCount > mold+100) {
 		mold = thisTickCount;
 		
 		if (bow.active) bow.hitme = /*true*/1;
@@ -246,8 +242,7 @@ void updateFrame()
 		process_animated_tiles(thisTickCount);
 	}
 	
-	if (show_inventory)
-	{
+	if (show_inventory) {
 		process_item();
 		return;
 	}
@@ -271,8 +266,7 @@ void updateFrame()
 	SDL_BlitSurface(GFX_background, NULL, GFX_backbuffer, NULL);
 	
 	
-	if (stop_entire_game == 1)
-	{
+	if (stop_entire_game == 1) {
 		if (game_choice.active) {
 			game_choice_logic();
 			game_choice_renderer_render();
@@ -281,19 +275,14 @@ void updateFrame()
 			
 			draw_screen_game_background();
 			draw_status_all();
-			
 		}
 		return;
 	}
 	
-	
-	
-	
-	for (int j = 0; j <= max_s; j++)
-	{
-		//h  = 1;
-		int h = 0;
-		h = rank[j];
+
+	/* Update all active sprites */
+	for (int j = 0; j <= max_s; j++) {
+		int h = rank[j];
 		//Msg( "Ok, rank %d is %d", j,h);
 		
 		if (h > 0) 
@@ -566,8 +555,8 @@ animate:
 past:
 				check_seq_status(spr[h].seq);
 				draw_sprite_game(GFX_backbuffer, h);
-}
-} /* for 0->max_s */
+			}
+	} /* for 0->max_s */
 
  
 	if (mode == 0)
@@ -646,8 +635,7 @@ past:
 	}
 	
 	/* Screen transition */
-	if (get_frame)
-	{
+	if (get_frame) {
 	  get_frame = 0;
 	  transition_in_progress = 1;
 	  SDL_Rect src = { playl, 0, 620 - playl, 400 };
@@ -656,22 +644,16 @@ past:
 	  return;
 	}
 	
-	
-	
-	if (screenlock == 1)
-	{
+	if (screenlock == 1) {
 		//Msg("Drawing screenlock.");
 		drawscreenlock();
-		
 	}
 	
-	for (int j2 = 0; j2 <= max_s; j2++)
-	  {
-	    int h = 0;
-	    h = rank[j2];
+	for (int j2 = 0; j2 <= max_s; j2++) {
+	    int h = rank[j2];
 	    if (h > 0 && spr[h].active && spr[h].brain == 8)
-	      text_draw(h);
-	  }
+			text_draw(h);
+	}
     
     
 	game_choice_logic(); // after brain_keyboard(), otherwise choice triggers Attack
@@ -679,4 +661,4 @@ past:
 	
 	kill_scripts_with_inactive_sprites();
 	process_callbacks(thisTickCount);
-} /* updateFrame */
+}
