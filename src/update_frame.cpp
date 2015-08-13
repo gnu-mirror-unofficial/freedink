@@ -204,6 +204,131 @@ void check_joystick()
     }
 }
 
+/**
+ * Play live sprite sequence.
+ *
+ * Globals:
+ * - push handling: dink_base_push, sjoy, play.push_dir, play.push_active
+ * - special/hit handling: run_through_tag_list
+ */
+void spr_animate_push_hit(int h, Uint32 thisTickCount) {
+	if (spr[h].reverse) {
+		//reverse instructions
+		if (spr[h].seq > 0) {
+			if (spr[h].frame < 1) {
+				// new anim
+				spr[h].pseq = spr[h].seq;
+				spr[h].pframe = seq[spr[h].seq].len;
+				spr[h].frame = seq[spr[h].seq].len;
+				if (spr[h].frame_delay != 0)
+					spr[h].delay = (thisTickCount+ spr[h].frame_delay);
+				else
+					spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[seq[spr[h].seq].len]);
+			} else {
+				// not new anim
+				//is it time?
+				if (thisTickCount > spr[h].delay) {
+					spr[h].frame--;
+					if (spr[h].frame_delay != 0)
+						spr[h].delay = (thisTickCount + spr[h].frame_delay);
+					else
+						spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[spr[h].frame]);
+
+					spr[h].pseq = spr[h].seq;
+					spr[h].pframe = spr[h].frame;
+
+					if (seq[spr[h].seq].frame[spr[h].frame]  < 2) {
+						spr[h].pseq = spr[h].seq;
+						spr[h].pframe = spr[h].frame+1;
+
+						spr[h].frame = 0;
+						spr[h].seq_orig = spr[h].seq;
+						spr[h].seq = 0;
+						spr[h].nocontrol = /*false*/0;
+
+						if (h == 1 && in_this_base(spr[h].seq_orig, dink_base_push)) {
+							play.push_active = false;
+							if (play.push_dir == 2) if (sjoy.down) play.push_active = true;
+							if (play.push_dir == 4) if (sjoy.left) play.push_active = true;
+							if (play.push_dir == 6) if (sjoy.right) play.push_active = true;
+							if (play.push_dir == 8) if (sjoy.up) play.push_active = true;
+
+							return;
+						}
+					}
+
+					if (spr[h].seq > 0 && seq[spr[h].seq].special[spr[h].frame] == 1) {
+						//this sprite can damage others right now!
+						//lets run through the list and tag sprites who were hit with their damage
+						run_through_tag_list(h, spr[h].strength);
+					}
+				}
+			}
+		}
+	} else {
+		if (spr[h].seq > 0 && spr[h].picfreeze == 0) {
+			if (spr[h].frame < 1) {
+				// new anim
+				spr[h].pseq = spr[h].seq;
+				spr[h].pframe = 1;
+				spr[h].frame = 1;
+				if (spr[h].frame_delay != 0)
+					spr[h].delay = thisTickCount + spr[h].frame_delay;
+				else
+					spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[1]);
+			} else {
+				// not new anim
+				//is it time?
+				if (thisTickCount > spr[h].delay) {
+					spr[h].frame++;
+					if (spr[h].frame_delay != 0)
+						spr[h].delay = thisTickCount + spr[h].frame_delay;
+					else
+						spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[spr[h].frame]);
+
+					spr[h].pseq = spr[h].seq;
+					spr[h].pframe = spr[h].frame;
+
+					if (seq[spr[h].seq].frame[spr[h].frame] == -1) {
+						spr[h].frame = 1;
+						spr[h].pseq = spr[h].seq;
+						spr[h].pframe = spr[h].frame;
+						if (spr[h].frame_delay != 0)
+							spr[h].delay = thisTickCount + spr[h].frame_delay;
+						else
+							spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[spr[h].frame]);
+					}
+
+					if (seq[spr[h].seq].frame[spr[h].frame] < 1) {
+						spr[h].pseq = spr[h].seq;
+						spr[h].pframe = spr[h].frame-1;
+
+						spr[h].frame = 0;
+						spr[h].seq_orig = spr[h].seq;
+						spr[h].seq = 0;
+						spr[h].nocontrol = /*false*/0;
+
+						if (h == 1 && in_this_base(spr[h].seq_orig, dink_base_push)) {
+							play.push_active = false;
+							if (play.push_dir == 2) if (sjoy.down) play.push_active = true;
+							if (play.push_dir == 4) if (sjoy.left) play.push_active = true;
+							if (play.push_dir == 6) if (sjoy.right) play.push_active = true;
+							if (play.push_dir == 8) if (sjoy.up) play.push_active = true;
+
+							return;
+						}
+					}
+
+					if (spr[h].seq > 0 && seq[spr[h].seq].special[spr[h].frame] == 1) {
+						//this sprite can damage others right now!
+						//lets run through the list and tag sprites who were hit with their damage
+						run_through_tag_list(h, spr[h].strength);
+					}
+				}
+			}
+		}
+	}
+}
 
 void updateFrame() {
 	check_joystick();
@@ -354,123 +479,10 @@ void updateFrame() {
 			&& cur_ed_screen.sprite[move_result-100].is_warp == 1)
 			special_block(move_result - 100);
 		
-		if (spr[h].reverse) {
-			//reverse instructions
-			if (spr[h].seq > 0) {
-				if (spr[h].frame < 1) {
-					// new anim
-					spr[h].pseq = spr[h].seq;
-					spr[h].pframe = seq[spr[h].seq].len;
-					spr[h].frame = seq[spr[h].seq].len;
-					if (spr[h].frame_delay != 0)
-						spr[h].delay = (thisTickCount+ spr[h].frame_delay);
-					else
-						spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[seq[spr[h].seq].len]);
-				} else {
-					// not new anim
-					//is it time?
-					if (thisTickCount > spr[h].delay) {
-						spr[h].frame--;
-						if (spr[h].frame_delay != 0)
-							spr[h].delay = (thisTickCount + spr[h].frame_delay);
-						else
-							spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[spr[h].frame]);
-						
-						spr[h].pseq = spr[h].seq;
-						spr[h].pframe = spr[h].frame;
-						
-						if (seq[spr[h].seq].frame[spr[h].frame]  < 2) {
-							spr[h].pseq = spr[h].seq;
-							spr[h].pframe = spr[h].frame+1;
-							
-							spr[h].frame = 0;
-							spr[h].seq_orig = spr[h].seq;
-							spr[h].seq = 0;
-							spr[h].nocontrol = /*false*/0;
-							
-							if (h == 1 && in_this_base(spr[h].seq_orig, dink_base_push)) {
-								play.push_active = false;
-								if (play.push_dir == 2) if (sjoy.down) play.push_active = true;
-								if (play.push_dir == 4) if (sjoy.left) play.push_active = true;
-								if (play.push_dir == 6) if (sjoy.right) play.push_active = true;
-								if (play.push_dir == 8) if (sjoy.up) play.push_active = true;
-								
-								goto past;
-							}
-						}
-						
-						if (spr[h].seq > 0 && seq[spr[h].seq].special[spr[h].frame] == 1) {
-							//this sprite can damage others right now!
-							//lets run through the list and tag sprites who were hit with their damage
-							run_through_tag_list(h, spr[h].strength);
-						}
-					}
-				}
-			}
-		} else {
-			if (spr[h].seq > 0 && spr[h].picfreeze == 0) {
-				if (spr[h].frame < 1) {
-					// new anim
-					spr[h].pseq = spr[h].seq;
-					spr[h].pframe = 1;
-					spr[h].frame = 1;
-					if (spr[h].frame_delay != 0)
-						spr[h].delay = thisTickCount + spr[h].frame_delay;
-					else
-						spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[1]);
-				} else {
-					// not new anim
-					//is it time?
-					if (thisTickCount > spr[h].delay) {
-						spr[h].frame++;
-						if (spr[h].frame_delay != 0)
-							spr[h].delay = thisTickCount + spr[h].frame_delay;
-						else
-							spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[spr[h].frame]);
-						
-						spr[h].pseq = spr[h].seq;
-						spr[h].pframe = spr[h].frame;
-						
-						if (seq[spr[h].seq].frame[spr[h].frame] == -1) {
-							spr[h].frame = 1;
-							spr[h].pseq = spr[h].seq;
-							spr[h].pframe = spr[h].frame;
-							if (spr[h].frame_delay != 0)
-								spr[h].delay = thisTickCount + spr[h].frame_delay;
-							else
-								spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[spr[h].frame]);
-						}
-						
-						if (seq[spr[h].seq].frame[spr[h].frame] < 1) {
-							spr[h].pseq = spr[h].seq;
-							spr[h].pframe = spr[h].frame-1;
-							
-							spr[h].frame = 0;
-							spr[h].seq_orig = spr[h].seq;
-							spr[h].seq = 0;
-							spr[h].nocontrol = /*false*/0;
-							
-							if (h == 1 && in_this_base(spr[h].seq_orig, dink_base_push)) {
-								play.push_active = false;
-								if (play.push_dir == 2) if (sjoy.down) play.push_active = true;
-								if (play.push_dir == 4) if (sjoy.left) play.push_active = true;
-								if (play.push_dir == 6) if (sjoy.right) play.push_active = true;
-								if (play.push_dir == 8) if (sjoy.up) play.push_active = true;
-								
-								goto past;
-							}
-						}
-						
-						if (spr[h].seq > 0 && seq[spr[h].seq].special[spr[h].frame] == 1) {
-							//this sprite can damage others right now!
-							//lets run through the list and tag sprites who were hit with their damage
-							run_through_tag_list(h, spr[h].strength);
-						}
-					}
-				}
-			}
-		}
 		
+		spr_animate_push_hit(h, thisTickCount);
+
+
 	past:
 		check_seq_status(spr[h].seq);
 		draw_sprite_game(GFX_backbuffer, h);
