@@ -66,8 +66,6 @@ struct player_info
   
   struct varman var[MAX_VARS];
   
-  int mouse; /* vertical position of the mouse when selecting a dialog
-		option */
   int last_map; /* screen to show on the map */
   
   char palette[50];
@@ -80,6 +78,8 @@ struct player_info
   unsigned int push_timer; /* time the player started maintaining the direction */
 
   int last_talk; /* script of last 'say_stop*' sprite */
+
+  int mouse; /* vertical position of the mouse when selecting a dialog option */
 };
 extern struct player_info play;
 
