@@ -389,11 +389,11 @@ void updateFrame() {
 							spr[h].nocontrol = /*false*/0;
 							
 							if (h == 1 && in_this_base(spr[h].seq_orig, dink_base_push)) {
-								play.push_active = /*false*/0;
-								if (play.push_dir == 2) if (sjoy.down) play.push_active = /*true*/1;
-								if (play.push_dir == 4) if (sjoy.left) play.push_active = /*true*/1;
-								if (play.push_dir == 6) if (sjoy.right) play.push_active = /*true*/1;
-								if (play.push_dir == 8) if (sjoy.up) play.push_active = /*true*/1;
+								play.push_active = false;
+								if (play.push_dir == 2) if (sjoy.down) play.push_active = true;
+								if (play.push_dir == 4) if (sjoy.left) play.push_active = true;
+								if (play.push_dir == 6) if (sjoy.right) play.push_active = true;
+								if (play.push_dir == 8) if (sjoy.up) play.push_active = true;
 								
 								goto past;
 							}
@@ -451,11 +451,11 @@ void updateFrame() {
 							spr[h].nocontrol = /*false*/0;
 							
 							if (h == 1 && in_this_base(spr[h].seq_orig, dink_base_push)) {
-								play.push_active = /*false*/0;
-								if (play.push_dir == 2) if (sjoy.down) play.push_active = /*true*/1;
-								if (play.push_dir == 4) if (sjoy.left) play.push_active = /*true*/1;
-								if (play.push_dir == 6) if (sjoy.right) play.push_active = /*true*/1;
-								if (play.push_dir == 8) if (sjoy.up) play.push_active = /*true*/1;
+								play.push_active = false;
+								if (play.push_dir == 2) if (sjoy.down) play.push_active = true;
+								if (play.push_dir == 4) if (sjoy.left) play.push_active = true;
+								if (play.push_dir == 6) if (sjoy.right) play.push_active = true;
+								if (play.push_dir == 8) if (sjoy.up) play.push_active = true;
 								
 								goto past;
 							}

@@ -106,19 +106,19 @@ int check_if_move_is_legal(int u)
 		  
 		  if (push_active)
 		    {
-		      if (u == 1 && hardness != 2 && play.push_active == /*false*/0)
+		      if (u == 1 && hardness != 2 && play.push_active == false)
 			{
 			  if ((spr[u].dir == 2) | (spr[u].dir == 4) | (spr[u].dir == 6) | (spr[u].dir == 8))
 			    {
 			      //he  (dink)  is definatly pushing on something
-			      play.push_active = /*true*/1;
+			      play.push_active = true;
 			      play.push_dir = spr[u].dir;
 			      play.push_timer = thisTickCount;
 			    }
 			}
 		      else
 			{
-			  if (play.push_dir != spr[1].dir) play.push_active = /*false*/0;
+			  if (play.push_dir != spr[1].dir) play.push_active = false;
 			}
 		    }
 		  return(hardness);
@@ -126,7 +126,7 @@ int check_if_move_is_legal(int u)
 	    }
 	}
 	
-	if (u == 1)  play.push_active = /*false*/0;
+	if (u == 1)  play.push_active = false;
 	return(0);
 }
 

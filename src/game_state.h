@@ -75,7 +75,7 @@ struct player_info
   struct global_function func[100];
 
   /* Variables that need not be saved */
-  BOOL_1BYTE push_active; /* player started maintaining direction against hard object */
+  bool push_active; /* player started maintaining direction against hard object */
   int push_dir; /* pushing animation direction */
   unsigned int push_timer; /* time the player started maintaining the direction */
 

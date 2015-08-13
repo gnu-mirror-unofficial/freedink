@@ -192,24 +192,24 @@ void human_brain(int h)
       if (play.push_dir == 2 && !sjoy.down) 
 	{
 	  spr[h].nocontrol = /*false*/0;
-	  play.push_active = /*false*/0;
+	  play.push_active = false;
 	}
       
       if (play.push_dir == 4 && !sjoy.left) 
 	{
 	  spr[h].nocontrol = /*false*/0;
-	  play.push_active = /*false*/0;
+	  play.push_active = false;
 	}
       if (play.push_dir == 6 && !sjoy.right) 
 	{
 	  spr[h].nocontrol = /*false*/0;
-	  play.push_active = /*false*/0;
+	  play.push_active = false;
 	}
       
       if (play.push_dir == 8 && !sjoy.up) 
 	{
 	  spr[h].nocontrol = /*false*/0;
-	  play.push_active = /*false*/0;
+	  play.push_active = false;
 	}
     }
   
