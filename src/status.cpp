@@ -151,8 +151,10 @@ void draw_level()
 
 void draw_gold()
 {
-  char final[5+1];
-  snprintf(final, sizeof(final), "%05d", fgold);
+  char final[6+1];
+  snprintf(final, sizeof(final),
+		   (fgold < 100000) ? "%05d" : "%06d",
+		   fgold);
   draw_num(185, final, 298, 457);
 }
 
