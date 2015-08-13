@@ -132,7 +132,7 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
   window = SDL_CreateWindow(PACKAGE_STRING,
     SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
     640, 480,
-    windowed == GFX_WINDOWED ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
+    windowed == GFX_WINDOWED ? SDL_WINDOW_RESIZABLE : SDL_WINDOW_FULLSCREEN_DESKTOP);
   /* Note: SDL_WINDOW_FULLSCREEN[!_DESKTOP] may not respect aspect ratio */
   if (window == NULL)
     {
