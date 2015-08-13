@@ -96,3 +96,100 @@ void live_sprite_set_kill_start(int h, Uint32 thisTickCount) {
 bool live_sprite_is_expired(int h, Uint32 thisTickCount) {
 	return spr[h].kill_ttl > 0 && (spr[h].kill_start + spr[h].kill_ttl < thisTickCount);
 }
+
+/**
+ * Play live sprite sequence.
+ * Set *p_isHitting to true if hit a 'special' frame
+ */
+void live_sprite_animate(int h, Uint32 thisTickCount, bool* p_isHitting) {
+	if (spr[h].reverse) {
+		//reverse instructions
+		if (spr[h].seq > 0) {
+			if (spr[h].frame < 1) {
+				// new anim
+				spr[h].pseq = spr[h].seq;
+				spr[h].pframe = seq[spr[h].seq].len;
+				spr[h].frame = seq[spr[h].seq].len;
+				if (spr[h].frame_delay != 0)
+					spr[h].delay = (thisTickCount+ spr[h].frame_delay);
+				else
+					spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[seq[spr[h].seq].len]);
+			} else {
+				// not new anim
+				//is it time?
+				if (thisTickCount > spr[h].delay) {
+					spr[h].frame--;
+					if (spr[h].frame_delay != 0)
+						spr[h].delay = (thisTickCount + spr[h].frame_delay);
+					else
+						spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[spr[h].frame]);
+
+					spr[h].pseq = spr[h].seq;
+					spr[h].pframe = spr[h].frame;
+
+					if (seq[spr[h].seq].frame[spr[h].frame]  < 2) {
+						spr[h].pseq = spr[h].seq;
+						spr[h].pframe = spr[h].frame+1;
+
+						spr[h].frame = 0;
+						spr[h].seq_orig = spr[h].seq;
+						spr[h].seq = 0;
+						spr[h].nocontrol = /*false*/0;
+					}
+
+					if (spr[h].seq > 0 && seq[spr[h].seq].special[spr[h].frame] == 1)
+						*p_isHitting = true;
+				}
+			}
+		}
+	} else {
+		if (spr[h].seq > 0 && spr[h].picfreeze == 0) {
+			if (spr[h].frame < 1) {
+				// new anim
+				spr[h].pseq = spr[h].seq;
+				spr[h].pframe = 1;
+				spr[h].frame = 1;
+				if (spr[h].frame_delay != 0)
+					spr[h].delay = thisTickCount + spr[h].frame_delay;
+				else
+					spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[1]);
+			} else {
+				// not new anim
+				//is it time?
+				if (thisTickCount > spr[h].delay) {
+					spr[h].frame++;
+					if (spr[h].frame_delay != 0)
+						spr[h].delay = thisTickCount + spr[h].frame_delay;
+					else
+						spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[spr[h].frame]);
+
+					spr[h].pseq = spr[h].seq;
+					spr[h].pframe = spr[h].frame;
+
+					if (seq[spr[h].seq].frame[spr[h].frame] == -1) {
+						spr[h].frame = 1;
+						spr[h].pseq = spr[h].seq;
+						spr[h].pframe = spr[h].frame;
+						if (spr[h].frame_delay != 0)
+							spr[h].delay = thisTickCount + spr[h].frame_delay;
+						else
+							spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[spr[h].frame]);
+					}
+
+					if (seq[spr[h].seq].frame[spr[h].frame] < 1) {
+						spr[h].pseq = spr[h].seq;
+						spr[h].pframe = spr[h].frame-1;
+
+						spr[h].frame = 0;
+						spr[h].seq_orig = spr[h].seq;
+						spr[h].seq = 0;
+						spr[h].nocontrol = /*false*/0;
+					}
+
+					if (spr[h].seq > 0 && seq[spr[h].seq].special[spr[h].frame] == 1)
+						*p_isHitting = true;
+				}
+			}
+		}
+	}
+}

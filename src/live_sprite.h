@@ -119,7 +119,9 @@ extern int getpic(int sprite_no);
 extern void check_sprite_status_full(int sprite_no);
 extern void check_sprite_status(int h);
 
-void live_sprite_set_kill_start(int h, Uint32 thisTickCount);
+extern void live_sprite_set_kill_start(int h, Uint32 thisTickCount);
 extern bool live_sprite_is_expired(int h, Uint32 thisTickCount);
+
+extern void live_sprite_animate(int h, Uint32 thisTickCount, bool* p_isHitting);
 
 #endif
