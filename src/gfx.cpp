@@ -163,9 +163,6 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
       log_set_init_error_msg("Unable to create renderer: %s\n", SDL_GetError());
       return -1;
     }
-  // Renderer reset window's size, set it back to avoid window to stay
-  // full size after fullscreen toggling
-  SDL_SetWindowSize(window, 640, 480);
   // Specify aspect ratio
   SDL_RenderSetLogicalSize(renderer, 640, 480);
 
