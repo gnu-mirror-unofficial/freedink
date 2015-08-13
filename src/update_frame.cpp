@@ -206,11 +206,8 @@ void check_joystick()
 
 /**
  * Play live sprite sequence.
- *
- * Globals:
- * - special/hit handling: run_through_tag_list
  */
-void spr_animate_hit(int h, Uint32 thisTickCount) {
+void live_sprite_animate(int h, Uint32 thisTickCount, bool* p_isHitting) {
 	if (spr[h].reverse) {
 		//reverse instructions
 		if (spr[h].seq > 0) {
@@ -246,11 +243,8 @@ void spr_animate_hit(int h, Uint32 thisTickCount) {
 						spr[h].nocontrol = /*false*/0;
 					}
 
-					if (spr[h].seq > 0 && seq[spr[h].seq].special[spr[h].frame] == 1) {
-						//this sprite can damage others right now!
-						//lets run through the list and tag sprites who were hit with their damage
-						run_through_tag_list(h, spr[h].strength);
-					}
+					if (spr[h].seq > 0 && seq[spr[h].seq].special[spr[h].frame] == 1)
+						*p_isHitting = true;
 				}
 			}
 		}
@@ -298,11 +292,8 @@ void spr_animate_hit(int h, Uint32 thisTickCount) {
 						spr[h].nocontrol = /*false*/0;
 					}
 
-					if (spr[h].seq > 0 && seq[spr[h].seq].special[spr[h].frame] == 1) {
-						//this sprite can damage others right now!
-						//lets run through the list and tag sprites who were hit with their damage
-						run_through_tag_list(h, spr[h].strength);
-					}
+					if (spr[h].seq > 0 && seq[spr[h].seq].special[spr[h].frame] == 1)
+						*p_isHitting = true;
 				}
 			}
 		}
@@ -457,9 +448,16 @@ void updateFrame() {
 			&& move_result > 100
 			&& cur_ed_screen.sprite[move_result-100].is_warp == 1)
 			special_block(move_result - 100);
-		
-		
-		spr_animate_hit(h, thisTickCount);
+
+		{
+			bool isHitting = false;
+			live_sprite_animate(h, thisTickCount, &isHitting);
+			if (isHitting) {
+				//this sprite can damage others right now!
+				//lets run through the list and tag sprites who were hit with their damage
+				run_through_tag_list(h, spr[h].strength);
+			}
+		}
 
 
 	past:
