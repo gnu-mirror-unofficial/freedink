@@ -217,7 +217,7 @@ void updateFrame() {
 	
 	
 	/* This run prepares a screen transition (when Dink runs to the border) */
-	/*bool*/int get_frame = /*false*/0;
+	bool get_frame = false;
 	
 	/* Screen transition preparation start point */
  trigger_start:
@@ -283,281 +283,199 @@ void updateFrame() {
 	/* Update all active sprites */
 	for (int j = 0; j <= max_s; j++) {
 		int h = rank[j];
-		//Msg( "Ok, rank %d is %d", j,h);
 		
-		if (h > 0) 
-			if (spr[h].active && spr[h].disabled == 0)
-			{
-				
-				//check_sprite_status_full(h);
-				
-				spr[h].moveman = 0; //init thing that keeps track of moving path	
-				spr[h].lpx[0] = spr[h].x;
-				spr[h].lpy[0] = spr[h].y; //last known legal cords
-				
-				spr[h].skiptimer++;
-				//inc delay, used by "skip" by all sprites
-/* 				box_crap = k[getpic(h)].box; */
-
-				live_sprite_set_kill_start(h, thisTickCount);
-				if (live_sprite_is_expired(h, thisTickCount)) {
-					spr[h].active = /*false*/0;
-					get_last_sprite();
-					if (spr[h].say_stop_callback > 0)
-						run_script(spr[h].say_stop_callback);
-				}
-				
-				if (spr[h].timing > 0)
-				{
-					if (thisTickCount > spr[h].wait)
-					{
-						spr[h].wait = thisTickCount + spr[h].timing;
-						
-					}else
-					{
-						goto animate;
-					}
-					
-				}
-				
-				
-				//brains - predefined bahavior patterns available to any sprite
-				
-				if (spr[h].notouch) if (thisTickCount > spr[h].notouch_timer) spr[h].notouch = /*false*/0;
-				if (get_frame == /*false*/0)
-				{
-					if (   (spr[h].brain == 1)/* || (spr[h].brain == 9) || (spr[h].brain == 3) */ )
-					{
-						
-						run_through_touch_damage_list(h);
-						
-						
-					}		
-					
-					if (spr[h].brain == 1)
-					{
-						if (process_warp == 0)
-							human_brain(h);	
-					}
-					
-					if (spr[h].brain == 2) bounce_brain(h);
-					if (spr[h].brain == 0) no_brain(h);
-					if (spr[h].brain == 3) duck_brain(h);
-					if (spr[h].brain == 4) pig_brain(h);
-					if (spr[h].brain == 5) one_time_brain(h);
-					if (spr[h].brain == 6) repeat_brain(h);
-					if (spr[h].brain == 7) one_time_brain_for_real(h);
-					if (spr[h].brain == 8) text_brain(h);
-					if (spr[h].brain == 9) pill_brain(h);
-					if (spr[h].brain == 10) dragon_brain(h);
-					if (spr[h].brain == 11) missile_brain(h, /*true*/1);
-					if (spr[h].brain == 12) scale_brain(h);
-					if (spr[h].brain == 13) mouse_brain(h);
-					if (spr[h].brain == 14) button_brain(h);
-					if (spr[h].brain == 15) shadow_brain(h);
-					if (spr[h].brain == 16) people_brain(h);
-					if (spr[h].brain == 17) missile_brain_expire(h);
-				} else
-				{
-					goto past;
-				}
-
-animate:
-				
-				move_result = check_if_move_is_legal(h);
-				
-				if (flub_mode != -500)
-				{
-					log_debug("move result is %d", flub_mode);
-					move_result = flub_mode;
-					flub_mode = -500;
-				}
-				
-				if (spr[h].brain == 1) if (move_result > 100)
-				{
-					if (cur_ed_screen.sprite[move_result-100].is_warp == 1)
-						special_block(move_result - 100);
-				}
-				
-				
-				if (spr[h].reverse)
-				{
-					
-					//reverse instructions
-					if (spr[h].seq > 0)
-					{
-						if (spr[h].frame < 1)
-						{
-							// new anim
-							spr[h].pseq = spr[h].seq;
-							spr[h].pframe = seq[spr[h].seq].len;
-							spr[h].frame = seq[spr[h].seq].len;
-							if (spr[h].frame_delay != 0) spr[h].delay = (thisTickCount+ spr[h].frame_delay); else
-								spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[seq[spr[h].seq].len]);
-						}   else
-						{
-							// not new anim
-							
-							//is it time?
-							
-							if (thisTickCount > spr[h].delay)
-							{
-								
-								
-								spr[h].frame--;
-								
-								
-								if (spr[h].frame_delay != 0) spr[h].delay = (thisTickCount + spr[h].frame_delay); else
-									
-									spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[spr[h].frame]);
-								
-								spr[h].pseq = spr[h].seq;
-								spr[h].pframe = spr[h].frame;
-								
-								
-								if (seq[spr[h].seq].frame[spr[h].frame]  < 2)
-								{
-									
-									spr[h].pseq = spr[h].seq;
-									spr[h].pframe = spr[h].frame+1;
-									
-									spr[h].frame = 0;
-									spr[h].seq_orig = spr[h].seq;
-									spr[h].seq = 0;
-									spr[h].nocontrol = /*false*/0;
-									
-									
-									if (h == 1) if (in_this_base(spr[h].seq_orig, dink_base_push))
-										
-									{
-										
-										
-										play.push_active = /*false*/0;
-										if (play.push_dir == 2) if (sjoy.down) play.push_active = /*true*/1;
-										if (play.push_dir == 4) if (sjoy.left) play.push_active = /*true*/1;
-										if (play.push_dir == 6) if (sjoy.right) play.push_active = /*true*/1;
-										if (play.push_dir == 8) if (sjoy.up) play.push_active = /*true*/1;
-										
-										
-										goto past;
-										
-									}
-								}
-								if (spr[h].seq > 0) if (seq[spr[h].seq].special[spr[h].frame] == 1)
-								{
-									//this sprite can damage others right now!
-									//lets run through the list and tag sprites who were hit with their damage
-									
-									run_through_tag_list(h, spr[h].strength);
-									
-								}
-								
-								
-								
-								
-							}
-						}
-					}
-					
-					
-				} else
-				{
-					
-					if (spr[h].seq > 0) if (spr[h].picfreeze == 0)
-					{
-						if (spr[h].frame < 1)
-						{
-							// new anim
-							spr[h].pseq = spr[h].seq;
-							spr[h].pframe = 1;
-							spr[h].frame = 1;
-							if (spr[h].frame_delay != 0)
-							  spr[h].delay = thisTickCount + spr[h].frame_delay;
-							else
-							  spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[1]);
-						}   else
-						{
-							// not new anim
-							
-							//is it time?
-							
-							if (thisTickCount > spr[h].delay)
-							{
-								
-								
-								spr[h].frame++;
-								if (spr[h].frame_delay != 0)
-								  spr[h].delay = thisTickCount + spr[h].frame_delay;
-								else
-								  spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[spr[h].frame]);
-								
-								spr[h].pseq = spr[h].seq;
-								spr[h].pframe = spr[h].frame;
-								
-								if (seq[spr[h].seq].frame[spr[h].frame] == -1)
-								{
-									spr[h].frame = 1;
-									spr[h].pseq = spr[h].seq;
-									spr[h].pframe = spr[h].frame;
-									if (spr[h].frame_delay != 0) spr[h].delay = thisTickCount + spr[h].frame_delay; else
-										
-										spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[spr[h].frame]);
-									
-								}
-								
-								if (seq[spr[h].seq].frame[spr[h].frame]  < 1)
-								{
-									
-									spr[h].pseq = spr[h].seq;
-									spr[h].pframe = spr[h].frame-1;
-									
-									spr[h].frame = 0;
-									spr[h].seq_orig = spr[h].seq;
-									spr[h].seq = 0;
-									spr[h].nocontrol = /*false*/0;
-									
-									
-									if (h == 1) if (in_this_base(spr[h].seq_orig, dink_base_push))
-										
-									{
-										
-										
-										play.push_active = /*false*/0;
-										if (play.push_dir == 2) if (sjoy.down) play.push_active = /*true*/1;
-										if (play.push_dir == 4) if (sjoy.left) play.push_active = /*true*/1;
-										if (play.push_dir == 6) if (sjoy.right) play.push_active = /*true*/1;
-										if (play.push_dir == 8) if (sjoy.up) play.push_active = /*true*/1;
-										
-										
-										goto past;
-										
-									}
-								}
-								if (spr[h].seq > 0) if (seq[spr[h].seq].special[spr[h].frame] == 1)
-								{
-									//this sprite can damage others right now!
-									//lets run through the list and tag sprites who were hit with their damage
-									
-									run_through_tag_list(h, spr[h].strength);
-									
-								}
-								
-								
-								
-								
-							}
-						}
-					}
-					
-					
-				}
-
-past:
-				check_seq_status(spr[h].seq);
-				draw_sprite_game(GFX_backbuffer, h);
+		if (!(h > 0 && spr[h].active && spr[h].disabled == 0))
+			continue;
+		
+		spr[h].moveman = 0; //init thing that keeps track of moving path	
+		spr[h].lpx[0] = spr[h].x;
+		spr[h].lpy[0] = spr[h].y; //last known legal cords
+		
+		//inc delay, used by "skip" by all sprites
+		spr[h].skiptimer++;
+		
+		live_sprite_set_kill_start(h, thisTickCount);
+		if (live_sprite_is_expired(h, thisTickCount)) {
+			spr[h].active = /*false*/0;
+			get_last_sprite();
+			if (spr[h].say_stop_callback > 0)
+				run_script(spr[h].say_stop_callback);
+		}
+		
+		if (spr[h].timing > 0) {
+			if (thisTickCount > spr[h].wait)
+				spr[h].wait = thisTickCount + spr[h].timing;
+			else
+				goto animate;
+		}
+		
+		//brains - predefined bahavior patterns available to any sprite
+		if (spr[h].notouch && thisTickCount > spr[h].notouch_timer)
+			spr[h].notouch = /*false*/0;
+		
+		if (get_frame == false) {
+			if (spr[h].brain == 1) {
+				run_through_touch_damage_list(h);
+				if (process_warp == 0)
+					human_brain(h);
 			}
+			if (spr[h].brain == 2) bounce_brain(h);
+			if (spr[h].brain == 0) no_brain(h);
+			if (spr[h].brain == 3) duck_brain(h);
+			if (spr[h].brain == 4) pig_brain(h);
+			if (spr[h].brain == 5) one_time_brain(h);
+			if (spr[h].brain == 6) repeat_brain(h);
+			if (spr[h].brain == 7) one_time_brain_for_real(h);
+			if (spr[h].brain == 8) text_brain(h);
+			if (spr[h].brain == 9) pill_brain(h);
+			if (spr[h].brain == 10) dragon_brain(h);
+			if (spr[h].brain == 11) missile_brain(h, /*true*/1);
+			if (spr[h].brain == 12) scale_brain(h);
+			if (spr[h].brain == 13) mouse_brain(h);
+			if (spr[h].brain == 14) button_brain(h);
+			if (spr[h].brain == 15) shadow_brain(h);
+			if (spr[h].brain == 16) people_brain(h);
+			if (spr[h].brain == 17) missile_brain_expire(h);
+		} else {
+			goto past;
+		}
+		
+	animate:
+		move_result = check_if_move_is_legal(h);
+		
+		if (flub_mode != -500) {
+			log_debug("move result is %d", flub_mode);
+			move_result = flub_mode;
+			flub_mode = -500;
+		}
+		
+		if (spr[h].brain == 1
+			&& move_result > 100
+			&& cur_ed_screen.sprite[move_result-100].is_warp == 1)
+			special_block(move_result - 100);
+		
+		if (spr[h].reverse) {
+			//reverse instructions
+			if (spr[h].seq > 0) {
+				if (spr[h].frame < 1) {
+					// new anim
+					spr[h].pseq = spr[h].seq;
+					spr[h].pframe = seq[spr[h].seq].len;
+					spr[h].frame = seq[spr[h].seq].len;
+					if (spr[h].frame_delay != 0)
+						spr[h].delay = (thisTickCount+ spr[h].frame_delay);
+					else
+						spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[seq[spr[h].seq].len]);
+				} else {
+					// not new anim
+					//is it time?
+					if (thisTickCount > spr[h].delay) {
+						spr[h].frame--;
+						if (spr[h].frame_delay != 0)
+							spr[h].delay = (thisTickCount + spr[h].frame_delay);
+						else
+							spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[spr[h].frame]);
+						
+						spr[h].pseq = spr[h].seq;
+						spr[h].pframe = spr[h].frame;
+						
+						if (seq[spr[h].seq].frame[spr[h].frame]  < 2) {
+							spr[h].pseq = spr[h].seq;
+							spr[h].pframe = spr[h].frame+1;
+							
+							spr[h].frame = 0;
+							spr[h].seq_orig = spr[h].seq;
+							spr[h].seq = 0;
+							spr[h].nocontrol = /*false*/0;
+							
+							if (h == 1 && in_this_base(spr[h].seq_orig, dink_base_push)) {
+								play.push_active = /*false*/0;
+								if (play.push_dir == 2) if (sjoy.down) play.push_active = /*true*/1;
+								if (play.push_dir == 4) if (sjoy.left) play.push_active = /*true*/1;
+								if (play.push_dir == 6) if (sjoy.right) play.push_active = /*true*/1;
+								if (play.push_dir == 8) if (sjoy.up) play.push_active = /*true*/1;
+								
+								goto past;
+							}
+						}
+						
+						if (spr[h].seq > 0 && seq[spr[h].seq].special[spr[h].frame] == 1) {
+							//this sprite can damage others right now!
+							//lets run through the list and tag sprites who were hit with their damage
+							run_through_tag_list(h, spr[h].strength);
+						}
+					}
+				}
+			}
+		} else {
+			if (spr[h].seq > 0 && spr[h].picfreeze == 0) {
+				if (spr[h].frame < 1) {
+					// new anim
+					spr[h].pseq = spr[h].seq;
+					spr[h].pframe = 1;
+					spr[h].frame = 1;
+					if (spr[h].frame_delay != 0)
+						spr[h].delay = thisTickCount + spr[h].frame_delay;
+					else
+						spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[1]);
+				} else {
+					// not new anim
+					//is it time?
+					if (thisTickCount > spr[h].delay) {
+						spr[h].frame++;
+						if (spr[h].frame_delay != 0)
+							spr[h].delay = thisTickCount + spr[h].frame_delay;
+						else
+							spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[spr[h].frame]);
+						
+						spr[h].pseq = spr[h].seq;
+						spr[h].pframe = spr[h].frame;
+						
+						if (seq[spr[h].seq].frame[spr[h].frame] == -1) {
+							spr[h].frame = 1;
+							spr[h].pseq = spr[h].seq;
+							spr[h].pframe = spr[h].frame;
+							if (spr[h].frame_delay != 0)
+								spr[h].delay = thisTickCount + spr[h].frame_delay;
+							else
+								spr[h].delay = (thisTickCount + seq[spr[h].seq].delay[spr[h].frame]);
+						}
+						
+						if (seq[spr[h].seq].frame[spr[h].frame] < 1) {
+							spr[h].pseq = spr[h].seq;
+							spr[h].pframe = spr[h].frame-1;
+							
+							spr[h].frame = 0;
+							spr[h].seq_orig = spr[h].seq;
+							spr[h].seq = 0;
+							spr[h].nocontrol = /*false*/0;
+							
+							if (h == 1 && in_this_base(spr[h].seq_orig, dink_base_push)) {
+								play.push_active = /*false*/0;
+								if (play.push_dir == 2) if (sjoy.down) play.push_active = /*true*/1;
+								if (play.push_dir == 4) if (sjoy.left) play.push_active = /*true*/1;
+								if (play.push_dir == 6) if (sjoy.right) play.push_active = /*true*/1;
+								if (play.push_dir == 8) if (sjoy.up) play.push_active = /*true*/1;
+								
+								goto past;
+							}
+						}
+						
+						if (spr[h].seq > 0 && seq[spr[h].seq].special[spr[h].frame] == 1) {
+							//this sprite can damage others right now!
+							//lets run through the list and tag sprites who were hit with their damage
+							run_through_tag_list(h, spr[h].strength);
+						}
+					}
+				}
+			}
+		}
+		
+	past:
+		check_seq_status(spr[h].seq);
+		draw_sprite_game(GFX_backbuffer, h);
 	} /* for 0->max_s */
-
+	
  
 	if (mode == 0)
 	{
@@ -629,14 +547,14 @@ past:
 		  /* let's restart and draw the next screen,
 	       did_player_cross_screen->grab_trick() screenshot'd the current one
 		   and drew base background, just need to place the active sprites */
-	    get_frame = 1;
+	    get_frame = true;
 	    goto trigger_start;
 	  }
 	}
 	
 	/* Screen transition */
 	if (get_frame) {
-	  get_frame = 0;
+	  get_frame = false;
 	  transition_in_progress = 1;
 	  SDL_Rect src = { playl, 0, 620 - playl, 400 };
 	  SDL_BlitSurface(GFX_backbuffer, &src, GFX_tmp2, NULL);
