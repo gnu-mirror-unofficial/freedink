@@ -537,6 +537,28 @@ int gfx_blit_stretch(SDL_Surface *src_surf, SDL_Rect *src_rect,
 }
 
 
+void gfx_center_game_display(SDL_Renderer *rend, SDL_Rect* rect) {
+	int rend_w, rend_h;
+	SDL_RenderGetLogicalSize(rend, &rend_w, &rend_h);
+	int game_w = GFX_RES_W;
+	int game_h = GFX_RES_H;
+	double game_ratio = 1.0 * game_w / game_h;
+	double rend_ratio = 1.0 * rend_w / rend_h;
+	if (game_ratio < rend_ratio) {
+		// left/right bars
+		rect->w = game_w * rend_h / game_h;
+		rect->h = rend_h;
+		rect->x = (rend_w - rect->w) / 2;
+		rect->y = 0;
+	} else {
+		// top/bottom bars
+		rect->w = rend_w;
+		rect->h = game_h * rend_w / game_w;
+		rect->x = 0;
+		rect->y = (rend_h - rect->h) / 2;
+	}
+}
+
 /**
  * Refresh the physical screen, and apply a new palette or fade effect
  * if needed
@@ -572,7 +594,9 @@ void flip_it(void)
 
   SDL_UpdateTexture(render_texture, NULL, source->pixels, source->pitch);
   SDL_RenderClear(renderer);
-  SDL_RenderCopy(renderer, render_texture, NULL, NULL);
+  SDL_Rect dst;
+  gfx_center_game_display(renderer, &dst);
+  SDL_RenderCopy(renderer, render_texture, NULL, &dst);
   SDL_RenderPresent(renderer);
 }
 

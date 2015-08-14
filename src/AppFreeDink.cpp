@@ -93,6 +93,15 @@ static void freedink_input_global_shortcuts(SDL_Event* ev) {
     }
 }
 
+void freedink_input_window(SDL_Event* ev) {
+	if (ev->type == SDL_WINDOWEVENT) {
+		if (ev->window.event == SDL_WINDOWEVENT_RESIZED) {
+			int w = ev->window.data1;
+			int h = ev->window.data2;
+			SDL_RenderSetLogicalSize(renderer, w, h);
+		}
+	}
+}
 	
 AppFreeDink::AppFreeDink() {
 	description = _("Starts the Dink Smallwood game or one of its D-Mods.");
@@ -150,6 +159,7 @@ void AppFreeDink::input(SDL_Event* ev) {
 			SDL_StopTextInput();
 	}
 	
+	freedink_input_window(ev);
 	if (ev->type == SDL_KEYUP
 		&& input_getscancodestate(ev->key.keysym.scancode) == SDL_PRESSED) {
 		// always tell the game when the player releases a key
