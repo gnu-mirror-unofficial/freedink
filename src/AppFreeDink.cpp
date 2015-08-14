@@ -30,11 +30,6 @@
 #include <windows.h>
 #endif
 
-#ifdef __ANDROID__
-#include <string.h> /* strerror */
-#include <errno.h>
-#endif
-
 
 /* Text choice selection (e.g. "Load game" in the title screen) */
 void freedink_update_mouse_text_choice(int dx, int dy) {
@@ -101,6 +96,21 @@ void freedink_input_window(SDL_Event* ev) {
 			SDL_RenderSetLogicalSize(renderer, w, h);
 		}
 	}
+}
+
+void freedink_controls_renderer_render() {
+	// SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+
+	// SDL_RenderDrawLine(renderer, 0, 0, 100, 100);
+
+	// SDL_Rect rectangle;
+	// rectangle.x = 0;
+	// rectangle.y = 0;
+	// rectangle.w = 50;
+	// rectangle.h = 50;
+	// SDL_RenderFillRect(renderer, &rectangle);
+
+	// SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 }
 	
 AppFreeDink::AppFreeDink() {
@@ -184,11 +194,13 @@ void AppFreeDink::logic() {
 	updateFrame();
 
 	/* Renderers */
+	SDL_RenderClear(renderer);
 	debug_renderer_render();
 	dinkc_console_renderer_render();
-
 	if (!abort_this_flip)
-		flip_it();
+		flip_it(); // game area
+	freedink_controls_renderer_render();
+	SDL_RenderPresent(renderer);
 }
 
 /**

@@ -593,11 +593,9 @@ void flip_it(void)
   }
 
   SDL_UpdateTexture(render_texture, NULL, source->pixels, source->pitch);
-  SDL_RenderClear(renderer);
   SDL_Rect dst;
   gfx_center_game_display(renderer, &dst);
   SDL_RenderCopy(renderer, render_texture, NULL, &dst);
-  SDL_RenderPresent(renderer);
 }
 
 void gfx_toggle_fullscreen()
