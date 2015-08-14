@@ -298,6 +298,7 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
       log_error("Error blitting splash to back buffer");
 
     flip_it();
+	SDL_RenderPresent(renderer);
   }
 
 
