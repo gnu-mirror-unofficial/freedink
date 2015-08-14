@@ -29,6 +29,9 @@
 
 using namespace std;
 
+/* Pleases gnulib's error module */
+char* program_name = __FILE__;
+
 /* Stub */
 static string last_line;
 int dinkc_execute_one_liner(char* line) {
