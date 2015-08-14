@@ -21,6 +21,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "game_engine.h"
 #include "live_sprites_manager.h"
 #include "live_screen.h"

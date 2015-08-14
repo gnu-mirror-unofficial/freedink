@@ -21,6 +21,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "status.h"
 #define SEQ_LEVEL_NUMS 442
 

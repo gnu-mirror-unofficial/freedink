@@ -43,7 +43,7 @@ if ANDROID
   AM_CFLAGS = -fPIC
   AM_LDFLAGS = -shared
   LIBS += -llog
-  COMMON_OBJS += SDL_android_main.cpp
+  COMMON_OBJS += SDL_android_main.c
 endif
 
 bin_PROGRAMS = freedink freedinkedit

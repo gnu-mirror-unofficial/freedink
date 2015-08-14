@@ -1,3 +1,7 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "brain.h"
 #include "live_sprites_manager.h"
 #include "live_screen.h"

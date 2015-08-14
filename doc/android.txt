@@ -16,226 +16,346 @@ Last we can use the external storage.
 
 == SDL2 ==
 
-Official documentation is in SDL2/README-android.txt
+Official documentation is in SDL2/docs/README-android.md
 See also my http://wiki.libsdl.org/Android
 
-=== Pre-requisites ===
+== Pre-requisites ==
 
-* Install minimal Java environment:
- sudo apt-get install openjdk-7-jdk ant
-* Install NDK (tested with r9d)
-* Install the latest SDK, run 'android' and install API 12
+ * Install minimal Java environment. For instance, in Debian/Ubuntu: {{{
+sudo apt-get install openjdk-7-jdk ant
+}}}
+ * Install NDK (tested with [[http://dl.google.com/android/ndk/android-ndk-r8c-linux-x86.tar.bz2|r8c]])
+ * Install the latest SDK, run `android` and install one API (>=12)
+ * Configure your environment variables, e.g.: {{{
+PATH="/usr/src/android-ndk-r8c:$PATH"                   # for 'ndk-build'
+PATH="/usr/src/android-sdk-linux/tools:$PATH"           # for 'android'
+PATH="/usr/src/android-sdk-linux/platform-tools:$PATH"  # for 'adb'
+}}}
+ * Edit {{{build-scripts/androidbuild.sh}}}, find the {{{android update project}}} line, and add {{{--target android-XX}}} to it (replace XX with your installed API number above).
 
-=== Test 1: SDL wrapper for simple programs ===
+== Simple builds ==
 
-* Compile a sample app (calls ndk-build):
+=== SDL wrapper for simple programs ===
+
+ * Compile a sample app (calls ndk-build): {{{
  cd /usr/src/SDL2/build-scripts/
  ./androidbuild.sh org.libsdl.testgles ../test/testgles.c
-* Follow the instructions to install on your device:
+}}}
+ * Follow the instructions to install on your device: {{{
  cd /usr/src/SDL2/build/org.libsdl.testgles/
  ant debug install
+}}}
 
 Notes:
-- triple target armeabi/armeabi-v7a/x86 compilation!
-- application doesn't quit
+ * triple target armeabi/armeabi-v7a/x86 compilation!
+ * application doesn't quit
 
 
-=== Test 2: SDL wrapper + SDL_image ===
+=== SDL wrapper + SDL_image NDK module ===
 
-First, modify showimage.c to show a simple embedded image (e.g. XPM).
+Let's modify `SDL2_image/showimage.c` to show a simple embedded image (e.g. XPM).
 
-To compile:
-
+Then let's make an Android app out of it. To compile: {{{
  cd /usr/src/SDL2/build-scripts/
  ./androidbuild.sh org.libsdl.showimage /usr/src/SDL2_image/showimage.c
  cd /usr/src/SDL2/build/org.libsdl.showimage/
  ln -s /usr/src/SDL2_image jni/
  ln -s /usr/src/SDL2_image/external/libwebp-0.3.0 jni/webp
- # - Edit jni/Android.mk
+ # - Edit jni/src/Android.mk
  #   LOCAL_SHARED_LIBRARIES := ... SDL2_image
- # - Edit android-project/src/org/libsdl/app/SDLActivity.java:
- #   System.loadLibrary("SDL2_image");
- #   System.loadLibrary("SDL2_mixer");
- #   System.loadLibrary("SDL2_ttf");
  # - Edit jni/Application.mk: remove x86 where jpeg-9 doesn't build
  ndk-build -j$(nproc)
  ant debug install
+}}}
 
 Notes:
-- application doesn't restart properly
+ * application doesn't restart properly
 
 
-== Static SDL2 build ==
+== Build an autotools-friendly environment ==
 
-cd /usr/src/SDL2/
-cp -a android-project/jni/src/Android_static.mk android-project/jni/src/Android.mk
-cd build-scripts/
-export NDK_MODULE_PATH=jni
-./androidbuild.sh org.libsdl /dev/null
-=> weird error about SDL being already defined in the same file...
-cd ../build/org.libsdl/
-cp -a libs/armeabi-v7a/libSDL2.a ...
+You use autotools in your project and can't be bothering understanding ndk-build's cryptic errors? This guide is for you!
 
+Note: this environment can be used for CMake too.
 
-=== SDL + .pc ===
+=== Compile a shared binaries bundle for SDL and SDL_* ===
 
-# SDL only
+ * Start with a minimal build: {{{
 cd /usr/src/SDL2/
 cd build-scripts/
+hg revert --all  # remove traces of previous builds
+# edit androidbuild.sh and modify android update project --target android-XX
 ./androidbuild.sh org.libsdl /dev/null
+# doesn't matter if the actual build fails, it's just for setup
 cd ../build/org.libsdl/
-cp -a libs/armeabi-v7a/libSDL2.so /usr/src/ndk-standalone-12-arm/sysroot/usr/lib
-
-# SDL + SDL_*
-cd /usr/src/SDL2/
-cd build-scripts/
-./androidbuild.sh org.libsdl /dev/null
-cd ../build/org.libsdl/
+}}}
+ * Remove reference to our dummy file: {{{
 rm -rf jni/src/
+}}}
+ * Get the latests SDL2_* libs from Mercurial (they fix a few bugs): {{{
+cd /usr/src/
+hg clone http://hg.libsdl.org/SDL_image SDL2_image
+hg clone http://hg.libsdl.org/SDL_mixer SDL2_mixer
+hg clone http://hg.libsdl.org/SDL_net   SDL2_net
+hg clone http://hg.libsdl.org/SDL_ttf   SDL2_ttf
+}}}
+ * Reference SDL_image, SDL_mixer, SDL_ttf, and their dependencies, as NDK modules: {{{
 ln -s /usr/src/SDL2_image jni/
 ln -s /usr/src/SDL2_image/external/libwebp-0.3.0 jni/webp
 ln -s /usr/src/SDL2_mixer jni/
 ln -s /usr/src/SDL2_mixer/external/libmikmod-3.1.12 jni/libmikmod
-#ln -s /usr/src/SDL2_mixer/external/smpeg2-2.0.0 jni/smpeg2
+ln -s /usr/src/SDL2_mixer/external/smpeg2-2.0.0 jni/smpeg2
+ln -s /usr/src/SDL2_net jni/
 ln -s /usr/src/SDL2_ttf jni/
-(echo "SUPPORT_MP3_SMPEG := false"; cat jni/Android.mk) | sponge jni/Android.mk
+}}}
+ * Optionnaly edit `jni/Android.mk` to disable some formats, e.g.: {{{
+SUPPORT_MP3_SMPEG := false
+include $(call all-subdir-makefiles)
+}}}
+ * Launch the build! {{{
 ndk-build -j$(nproc)
-for i in libs/armeabi/*; do ln -nfs $(pwd)/$i /usr/src/ndk-standalone-12-arm/sysroot/usr/lib/; done
-mkdir /usr/src/ndk-standalone-12-arm/sysroot/usr/include/SDL2/
-cp jni/SDL/include/* /usr/src/ndk-standalone-12-arm/sysroot/usr/include/SDL2/
-cp jni/*/SDL*.h /usr/src/ndk-standalone-12-arm/sysroot/usr/include/SDL2/
+}}}
 
-cat <<'EOF' > /usr/src/ndk-standalone-12-arm/sysroot/usr/lib/pkgconfig/sdl2.pc
-prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr
+Note: no need to add `System.loadLibrary` calls in `SDLActivity.java`, your application will be linked to them and Android's Linux loads them automatically.
+
+
+=== Install SDL in a GCC toolchain ===
+
+Now:
+ * Copy the NDK into a traditional GCC toolchain: {{{
+/usr/src/android-ndk-r8c/build/tools/make-standalone-toolchain.sh \
+  --platform=android-14 --install-dir=/usr/src/ndk-standalone-14-arm --arch=arm
+}}}
+ * Set your PATH (important, do it before any build): {{{
+NDK_STANDALONE=/usr/src/ndk-standalone-14-arm
+PATH=$NDK_STANDALONE/bin:$PATH
+}}}
+ * Install the SDL2 binaries in the toolchain: {{{
+cd /usr/src/SDL2/build/org.libsdl/
+for i in libs/armeabi/*; do ln -nfs $(pwd)/$i $NDK_STANDALONE/sysroot/usr/lib/; done
+mkdir $NDK_STANDALONE/sysroot/usr/include/SDL2/
+\cp jni/SDL/include/* $NDK_STANDALONE/sysroot/usr/include/SDL2/
+\cp jni/*/SDL*.h $NDK_STANDALONE/sysroot/usr/include/SDL2/
+}}}
+ * Install `pkg-config` and install a host-triplet-prefixed symlink in the PATH (auto-detected by autoconf): {{{
+VERSION=0.9.12
+cd /usr/src/
+wget http://rabbit.dereferenced.org/~nenolod/distfiles/pkgconf-$VERSION.tar.gz
+tar xf pkgconf-$VERSION.tar.gz
+cd pkgconf-$VERSION
+mkdir native-android/ && cd native-android/
+../configure --prefix=$NDK_STANDALONE/sysroot/usr
+make -j$(nproc)
+make install
+ln -s ../sysroot/usr/bin/pkgconf $NDK_STANDALONE/bin/arm-linux-androideabi-pkg-config
+mkdir $NDK_STANDALONE/sysroot/usr/lib/pkgconfig/
+}}}
+ * Install pkg-config `.pc` files for SDL: {{{
+cat <<'EOF' > $NDK_STANDALONE/sysroot/usr/lib/pkgconfig/sdl2.pc
+prefix=/usr/src/ndk-standalone-14-arm/sysroot/usr
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
 Name: sdl2
 Description: Simple DirectMedia Layer is a cross-platform multimedia library designed to provide low level access to audio, keyboard, mouse, joystick, 3D hardware via OpenGL, and 2D video framebuffer.
-Version: 2.0.3
+Version: 2.0.2.scm
 Requires:
 Conflicts:
 Libs: -lSDL2
 Cflags: -I${includedir}/SDL2   -D_REENTRANT
 EOF
 
-cat <<'EOF' > /usr/src/ndk-standalone-12-arm/sysroot/usr/lib/pkgconfig/SDL2_image.pc
-prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr
+cat <<'EOF' > $NDK_STANDALONE/sysroot/usr/lib/pkgconfig/SDL2_image.pc
+prefix=/usr/src/ndk-standalone-14-arm/sysroot/usr
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
 Name: SDL2_image
 Description: image loading library for Simple DirectMedia Layer
-Version: 2.0.1
+Version: 2.0.0.scm
 Requires: sdl2 >= 2.0.0
 Libs: -L${libdir} -lSDL2_image
 Cflags: -I${includedir}/SDL2
 EOF
 
-cat <<'EOF' > /usr/src/ndk-standalone-12-arm/sysroot/usr/lib/pkgconfig/SDL2_mixer.pc
-prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr
+cat <<'EOF' > $NDK_STANDALONE/sysroot/usr/lib/pkgconfig/SDL2_mixer.pc
+prefix=/usr/src/ndk-standalone-14-arm/sysroot/usr
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
 Name: SDL2_mixer
 Description: mixer library for Simple DirectMedia Layer
-Version: 2.0.1
+Version: 2.0.0.scm
 Requires: sdl2 >= 2.0.0
 Libs: -L${libdir} -lSDL2_mixer
 Cflags: -I${includedir}/SDL2
 EOF
 
-cat <<'EOF' > /usr/src/ndk-standalone-12-arm/sysroot/usr/lib/pkgconfig/SDL2_ttf.pc
-prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr
+cat <<'EOF' > $NDK_STANDALONE/sysroot/usr/lib/pkgconfig/SDL2_net.pc
+prefix=/usr/src/ndk-standalone-14-arm/sysroot/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+Name: SDL2_net
+Description: net library for Simple DirectMedia Layer
+Version: 2.0.0.scm
+Requires: sdl2 >= 2.0.0
+Libs: -L${libdir} -lSDL2_net
+Cflags: -I${includedir}/SDL2
+EOF
+
+cat <<'EOF' > $NDK_STANDALONE/sysroot/usr/lib/pkgconfig/SDL2_ttf.pc
+prefix=/usr/src/ndk-standalone-14-arm/sysroot/usr
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
 Name: SDL2_ttf
 Description: ttf library for Simple DirectMedia Layer with FreeType 2 support
-Version: 2.0.13
+Version: 2.0.12.scm
 Requires: sdl2 >= 2.0.0
 Libs: -L${libdir} -lSDL2_ttf
 Cflags: -I${includedir}/SDL2
 EOF
+}}}
 
+=== Building other dependencies ===
 
+You can add any other libraries (e.g.: SDL2_gfx, freetype, gettext, gmp...) using commands like: {{{
+mkdir cross-android/ && cd cross-android/
+../configure --host=arm-linux-androideabi --prefix=$NDK_STANDALONE/sysroot/usr \
+  --with-some-option --enable-another-option \
+  --disable-shared
+make -j$(nproc)
+make install
+}}}
+
+Static builds (`--disable-shared`) are recommended for simplicity (no additional `.so` to declare).
+
+Example with SDL2_gfx: {{{
 VERSION=1.0.1
-$WGET http://www.ferzkopp.net/Software/SDL2_gfx/SDL2_gfx-$VERSION.tar.gz
+wget http://www.ferzkopp.net/Software/SDL2_gfx/SDL2_gfx-$VERSION.tar.gz
 tar xf SDL2_gfx-$VERSION.tar.gz
 mv SDL2_gfx-$VERSION/ SDL2_gfx/
 cd SDL2_gfx/
 mkdir cross-android/ && cd cross-android/
-../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
+../configure --host=arm-linux-androideabi --prefix=$NDK_STANDALONE/sysroot/usr \
   --disable-shared --disable-mmx
-make -j$(nproc) && make install
+make -j$(nproc)
+make install
+}}}
+
+You can compile YOUR application using this technique, with some more steps to tell Android how to run it using JNI.
 
 
+=== Build your autotools app ===
 
-=== pgk-config ===
+First, prepare an Android project:
+ * Copy and adapt the `/usr/src/SDL2/android-project` skeleton as explained in `README-android.md`. You can leave it as-is in a first step.
+ * Make links to the SDL binaries as well: {{{
+mkdir -p libs/armeabi/
+for i in /usr/src/SDL2/build/org.libsdl/libs/armeabi/*; do ln -nfs $i libs/armeabi/; done
+}}}
 
-VERSION=0.9.6
-$WGET http://rabbit.dereferenced.org/~nenolod/distfiles/pkgconf-$VERSION.tar.gz
-tar xf pkgconf-$VERSION.tar.gz
-cd pkgconf-$VERSION
-mkdir native-android/ && cd native-android/
-../configure --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr
-make -j$(nproc) && make install
-ln -s ../sysroot/usr/bin/pkgconf /usr/src/ndk-standalone-12-arm/bin/arm-linux-androideabi-pkg-config
-mkdir /usr/src/ndk-standalone-12-arm/sysroot/usr/lib/pkgconfig/
+Make your project Android-aware:
+ * Add `/usr/src/SDL2/src/main/android/SDL_android_main.c` in your project (comment out the line referencing "SDL_internal.h"). Compile it as C (not C++).
+ * In your {{{configure.ac}}}, detect Android: {{{
+AM_CONDITIONAL(ANDROID, test "$host" = "arm-unknown-linux-androideabi")
+}}}
+ * In your {{{Makefile.am}}}, tell Automake you'll build executables as libraries, using something like: {{{
+if ANDROID
+  # Build .so JNI libs rather than executables
+  AM_CFLAGS = -fPIC
+  AM_LDFLAGS += -shared
+  COMMON_OBJS += SDL_android_main.c
+endif
+}}}
+ * Cross-compile your project using the GCC toolchain environment we created: {{{
+PATH=$NDK_STANDALONE/bin:$PATH
+mkdir cross-android/ && cd cross-android/
+../configure --host=arm-linux-androideabi \
+  --with-your-option --enable-your-other-option ...
+make
+}}}
+ * Do this again for any additional arch you want to support (TODO: see how to support `armeabi-v7a` and document what devices support it); something like: {{{
+mkdir cross-android-v7a/ && cd cross-android-v7a/
+# .o: -march=armv5te -mtune=xscale -msoft-float -mthumb  =>  -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=softfp -mthumb
+# .so: -march=armv7-a -Wl,--fix-cortex-a8
+CFLAGS="-g -O2 -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=softfp -mthumb" LFDLAGS="-march=armv7-a -Wl,--fix-cortex-a8" \
+  ../configure --host=arm-linux-androideabi \
+  ...
+}}}
 
+Now you can install your pre-built binaries and build the Android project:
+ * Copy your program in `android-project/libs/armeabi/libmain.so`.
+ * Build your Android `.apk`: {{{
+android update project --name your_app --path . --target android-XX
+ant debug
+ant installd
+}}}
+ * You can run the application remotely: {{{
+adb shell am start -a android.intenon.MAIN -n org.libsdl.app/org.libsdl.app.SDLActivity  # replace with your app package
+}}}
+ * Your SDL2 Android app is running!
+
+=== Build your CMake app ===
+
+(Work In Progress)
+
+You can use our Android GCC toolchain using a simple toolchain file: {{{
+# CMake toolchain file
+SET(CMAKE_SYSTEM_NAME Linux)  # Tell CMake we're cross-compiling
+include(CMakeForceCompiler)
+# Prefix detection only works with compiler id "GNU"
+CMAKE_FORCE_C_COMPILER(arm-linux-androideabi-gcc GNU)
+SET(ANDROID TRUE)
+}}}
+
+You then call CMake like this: {{{
+PATH=$NDK_STANDALONE/bin:$PATH
+cmake \
+  -D CMAKE_TOOLCHAIN_FILE=../android_toolchain.cmake \
+  ...
+}}}
+
+
+== FreeDink ==
 
 === iconv ===
 
-VERSION=0.14
-$WGET http://ftp.gnu.org/pub/gnu/libiconv/libiconv-$VERSION.tar.gz
-tar xf libiconv-$VERSION.tar.gz
-cd libiconv-$VERSION/
-mkdir cross-android/ && cd cross-android/
-\cp -a /usr/share/misc/config.{guess,sub} ../build-aux/
-\cp -a /usr/share/misc/config.{guess,sub} ../libcharset/build-aux/
-../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
-  --disable-shared
-make -j$(nproc) && make install
+# TODO: check if necessary (gettext should work but there may be accents issues)
+#VERSION=0.14
+#wget -c http://ftp.gnu.org/pub/gnu/libiconv/libiconv-$VERSION.tar.gz
+#tar xf libiconv-$VERSION.tar.gz
+#cd libiconv-$VERSION/
+#mkdir cross-android/ && cd cross-android/
+#\cp -a /usr/share/misc/config.{guess,sub} ../build-aux/
+#\cp -a /usr/share/misc/config.{guess,sub} ../libcharset/build-aux/
+#../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-14-arm/sysroot/usr \
+#  --disable-shared
+#make -j$(nproc) && make install
 
 
 === gettext ===
 
-VERSION=0.19.1
-$WGET http://ftp.gnu.org/pub/gnu/gettext/gettext-$VERSION.tar.gz
+VERSION=0.19.5
+wget -c http://ftp.gnu.org/pub/gnu/gettext/gettext-$VERSION.tar.gz
 tar xf gettext-$VERSION.tar.gz
 cd gettext-$VERSION/
 cd gettext-runtime/
 mkdir cross-android/ && cd cross-android/
-../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
+../configure --host=arm-linux-androideabi --prefix=$NDK_STANDALONE/sysroot/usr \
   --disable-shared
 make -j$(nproc) && make install
 
 
-=== Check ===
+=== FreeDink engine ===
 
-VERSION=0.9.13
-$WGET http://downloads.sourceforge.net/project/check/check/0.9.13/check-0.9.13.tar.gz
-tar xf check-$VERSION.tar.gz
-cd check-$VERSION/
-mkdir cross-android/ && cd cross-android/
-../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr
-make -j($nproc)
-=>
-../../lib/snprintf.c:526:1: warning: function declaration isn't a prototype [-Wstrict-prototypes]
-../../lib/snprintf.c:526:12: error: conflicting types for '__errno'
-
-
-=== FreeDink ===
-
-
-/usr/src/android-ndk-r9d/build/tools/make-standalone-toolchain.sh \
-  --platform=android-12 --install-dir=/usr/src/ndk-standalone-12
-PATH=/usr/src/ndk-standalone-12-arm/bin:$PATH
+PATH=/usr/src/ndk-standalone-14-arm/bin:$PATH
 mkdir cross-android/
 cd cross-android/
 ../configure --host=arm-linux-androideabi \
   --prefix=/android-aint-posix \
-  --disable-embedded-resources --disable-tests
+  --disable-tests
 make -j$(nproc)
 
 # To see dynamic symbols:
@@ -244,18 +364,34 @@ arm-linux-androideabi-objdump -R src/freedink
 arm-linux-androideabi-objdump -x libs/armeabi/libnative-activity.so | grep NEEDED
 arm-linux-androideabi-readelf -d libs/armeabi/libnative-activity.so | grep NEEDED  # alternatively
 
-cp -a /usr/src/SDL2/android-project android
-
+# Initial install:
+cp -a /usr/src/SDL2/android-project ../android
+cd ../android/
 ant clean
 rm -rf libs/ bin/ gen/
 mkdir -p libs/armeabi/
 cp -a /usr/src/SDL2/build/org.libsdl/libs/armeabi/* libs/armeabi/
-cp -a ../cross-android/src/freedink libs/armeabi/libmain.so
-android update project --name freedink --path . --target "android-12"
+android update project --name freedink --path . --target android-22
 echo '<?xml version="1.0" encoding="utf-8"?><resources><string name="app_name">FreeDink</string></resources>' > res/values/strings.xml
-make
+mkdir -p src/org/freedink/
+# create src/org/freedink/SDLActivity.java
+# ...
 
+# If SDK changed:
+android update project --name freedink --path . --target android-22
+
+cp -a ../cross-android/src/freedink libs/armeabi/libmain.so
+ant debug
+ant installd
+
+tar czf dink.tar.gz -C freedink-data-1.08.2015XXXX dink/
 adb push dink.tar.gz /storage/sdcard0/Android/data/org.freedink/files/
+adb shell
+  cd /storage/sdcard0/Android/data/org.freedink/files/
+  tar xf dink.tar.gz
+exit
+
+adb push ../share/freedink /storage/sdcard0/Android/data/org.freedink/files/freedink
 
 cp -a /usr/share/midi/freepats .
 cp -a /etc/timidity/freepats.cfg timidity.cfg
@@ -270,8 +406,8 @@ adb push timidity.tar.gz /storage/sdcard0/Android/data/org.freedink/files/
 # https://lists.gnu.org/archive/html/guile-user/2014-06/msg00011.html
 
 /usr/src/android-ndk-r9d/build/tools/make-standalone-toolchain.sh \
-  --platform=android-12 --install-dir=/usr/src/ndk-standalone-12-arm
-PATH=/usr/src/ndk-standalone-12-arm/bin:$PATH
+  --platform=android-12 --install-dir=/usr/src/ndk-standalone-14-arm
+PATH=/usr/src/ndk-standalone-14-arm/bin:$PATH
 
 aptitude install lzip
 WGET=wget
@@ -284,7 +420,7 @@ $WGET http://ftp.gnu.org/pub/gnu/libtool/libtool-$VERSION.tar.xz
 tar xf libtool-$VERSION.tar.xz
 cd libtool-$VERSION/
 mkdir cross-android/ && cd cross-android/
-../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
+../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-14-arm/sysroot/usr \
   --disable-shared
 make -j$(nproc) && make install
 
@@ -295,7 +431,7 @@ $WGET https://gmplib.org/download/gmp/gmp-$VERSION.tar.lz
 tar xf gmp-$VERSION.tar.lz
 cd gmp-$VERSIONDIR/
 mkdir cross-android/ && cd cross-android/
-../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
+../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-14-arm/sysroot/usr \
   --disable-shared
 make -j$(nproc) && make install
 
@@ -307,7 +443,7 @@ $WGET http://ftp.gnu.org/gnu/libunistring/libunistring-0.9.3.tar.gz
 tar xf libunistring-$VERSION.tar.gz
 mkdir cross-android/ && cd cross-android/
 \cp -a /usr/share/misc/config.{guess,sub} ../build-aux/
-../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
+../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-14-arm/sysroot/usr \
   --disable-shared
 make -j$(nproc) && make install
 
@@ -317,7 +453,7 @@ $WGET ftp://sourceware.org/pub/libffi/libffi-$VERSION.tar.gz
 tar xf libffi-$VERSION.tar.gz
 cd libffi-$VERSION/
 mkdir cross-android/ && cd cross-android/
-../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
+../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-14-arm/sysroot/usr \
   --disable-shared
 make -j$(nproc) && make install
 
@@ -327,7 +463,7 @@ $WGET http://www.ivmaisoft.com/_bin/atomic_ops/libatomic_ops-$VERSION.tar.gz
 tar xf libatomic_ops-$VERSION.tar.gz
 cd libatomic_ops-$VERSION/
 mkdir cross-android/ && cd cross-android/
-../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
+../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-14-arm/sysroot/usr \
   --disable-shared
 make -j$(nproc) && make install
 cd ../..
@@ -335,7 +471,7 @@ $WGET http://www.hboehm.info/gc/gc_source/gc-$VERSION.tar.gz
 tar xf gc-$VERSION.tar.gz
 cd gc-$VERSION/
 mkdir cross-android/ && cd cross-android/
-../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
+../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-14-arm/sysroot/usr \
   --disable-shared
 make -j$(nproc) && make install
 
@@ -343,10 +479,10 @@ make -j$(nproc) && make install
 cd guile/cross-android/
 git checkout stable-2.0
 mkdir cross-android/ && cd cross-android/
-../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
+../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-14-arm/sysroot/usr \
   --disable-shared
 make -j$(nproc)
 => build failure due to Android's pthread_cancel
-../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-12-arm/sysroot/usr \
+../configure --host=arm-linux-androideabi --prefix=/usr/src/ndk-standalone-14-arm/sysroot/usr \
   --disable-shared --without-threads
 => OK but "unknown CPU endianness "arm" in ice-9/eval.go

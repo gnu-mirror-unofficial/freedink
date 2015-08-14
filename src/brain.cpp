@@ -21,6 +21,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "brain.h"
 #include "live_sprites_manager.h"
 #include "game_engine.h" /* smooth_follow */

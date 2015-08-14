@@ -26,6 +26,7 @@
 #endif
 
 #include "AppFreeDink.h"
+#include "SDL.h"
 
 /**
  * Bootstrap

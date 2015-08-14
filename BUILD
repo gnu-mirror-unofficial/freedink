@@ -32,7 +32,7 @@ maintainers don't release so often :/
     (cd /usr/src/SDL2_image/ && hg diff -c c0132bb6251a) > /usr/src/mxe/src/sdl2_image-1-beuc.patch
 
 This can help:
-sed -i -e 's/^Version: 2.0.[0-9]\+$/&.1/' /usr/src/mxe/usr/i686-w64-mingw32.static/lib/pkgconfig/SDL2_*
+sed -i -e 's/^Version: 2.0.[0-9]\+$/&.scm/' /usr/src/mxe/usr/i686-w64-mingw32.static/lib/pkgconfig/SDL2_*
 
 
 On a minimal Debian system

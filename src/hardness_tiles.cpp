@@ -21,6 +21,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "hardness_tiles.h"
 #include "EditorMap.h"
 #include "paths.h"

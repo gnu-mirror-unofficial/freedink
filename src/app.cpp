@@ -48,6 +48,11 @@
 #include "log.h"
 #include "msgbox.h"
 
+#ifdef __ANDROID__
+#include <string.h> /* strerror */
+#include <errno.h>
+#endif
+
 /**
  * What to do if running out of memory
  */
