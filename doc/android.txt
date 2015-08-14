@@ -322,8 +322,8 @@ cmake \
 
 === iconv ===
 
-# TODO: check if necessary (gettext should work but there may be accents issues)
-#VERSION=0.14
+# gettext works without - as long as .mo's and FreeDink use UTF-8 I think
+#VERSION=1.14
 #wget -c http://ftp.gnu.org/pub/gnu/libiconv/libiconv-$VERSION.tar.gz
 #tar xf libiconv-$VERSION.tar.gz
 #cd libiconv-$VERSION/
@@ -357,6 +357,7 @@ cd cross-android/
   --prefix=/android-aint-posix \
   --disable-tests
 make -j$(nproc)
+make install DESTDIR=$(pwd)/destdir  # for locales
 
 # To see dynamic symbols:
 arm-linux-androideabi-objdump -R src/freedink
@@ -384,6 +385,9 @@ cp -a ../cross-android/src/freedink libs/armeabi/libmain.so
 ant debug
 ant installd
 
+adb push ../share/freedink /storage/sdcard0/Android/data/org.freedink/files/freedink
+adb push ../cross-android/destdir/android-aint-posix/share/locale /storage/sdcard0/Android/data/org.freedink/files/freedink/locale
+
 tar czf dink.tar.gz -C freedink-data-1.08.2015XXXX dink/
 adb push dink.tar.gz /storage/sdcard0/Android/data/org.freedink/files/
 adb shell
@@ -391,14 +395,16 @@ adb shell
   tar xf dink.tar.gz
 exit
 
-adb push ../share/freedink /storage/sdcard0/Android/data/org.freedink/files/freedink
-
 cp -a /usr/share/midi/freepats .
 cp -a /etc/timidity/freepats.cfg timidity.cfg
 sed -i -e 's,/usr/share/midi/,,' timidity.cfg
 tar czf timidity.tar.gz freepats/ timidity.cfg
 rm -rf freepats/ timidity.cfg
 adb push timidity.tar.gz /storage/sdcard0/Android/data/org.freedink/files/
+adb shell
+  cd /storage/sdcard0/Android/data/org.freedink/files/
+  tar xf timidity.tar.gz
+exit
 
 
 === Guile ===

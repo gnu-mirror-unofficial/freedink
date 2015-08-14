@@ -51,6 +51,36 @@
 #ifdef __ANDROID__
 #include <string.h> /* strerror */
 #include <errno.h>
+#include <jni.h>
+extern char **environ;
+
+static void log_environment() {
+	for (char **pair = environ; *pair; pair++)
+		log_info("%s", *pair);
+
+}
+
+// No default locale on Android, need to get it manually  (T-T)
+// TODO: submit me for inclusion in SDL2
+static void android_set_LANG() {
+    JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
+	jmethodID mid;
+	
+	// locale = Locale.getDefault()
+    jclass localeClass = env->FindClass("java/util/Locale");
+    mid = env->GetStaticMethodID(localeClass, "getDefault",
+								 "()Ljava/util/Locale;");
+	jobject locale = env->CallStaticObjectMethod(localeClass, mid);
+	
+	// locale.toString()
+	mid = env->GetMethodID(localeClass, "toString",
+						   "()Ljava/lang/String;");
+	jstring toString = (jstring)env->CallObjectMethod(locale, mid);
+	const char* lang = env->GetStringUTFChars(toString, NULL);
+	
+	SDL_setenv("LANG", lang, 1);
+	env->ReleaseStringUTFChars(toString, lang);
+}
 #endif
 
 /**
@@ -84,6 +114,9 @@ static void app_chdir() {
     log_error("Could not chdir to '%s': %s'",
 	      SDL_AndroidGetExternalStoragePath(),
 	      strerror(errno));
+
+  android_set_LANG();
+  log_environment();
 #elif defined _WIN32 || defined __WIN32__ || defined __CYGWIN__
   /* .exe's directory */
   log_info("Woe exe dir: %s\n", SDL_GetBasePath());
@@ -301,6 +334,11 @@ int App::main(int argc, char *argv[]) {
   if (!check_arg(argc, argv))
     return EXIT_FAILURE;
 
+#ifdef __ANDROID__
+  //log_debug_on();
+  SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
+#endif
+  
   /* SDL */
   /* Init timer subsystem */
   if (SDL_Init(SDL_INIT_TIMER) == -1) {
@@ -331,6 +369,8 @@ int App::main(int argc, char *argv[]) {
   {
 	  /** localization (l10n) for this D-Mod's .mo (after options are parsed) */
 	  char* dmod_localedir = paths_dmodfile("l10n");
+	  log_info("localedir: %s", LOCALEDIR);
+	  log_info("localedir for dmod: %s", dmod_localedir);
 	  bindtextdomain(paths_getdmodname(), dmod_localedir);
 	  bind_textdomain_codeset(paths_getdmodname(), "UTF-8");
 	  free(dmod_localedir);
