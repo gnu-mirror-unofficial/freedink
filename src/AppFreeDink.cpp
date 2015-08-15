@@ -214,13 +214,14 @@ void AppFreeDink::logic() {
 	updateFrame();
 
 	/* Renderers */
-	SDL_RenderClear(renderer);
-	debug_renderer_render();
-	dinkc_console_renderer_render();
-	if (!abort_this_flip)
+	if (!abort_this_flip) {
+		SDL_RenderClear(renderer);
+		debug_renderer_render();
+		dinkc_console_renderer_render();
 		flip_it(); // game area
-	freedink_controls_renderer_render();
-	SDL_RenderPresent(renderer);
+		freedink_controls_renderer_render();
+		SDL_RenderPresent(renderer);
+	}
 }
 
 /**
