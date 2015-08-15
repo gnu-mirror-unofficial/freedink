@@ -327,7 +327,9 @@ void draw_mgauge(int percent)
 }
 
 
-/* Draw screen lateral bars, the status bar and the magic jauge */
+/**
+ * Sync status with player stats, and redraw full status
+ */
 void draw_status_all(void)
 {
   {
@@ -371,141 +373,115 @@ void drawscreenlock() {
     gfx_blit_nocolorkey(GFX_k[seq[423].frame[10]].k, NULL, GFX_backbuffer, &dst);
 }
 
+/**
+ * Update player stats, and render status bar only as needed
+ */
+void update_status_all() {
+	bool drawexp = false;
+	int next = next_raise();
 
-void update_status_all(void)
-{
-        /*bool*/int drawexp = /*false*/0;
-        int next = next_raise();
-    int script;
-        if (next != fraise)
-        {
-                fraise += next / 40;
+	if (next != fraise) {
+		fraise += next / 40;
 
-                if (fraise > next) fraise = next;
-                //make noise here
-                drawexp = /*true*/1;
-                SoundPlayEffect( 13,15050, 0,0 ,0);
+		if (fraise > next)
+			fraise = next;
 
+		drawexp = true;
+		SoundPlayEffect(13,15050, 0,0 ,0);
+	}
 
-        }
-
-        if (*pexp != fexp
+	if (*pexp != fexp
 	    && ((game_choice.active == 0 && show_inventory == 0 && spr[1].freeze == 0)
-		|| fexp + 10 < fraise))
+	    || fexp + 10 < fraise)) {
+		//update screen experience
+		fexp += 10;
+		//make noise here
 
-        {
-                //update screen experience
-                fexp += 10;
-                //make noise here
+		if (fexp > *pexp)
+			fexp = *pexp;
 
-                if (fexp > *pexp) fexp = *pexp;
-                drawexp = /*true*/1;
-                SoundPlayEffect( 13,29050, 0,0 ,0);
+		drawexp = true;
+		SoundPlayEffect(13,29050, 0,0 ,0);
 
-                if (fexp >= fraise)
-                {
+		if (fexp >= fraise) {
+			*pexp -= next;
+			fexp = 0;
 
-                        *pexp -= next;
-                        fexp = 0;
+			int script = load_script("lraise", 1);
+			if (locate(script, "raise")) run_script(script);
+		}
+	}
 
-                        script = load_script("lraise", 1);
-                        if (locate(script, "raise")) run_script(script);
-                }
-        }
+	if (drawexp) {
+		draw_exp();
+	}
 
+	if (flifemax != *plifemax || flife != *plife) {
+		if (flifemax < *plifemax) flifemax++;
+		if (flifemax > *plifemax) flifemax--;
+		if (flife > *plife) flife--;
+		if (flife < *plife) flife++;
+		if (flife > *plife) flife--;
+		if (flife < *plife) flife++;
+		draw_bar(flifemax, 190);
+		draw_bar(flife, 451);
+	}
 
+	if (fstrength != *pstrength) {
+		if (fstrength < *pstrength) fstrength++;
+		if (fstrength > *pstrength) fstrength--;
+		SoundPlayEffect( 22,22050, 0,0 ,0);
+		draw_strength();
+	}
 
-        if (drawexp)
-        {
+	if (fdefense != *pdefense) {
+		if (fdefense < *pdefense) fdefense++;
+		if (fdefense > *pdefense) fdefense--;
+		SoundPlayEffect( 22,22050, 0,0 ,0);
+		draw_defense();
+	}
 
+	if (fmagic != *pmagic) {
+		if (fmagic < *pmagic) fmagic++;
+		if (fmagic > *pmagic) fmagic--;
+		SoundPlayEffect( 22,22050, 0,0 ,0);
+		draw_magic();
+	}
 
-                draw_exp();
-        }
+	if (fgold != *pgold) {
+		if (fgold < *pgold) {
+			fgold += 20;
+			if (fgold > *pgold) fgold = *pgold;
+		}
 
+		if (fgold > *pgold) {
+			fgold -= 20;
+			if (fgold < *pgold) fgold = *pgold;
+		}
+		SoundPlayEffect( 14,22050, 0,0 ,0);
+		draw_gold();
+	}
 
-        if ( (flifemax != *plifemax) || (flife != *plife) )
-        {
-                if (flifemax < *plifemax) flifemax++;
-                if (flifemax > *plifemax) flifemax--;
-                if (flife > *plife) flife--;
-                if (flife < *plife) flife++;
-                if (flife > *plife) flife--;
-                if (flife < *plife) flife++;
-                draw_bar(flifemax, 190);
-                draw_bar(flife, 451);
-        }
+	if (*pmagic_level < *pmagic_cost) {
+		if (show_inventory == 0)
+			*pmagic_level += *pmagic;
+		if (*pmagic_level > *pmagic_cost) *pmagic_level = *pmagic_cost;
+	}
 
-        if ( fstrength != *pstrength)
-        {
-                if (fstrength < *pstrength) fstrength++;
-                if (fstrength > *pstrength) fstrength--;
-                SoundPlayEffect( 22,22050, 0,0 ,0);
+	if (*pmagic_cost > 0) if (*pmagic_level > 0) {
+		int mnum = *pmagic_level * 100 / *pmagic_cost;
+		if (mnum != last_magic_draw) {
+			draw_mgauge(mnum);
+			last_magic_draw = mnum;
+		}
+	}
 
-                draw_strength();
-        }
+	spr[1].strength = fstrength;
+	spr[1].defense = fdefense;
 
-        if ( fdefense != *pdefense)
-        {
-                if (fdefense < *pdefense) fdefense++;
-                if (fdefense > *pdefense) fdefense--;
-                SoundPlayEffect( 22,22050, 0,0 ,0);
-                draw_defense();
-        }
-        if ( fmagic != *pmagic)
-        {
-                if (fmagic < *pmagic) fmagic++;
-                if (fmagic > *pmagic) fmagic--;
-                SoundPlayEffect( 22,22050, 0,0 ,0);
-                draw_magic();
-        }
-
-        if (fgold != *pgold)
-        {
-                if (fgold < *pgold)
-                {
-                        fgold += 20;
-                        if (fgold > *pgold) fgold = *pgold;
-                }
-
-                if (fgold > *pgold)
-                {
-                        fgold -= 20;
-                        if (fgold < *pgold) fgold = *pgold;
-                }
-                SoundPlayEffect( 14,22050, 0,0 ,0);
-                draw_gold();
-        }
-
-        if (*pmagic_level < *pmagic_cost)
-        {
-                if (show_inventory == 0)
-                        *pmagic_level += *pmagic;
-                if (*pmagic_level > *pmagic_cost) *pmagic_level = *pmagic_cost;
-        }
-        if (*pmagic_cost > 0) if (*pmagic_level > 0)
-        {
-                int mnum = *pmagic_level * 100 / *pmagic_cost;
-                if (mnum != last_magic_draw)
-                {
-
-                        draw_mgauge(mnum);
-
-                        //draw_status_all();
-                        last_magic_draw = mnum;
-
-
-                }
-        }
-
-
-        spr[1].strength = fstrength;
-        spr[1].defense = fdefense;
-
-
-        if (flife < 1)
-        {
-                script = load_script("dinfo", 1000);
-                if (locate(script, "die")) run_script(script);
-        }
-
+	if (flife < 1) {
+		int script = load_script("dinfo", 1000);
+		if (locate(script, "die"))
+			run_script(script);
+	}
 }
