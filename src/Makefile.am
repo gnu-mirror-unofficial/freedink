@@ -48,15 +48,16 @@ endif
 
 bin_PROGRAMS = freedink freedinkedit
 freedink_SOURCES = $(COMMON_OBJS) AppFreeDink.cpp AppFreeDink.h		\
-	freedink.cpp freedink.h freedink_main.cpp update_frame.cpp	\
-	update_frame.h brains.h brain.cpp brain.h brain_bounce.cpp	\
-	brain_button.cpp brain_diagonal.cpp brain_duck.cpp		\
-	brain_keyboard.cpp brain_lateral.cpp brain_missile.cpp		\
-	brain_mouse.cpp brain_none.cpp brain_onetime.cpp		\
-	brain_people.cpp brain_pig.cpp brain_repeat.cpp			\
-	brain_scale.cpp brain_shadow.cpp brain_text.cpp			\
-	dinkc_bindings.cpp dinkc_bindings.h dinkc.cpp dinkc.h		\
-	dinkc_console.cpp dinkc_console.h dinkc_console_renderer.cpp	\
+	IOTouchDragAnywhere.cpp IOTouchDragAnywhere.h freedink.cpp	\
+	freedink.h freedink_main.cpp update_frame.cpp update_frame.h	\
+	brains.h brain.cpp brain.h brain_bounce.cpp brain_button.cpp	\
+	brain_diagonal.cpp brain_duck.cpp brain_keyboard.cpp		\
+	brain_lateral.cpp brain_missile.cpp brain_mouse.cpp		\
+	brain_none.cpp brain_onetime.cpp brain_people.cpp		\
+	brain_pig.cpp brain_repeat.cpp brain_scale.cpp			\
+	brain_shadow.cpp brain_text.cpp dinkc_bindings.cpp		\
+	dinkc_bindings.h dinkc.cpp dinkc.h dinkc_console.cpp		\
+	dinkc_console.h dinkc_console_renderer.cpp			\
 	dinkc_console_renderer.h debug.cpp debug.h debug_renderer.cpp	\
 	debug_renderer.h game_choice.cpp game_choice.h			\
 	game_choice_renderer.cpp game_choice_renderer.h			\
@@ -123,7 +124,7 @@ if HAVE_TESTS
 check_PROGRAMS = test_str_util test_io_util TestEditorMap		\
 	test_editor_screen test_dinkini test_dinkc test_dinkc_console	\
 	test_dinkc_bindings test_live_sprites_manager test_brain_text	\
-	test_text test_integration
+	test_text TestIOTouchDragAnywhere test_integration
 .cxx.cpp:
 	$(CXXTESTGEN) --error-printer --include test_sdl_workaround.h -o $@ $<
 EXTRA_DIST += test_sdl_workaround.h
@@ -189,6 +190,8 @@ test_brain_text_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 test_text_SOURCES = test_text.cpp text.cpp live_sprites_manager.cpp	\
 	dinkini.cpp live_sprite.cpp rect.cpp gfx_sprites.cpp		\
 	str_util.cpp io_util.cpp fastfile.cpp paths.cpp msgbox.cpp
+TestIOTouchDragAnywhere_SOURCES = TestIOTouchDragAnywhere.cpp	\
+	IOTouchDragAnywhere.cpp
 test_integration_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	brain_bounce.cpp brain_button.cpp brain_diagonal.cpp		\
 	brain_duck.cpp brain_keyboard.cpp brain_lateral.cpp		\

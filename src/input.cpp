@@ -113,7 +113,7 @@ void input_init(void)
   /* No joystick events unless one is detected */
   SDL_JoystickEventState(SDL_IGNORE);
   /* We use SDL mouse emulation, no touchscreen-specific events */
-  SDL_EventState(SDL_FINGERMOTION, SDL_IGNORE);
+  // SDL_EventState(SDL_FINGERMOTION, SDL_IGNORE);
   /* We still process through a SDL_PollEvent() loop: */
   /* - SDL_QUIT: quit on window close and Ctrl+C */
   /* - SDL_MOUSEMOTION: required for SDL_SetRelativeMouseMode() */

@@ -98,6 +98,24 @@ void freedink_input_window(SDL_Event* ev) {
 	}
 }
 
+void log_touch(SDL_Event* ev) {
+	char* desc;
+	if (ev->type == SDL_FINGERUP) {
+		desc = "SDL_FINGERUP";
+	} else if (ev->type == SDL_FINGERDOWN) {
+		desc = "SDL_FINGERDOWN";
+	} else if (ev->type == SDL_FINGERMOTION) {
+		desc = "SDL_FINGERMOTION";
+	} else {
+		return;
+	}
+	SDL_TouchFingerEvent* tev = (SDL_TouchFingerEvent*)ev;
+	log_debug("%s @%d id%"SDL_PRIs64",%"SDL_PRIs64
+			 " (%f,%f) %f,%f p%f",
+			  desc, tev->timestamp, tev->touchId, tev->fingerId,
+			  tev->x, tev->y, tev->dx, tev->dy, tev->pressure);
+}
+
 void freedink_controls_renderer_render() {
 	// SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 
@@ -170,6 +188,8 @@ void AppFreeDink::input(SDL_Event* ev) {
 	}
 	
 	freedink_input_window(ev);
+	log_touch(ev);
+	touchConv.convertInput(ev);
 	if (ev->type == SDL_KEYUP
 		&& input_getscancodestate(ev->key.keysym.scancode) == SDL_PRESSED) {
 		// always tell the game when the player releases a key
