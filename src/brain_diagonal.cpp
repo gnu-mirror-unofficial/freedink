@@ -57,7 +57,7 @@ void pill_brain(int h)
 				//they killed it
 				check_for_kill_script(h);
 				
-				if (spr[h].brain == 9)
+				if (spr[h].brain == 9) // i.e. not overriden in sprite's die()
 				{
 					if (spr[h].dir == 0) spr[h].dir = 3;
 					change_dir_to_diag(&spr[h].dir);

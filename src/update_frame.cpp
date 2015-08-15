@@ -308,37 +308,36 @@ void updateFrame() {
 				goto animate;
 		}
 		
-		//brains - predefined bahavior patterns available to any sprite
 		if (spr[h].notouch && thisTickCount > spr[h].notouch_timer)
 			spr[h].notouch = /*false*/0;
-		
-		if (get_frame == false) {
-			if (spr[h].brain == 1) {
-				run_through_touch_damage_list(h);
-				if (process_warp == 0)
-					human_brain(h);
-			}
-			if (spr[h].brain == 2) bounce_brain(h);
-			if (spr[h].brain == 0) no_brain(h);
-			if (spr[h].brain == 3) duck_brain(h);
-			if (spr[h].brain == 4) pig_brain(h);
-			if (spr[h].brain == 5) one_time_brain(h);
-			if (spr[h].brain == 6) repeat_brain(h);
-			if (spr[h].brain == 7) one_time_brain_for_real(h);
-			if (spr[h].brain == 8) text_brain(h);
-			if (spr[h].brain == 9) pill_brain(h);
-			if (spr[h].brain == 10) dragon_brain(h);
-			if (spr[h].brain == 11) missile_brain(h, /*true*/1);
-			if (spr[h].brain == 12) scale_brain(h);
-			if (spr[h].brain == 13) mouse_brain(h);
-			if (spr[h].brain == 14) button_brain(h);
-			if (spr[h].brain == 15) shadow_brain(h);
-			if (spr[h].brain == 16) people_brain(h);
-			if (spr[h].brain == 17) missile_brain_expire(h);
-		} else {
+
+		if (get_frame)
 			goto past;
+
+		//brains - predefined bahavior patterns available to any sprite
+		if (spr[h].brain == 1) {
+			run_through_touch_damage_list(h);
+			if (process_warp == 0)
+				human_brain(h);
 		}
-		
+		if (spr[h].brain == 2) bounce_brain(h);
+		if (spr[h].brain == 0) no_brain(h);
+		if (spr[h].brain == 3) duck_brain(h);
+		if (spr[h].brain == 4) pig_brain(h);
+		if (spr[h].brain == 5) one_time_brain(h);
+		if (spr[h].brain == 6) repeat_brain(h);
+		if (spr[h].brain == 7) one_time_brain_for_real(h);
+		if (spr[h].brain == 8) text_brain(h);
+		if (spr[h].brain == 9) pill_brain(h);
+		if (spr[h].brain == 10) dragon_brain(h);
+		if (spr[h].brain == 11) missile_brain(h, /*true*/1);
+		if (spr[h].brain == 12) scale_brain(h);
+		if (spr[h].brain == 13) mouse_brain(h);
+		if (spr[h].brain == 14) button_brain(h);
+		if (spr[h].brain == 15) shadow_brain(h);
+		if (spr[h].brain == 16) people_brain(h);
+		if (spr[h].brain == 17) missile_brain_expire(h);
+
 	animate:
 		move_result = check_if_move_is_legal(h);
 		
