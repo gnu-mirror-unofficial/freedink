@@ -397,10 +397,10 @@ void updateFrame() {
 		drawscreenlock();
 	}
 	
-	for (int j2 = 0; j2 <= max_s; j2++) {
-	    int h = rank[j2];
-	    if (h > 0 && spr[h].active && spr[h].brain == 8)
-			text_draw(h);
+	for (int j = 0; j <= max_s; j++) {
+	    int sprite = rank[j];
+	    if (sprite > 0 && spr[sprite].active && spr[sprite].brain == 8)
+			text_draw(sprite);
 	}
     
     
