@@ -369,71 +369,8 @@ void updateFrame() {
 		draw_sprite_game(GFX_backbuffer, h);
 	} /* for 0->max_s */
 	
- 
-	if (mode == 0)
-	{
-		
-	  memset(&spr[1], 0, sizeof(spr[1]));
-		
-		spr[1].speed = 3;
-		/* init_mouse(hWndMain); */
-		/* g_pMouse->Acquire(); */
-		
-		spr[1].timing = 0;
-		spr[1].brain = 1;
-		spr[1].hard = 1;
-		spr[1].pseq = 2;
-		spr[1].pframe = 1;
-		spr[1].seq = 2;
-		spr[1].dir = 2;
-		spr[1].damage = 0;
-		spr[1].strength = 10;
-		spr[1].defense = 0;
-		spr[1].skip = 0;
-		rect_set(&spr[1].alt,0,0,0,0);
-		spr[1].base_idle = 10;
-		spr[1].base_walk = -1;
-		spr[1].size = 100;		 
-		spr[1].base_hit = 100;
-		spr[1].active = /*TRUE*/1;
-		spr[1].custom = new std::map<std::string, int>;
+	apply_mode();
 
-		SDL_WarpMouseInWindow(window, spr[1].x, spr[1].y);
-		
-		int crap2 = add_sprite(0,450,8,0,0);
-		
-		
-		spr[crap2].hard = 1;
-		spr[crap2].noclip = 1;
-		strcpy(spr[crap2].text, dversion_string);
-		
-		spr[crap2].damage = -1;
-		spr[crap2].owner = 1000;
-		
-		
-		
-		int scr = load_script("START", 1000);
-		if (locate(scr, "MAIN") == /*false*/0)
-		{
-			log_error("Can't locate MAIN in script START!");
-		}
-
-		run_script(scr);
-		set_mode(1);
-		
-	}
-	
-	
-	
-	if (mode == 2)
-	{
-	  set_mode(3);
-	  game_load_screen(g_map.loc[*pplayer_map]);
-	  draw_screen_game();
-	  flife = *plife;
-	}
-	
-	
 	/* Screen transition? */
 	if (spr[1].active && spr[1].brain == 1) {
 	  if (did_player_cross_screen()) {

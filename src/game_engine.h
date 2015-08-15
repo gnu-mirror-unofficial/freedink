@@ -119,6 +119,7 @@ extern void draw_screen_game_background(void);
 extern void draw_sprite_game(SDL_Surface *GFX_lpdest, int h);
 
 extern void set_mode(int new_mode);
+extern void apply_mode();
 extern void set_keep_mouse(int on);
 
 #endif

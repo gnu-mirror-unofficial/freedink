@@ -47,6 +47,7 @@
 #include "dinkc.h"
 #include "dinkc_bindings.h"
 #include "game_state.h"
+#include "status.h"
 
 
 int dversion = 108;
@@ -778,6 +779,64 @@ void set_mode(int new_mode) {
     SDL_SetWindowGrab(window, SDL_TRUE);
   }
 }
+
+
+/**
+ * Prepare mode 1 (mouse interaction / title screen / START.c)
+ */
+void apply_mode0() {
+	memset(&spr[1], 0, sizeof(spr[1]));
+	spr[1].speed = 3;
+	spr[1].timing = 0;
+	spr[1].brain = 1;
+	spr[1].hard = 1;
+	spr[1].pseq = 2;
+	spr[1].pframe = 1;
+	spr[1].seq = 2;
+	spr[1].dir = 2;
+	spr[1].damage = 0;
+	spr[1].strength = 10;
+	spr[1].defense = 0;
+	spr[1].skip = 0;
+	rect_set(&spr[1].alt, 0, 0, 0, 0);
+	spr[1].base_idle = 10;
+	spr[1].base_walk = -1;
+	spr[1].size = 100;
+	spr[1].base_hit = 100;
+	spr[1].active = /*TRUE*/1;
+	spr[1].custom = new std::map<std::string, int>;
+
+	SDL_WarpMouseInWindow(window, spr[1].x, spr[1].y);
+
+	int version_text = add_sprite(0, 450, 8, 0, 0);
+	spr[version_text].hard = 1;
+	spr[version_text].noclip = 1;
+	strcpy(spr[version_text].text, dversion_string);
+	spr[version_text].damage = -1;
+	spr[version_text].owner = 1000;
+
+	int scr = load_script("START", 1000);
+	if (locate(scr, "MAIN") == /*false*/0) {
+		log_error("Can't locate MAIN in script START!");
+	}
+
+	run_script(scr);
+}
+
+void apply_mode() {
+	if (mode == 0) {
+		apply_mode0();
+		set_mode(1);
+	}
+
+	if (mode == 2) {
+		set_mode(3);
+		game_load_screen(g_map.loc[*pplayer_map]);
+		draw_screen_game();
+		flife = *plife;
+	}
+}
+
 
 void set_keep_mouse(int on) {
   keep_mouse = on;
