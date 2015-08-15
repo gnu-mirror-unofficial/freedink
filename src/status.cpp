@@ -226,7 +226,7 @@ void draw_icons()
 /** draw_virtical, draw_hor, draw_virt2, draw_hor2: used to draw the
     magic jauge (in that order) (dinkvar.cpp:draw_mlevel() only) **/
 
-void draw_virtical(int percent, int mx, int my, int mseq, int mframe)
+void draw_mgauge_ver1(int percent, int mx, int my, int mseq, int mframe)
 {
   int cut;
   if (percent > 25) percent = 25;
@@ -248,7 +248,7 @@ void draw_virtical(int percent, int mx, int my, int mseq, int mframe)
   gfx_blit_nocolorkey(GFX_k[seq[mseq].frame[mframe]].k, &src, GFX_background, &dst);
 }
 
-void draw_virt2(int percent, int mx, int my, int mseq, int mframe)
+void draw_mgauge_ver2(int percent, int mx, int my, int mseq, int mframe)
 {
   int cut;
   if (percent > 25) percent = 25;
@@ -267,7 +267,7 @@ void draw_virt2(int percent, int mx, int my, int mseq, int mframe)
   gfx_blit_nocolorkey(GFX_k[seq[mseq].frame[mframe]].k, &src, GFX_background, &dst);
 }
 
-void draw_hor(int percent, int mx, int my, int mseq, int mframe)
+void draw_mgauge_hor1(int percent, int mx, int my, int mseq, int mframe)
 {
   int cut;
   if (percent > 25) percent = 25;
@@ -287,7 +287,7 @@ void draw_hor(int percent, int mx, int my, int mseq, int mframe)
   gfx_blit_nocolorkey(GFX_k[seq[mseq].frame[mframe]].k, &src, GFX_background, &dst);
 }
 
-void draw_hor2(int percent, int mx, int my, int mseq, int mframe)
+void draw_mgauge_hor2(int percent, int mx, int my, int mseq, int mframe)
 {
   int cut;
   if (percent > 25) percent = 25;
@@ -309,7 +309,7 @@ void draw_hor2(int percent, int mx, int my, int mseq, int mframe)
   gfx_blit_nocolorkey(GFX_k[seq[mseq].frame[mframe]].k, &src, GFX_background, &dst);
 }
 
-void draw_mlevel(int percent)
+void draw_mgauge(int percent)
 {
   //if (*pmagic_level < 1) return;
 
@@ -317,13 +317,13 @@ void draw_mlevel(int percent)
   int bary = 6;
   int barx = 7;
 
-  if (percent > 0) draw_virtical(percent, 149, 411, mseq, bary);
+  if (percent > 0) draw_mgauge_ver1(percent, 149, 411, mseq, bary);
   percent -= 25;
-  if (percent > 0) draw_hor(percent, 149, 409, mseq, barx);
+  if (percent > 0) draw_mgauge_hor1(percent, 149, 409, mseq, barx);
   percent -= 25;
-  if (percent > 0) draw_virt2(percent, 215, 411, mseq, bary);
+  if (percent > 0) draw_mgauge_ver2(percent, 215, 411, mseq, bary);
   percent -= 25;
-  if (percent > 0) draw_hor2(percent, 149, 466, mseq, barx);
+  if (percent > 0) draw_mgauge_hor2(percent, 149, 466, mseq, barx);
 }
 
 
@@ -359,7 +359,7 @@ void draw_status_all(void)
   draw_level();
   draw_icons();
   if (*pmagic_cost > 0 && *pmagic_level > 0)
-    draw_mlevel(*pmagic_level * 100 / *pmagic_cost);
+    draw_mgauge(*pmagic_level * 100 / *pmagic_cost);
 }
 
 /**
@@ -488,7 +488,7 @@ void update_status_all(void)
                 if (mnum != last_magic_draw)
                 {
 
-                        draw_mlevel(mnum);
+                        draw_mgauge(mnum);
 
                         //draw_status_all();
                         last_magic_draw = mnum;
