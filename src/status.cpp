@@ -33,11 +33,9 @@
 #include "gfx.h" /* gfx_blit_nocolorkey */
 #include "gfx_sprites.h" /* GFX_k */
 #include "dinkini.h" /* check_seq_status */
-#include "live_sprites_manager.h"
+#include "live_sprites_manager.h" /* spr */
 #include "sfx.h"
-#include "game_choice.h"
-#include "editor_screen.h" /* spr */
-
+#include "game_choice.h" /* game_choice.active */
 #include "game_engine.h" /* show_inventory */
 
 /* Status animations */
@@ -51,7 +49,6 @@ static int fstrength, fdefense, fmagic,
 static int draw_num(int mseq, char* nums, int mx, int my)
 {
   int length = 0;
-/*   HRESULT             ddrval; */
   int rnum = 0;
 
   for (unsigned int i = 0; i < strlen(nums); i++)
@@ -67,39 +64,18 @@ static int draw_num(int mseq, char* nums, int mx, int my)
       else if (nums[i] == '8') rnum = 8;
       else if (nums[i] == '9') rnum = 9;
       else if (nums[i] == '/') rnum = 11;
-/*     again: */
       if ((rnum != 11) && (!(mseq == SEQ_LEVEL_NUMS)))
 	{
-/* 	  ddrval = lpDDSTwo->BltFast(mx+length, my, k[seq[mseq].frame[rnum]].k, */
-/* 				     &k[seq[mseq].frame[rnum]].box, DDBLTFAST_NOCOLORKEY); */
-	  // GFX
-	  {
 	    SDL_Rect dst = {mx+length, my};
 	    gfx_blit_nocolorkey(GFX_k[seq[mseq].frame[rnum]].k, NULL, GFX_background, &dst);
-	  }
 	}
       else
 	{
-/* 	  ddrval = lpDDSTwo->BltFast(mx+length, my, k[seq[mseq].frame[rnum]].k, */
-/* 				     &k[seq[mseq].frame[rnum]].box, DDBLTFAST_SRCCOLORKEY); */
-	  /* Draw experience level number _with_ transparency */
-	  // GFX
-	  {
 	    SDL_Rect dst = {mx+length, my};
 	    SDL_BlitSurface(GFX_k[seq[mseq].frame[rnum]].k, NULL, GFX_background, &dst);
-	  }
 	}
 
-
-/*       if (ddrval != DD_OK) */
-/* 	{ */
-/* 	  if (ddrval == DDERR_WASSTILLDRAWING) goto again; */
-/* 	  //dderror(ddrval); */
-/* 	} */
-/*       else */
-/* 	{ */
 	  length += k[seq[mseq].frame[rnum]].box.right;
-/* 	} */
     }
   return(length);
 }
@@ -182,23 +158,14 @@ void draw_bar(int life, int seqman)
 	  if (rem != 0)
 	    {
 	      rect_copy(&box, &k[seq[seqman].frame[rnum]].box);
-	      //Msg("Drawing part bar . cur is %d", rem);
 	      box.right = (box.right * ((rem) * 10)/100);
 	      //woah, there is part of a bar remaining.  Lets do it.
-/* 	    again: */
-/* 	      ddrval = lpDDSTwo->BltFast(curx, cury, k[seq[seqman].frame[rnum]].k, */
-/* 					 &box, DDBLTFAST_NOCOLORKEY); */
-/* 	      if (ddrval == DDERR_WASSTILLDRAWING) */
-/* 		goto again; */
-	      // GFX
-	      {
 		SDL_Rect src, dst;
 		src.x = 0; src.y = 0;
 		src.w = GFX_k[seq[seqman].frame[rnum]].k->w * (rem * 10) / 100;
 		src.h = GFX_k[seq[seqman].frame[rnum]].k->h;
 		dst.x = curx; dst.y = cury;
 		gfx_blit_nocolorkey(GFX_k[seq[seqman].frame[rnum]].k, &src, GFX_background, &dst);
-	      }
 	    }
 	  //are we done?
 	  return;
@@ -210,19 +177,11 @@ void draw_bar(int life, int seqman)
 
       if ((cur / 10) * 10 == cur)
 	{
-/* 	again2: */
-/* 	  ddrval = lpDDSTwo->BltFast( curx, cury, k[seq[seqman].frame[rnum]].k, */
-/* 				      &k[seq[seqman].frame[rnum]].box  , DDBLTFAST_NOCOLORKEY); */
-/* 	  if (ddrval == DDERR_WASSTILLDRAWING) goto again2; */
-	  // GFX
-	  {
 	    SDL_Rect dst;
 	    dst.x = curx;
 	    dst.y = cury;
 	    gfx_blit_nocolorkey(GFX_k[seq[seqman].frame[rnum]].k, NULL, GFX_background, &dst);
-	  }
 
-	  //if (ddrval != DD_OK) dderror(ddrval);
 	  curx += k[seq[seqman].frame[rnum]].box.right;
 	  if (cur == 110)
 	    {cury += k[seq[seqman].frame[rnum]].box.bottom+5;
@@ -248,7 +207,6 @@ void draw_icons()
 {
   if (*pcur_weapon >= 1 && *pcur_weapon <= NB_ITEMS && play.item[*pcur_weapon - 1].active)
     {
-      //disarm old weapon
       check_seq_status(play.item[*pcur_weapon - 1].seq);
       SDL_Rect dst = {557, 413};
       SDL_BlitSurface(GFX_k[seq[play.item[*pcur_weapon - 1].seq].frame[play.item[*pcur_weapon - 1].frame]].k, NULL,
@@ -257,7 +215,6 @@ void draw_icons()
 
   if (*pcur_magic >= 1 && *pcur_magic <= NB_MITEMS && play.mitem[*pcur_magic - 1].active)
     {
-      //disarm old weapon
       check_seq_status(play.mitem[*pcur_magic - 1].seq);
       SDL_Rect dst = {153, 413};
       SDL_BlitSurface(GFX_k[seq[play.mitem[*pcur_magic - 1].seq].frame[play.mitem[*pcur_magic - 1].frame]].k, NULL,
@@ -282,19 +239,13 @@ void draw_virtical(int percent, int mx, int my, int mseq, int mframe)
 
   my += (full - cut);
 
-/*   ddrval = lpDDSTwo->BltFast(mx, my, k[seq[mseq].frame[mframe]].k, */
-/* 			     &myrect, DDBLTFAST_NOCOLORKEY); */
-  // GFX
-  {
-    /* TODO: test me! */
-    SDL_Rect src, dst;
-    src.x = src.y = 0;
-    src.w = GFX_k[seq[mseq].frame[mframe]].k->w;
-    src.h = GFX_k[seq[mseq].frame[mframe]].k->h * percent / 100;
-    dst.x = mx;
-    dst.y = my;
-    gfx_blit_nocolorkey(GFX_k[seq[mseq].frame[mframe]].k, &src, GFX_background, &dst);
-  }
+  SDL_Rect src, dst;
+  src.x = src.y = 0;
+  src.w = GFX_k[seq[mseq].frame[mframe]].k->w;
+  src.h = GFX_k[seq[mseq].frame[mframe]].k->h * percent / 100;
+  dst.x = mx;
+  dst.y = my;
+  gfx_blit_nocolorkey(GFX_k[seq[mseq].frame[mframe]].k, &src, GFX_background, &dst);
 }
 
 void draw_virt2(int percent, int mx, int my, int mseq, int mframe)
@@ -308,19 +259,12 @@ void draw_virt2(int percent, int mx, int my, int mseq, int mframe)
   cut = (full * percent) / 100;
   myrect.bottom = cut;
 
-/*  again: */
-/*   ddrval = lpDDSTwo->BltFast( mx, my, k[seq[mseq].frame[mframe]].k, */
-/* 			      &myrect, DDBLTFAST_NOCOLORKEY); */
-/*   if (ddrval == DDERR_WASSTILLDRAWING) goto again; */
-  // GFX
-  {
-    SDL_Rect src, dst;
-    src.x = src.y = 0;
-    src.w = GFX_k[seq[mseq].frame[mframe]].k->w;
-    src.h = GFX_k[seq[mseq].frame[mframe]].k->h * percent / 100;
-    dst.x = mx; dst.y = my;
-    gfx_blit_nocolorkey(GFX_k[seq[mseq].frame[mframe]].k, &src, GFX_background, &dst);
-  }
+  SDL_Rect src, dst;
+  src.x = src.y = 0;
+  src.w = GFX_k[seq[mseq].frame[mframe]].k->w;
+  src.h = GFX_k[seq[mseq].frame[mframe]].k->h * percent / 100;
+  dst.x = mx; dst.y = my;
+  gfx_blit_nocolorkey(GFX_k[seq[mseq].frame[mframe]].k, &src, GFX_background, &dst);
 }
 
 void draw_hor(int percent, int mx, int my, int mseq, int mframe)
@@ -334,20 +278,13 @@ void draw_hor(int percent, int mx, int my, int mseq, int mframe)
   cut = (full * percent) / 100;
   full = cut;
   myrect.right = full;
-/*  again: */
-/*   ddrval = lpDDSTwo->BltFast( mx, my, k[seq[mseq].frame[mframe]].k, */
-/* 			      &myrect, DDBLTFAST_NOCOLORKEY); */
-/*   if (ddrval == DDERR_WASSTILLDRAWING) goto again; */
-  // GFX
-  {
-    /* TODO: test me! */
-    SDL_Rect src, dst;
-    src.x = src.y = 0;
-    src.w = GFX_k[seq[mseq].frame[mframe]].k->w * percent / 100;
-    src.h = GFX_k[seq[mseq].frame[mframe]].k->h;
-    dst.x = mx; dst.y = my;
-    gfx_blit_nocolorkey(GFX_k[seq[mseq].frame[mframe]].k, &src, GFX_background, &dst);
-  }
+
+  SDL_Rect src, dst;
+  src.x = src.y = 0;
+  src.w = GFX_k[seq[mseq].frame[mframe]].k->w * percent / 100;
+  src.h = GFX_k[seq[mseq].frame[mframe]].k->h;
+  dst.x = mx; dst.y = my;
+  gfx_blit_nocolorkey(GFX_k[seq[mseq].frame[mframe]].k, &src, GFX_background, &dst);
 }
 
 void draw_hor2(int percent, int mx, int my, int mseq, int mframe)
@@ -363,20 +300,13 @@ void draw_hor2(int percent, int mx, int my, int mseq, int mframe)
   myrect.right = cut;
   mx += (full - cut);
 
-/*  again: */
-/*   ddrval = lpDDSTwo->BltFast( mx, my, k[seq[mseq].frame[mframe]].k, */
-/* 			      &myrect, DDBLTFAST_NOCOLORKEY); */
-/*   if (ddrval == DDERR_WASSTILLDRAWING) goto again; */
-  // GFX
-  {
-    SDL_Rect src, dst;
-    src.x = src.y = 0;
-    src.w = GFX_k[seq[mseq].frame[mframe]].k->w * percent / 100;
-    src.h = GFX_k[seq[mseq].frame[mframe]].k->h;
-    dst.x = mx;
-    dst.y = my;
-    gfx_blit_nocolorkey(GFX_k[seq[mseq].frame[mframe]].k, &src, GFX_background, &dst);
-  }
+  SDL_Rect src, dst;
+  src.x = src.y = 0;
+  src.w = GFX_k[seq[mseq].frame[mframe]].k->w * percent / 100;
+  src.h = GFX_k[seq[mseq].frame[mframe]].k->h;
+  dst.x = mx;
+  dst.y = my;
+  gfx_blit_nocolorkey(GFX_k[seq[mseq].frame[mframe]].k, &src, GFX_background, &dst);
 }
 
 void draw_mlevel(int percent)
@@ -400,34 +330,10 @@ void draw_mlevel(int percent)
 /* Draw screen lateral bars, the status bar and the magic jauge */
 void draw_status_all(void)
 {
-/*   RECT rcRect; */
-/*   rcRect.left = 0; */
-/*   rcRect.top = 0; */
-/*   rcRect.right = 640; */
-/*   rcRect.bottom = 80; */
-/*  again: */
-/*   ddrval = lpDDSTwo->BltFast(0, 400, k[seq[180].frame[3]].k, */
-/* 			     &rcRect, DDBLTFAST_NOCOLORKEY); */
-/*   if (ddrval == DDERR_WASSTILLDRAWING) goto again; */
-  // GFX
   {
     SDL_Rect src = {0, 0, 640, 80}, dst = {0, 400};
     gfx_blit_nocolorkey(GFX_k[seq[180].frame[3]].k, &src, GFX_background, &dst);
   }
-
-/*   rcRect.left = 0; */
-/*   rcRect.top = 0; */
-/*   rcRect.right = 20; */
-/*   rcRect.bottom = 400; */
-/*  again2: */
-/*   ddrval = lpDDSTwo->BltFast(0, 0, k[seq[180].frame[1]].k, */
-/* 			     &rcRect, DDBLTFAST_NOCOLORKEY); */
-/*   if (ddrval == DDERR_WASSTILLDRAWING) goto again2; */
-/*  again3: */
-/*   ddrval = lpDDSTwo->BltFast(620, 0, k[seq[180].frame[2]].k, */
-/* 			     &rcRect, DDBLTFAST_NOCOLORKEY); */
-/*   if (ddrval == DDERR_WASSTILLDRAWING) goto again3; */
-  // GFX
   {
     SDL_Rect src = {0, 0, 20, 400}, dst1 = {0, 0}, dst2 = {620, 0};
     gfx_blit_nocolorkey(GFX_k[seq[180].frame[1]].k, &src, GFX_background, &dst1);
