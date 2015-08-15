@@ -22,7 +22,7 @@
 
 /* Engine variables directly mapped with DinkC variables */
 int *pvision, *plife, *presult, *pspeed, *ptiming, *plifemax,
-	*pexper, *pstrength, *pcur_weapon, *pcur_magic, *pdefense,
+	*pexp, *pstrength, *pcur_weapon, *pcur_magic, *pdefense,
 	*pgold, *pmagic, *plevel, *plast_text, *pmagic_level,
 	*pplayer_map, *pupdate_status, *pmissile_target, *penemy_sprite,
 	*pmagic_cost, *pmissle_source;

@@ -341,8 +341,8 @@ void draw_status_all(void)
   }
 
   fraise = next_raise();
-  if (*pexper < fraise)
-    fexp = *pexper;
+  if (*pexp < fraise)
+    fexp = *pexp;
   else
     fexp = fraise - 1;
   fstrength = *pstrength;
@@ -389,7 +389,7 @@ void update_status_all(void)
 
         }
 
-        if (*pexper != fexp
+        if (*pexp != fexp
 	    && ((game_choice.active == 0 && show_inventory == 0 && spr[1].freeze == 0)
 		|| fexp + 10 < fraise))
 
@@ -398,14 +398,14 @@ void update_status_all(void)
                 fexp += 10;
                 //make noise here
 
-                if (fexp > *pexper) fexp = *pexper;
+                if (fexp > *pexp) fexp = *pexp;
                 drawexp = /*true*/1;
                 SoundPlayEffect( 13,29050, 0,0 ,0);
 
                 if (fexp >= fraise)
                 {
 
-                        *pexper -= next;
+                        *pexp -= next;
                         fexp = 0;
 
                         script = load_script("lraise", 1);

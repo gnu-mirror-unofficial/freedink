@@ -241,7 +241,7 @@ void add_exp_force(int num, int source_sprite)
   if (num > 0)
     {
       //add experience
-      *pexper += num;
+      *pexp += num;
 
       int crap2 = add_sprite(spr[source_sprite].x, spr[source_sprite].y, 8, 0, 0);
       spr[crap2].y -= k[seq[spr[source_sprite].pseq].frame[spr[source_sprite].pframe]].yoffset;
@@ -257,8 +257,8 @@ void add_exp_force(int num, int source_sprite)
       spr[crap2].dir = 8;
       spr[crap2].damage = num;
       
-      if (*pexper > 99999)
-	*pexper = 99999;
+      if (*pexp > 99999)
+	*pexp = 99999;
     }
 }
 

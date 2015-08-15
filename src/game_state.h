@@ -91,7 +91,7 @@ extern unsigned int dink_base_push; /* base Dink push sequence, cf. set_dink_bas
 
 /* Engine variables directly mapped with DinkC variables */
 extern int *pvision, *plife, *presult, *pspeed, *ptiming, *plifemax,
-  *pexper, *pstrength, *pcur_weapon,*pcur_magic, *pdefense,
+  *pexp, *pstrength, *pcur_weapon,*pcur_magic, *pdefense,
   *pgold, *pmagic, *plevel, *plast_text, *pplayer_map, *pmagic_level,
   *pupdate_status, *pmissile_target, *penemy_sprite,
   *pmagic_cost, *pmissle_source;

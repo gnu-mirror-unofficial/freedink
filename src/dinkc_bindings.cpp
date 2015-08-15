@@ -1994,7 +1994,7 @@ void attach(void)
       if (compare("&speed", play.var[i].name)) pspeed = &play.var[i].var;
       if (compare("&timing", play.var[i].name))	ptiming = &play.var[i].var;
       if (compare("&lifemax", play.var[i].name)) plifemax = &play.var[i].var;
-      if (compare("&exp", play.var[i].name)) pexper = &play.var[i].var;
+      if (compare("&exp", play.var[i].name)) pexp = &play.var[i].var;
       if (compare("&strength", play.var[i].name))  pstrength = &play.var[i].var;
       if (compare("&defense", play.var[i].name))  pdefense = &play.var[i].var;
       if (compare("&gold", play.var[i].name))  pgold = &play.var[i].var;
