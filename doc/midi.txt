@@ -1,3 +1,12 @@
+I can't say if Dink player used Windows' early MIDI software emulation
+or relied on their Sound Blaster-compatible card MIDI synthetizer.
+https://en.wikipedia.org/wiki/MIDI#Game_music
+
+Anyway, the point isn't to perfectly emulate the MIDI of the late
+90's, especially since it varied among PCs.  The point is to get
+decent playing of all the MIDI files included in D-Mods.
+
+
 TiMidity++
 ==========
 
@@ -112,6 +121,55 @@ http://bugs.debian.org/726912
 ScummVM
 =======
 
-ScummVM implements a few MIDI backends, including two AdLib card
+ScummVM implements a few MIDI backends, including two AdLib+OPL card
 emulators:
+
 http://wiki.scummvm.org/index.php/User_Manual/Appendix:_Music_and_sound
+http://forums.scummvm.org/viewtopic.php?t=11625
+
+Principle of operation: ScummVM offers an emulated sound card
+compatible with the AdLib brand.  The card included an hardware
+synthetizer called OPL which is emulated too and is the core of the
+sound output.
+
+The OPL emulator is based on either MAME or DOSBox. You can try it
+with e.g. DOSBox + MIDIer.
+
+http://www.dosbox.com/wiki/Sound#Sound_Blaster
+http://www.pldos.pl/windos/midier.htm
+
+The Chocolate Doom port has interesting background information on the
+sound card that produced the MIDI output of the early 90's:
+
+http://www.chocolate-doom.org/wiki/index.php/OPL_MIDI
+http://www.chocolate-doom.org/wiki/index.php/Opl-branch
+https://github.com/chocolate-doom/chocolate-doom/blob/master/README.Music
+
+After discussing with ScummVM contributors, it doesn't seem easy to
+setup, and provides only minimal sound fonts.
+
+In addition, this is a bit too early for us: Dink was released during
+the late 90's, and DOSBox tests sound even more old-school than Dink.
+
+
+AdPlug
+======
+
+AdPlug also has support for standalone MIDI playing.  Test with the
+'adplay' tool.  It stays silent on 104.mid and Bullythe.mid AFAICH.
+
+
+Duke Nukem 3D comparison
+========================
+
+Duke3D was released about the same time as Dink, and also relied on
+MIDI files, which makes it a good comparison.  Interestingly,
+retrogaming effort was focused on producing .ogg files compatible with
+the original rather than working on software synthesis.
+
+http://vision.gel.ulaval.ca/~klein/duke3d/
+http://vision.gel.ulaval.ca/~klein/duke3d/musicpack_sc55.zip
+
+However, these songs focus on how they should have been heard, that is
+using the composer's very synthesizer.  They don't sound at all like
+what you heard when playing on common PC.
