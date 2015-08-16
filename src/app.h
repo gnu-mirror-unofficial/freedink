@@ -48,7 +48,7 @@ public:
 
 	void print_version();
 	void print_help(int argc, char *argv[]);
-	int check_arg(int argc, char *argv[]);
+	bool check_arg(int argc, char *argv[]);
 };
 
 #endif

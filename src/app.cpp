@@ -224,7 +224,7 @@ App::App() :
  * Check the command line arguments and initialize the required global
  * variables
  */
-int App::check_arg(int argc, char *argv[]) {
+bool App::check_arg(int argc, char *argv[]) {
 	int c;
 	char *refdir_opt = NULL;
 	char *dmoddir_opt = NULL;
@@ -295,7 +295,7 @@ int App::check_arg(int argc, char *argv[]) {
 			printf(_("Note: -nomovie is accepted for compatiblity, but has no effect.\n"));
 			break;
 		default:
-			exit(EXIT_FAILURE);
+			return false;
 		}
     }
 	
@@ -304,7 +304,7 @@ int App::check_arg(int argc, char *argv[]) {
 		while (optind < argc)
 			fprintf(stderr, "%s ", argv[optind++]);
 		printf(" (did you forget '--game'?)\n");
-		exit(EXIT_FAILURE);
+		return false;
 	}
 	
 	log_init();
@@ -325,7 +325,7 @@ int App::check_arg(int argc, char *argv[]) {
     }
 	
 	log_info("Game directory is '%s'.", paths_getdmoddir());
-	return 1;
+	return true;
 }
 
 /* freedink and freedinkedit's common init procedure. This procedure

@@ -57,11 +57,13 @@ void log_output(void *userdata,
 }
 
 void log_init() {
+  /* Decorate default SDL log */
   SDL_LogGetOutputFunction(&sdl_logger, NULL);
   SDL_LogSetOutputFunction(log_output, NULL);
 }
 
 void log_quit() {
+  SDL_LogSetOutputFunction(sdl_logger, NULL);
   if (init_error_msg != NULL)
     free(init_error_msg);
 }
