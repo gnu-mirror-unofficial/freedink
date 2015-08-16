@@ -169,10 +169,18 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
   SDL_RendererInfo info;
   SDL_GetRendererInfo(renderer, &info);
   log_info("Renderer driver: %s", info.name);
-  /* Uint32 flags a mask of supported renderer flags; see Remarks for details */
+  log_info("Renderer flags:");
+  if (info.flags & SDL_RENDERER_SOFTWARE)
+    log_info("  SDL_RENDERER_SOFTWARE");
+  if (info.flags & SDL_RENDERER_ACCELERATED)
+    log_info("  SDL_RENDERER_ACCELERATED");
+  if (info.flags & SDL_RENDERER_PRESENTVSYNC)
+    log_info("  SDL_RENDERER_PRESENTVSYNC");
+  if (info.flags & SDL_RENDERER_TARGETTEXTURE)
+    log_info("  SDL_RENDERER_TARGETTEXTURE");
+  log_info("Renderer texture formats:");
   for (unsigned int i = 0; i < info.num_texture_formats; i++)
-    log_info("Renderer texture formats: %s",
-	     SDL_GetPixelFormatName(info.texture_formats[i]));
+    log_info("  %s", SDL_GetPixelFormatName(info.texture_formats[i]));
   log_info("Renderer max texture width: %d", info.max_texture_width);
   log_info("Renderer max texture height: %d", info.max_texture_height);
 
