@@ -112,6 +112,39 @@ enum gfx_init_state gfx_get_init_state()
   return init_state;
 }
 
+void logRendererInfo(SDL_RendererInfo* info) {
+	log_info("  Renderer driver: %s", info->name);
+	log_info("  Renderer flags:");
+	if (info->flags & SDL_RENDERER_SOFTWARE)
+		log_info("    SDL_RENDERER_SOFTWARE");
+	if (info->flags & SDL_RENDERER_ACCELERATED)
+		log_info("    SDL_RENDERER_ACCELERATED");
+	if (info->flags & SDL_RENDERER_PRESENTVSYNC)
+		log_info("    SDL_RENDERER_PRESENTVSYNC");
+	if (info->flags & SDL_RENDERER_TARGETTEXTURE)
+		log_info("    SDL_RENDERER_TARGETTEXTURE");
+	log_info("  Renderer texture formats:");
+	for (unsigned int i = 0; i < info->num_texture_formats; i++)
+		log_info("    %s", SDL_GetPixelFormatName(info->texture_formats[i]));
+	log_info("  Renderer max texture width: %d", info->max_texture_width);
+	log_info("  Renderer max texture height: %d", info->max_texture_height);
+}
+
+void logRenderersInfo() {
+	log_info("Available renderers:");
+	for (int i = 0; i < SDL_GetNumRenderDrivers(); i++) {
+		SDL_RendererInfo info;
+		SDL_GetRenderDriverInfo(i, &info);
+		log_info("%d:\n", i);
+		logRendererInfo(&info);
+	}
+
+	log_info("current:\n");
+	SDL_RendererInfo info;
+	SDL_GetRendererInfo(renderer, &info);
+	logRendererInfo(&info);
+}
+
 /**
  * Graphics subsystem initalization
  */
@@ -166,23 +199,7 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
   // Specify aspect ratio
   SDL_RenderSetLogicalSize(renderer, 640, 480);
 
-  SDL_RendererInfo info;
-  SDL_GetRendererInfo(renderer, &info);
-  log_info("Renderer driver: %s", info.name);
-  log_info("Renderer flags:");
-  if (info.flags & SDL_RENDERER_SOFTWARE)
-    log_info("  SDL_RENDERER_SOFTWARE");
-  if (info.flags & SDL_RENDERER_ACCELERATED)
-    log_info("  SDL_RENDERER_ACCELERATED");
-  if (info.flags & SDL_RENDERER_PRESENTVSYNC)
-    log_info("  SDL_RENDERER_PRESENTVSYNC");
-  if (info.flags & SDL_RENDERER_TARGETTEXTURE)
-    log_info("  SDL_RENDERER_TARGETTEXTURE");
-  log_info("Renderer texture formats:");
-  for (unsigned int i = 0; i < info.num_texture_formats; i++)
-    log_info("  %s", SDL_GetPixelFormatName(info.texture_formats[i]));
-  log_info("Renderer max texture width: %d", info.max_texture_width);
-  log_info("Renderer max texture height: %d", info.max_texture_height);
+  logRenderersInfo();
 
   /* Window configuration */
   {
