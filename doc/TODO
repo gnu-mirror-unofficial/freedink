@@ -121,10 +121,3 @@ Bug reports
 
 - The screen fade is too fast when compared to dink108.exe
   (tested with Wine)
-
-
-Tests
-=====
-
-- Dink position is updated *after* a new screen is loaded:
-http://www.dinknetwork.com/forum.cgi?MID=186069#186263
