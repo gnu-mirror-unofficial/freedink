@@ -62,6 +62,9 @@ static void log_environment() {
 
 // No default locale on Android, need to get it manually  (T-T)
 // TODO: submit me for inclusion in SDL2
+// TODO: ScummVM uses a simpler technique, combine %s_%s:
+//   __system_property_get("persist.sys.language", buf1)
+//   __system_property_get("persist.sys.country", buf2)
 static void android_set_LANG() {
     JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
 	jmethodID mid;
