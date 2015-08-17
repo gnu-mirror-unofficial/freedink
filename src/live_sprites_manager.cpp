@@ -188,6 +188,12 @@ void random_blood(int mx, int my, int sprite)
                 else
                   {
                     myseq = 187;
+					// TODO: dropped dversion dependency for testsuite
+					// purposes, see how to reintroduce it cleanly
+					// if (dversion >= 108)
+					// 	randy = 3;
+                    // else
+					// 	randy = 2;
 					randy = 3;
                   }
                 myseq += (rand () % randy);
