@@ -186,6 +186,12 @@ void AppFreeDink::input(SDL_Event* ev) {
 		else
 			SDL_StopTextInput();
 	}
+	if (ev->type == SDL_KEYDOWN && ev->key.keysym.scancode == SDL_SCANCODE_AC_BACK) {
+		// quit for now
+		SDL_Event ev;
+		ev.type = SDL_QUIT;
+		SDL_PushEvent(&ev);
+	}
 	
 	freedink_input_window(ev);
 	log_touch(ev);
