@@ -89,6 +89,10 @@ void input_init(void)
   // It also keeps the mouse within the window in software mode.
   SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_WARP, "1");
 
+  // TODO: don't attempt to simulate mouse events from touch events -
+  // fake mouse events often are de-centered
+  SDL_SetHint(SDL_HINT_ANDROID_SEPARATE_MOUSE_AND_TOUCH, "0");
+
   /* Touch devices */
   {
     int i;
