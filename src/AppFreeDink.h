@@ -1,4 +1,5 @@
 #include "app.h"
+#include "IOTouchDragAnywhere.h"
 
 class AppFreeDink : public App {
 public:
@@ -9,4 +10,5 @@ public:
 	void logic();
 
 	void writeDinksmallwoodIni(bool);
+	IOTouchDragAnywhere touchConv;
 };
