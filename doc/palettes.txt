@@ -153,3 +153,39 @@ incorrect results)?
   goes wrong the full background will be white.
 
 Cf. http://www.dinknetwork.com/forum.cgi?MID=186076
+
+-----
+
+Palettes with OpenGL ES2
+
+Modern OpenGL doesn't support indexed (palette'd) formats.  A possible
+work-around is to:
+
+- upload a texture with one of RGB equal to the palette index
+  (eg. through GL_LUMINANCE format)
+
+- upload the palette as a 256x1 RGB texture
+
+- set color key as a 'uniform int'
+
+- use a shader to display the texture, something like (untested):
+
+  vec3 index = texture2D(mytexture, f_texcoord);
+  if (index.r*256 == colorKey)
+    discard;
+  else
+    gl_FragColor = texture2D(palette, vec2(index.r, 0));
+
+Limitations:
+
+- colors components are mapped to [0,1], and OpenGL's color precision
+  is unknown.  Maybe we're on a 16-bit display and index.r is
+  internally stored on 5 bits, so it will reference a nearby
+  (incorrect) palette index.  A work-around could be to assume 4-bit
+  precision from r and g, store as GL_RGB instead of GL_LUMINANCE, and
+  compute the index as (int)r/16<<4 + (int)g/16.
+
+- textures may take a lot of video memory if stored internally as
+  32-bit.  Just the background tilesets would take around
+  41*512*512*4/(1024*1024) = 41MB.  gfx_sprites.cpp references a +10MB
+  footprint when base Dink sprites (not tiles) are loaded as 24-bit.
