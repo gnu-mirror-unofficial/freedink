@@ -28,11 +28,14 @@
 #include <string.h> /* strerror */
 #include <errno.h>
 #include "log.h"
-#include "paths.h"
 
-char last_debug[200];
+#include <string>
+using namespace std;
+
 int debug_mode = 0;
-static SDL_LogOutputFunction sdl_logger;
+static string lastLog;
+static SDL_LogOutputFunction sdlLogger;
+static string filename;
 static FILE* out = NULL;
 
 static char* init_error_msg = NULL;
@@ -40,49 +43,46 @@ static char* init_error_msg = NULL;
 void log_output(void *userdata,
 		int category, SDL_LogPriority priority,
 		const char *message) {
-  sdl_logger(userdata, category, priority, message);
-  
-  if (debug_mode)
-    {
-      // display message on screen in debug mode
-      strncpy(last_debug, message, sizeof(last_debug) - 1);
-      
-      // also write to DEBUG.TXT
-      if (out != NULL)
-	{
-	  fputs(message, out);
-	  fputc('\n', out);
+	sdlLogger(userdata, category, priority, message);
+
+	if (debug_mode) {
+		// display message on screen in debug mode
+		lastLog = message;
+
+		// also write to DEBUG.TXT
+		if (out != NULL) {
+			fputs(message, out);
+			fputc('\n', out);
+		}
 	}
-    }
 }
 
 void log_init() {
   /* Decorate default SDL log */
-  SDL_LogGetOutputFunction(&sdl_logger, NULL);
+  SDL_LogGetOutputFunction(&sdlLogger, NULL);
   SDL_LogSetOutputFunction(log_output, NULL);
 }
 
 void log_quit() {
-  SDL_LogSetOutputFunction(sdl_logger, NULL);
+  SDL_LogSetOutputFunction(sdlLogger, NULL);
   if (init_error_msg != NULL)
     free(init_error_msg);
 }
 
-void log_debug_on()
-{
-  debug_mode = 1;
-  SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
+void log_debug_on() {
+	debug_mode = 1;
+	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
 
-  out = paths_dmodfile_fopen("DEBUG.TXT", "a");
-  if (out == NULL) {
-    log_error("Cannot open DEBUG.TXT: %s", strerror(errno));
-    return;
-  }
+	out = fopen(filename.c_str(), "a");
+	if (out == NULL) {
+		log_error("Cannot open %s: %s", filename.c_str(), strerror(errno));
+		return;
+	}
 }
 
 void log_debug_off()
 {
-  strcpy(last_debug, "");
+  lastLog = "";
   if (out != NULL)
     fclose(out);
   out = NULL;
@@ -95,15 +95,11 @@ void log_debug_off()
   /* SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG); */
 }
 
-void log_set_init_error_msg(const char *fmt, ...)
+const char* log_getLastLog()
 {
-  va_list ap;
-  va_start(ap, fmt);
-  vasprintf(&init_error_msg, fmt, ap);
-  va_end(ap);
+  return lastLog.c_str();
 }
 
-char* log_get_init_error_msg()
-{
-  return init_error_msg;
+void log_set_output_file(const char* fn) {
+	filename = fn;
 }

@@ -156,7 +156,7 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
   /* Init graphics subsystem */
   if (SDL_WasInit(SDL_INIT_VIDEO) == 0 && SDL_InitSubSystem(SDL_INIT_VIDEO) == -1)
     {
-      log_set_init_error_msg("Video initialization error: %s", SDL_GetError());
+      log_error("Video initialization error: %s", SDL_GetError());
       return -1;
     }
 
@@ -169,7 +169,7 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
   /* Note: SDL_WINDOW_FULLSCREEN[!_DESKTOP] may not respect aspect ratio */
   if (window == NULL)
     {
-      log_set_init_error_msg("Unable to create 640x480 window: %s\n", SDL_GetError());
+      log_error("Unable to create 640x480 window: %s\n", SDL_GetError());
       return -1;
     }
 
@@ -193,7 +193,7 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
   /* TODO SDL2: optionally pass SDL_RENDERER_PRESENTVSYNC to 3rd param */
   if (renderer == NULL)
     {
-      log_set_init_error_msg("Unable to create renderer: %s\n", SDL_GetError());
+      log_error("Unable to create renderer: %s\n", SDL_GetError());
       return -1;
     }
   // Specify aspect ratio
@@ -237,7 +237,7 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
     render_texture = SDL_CreateTexture(renderer,
       SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 640, 480);
     if (render_texture == NULL) {
-      log_set_init_error_msg("Unable to create render texture: %s", SDL_GetError());
+      log_error("Unable to create render texture: %s", SDL_GetError());
       return -1;
     }
 

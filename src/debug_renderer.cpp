@@ -36,11 +36,11 @@ void debug_renderer_render() {
 				}
 	    
 			print_text_wrap_debug(msg, 0, 0);
-			if (strlen(last_debug) > 0)
+			const char* lastLog = log_getLastLog();
+			if (strlen(lastLog) > 0)
 				{
 					//let's also draw this...
-					strcpy(msg, last_debug);
-					print_text_wrap_debug(msg, 0, 20);
+					print_text_wrap_debug(lastLog, 0, 20);
 				}
 		}
 }

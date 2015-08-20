@@ -322,6 +322,7 @@ bool App::check_arg(int argc, char *argv[]) {
 			/* Remove DEBUG.TXT when starting Dink (but not when toggling debug) */
 			char* fullpath = paths_dmodfile("DEBUG.TXT");
 			remove(fullpath);
+			log_set_output_file(fullpath);
 			free(fullpath);
 			
 			log_debug_on();
@@ -345,8 +346,8 @@ int App::main(int argc, char *argv[]) {
   /* SDL */
   /* Init timer subsystem */
   if (SDL_Init(SDL_INIT_TIMER) == -1) {
-    log_set_init_error_msg("Timer initialization error: %s\n", SDL_GetError());
-	msgbox(log_get_init_error_msg());
+    log_error("Timer initialization error: %s\n", SDL_GetError());
+	msgbox(log_getLastLog());
     return EXIT_FAILURE;
   }
 
@@ -357,7 +358,7 @@ int App::main(int argc, char *argv[]) {
   /* GFX */
   if (gfx_init(windowed ? GFX_WINDOWED : GFX_FULLSCREEN,
 			   splash_path) < 0) {
-	msgbox(log_get_init_error_msg());
+	msgbox(log_getLastLog());
     return EXIT_FAILURE;
   }
   

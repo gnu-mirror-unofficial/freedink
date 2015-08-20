@@ -23,6 +23,6 @@
 #ifndef _MSGBOX_H
 #define _MSGBOX_H
 
-void msgbox(char* msg, ...);
+void msgbox(const char* msg, ...);
 
 #endif

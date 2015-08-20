@@ -24,7 +24,6 @@
 #define _LOG_H
 #include "SDL.h"
 
-extern char last_debug[200];
 extern int debug_mode;
 
 #define log_trace(...) SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_VERBOSE,  __VA_ARGS__)
@@ -39,7 +38,7 @@ extern void log_quit();
 extern void log_debug_on();
 extern void log_debug_off();
 
-extern void log_set_init_error_msg(const char *fmt, ...);
-extern char* log_get_init_error_msg();
+extern const char* log_getLastLog();
+extern void log_set_output_file(const char* filename);
 
 #endif

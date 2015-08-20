@@ -128,7 +128,7 @@ char* get_fontconfig_path(char* fontname)
 int gfx_fonts_init()
 {
   if (TTF_Init() == -1) {
-    log_set_init_error_msg(TTF_GetError());
+    log_error(TTF_GetError());
     return -1;
   }
 
@@ -137,8 +137,7 @@ int gfx_fonts_init()
 			       1, FONT_SIZE);
   if (system_font == NULL)
     {
-      log_set_init_error_msg("Failed to load built-in 'vgasys.fon' font: %s",
-			 SDL_GetError());
+      log_error("Failed to load built-in 'vgasys.fon' font: %s", SDL_GetError());
       return -1;
     }
   setup_font(system_font);
@@ -198,7 +197,7 @@ static TTF_Font *load_default_font() {
 #endif
   if (rwops == NULL)
     {
-      log_set_init_error_msg("Could not open font 'LiberationSans-Regular.ttf'. I tried:\n"
+      log_error("Could not open font 'LiberationSans-Regular.ttf'. I tried:\n"
 							 "- loading from '%s' [build prefix]\n"
 							 "- loading from executable's resources\n"
 #ifdef HAVE_FONTCONFIG
@@ -212,7 +211,7 @@ static TTF_Font *load_default_font() {
   font_object = TTF_OpenFontRW(rwops, 1, FONT_SIZE);
   if (font_object == NULL)
     {
-      log_set_init_error_msg("Could not open font 'LiberationSans-Regular.ttf': %s", TTF_GetError());
+      log_error("Could not open font 'LiberationSans-Regular.ttf': %s", TTF_GetError());
       return NULL;
     }
 
@@ -591,7 +590,7 @@ print_text_wrap (char *str, rect* box,
  * Display text for debug mode (with a white background)
  */
 void
-print_text_wrap_debug(char *text, int x, int y)
+print_text_wrap_debug(const char *text, int x, int y)
 {
   if (text == NULL || text[0] == '\0')
     return;

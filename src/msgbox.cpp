@@ -90,7 +90,7 @@ void msgbox_os(char *msg)
  * Display an error for the user's immediate attention, during
  * initialization (so we can use the SDL window if needed)
  */
-void msgbox(char* fmt, ...)
+void msgbox(const char* fmt, ...)
 {
   va_list ap;
 
