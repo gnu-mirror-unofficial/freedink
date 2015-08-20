@@ -29,15 +29,11 @@
 
 using namespace std;
 
-extern char current_hard[50];
-
-/* dink.dat */
 class EditorMap
 {
  public:
   std::string dink_dat;
   std::string map_dat;
-  std::string hard_dat;
 
   EditorMap(string dink_dat = "dink.dat", string map_dat = "map.dat");
   bool load();

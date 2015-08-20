@@ -33,6 +33,7 @@
 /* HWND                    hWndMain = NULL; */
 struct hardness hmap;
 
+char current_hard[50] = "hard.dat";
 
 /***
  * Saves hard.dat (only used from the editor)

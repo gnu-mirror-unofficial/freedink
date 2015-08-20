@@ -37,10 +37,8 @@ using namespace std;
 /* dink.dat */
 EditorMap g_map;
 
-char current_hard[50] = "hard.dat";
-
 EditorMap::EditorMap(string dink_dat, string map_dat) :
-	dink_dat(dink_dat), map_dat(map_dat), hard_dat("hard.dat") {}
+	dink_dat(dink_dat), map_dat(map_dat) {}
 
 /**
  * Load dink.dat, an offsets index to screens stored in map.dat, with
