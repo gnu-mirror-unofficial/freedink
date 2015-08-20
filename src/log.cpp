@@ -44,11 +44,10 @@ void log_output(void *userdata,
 		int category, SDL_LogPriority priority,
 		const char *message) {
 	sdlLogger(userdata, category, priority, message);
+	lastLog = message;
 
 	if (debug_mode) {
 		// display message on screen in debug mode
-		lastLog = message;
-
 		// also write to DEBUG.TXT
 		if (out != NULL) {
 			fputs(message, out);

@@ -145,10 +145,10 @@ TestEditorMap_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	inventory.h meminfo.cpp meminfo.h savegame.cpp savegame.h	\
 	status.cpp status.h text.cpp text.h TestEditorMap.cpp
 test_dinkini_SOURCES = dinkini.cpp rect.cpp gfx_sprites.cpp		\
-	fastfile.cpp str_util.cpp io_util.cpp msgbox.cpp paths.cpp	\
+	fastfile.cpp str_util.cpp io_util.cpp paths.cpp	\
 	log.cpp test_dinkini.cpp
 test_dinkc_SOURCES = dinkc.cpp str_util.cpp paths.cpp io_util.cpp	\
-	msgbox.cpp i18n.cpp test_dinkc.cpp
+	i18n.cpp test_dinkc.cpp
 test_dinkc_console_SOURCES = test_dinkc_console.cpp dinkc_console.cpp	\
 	str_util.cpp
 test_editor_screen_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
@@ -191,7 +191,7 @@ test_brain_text_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	status.cpp status.h text.cpp text.h test_brain_text.cpp
 test_text_SOURCES = test_text.cpp text.cpp live_sprites_manager.cpp	\
 	dinkini.cpp live_sprite.cpp rect.cpp gfx_sprites.cpp		\
-	str_util.cpp io_util.cpp fastfile.cpp paths.cpp msgbox.cpp
+	str_util.cpp io_util.cpp fastfile.cpp paths.cpp
 TestIOTouchDragAnywhere_SOURCES = TestIOTouchDragAnywhere.cpp	\
 	IOTouchDragAnywhere.cpp
 test_integration_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\

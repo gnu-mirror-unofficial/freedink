@@ -312,7 +312,10 @@ bool App::check_arg(int argc, char *argv[]) {
 	
 	log_init();
 	
-	paths_init(argv[0], refdir_opt, dmoddir_opt);
+	if (!paths_init(argv[0], refdir_opt, dmoddir_opt)) {
+		msgbox(log_getLastLog());
+		return false;
+	}
 	
 	free(refdir_opt);
 	free(dmoddir_opt);

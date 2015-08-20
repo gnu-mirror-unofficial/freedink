@@ -30,7 +30,6 @@
 
 #include "io_util.h"
 #include "paths.h"
-#include "msgbox.h"
 #include "log.h"
 
 #if defined _WIN32 || defined __WIN32__ || defined __CYGWIN__
@@ -177,7 +176,7 @@ void ts_paths_init() {
   fclose(in);
 }
 
-void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
+bool paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
 {
   char *refdir = NULL;
 
@@ -235,9 +234,9 @@ void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
 
 	if (match == NULL && i == 0)
 	  {
-	    msgbox("Invalid --refdir option: %s and/or %s are not accessible.",
-		   dir_graphics_ci, dir_tiles_ci);
-	    exit(1);
+	    log_error("Invalid --refdir option: %s and/or %s are not accessible.",
+				  dir_graphics_ci, dir_tiles_ci);
+	    return false;
 	  }
 
 	free(dir_graphics_ci);
@@ -264,9 +263,9 @@ void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
 	asprintf_append(&msg, "The reference directory contains among others the "
 		"'dink/graphics/' and 'dink/tiles/' directories (as well as "
 		"D-Mods).");
-	msgbox(msg);
+	log_error(msg);
 	free(msg);
-	exit(1);
+	return false;
       }
 
     free(lookup[1]); // paths_getcwd
@@ -308,9 +307,9 @@ void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
 	      asprintf_append(&msg, "- ./%s\n", dmoddir_opt);
 	    asprintf_append(&msg, "- %s (refdir is '%s')", dmoddir, refdir);
 
-	    msgbox(msg);
+	    log_error(msg);
 	    free(msg);
-	    exit(1);
+	    return false;
 	  }
       }
     /* Strip slashes */
@@ -331,8 +330,8 @@ void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
     if (strcmp(start, ".") == 0 || strcmp(start, "..") == 0
 	|| strcmp(start, "") == 0)
       {
-	msgbox("Error: not loading nameless D-Mod '%s'", start);
-	exit(1);
+	log_error("Error: not loading nameless D-Mod '%s'", start);
+	return false;
       }
     int dmodname_len = start - dmoddir;
     dmodname = (char*)malloc(dmodname_len+1);
@@ -378,6 +377,7 @@ void paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
   log_info("userappdir = %s", userappdir);
 
   free(refdir);
+  return true;
 }
 
 
