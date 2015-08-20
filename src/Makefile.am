@@ -124,7 +124,7 @@ if HAVE_TESTS
 check_PROGRAMS = test_str_util test_io_util TestEditorMap		\
 	test_editor_screen test_dinkini test_dinkc test_dinkc_console	\
 	test_dinkc_bindings test_live_sprites_manager test_brain_text	\
-	test_text TestIOTouchDragAnywhere test_integration
+	test_text TestIOGfxGL2 TestIOTouchDragAnywhere test_integration
 .cxx.cpp:
 	$(CXXTESTGEN) --error-printer \
 		--include config.h --include SDL.h \
@@ -206,6 +206,9 @@ test_integration_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	game_state.cpp game_state.h i18n.cpp i18n.h inventory.cpp	\
 	inventory.h meminfo.cpp meminfo.h savegame.cpp savegame.h	\
 	status.cpp status.h text.cpp text.h test_integration.cpp
+TestIOGfxGL2_SOURCES = TestIOGfxGL2.cpp IOGfxGL2.cpp IOGfx.cpp		\
+	IOGfxGLFuncs.cpp log.cpp paths.cpp io_util.cpp str_util.cpp	\
+	msgbox.cpp SDL_android_main.c
 # Tests to run
 TESTS = $(check_PROGRAMS)
 endif
