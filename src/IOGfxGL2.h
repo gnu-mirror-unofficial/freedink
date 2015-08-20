@@ -41,7 +41,9 @@ public:
 	IOGraphicsGLFuncs* gl;
 
 	IOGfxGL2(int w, int h, Uint32 flags);
+	~IOGfxGL2();
 	bool open();
+	void close();
 
 	bool createWindow();
 	void logWindowInfo();

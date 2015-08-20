@@ -23,9 +23,13 @@
 #ifndef IOGRAPHICSGLFUNCS_H
 #define IOGRAPHICSGLFUNCS_H
 
-#    ifndef APIENTRY
-#        define APIENTRY
-#    endif
+#ifndef APIENTRY
+#  if defined(_WIN32)
+#    define APIENTRY __stdcall
+#  else
+#    define APIENTRY
+#  endif
+#endif
 
 typedef void GLvoid;
 typedef int GLint;

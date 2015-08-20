@@ -206,9 +206,8 @@ test_integration_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	game_state.cpp game_state.h i18n.cpp i18n.h inventory.cpp	\
 	inventory.h meminfo.cpp meminfo.h savegame.cpp savegame.h	\
 	status.cpp status.h text.cpp text.h test_integration.cpp
-TestIOGfxGL2_SOURCES = TestIOGfxGL2.cpp IOGfxGL2.cpp IOGfx.cpp		\
-	IOGfxGLFuncs.cpp log.cpp paths.cpp io_util.cpp str_util.cpp	\
-	msgbox.cpp SDL_android_main.c
+TestIOGfxGL2_SOURCES = TestIOGfxGL2.cpp IOGfxGL2.cpp IOGfx.cpp	\
+	IOGfxGLFuncs.cpp log.cpp msgbox.cpp SDL_android_main.c
 # Tests to run
 TESTS = $(check_PROGRAMS)
 endif

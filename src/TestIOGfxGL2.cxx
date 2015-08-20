@@ -53,5 +53,8 @@ public:
 		TS_ASSERT_EQUALS(b, 255);
 		TS_ASSERT_EQUALS(g, 0);
 		TS_ASSERT_EQUALS(a, 255);
+		
+		SDL_FreeSurface(screenshot);
+		gc.close();
 	}
 };

@@ -41,6 +41,21 @@ bool IOGfxGL2::open() {
 	return true;
 }
 
+void IOGfxGL2::close() {
+	if (gl) delete gl;
+	gl = NULL;
+
+	if (glcontext) SDL_GL_DeleteContext(glcontext);
+	glcontext = NULL;
+
+	if (window) SDL_DestroyWindow(window);
+	window = NULL;
+}
+
+IOGfxGL2::~IOGfxGL2() {
+	close();
+}
+
 bool IOGfxGL2::createWindow() {
 	window = SDL_CreateWindow(PACKAGE_STRING,
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -48,8 +63,8 @@ bool IOGfxGL2::createWindow() {
 		flags | SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	/* Note: SDL_WINDOW_FULLSCREEN[!_DESKTOP] may not respect aspect ratio */
 	if (window == NULL) {
-		log_set_init_error_msg("Unable to create %dx%d window: %s\n",
-							   w, h, SDL_GetError());
+		log_error("Unable to create %dx%d window: %s\n",
+		          w, h, SDL_GetError());
 		return false;
 	}
 	return true;
@@ -104,7 +119,9 @@ SDL_Surface* IOGfxGL2::screenshot() {
 		0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000
 #endif
 	);
+	SDL_LockSurface(surface);
 	gl->ReadPixels(0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
+	SDL_UnlockSurface(surface);
 	return surface;
 }
 

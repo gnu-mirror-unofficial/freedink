@@ -24,7 +24,7 @@
 #include "SDL.h"
 
 IOGraphicsGLFuncs::IOGraphicsGLFuncs() {
-	Clear = (void (*)(GLbitfield))SDL_GL_GetProcAddress("glClear");
-	ClearColor = (void (*)(GLclampf, GLclampf, GLclampf, GLclampf))SDL_GL_GetProcAddress("glClearColor");
-	ReadPixels = (void (*)(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *pixels))SDL_GL_GetProcAddress("glReadPixels");
+	Clear = (void (APIENTRY *)(GLbitfield))SDL_GL_GetProcAddress("glClear");
+	ClearColor = (void (APIENTRY *)(GLclampf, GLclampf, GLclampf, GLclampf))SDL_GL_GetProcAddress("glClearColor");
+	ReadPixels = (void (APIENTRY *)(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *pixels))SDL_GL_GetProcAddress("glReadPixels");
 }
