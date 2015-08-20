@@ -35,8 +35,7 @@ COMMON_OBJS = app.cpp app.h bgm.cpp bgm.h dinkini.cpp dinkini.h		\
 	live_sprites_manager.h rect.cpp rect.h resources.cpp		\
 	resources.h input.cpp input.h freedink_xpm.cpp freedink_xpm.h	\
 	paths.cpp paths.h log.cpp log.h gfx_sprites.cpp gfx_sprites.h	\
-	vgasys_fon.cpp vgasys_fon.h msgbox.cpp msgbox.h			\
-	SDL_android_main.c sfx.cpp sfx.h
+	vgasys_fon.cpp vgasys_fon.h SDL_android_main.c sfx.cpp sfx.h
 
 if ANDROID
   # Build .so JNI libs rather than executables

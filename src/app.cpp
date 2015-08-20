@@ -46,7 +46,6 @@
 #include "input.h"
 #include "paths.h"
 #include "log.h"
-#include "msgbox.h"
 
 #ifdef __ANDROID__
 #include <string.h> /* strerror */
@@ -313,10 +312,11 @@ bool App::check_arg(int argc, char *argv[]) {
 	log_init();
 	
 	if (!paths_init(argv[0], refdir_opt, dmoddir_opt)) {
-		msgbox(log_getLastLog());
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, PACKAGE_STRING,
+								 log_getLastLog(), NULL);
 		return false;
 	}
-	
+
 	free(refdir_opt);
 	free(dmoddir_opt);
 	
@@ -350,7 +350,8 @@ int App::main(int argc, char *argv[]) {
   /* Init timer subsystem */
   if (SDL_Init(SDL_INIT_TIMER) == -1) {
     log_error("Timer initialization error: %s\n", SDL_GetError());
-	msgbox(log_getLastLog());
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, PACKAGE_STRING,
+								 log_getLastLog(), NULL);
     return EXIT_FAILURE;
   }
 
@@ -361,8 +362,9 @@ int App::main(int argc, char *argv[]) {
   /* GFX */
   if (gfx_init(windowed ? GFX_WINDOWED : GFX_FULLSCREEN,
 			   splash_path) < 0) {
-	msgbox(log_getLastLog());
-    return EXIT_FAILURE;
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, PACKAGE_STRING,
+							 log_getLastLog(), NULL);
+	return EXIT_FAILURE;
   }
   
   /* Joystick */
