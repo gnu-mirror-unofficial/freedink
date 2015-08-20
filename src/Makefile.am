@@ -129,7 +129,8 @@ check_PROGRAMS = test_str_util test_io_util TestEditorMap		\
 		--include test_android_workaround.h \
 		--include config.h --include SDL.h \
 		-o $@ $<
-EXTRA_DIST += test_android_workaround.h
+EXTRA_DIST += test_android_workaround.h \
+	$(patsubst %$(EXEEXT),%.cxx,$(check_PROGRAMS))
 test_str_util_SOURCES = str_util.cpp test_str_util.cpp
 test_io_util_SOURCES = io_util.cpp test_io_util.cpp
 TestEditorMap_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
@@ -206,13 +207,14 @@ test_integration_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	game_state.cpp game_state.h i18n.cpp i18n.h inventory.cpp	\
 	inventory.h meminfo.cpp meminfo.h savegame.cpp savegame.h	\
 	status.cpp status.h text.cpp text.h test_integration.cpp
-TestIOGfxGL2_SOURCES = TestIOGfxGL2.cpp IOGfxGL2.cpp IOGfx.cpp	\
-	IOGfxGLFuncs.cpp log.cpp
+TestIOGfxGL2_SOURCES = TestIOGfxGL2.cpp IOGfxGL2.cpp IOGfxGL2.h		\
+	IOGfx.cpp IOGfx.h IOGfxGLFuncs.cpp IOGfxGLFuncs.h log.cpp
 # Tests to run
 TESTS = $(check_PROGRAMS)
 
 clean-local:
 	rm -f $(patsubst %$(EXEEXT),%.cpp,$(check_PROGRAMS))
+	rm -rf tmp_ts/
 
 if ANDROID
 # Use ugly work-around
