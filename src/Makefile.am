@@ -35,7 +35,8 @@ COMMON_OBJS = app.cpp app.h bgm.cpp bgm.h dinkini.cpp dinkini.h		\
 	rect.h resources.cpp resources.h input.cpp input.h		\
 	freedink_xpm.cpp freedink_xpm.h EditorMap.cpp EditorMap.h	\
 	paths.cpp paths.h log.cpp log.h gfx_sprites.cpp gfx_sprites.h	\
-	vgasys_fon.cpp vgasys_fon.h msgbox.cpp msgbox.h sfx.cpp sfx.h
+	vgasys_fon.cpp vgasys_fon.h msgbox.cpp msgbox.h			\
+	SDL_android_main.c sfx.cpp sfx.h
 
 if ANDROID
   # Build .so JNI libs rather than executables
@@ -43,7 +44,6 @@ if ANDROID
   AM_CFLAGS = -fPIC
   AM_LDFLAGS = -shared
   LIBS += -llog
-  COMMON_OBJS += SDL_android_main.c
 endif
 
 bin_PROGRAMS = freedink freedinkedit
@@ -126,7 +126,9 @@ check_PROGRAMS = test_str_util test_io_util TestEditorMap		\
 	test_dinkc_bindings test_live_sprites_manager test_brain_text	\
 	test_text TestIOTouchDragAnywhere test_integration
 .cxx.cpp:
-	$(CXXTESTGEN) --error-printer --include test_sdl_workaround.h -o $@ $<
+	$(CXXTESTGEN) --error-printer \
+		--include config.h --include SDL.h \
+		-o $@ $<
 EXTRA_DIST += test_sdl_workaround.h
 test_str_util_SOURCES = str_util.cpp test_str_util.cpp
 test_io_util_SOURCES = io_util.cpp test_io_util.cpp

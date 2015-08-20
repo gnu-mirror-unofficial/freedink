@@ -354,8 +354,7 @@ PATH=/usr/src/ndk-standalone-14-arm/bin:$PATH
 mkdir cross-android/
 cd cross-android/
 ../configure --host=arm-linux-androideabi \
-  --prefix=/android-aint-posix \
-  --disable-tests
+  --prefix=/android-aint-posix
 make -j$(nproc)
 make install DESTDIR=$(pwd)/destdir  # for locales
 
