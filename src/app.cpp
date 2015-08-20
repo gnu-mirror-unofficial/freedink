@@ -38,7 +38,7 @@
 #include "app.h"
 #include "SDL.h"
 #include "dinkini.h"
-#include "EditorMap.h"
+#include "DMod.h"
 #include "hardness_tiles.h"
 #include "live_screen.h"
 #include "gfx.h"
@@ -394,7 +394,7 @@ int App::main(int argc, char *argv[]) {
 	  log_info(" done!");
 	  
 	  log_info("World data....");
-	  g_map.load();
+	  g_dmod.map.load();
 	  log_info(" done!");
   }
 

@@ -25,6 +25,7 @@
 #endif
 
 #include "EditorMap.h"
+#include "DMod.h"
 #include "paths.h"
 
 class TestEditorMap : public CxxTest::TestSuite {
@@ -34,9 +35,9 @@ public:
 	
 	void test_new() {
 		ts_paths_init();
-		TS_ASSERT_EQUALS(g_map.load(), false);
-		TS_ASSERT_EQUALS(g_map.dink_dat.c_str(), "dink.dat");
-		TS_ASSERT_EQUALS(g_map.loc[1], 0);
+		TS_ASSERT_EQUALS(g_dmod.map.load(), false);
+		TS_ASSERT_EQUALS(g_dmod.map.dink_dat.c_str(), "dink.dat");
+		TS_ASSERT_EQUALS(g_dmod.map.loc[1], 0);
 		
 		EditorMap testmap2("dink2.dat", "map2.dat");
 		TS_ASSERT_EQUALS(testmap2.load(), false);

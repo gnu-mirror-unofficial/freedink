@@ -53,7 +53,7 @@
 #include "game_engine.h"
 #include "live_sprites_manager.h"
 #include "live_screen.h"
-#include "EditorMap.h"
+#include "DMod.h"
 #include "meminfo.h"
 #include "dinkc_console.h"
 #include "game_choice.h"
@@ -139,14 +139,14 @@ int did_player_cross_screen()
   // DO MATH TO SEE IF THEY HAVE CROSSED THE SCREEN, IF SO LOAD NEW ONE
   if (spr[1].x < playl)
     {
-      if ((*pplayer_map-1) >= 1 && g_map.loc[*pplayer_map-1] > 0 && screenlock == 0)
+      if ((*pplayer_map-1) >= 1 && g_dmod.map.loc[*pplayer_map-1] > 0 && screenlock == 0)
 	{
 	  //move one map to the left
 	  update_screen_time();
 	  grab_trick(4);
 	  *pplayer_map -= 1;
-	  game_load_screen(g_map.loc[*pplayer_map]);
-	  if (g_map.indoor[*pplayer_map] == 0)
+	  game_load_screen(g_dmod.map.loc[*pplayer_map]);
+	  if (g_dmod.map.indoor[*pplayer_map] == 0)
 	    play.last_map = *pplayer_map;
 	  
 	  draw_screen_game();
@@ -163,14 +163,14 @@ int did_player_cross_screen()
   
   else if (spr[1].x > 619)
     {
-      if ((*pplayer_map+1) <= 24*32 && g_map.loc[*pplayer_map+1] > 0 && screenlock == 0)
+      if ((*pplayer_map+1) <= 24*32 && g_dmod.map.loc[*pplayer_map+1] > 0 && screenlock == 0)
 	{
 	  //move one map to the right
 	  update_screen_time();
 	  grab_trick(6);
 	  *pplayer_map += 1;
-	  game_load_screen(g_map.loc[*pplayer_map]);
-	  if (g_map.indoor[*pplayer_map] == 0)
+	  game_load_screen(g_dmod.map.loc[*pplayer_map]);
+	  if (g_dmod.map.indoor[*pplayer_map] == 0)
 	    play.last_map = *pplayer_map;
 	  
 	  draw_screen_game();
@@ -187,14 +187,14 @@ int did_player_cross_screen()
   
   else if (spr[1].y < 0)
     {
-      if ((*pplayer_map-32) >= 1 && g_map.loc[*pplayer_map-32] > 0 && screenlock == 0)
+      if ((*pplayer_map-32) >= 1 && g_dmod.map.loc[*pplayer_map-32] > 0 && screenlock == 0)
 	{
 	  //move one map up
 	  update_screen_time();
 	  grab_trick(8);
 	  *pplayer_map -= 32;
-	  game_load_screen(g_map.loc[*pplayer_map]);
-	  if (g_map.indoor[*pplayer_map] == 0)
+	  game_load_screen(g_dmod.map.loc[*pplayer_map]);
+	  if (g_dmod.map.indoor[*pplayer_map] == 0)
 	    play.last_map = *pplayer_map;
 	  
 	  // compatibility: update Dink X position *before* screen change
@@ -214,14 +214,14 @@ int did_player_cross_screen()
   
   else if (spr[1].y > 399)
     {
-      if ((*pplayer_map+32) <= 24*32 && g_map.loc[*pplayer_map+32] > 0 && screenlock == 0)
+      if ((*pplayer_map+32) <= 24*32 && g_dmod.map.loc[*pplayer_map+32] > 0 && screenlock == 0)
 	{
 	  //move one map down
 	  update_screen_time();
 	  grab_trick(2);
 	  *pplayer_map += 32;
-	  game_load_screen(g_map.loc[*pplayer_map]);
-	  if (g_map.indoor[*pplayer_map] == 0)
+	  game_load_screen(g_dmod.map.loc[*pplayer_map]);
+	  if (g_dmod.map.indoor[*pplayer_map] == 0)
 	    play.last_map = *pplayer_map;
 	  
 	  draw_screen_game();
@@ -824,10 +824,10 @@ void process_warp_man(void)
 	  *pplayer_map = cur_ed_screen.sprite[block].warp_map;
 
 	  // update map indicator
-	  if (g_map.indoor[cur_ed_screen.sprite[block].warp_map] == 0)
+	  if (g_dmod.map.indoor[cur_ed_screen.sprite[block].warp_map] == 0)
 	    play.last_map = cur_ed_screen.sprite[block].warp_map;
 	  
-	  game_load_screen(g_map.loc[cur_ed_screen.sprite[block].warp_map]);
+	  game_load_screen(g_dmod.map.loc[cur_ed_screen.sprite[block].warp_map]);
 	  draw_screen_game();
 	  
 	  process_upcycle = 1;

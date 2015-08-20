@@ -47,7 +47,7 @@
 
 #include "app.h"
 #include "AppFreeDinkedit.h"
-#include "EditorMap.h"
+#include "DMod.h"
 #include "hardness_tiles.h"
 #include "fastfile.h"
 #include "gfx.h"
@@ -384,12 +384,12 @@ void place_sprites()
 }
 
 void editor_save_screen(int num) {
-  save_screen(g_map.map_dat.c_str(), num);
+  save_screen(g_dmod.map.map_dat.c_str(), num);
 }
 
 void editor_load_screen(int num)
 {
-  if (load_screen_to(g_map.map_dat.c_str(), num, &cur_ed_screen) < 0)
+  if (load_screen_to(g_dmod.map.map_dat.c_str(), num, &cur_ed_screen) < 0)
     return;
   fill_whole_hard();
 }
@@ -707,7 +707,7 @@ void draw_minimap(void)
     box_crap.right = spr[h].x + k[spr[h].pic].hardbox.right;
   */
   //lpDDSBack->Blt(NULL ,NULL,NULL, DDBLT_COLORFILL, &ddbltfx);
-  draw_this_map(&g_map);
+  draw_this_map(&g_dmod.map);
 }
 
 
@@ -768,8 +768,8 @@ int add_new_map()
 {
   int loc_max = 0;
   for (int i = 0; i < 768+1; i++)
-    if (g_map.loc[i] > loc_max)
-      loc_max = g_map.loc[i];
+    if (g_dmod.map.loc[i] > loc_max)
+      loc_max = g_dmod.map.loc[i];
   
   int loc_new = loc_max + 1;
   if (loc_new > 768)
@@ -1185,17 +1185,17 @@ if (spr[1].size == 100)
 	log_debug("need to add it to the right");
 
 		//need to add it to the right
-		if (g_map.loc[cur_map+1] > 0)
+		if (g_dmod.map.loc[cur_map+1] > 0)
 		{
-        	editor_save_screen(g_map.loc[cur_map]);
+        	editor_save_screen(g_dmod.map.loc[cur_map]);
           log_debug("loading right map");
-			editor_load_screen(g_map.loc[cur_map+1]);
+			editor_load_screen(g_dmod.map.loc[cur_map+1]);
                int holdx = spr[1].x;
                int holdy = spr[1].y;
 			   spr[1].x -= 600;
 			sp_add();
-			editor_save_screen(g_map.loc[cur_map+1]);
-			editor_load_screen(g_map.loc[cur_map]);
+			editor_save_screen(g_dmod.map.loc[cur_map+1]);
+			editor_load_screen(g_dmod.map.loc[cur_map]);
            spr[1].x = holdx;
 		   spr[1].y = holdy;
 		}
@@ -1207,17 +1207,17 @@ if (spr[1].size == 100)
 	log_debug("need to add it to the right");
 
 		//need to add it to the left
-		if (g_map.loc[cur_map-1] > 0)
+		if (g_dmod.map.loc[cur_map-1] > 0)
 		{
-        	editor_save_screen(g_map.loc[cur_map]);
+        	editor_save_screen(g_dmod.map.loc[cur_map]);
           log_debug("loading right map");
-			editor_load_screen(g_map.loc[cur_map-1]);
+			editor_load_screen(g_dmod.map.loc[cur_map-1]);
                int holdx = spr[1].x;
                int holdy = spr[1].y;
 			   spr[1].x += 600;
 			sp_add();
-			editor_save_screen(g_map.loc[cur_map-1]);
-			editor_load_screen(g_map.loc[cur_map]);
+			editor_save_screen(g_dmod.map.loc[cur_map-1]);
+			editor_load_screen(g_dmod.map.loc[cur_map]);
            spr[1].x = holdx;
 		   spr[1].y = holdy;
 		}
@@ -1229,17 +1229,17 @@ if (spr[1].size == 100)
 	log_debug("need to add it to the bottom");
 
 		//need to add it to the bottom
-		if (g_map.loc[cur_map+32] > 0)
+		if (g_dmod.map.loc[cur_map+32] > 0)
 		{
-        	editor_save_screen(g_map.loc[cur_map]);
+        	editor_save_screen(g_dmod.map.loc[cur_map]);
           log_debug("loading bottom ");
-			editor_load_screen(g_map.loc[cur_map+32]);
+			editor_load_screen(g_dmod.map.loc[cur_map+32]);
                int holdx = spr[1].x;
                int holdy = spr[1].y;
 			   spr[1].y -= 400;
 			sp_add();
-			editor_save_screen(g_map.loc[cur_map+32]);
-			editor_load_screen(g_map.loc[cur_map]);
+			editor_save_screen(g_dmod.map.loc[cur_map+32]);
+			editor_load_screen(g_dmod.map.loc[cur_map]);
            spr[1].x = holdx;
 		   spr[1].y = holdy;
 		}
@@ -1251,17 +1251,17 @@ if (spr[1].size == 100)
 	log_debug("need to add it to the top");
 
 		//need to add it to the left
-		if (g_map.loc[cur_map-32] > 0)
+		if (g_dmod.map.loc[cur_map-32] > 0)
 		{
-        	editor_save_screen(g_map.loc[cur_map]);
+        	editor_save_screen(g_dmod.map.loc[cur_map]);
           log_debug("loading top map");
-			editor_load_screen(g_map.loc[cur_map-32]);
+			editor_load_screen(g_dmod.map.loc[cur_map-32]);
                int holdx = spr[1].x;
                int holdy = spr[1].y;
 			   spr[1].y += 400;
 			sp_add();
-			editor_save_screen(g_map.loc[cur_map-32]);
-			editor_load_screen(g_map.loc[cur_map]);
+			editor_save_screen(g_dmod.map.loc[cur_map-32]);
+			editor_load_screen(g_dmod.map.loc[cur_map]);
            spr[1].x = holdx;
 		   spr[1].y = holdy;
 		}
@@ -3315,7 +3315,7 @@ int gui_logic(int h) {
 
 		if ( (input_getcharjustpressed(SDLK_l))  && (g_editorMode == EDITOR_MODE_MINIMAP)) {
 
-			//if (g_map.loc[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)] != 0)
+			//if (g_dmod.map.loc[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)] != 0)
 			//{
 			buf_map = (((spr[1].y+1)*32) / 20)+(spr[1].x / 20);
 			in_master = INPUT_MINIMAP_LOAD;
@@ -3325,7 +3325,7 @@ int gui_logic(int h) {
 
 
 		if ( (input_getscancodejustpressed(SDL_SCANCODE_ESCAPE)) && (g_editorMode == EDITOR_MODE_MINIMAP)) {
-			g_map.load();
+			g_dmod.map.load();
 			draw_minimap();
 			buf_mode = /*false*/0;
 
@@ -3334,13 +3334,13 @@ int gui_logic(int h) {
 
 		if ( (input_getcharjustpressed(SDLK_m)) && (g_editorMode == EDITOR_MODE_MINIMAP)) {
 			//set music # for this block
-			in_int = &g_map.music[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)];
+			in_int = &g_dmod.map.music[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)];
 			in_master = INPUT_SCREEN_MIDI;
 		}
 
 		if ( (input_getcharjustpressed(SDLK_s)) && (g_editorMode == EDITOR_MODE_MINIMAP)) {
 			//set music # for this block
-			in_int = &g_map.indoor[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)];
+			in_int = &g_dmod.map.indoor[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)];
 			in_master = INPUT_SCREEN_TYPE;
 		}
 
@@ -3368,12 +3368,12 @@ int gui_logic(int h) {
 				}
 
 
-				g_map.load();
+				g_dmod.map.load();
 
-				if (g_map.loc[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)] == 0) {
+				if (g_dmod.map.loc[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)] == 0) {
 
 					(
-					 g_map.loc[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)]) = add_new_map();
+					 g_dmod.map.loc[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)]) = add_new_map();
 					//wrongo, let's add the map
 
 					//draw_minimap();
@@ -3381,26 +3381,26 @@ int gui_logic(int h) {
 
 				}
 
-				g_map.indoor[buf_map] = buffmap.indoor[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)];
-				g_map.music[buf_map] = buffmap.music[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)];
+				g_dmod.map.indoor[buf_map] = buffmap.indoor[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)];
+				g_dmod.map.music[buf_map] = buffmap.music[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20)];
 
-				editor_save_screen(g_map.loc[buf_map]);
+				editor_save_screen(g_dmod.map.loc[buf_map]);
 
-				g_map.save();
+				g_dmod.map.save();
 				draw_minimap();
 				return 2;
 			}
 
-			g_map.load();
+			g_dmod.map.load();
 
 			cur_map = (((spr[1].y+1)*32) / 20)+(spr[1].x / 20);
-			if (g_map.loc[cur_map] == 0) {
+			if (g_dmod.map.loc[cur_map] == 0) {
 				//new map screen
-				g_map.loc[cur_map] = add_new_map();
-				g_map.save();
+				g_dmod.map.loc[cur_map] = add_new_map();
+				g_dmod.map.save();
 			}
 			else {
-				editor_load_screen(g_map.loc[cur_map]);
+				editor_load_screen(g_dmod.map.loc[cur_map]);
 			}
 
 			spr[h].seq = 3;
@@ -3569,7 +3569,7 @@ int gui_logic(int h) {
 			spr[h].y = m1y;
 			g_editorMode = EDITOR_MODE_MINIMAP;
 			spr[h].speed = 20;
-			g_map.load();
+			g_dmod.map.load();
 			draw_minimap();
 			lsm_kill_all_nonlive_sprites();
 			return 2;
@@ -3577,7 +3577,7 @@ int gui_logic(int h) {
 
 		if ((g_editorMode == EDITOR_MODE_SCREEN_TILES) && (sjoy.button[EDITOR_ACTION_ESCAPE])) {
 			// jump to map selector selector from map mode
-			editor_save_screen(g_map.loc[cur_map]);
+			editor_save_screen(g_dmod.map.loc[cur_map]);
 			spr[h].seq = 2;
 			spr[h].seq_orig = 2;
 			//SoundPlayEffect( SOUND_JUMP );
@@ -3588,7 +3588,7 @@ int gui_logic(int h) {
 			spr[h].y = m1y;
 			g_editorMode = EDITOR_MODE_MINIMAP;
 			spr[h].speed = 20;
-			g_map.load();
+			g_dmod.map.load();
 			draw_minimap();
 			lsm_kill_all_nonlive_sprites();
 			return 2;
@@ -3710,10 +3710,10 @@ void AppFreeDinkedit::logic(void)
 	  copy_front_to_two();
 
 
-	  if (g_map.loc[draw_screen_tiny] != 0)
+	  if (g_dmod.map.loc[draw_screen_tiny] != 0)
 	    {
 	      //a map exists here
-	      editor_load_screen(g_map.loc[draw_screen_tiny]);
+	      editor_load_screen(g_dmod.map.loc[draw_screen_tiny]);
 	      //map loaded, lets display it
 	      draw_screen_editor();
 
@@ -4057,7 +4057,7 @@ void AppFreeDinkedit::logic(void)
 		  "screen from another map file.  Z to toggle this help text. S to modify screentype. M to modify midi.",
 		  g_editorMode,
 		  (((spr[1].y+1)*32) / 20)+(spr[1].x / 20));
-/* 		  g_map.loc[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20) ]); */
+/* 		  g_dmod.map.loc[(((spr[1].y+1)*32) / 20)+(spr[1].x / 20) ]); */
 	}
       if (g_editorMode == EDITOR_MODE_SCREEN_TILES)
 	{
@@ -4393,12 +4393,12 @@ void AppFreeDinkedit::logic(void)
 		  in_crap2 = in_crap;
 		  
 		  if ((old_command == INPUT_SCREEN_MIDI) || (old_command == INPUT_SCREEN_TYPE))
-		    g_map.load();
+		    g_dmod.map.load();
 		  
 		  *in_int = in_crap2;
 
 		  if ((old_command == INPUT_SCREEN_MIDI) || (old_command == INPUT_SCREEN_TYPE))
-		    g_map.save();
+		    g_dmod.map.save();
 		}
 	      else
 		{

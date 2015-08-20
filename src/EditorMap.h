@@ -44,6 +44,5 @@ class EditorMap
   int music[768+1];
   int indoor[768+1];
 };
-extern EditorMap g_map;
 
 #endif

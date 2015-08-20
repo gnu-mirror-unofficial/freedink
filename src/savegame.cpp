@@ -29,7 +29,7 @@
 
 #include "game_engine.h"
 #include "live_sprites_manager.h"
-#include "EditorMap.h"
+#include "DMod.h"
 #include "dinkc.h"
 #include "sfx.h"
 #include "bgm.h"
@@ -253,8 +253,8 @@
       // new map, if exist
       if (strlen (mapdat) > 0 && strlen (dinkdat) > 0)
 	{
-	  g_map = EditorMap(dinkdat, mapdat);
-	  g_map.load();
+	  g_dmod.map = EditorMap(dinkdat, mapdat);
+	  g_dmod.map.load();
 	}
       
       // load palette
@@ -329,7 +329,7 @@
 	}
     }
   kill_repeat_sounds_all();
-  game_load_screen(g_map.loc[*pplayer_map]);
+  game_load_screen(g_dmod.map.loc[*pplayer_map]);
   log_info("Loaded map.");
   draw_screen_game();
   log_info("Map drawn.");
@@ -469,8 +469,8 @@ void save_game(int num)
   /* v1.08: use wasted space for storing file location of map.dat,
      dink.dat, palette, and tiles */
   /* char cbuff[6000];*/
-  fwrite(g_map.map_dat.c_str(), 50, 1, f);
-  fwrite(g_map.dink_dat.c_str(), 50, 1, f);
+  fwrite(g_dmod.map.map_dat.c_str(), 50, 1, f);
+  fwrite(g_dmod.map.dink_dat.c_str(), 50, 1, f);
   fwrite(play.palette, 50, 1, f);
 
   for (i = 0; i < GFX_TILES_NB_SETS+1; i++)

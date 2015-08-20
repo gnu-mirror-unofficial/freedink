@@ -40,7 +40,7 @@
 #include "game_engine.h"
 #include "live_sprites_manager.h"
 #include "live_screen.h"
-#include "EditorMap.h"
+#include "DMod.h"
 #include "editor_screen.h"
 #include "dinkc.h"
 #include "freedink.h"
@@ -651,10 +651,10 @@ void dc_load_screen(int script, int* yield, int* preturnint)
 
   //Msg("Loading map %d..",*pplayer_map);
   update_screen_time();
-  game_load_screen(g_map.loc[*pplayer_map]);
+  game_load_screen(g_dmod.map.loc[*pplayer_map]);
 
   // update indicator on mini-map
-  if (g_map.indoor[*pplayer_map] == 0)
+  if (g_dmod.map.indoor[*pplayer_map] == 0)
     play.last_map = *pplayer_map;
     
   return;
@@ -1815,8 +1815,8 @@ void dc_set_save_game_info(int script, int* yield, int* preturnint, char* info)
 void dc_load_map(int script, int* yield, int* preturnint, char* mapdat_file, char* dinkdat_file)
 {
   // load a new map/dink.dat
-  g_map = EditorMap(dinkdat_file, mapdat_file);
-  g_map.load();
+  g_dmod.map = EditorMap(dinkdat_file, mapdat_file);
+  g_dmod.map.load();
 }
 
 void dc_load_tile(int script, int* yield, int* preturnint, char* tileset_file, int tileset_index)

@@ -31,7 +31,7 @@
 #include "game_engine.h"
 #include "live_sprites_manager.h"
 #include "live_screen.h"
-#include "EditorMap.h" /* map */
+#include "DMod.h" /* g_dmod.map */
 #include "live_screen.h" /* screen_hitmap */
 #include "dinkini.h" /* check_seq_status, hmap, cur_ed_screen */
 #include "freedink.h"  /* add_time_to_saved_game */
@@ -324,21 +324,21 @@ void check_midi(void)
   // TODO: use a better constant (like max_file_path)
   char midi_filename[20];
 
-  if ((!midi_active) || (g_map.music[*pplayer_map] == 0))
+  if ((!midi_active) || (g_dmod.map.music[*pplayer_map] == 0))
     return;
 
   /* There is music information associated with this screen */
-  if (g_map.music[*pplayer_map] != -1) {
-    if (g_map.music[*pplayer_map] > 1000)
+  if (g_dmod.map.music[*pplayer_map] != -1) {
+    if (g_dmod.map.music[*pplayer_map] > 1000)
       /* Try to play a CD track (unsupported) - fall back to MIDI */
       {
-	sprintf(midi_filename, "%d.mid", g_map.music[*pplayer_map] - 1000);
+	sprintf(midi_filename, "%d.mid", g_dmod.map.music[*pplayer_map] - 1000);
 	PlayMidi(midi_filename);
       }
     else
       {
 	/* Just play the specified MIDI */
-	sprintf(midi_filename, "%d.mid", g_map.music[*pplayer_map]);
+	sprintf(midi_filename, "%d.mid", g_dmod.map.music[*pplayer_map]);
 	PlayMidi(midi_filename);
       }
   }
@@ -352,9 +352,9 @@ int game_load_screen(int num)
   if (num > 768)
     return -1;
 
-  if (g_map.ts_loc_mem[num] != NULL)
-    memcpy(&cur_ed_screen, g_map.ts_loc_mem[num], sizeof(struct editor_screen));
-  else if (load_screen_to(g_map.map_dat.c_str(), num, &cur_ed_screen) < 0)
+  if (g_dmod.map.ts_loc_mem[num] != NULL)
+    memcpy(&cur_ed_screen, g_dmod.map.ts_loc_mem[num], sizeof(struct editor_screen));
+  else if (load_screen_to(g_dmod.map.map_dat.c_str(), num, &cur_ed_screen) < 0)
     return -1;
   
   spr[1].move_active = 0;
@@ -831,7 +831,7 @@ void apply_mode() {
 
 	if (mode == 2) {
 		set_mode(3);
-		game_load_screen(g_map.loc[*pplayer_map]);
+		game_load_screen(g_dmod.map.loc[*pplayer_map]);
 		draw_screen_game();
 		flife = *plife;
 	}

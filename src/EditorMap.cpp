@@ -34,9 +34,6 @@
 
 using namespace std;
 
-/* dink.dat */
-EditorMap g_map;
-
 EditorMap::EditorMap(string dink_dat, string map_dat) :
 	dink_dat(dink_dat), map_dat(map_dat) {}
 
@@ -64,7 +61,7 @@ bool EditorMap::load() {
 
   fclose(f);
 
-  memset(&g_map.ts_loc_mem, 0, sizeof(g_map.ts_loc_mem));
+  memset(&ts_loc_mem, 0, sizeof(ts_loc_mem));
 
   return true;
 }
