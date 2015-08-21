@@ -26,20 +26,12 @@
 #endif
 
 #include <stdlib.h>
-#include <string.h>
-#include "game_engine.h"
 #include "live_screen.h" /* cur_ed_screen */
 #include "gfx.h"
 #include "gfx_tiles.h"
 #include "io_util.h"
 #include "paths.h"
-#include "sfx.h"
 #include "log.h"
-
-/* Tiles */
-/* Game pieces */
-/* +1 to avoid the -1 in array indexes.. */
-SDL_Surface* gfx_tiles[GFX_TILES_NB_SETS+1];
 
 /* Animated tiles current status */
 static unsigned int water_timer = 0;
@@ -50,7 +42,7 @@ static int fire_flip = 0;
 
 
 // Load the tiles from the BMPs
-void tiles_load_default() {
+void tiles_load_default(SDL_Surface** gfx_tiles) {
   char crap[30];
   char crap1[10];
   int h;
@@ -64,7 +56,7 @@ void tiles_load_default() {
 	strcpy(crap1, "");      
       sprintf(crap, "tiles/Ts%s%d.BMP", crap1, h);
 
-      tiles_load_slot(crap, h);
+      tiles_load_slot(gfx_tiles, crap, h);
 
       if (gfx_tiles[h] == NULL)
 	exit(0);
@@ -73,7 +65,7 @@ void tiles_load_default() {
   log_info("Done with tilescreens...");
 }
 
-void tiles_load_slot(char* relpath, int slot)
+void tiles_load_slot(SDL_Surface** gfx_tiles, char* relpath, int slot)
 {
   FILE* in = paths_dmodfile_fopen(relpath, "rb");
   if (in == NULL)
@@ -101,7 +93,7 @@ void tiles_load_slot(char* relpath, int slot)
 /**
  * Free memory used by tiles
  */
-void tiles_unload_all(void) {
+void tiles_unload_all(SDL_Surface** gfx_tiles) {
   int h = 0;
   for (h=1; h <= GFX_TILES_NB_SETS; h++)
     {
@@ -115,7 +107,7 @@ void tiles_unload_all(void) {
  * Draw tile number 'dsttile_square_id0x' (in [0, 96-1]) in the
  * current screen
  */
-void gfx_tiles_draw(int srctileset_idx0, int srctile_square_idx0, int dsttile_square_idx0)
+void gfx_tiles_draw(SDL_Surface** gfx_tiles, int srctileset_idx0, int srctile_square_idx0, int dsttile_square_idx0)
 {
   SDL_Rect src;
   int srctile_square_x = srctile_square_idx0 % GFX_TILES_SCREEN_W;
@@ -137,19 +129,19 @@ void gfx_tiles_draw(int srctileset_idx0, int srctile_square_idx0, int dsttile_sq
 /**
  * Draw all background tiles in the current screen
  */
-void gfx_tiles_draw_screen()
+void gfx_tiles_draw_screen(SDL_Surface** gfx_tiles)
 {
   int x = 0;
   for (; x < GFX_TILES_PER_SCREEN; x++)
     {
       int srctileset_idx0 = cur_ed_screen.t[x].square_full_idx0 / 128;
       int srctile_square_idx0 = cur_ed_screen.t[x].square_full_idx0 % 128;
-      gfx_tiles_draw(srctileset_idx0, srctile_square_idx0, x);
+      gfx_tiles_draw(gfx_tiles, srctileset_idx0, srctile_square_idx0, x);
     }
 }
         
 /* Game-specific: animate background (water, fire, ...) */        
-void process_animated_tiles(Uint32 thisTickCount)
+void process_animated_tiles(SDL_Surface** gfx_tiles, Uint32 thisTickCount)
 {
   // Water:
   if (water_timer < thisTickCount)
@@ -165,7 +157,7 @@ void process_animated_tiles(Uint32 thisTickCount)
 	  int start_full_idx0 = (8-1) * 128; // 8th tileset -> 896
 	  if (screen_square_full_idx0 >= start_full_idx0
 	      && screen_square_full_idx0 < (start_full_idx0 + 128))
-	    gfx_tiles_draw((8-1) + flip, screen_square_full_idx0 % 128, x);
+		  gfx_tiles_draw(gfx_tiles, (8-1) + flip, screen_square_full_idx0 % 128, x);
 	}
     }
 	
@@ -183,7 +175,19 @@ void process_animated_tiles(Uint32 thisTickCount)
 	int start_full_idx0 = (19-1) * 128; // 19th tileset -> 2304
 	if (screen_square_full_idx0 >= start_full_idx0
 	    && screen_square_full_idx0 < (start_full_idx0 + 128))
-	  gfx_tiles_draw((19-1) + fire_flip, screen_square_full_idx0 % 128, x);
+		gfx_tiles_draw(gfx_tiles, (19-1) + fire_flip, screen_square_full_idx0 % 128, x);
       }
   }
+}
+
+int gfx_tiles_memusage(SDL_Surface** gfx_tiles) {
+    int sum = 0;
+    int i = 0;
+    SDL_Surface* s = NULL;
+    for (; i < GFX_TILES_NB_SETS+1; i++) {
+		s = gfx_tiles[i];
+		if (s != NULL)
+			sum += s->h * s->pitch;
+	}
+    return sum;
 }

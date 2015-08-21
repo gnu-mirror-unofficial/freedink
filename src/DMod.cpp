@@ -26,7 +26,20 @@
 
 #include "DMod.h"
 
+#include <string>
+using namespace std;
+
 DMod g_dmod;
 
 DMod::DMod() {
+	memset(&gfx_tiles, 0, sizeof(gfx_tiles));
+}
+
+void DMod::load(string path) {
+  /* Load the tiles from the BMPs */
+  tiles_load_default(gfx_tiles);
+}
+
+void DMod::unload() {
+	tiles_unload_all(gfx_tiles);
 }

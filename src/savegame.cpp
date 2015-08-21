@@ -266,12 +266,12 @@
 	}
       
       /* Reload tiles */
-      tiles_load_default();
+      tiles_load_default(g_dmod.gfx_tiles);
       
       /* Replace with custom tiles if needed */
       for (i = 1; i <= GFX_TILES_NB_SETS; i++)
 	if (strlen(play.tile[i].file) > 0)
-	  tiles_load_slot(play.tile[i].file, i);
+	  tiles_load_slot(g_dmod.gfx_tiles, play.tile[i].file, i);
     }
   
   

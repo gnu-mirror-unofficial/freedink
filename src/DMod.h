@@ -31,7 +31,11 @@ using namespace std;
 class DMod {
 public:
 	DMod();
+	void load(string path);
+	void unload();
+	
 	EditorMap map;
+	SDL_Surface* gfx_tiles[GFX_TILES_NB_SETS+1]; /* 1-indexed array */
 };
 
 extern DMod g_dmod;

@@ -33,6 +33,7 @@
 #include "SDL2_rotozoom.h"
 
 #include "freedink_xpm.h"
+#include "DMod.h"
 #include "io_util.h"
 #include "gfx.h"
 #include "gfx_fade.h"
@@ -337,13 +338,10 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
   gfx_fade_init();
 
   /* make all pointers to NULL */
-  memset(&gfx_tiles, 0, sizeof(gfx_tiles));
   memset(&k, 0, sizeof(k));
   memset(&GFX_k, 0, sizeof(GFX_k));
   memset(&seq, 0, sizeof(seq));
 
-  /* Load the tiles from the BMPs */
-  tiles_load_default();
 
   SDL_initFramerate(&framerate_manager);
   /* The official v1.08 .exe runs 50-60 FPS in practice, despite the
@@ -366,7 +364,6 @@ void gfx_quit()
 
   gfx_fonts_quit();
 
-  tiles_unload_all();
   sprites_unload();
   
   if (GFX_backbuffer   != NULL) SDL_FreeSurface(GFX_backbuffer);
@@ -659,17 +656,9 @@ void gfx_log_meminfo()
   }
 
   {
-    int sum = 0;
-    int i = 0;
-    SDL_Surface* s = NULL;
-    for (; i < GFX_TILES_NB_SETS+1; i++)
-      {
-	s = gfx_tiles[i];
-	if (s != NULL)
-	  sum += s->h * s->pitch;
-      }
-    log_debug("GFX tiles  = %8d", sum);
-    total += sum;
+	  int sum = gfx_tiles_memusage(g_dmod.gfx_tiles);
+	  log_debug("GFX tiles  = %8d", sum);
+	  total += sum;
   }
 
   log_debug("GFX total  = %8d (+ ~150kB fonts)", total);

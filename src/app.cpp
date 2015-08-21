@@ -366,6 +366,7 @@ int App::main(int argc, char *argv[]) {
 							 log_getLastLog(), NULL);
 	return EXIT_FAILURE;
   }
+  g_dmod.load(paths_getdmoddir());
   
   /* Joystick */
   input_init();
@@ -455,7 +456,8 @@ App::~App() {
 	sfx_quit();
 	
 	input_quit();
-	
+
+	g_dmod.unload();
 	gfx_quit();
 	
 	//SDL_QuitSubSystem(SDL_INIT_EVENTTHREAD);

@@ -39,7 +39,7 @@
 
 #include "game_engine.h"
 #include "live_sprites_manager.h"
-#include "EditorMap.h"
+#include "DMod.h"
 #include "editor_screen.h"
 #include "live_screen.h"
 #include "live_sprite.h"
@@ -238,7 +238,7 @@ void updateFrame() {
 		
 		update_sound();
 		
-		process_animated_tiles(thisTickCount);
+		process_animated_tiles(g_dmod.gfx_tiles, thisTickCount);
 	}
 	
 	if (show_inventory) {

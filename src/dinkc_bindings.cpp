@@ -1825,7 +1825,7 @@ void dc_load_tile(int script, int* yield, int* preturnint, char* tileset_file, i
   if (tileset_index >= 1 && tileset_index <= GFX_TILES_NB_SETS)
     {
       //Load in the new tiles...
-      tiles_load_slot(tileset_file, tileset_index);
+      tiles_load_slot(g_dmod.gfx_tiles, tileset_file, tileset_index);
       
       //Store in save game
       strncpy(play.tile[tileset_index].file, tileset_file, 50);
