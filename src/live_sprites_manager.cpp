@@ -268,7 +268,7 @@ int does_sprite_have_text(int sprite)
 {
   int k;
         //Msg("getting callback # with %d..", sprite);
-        for (k = 1; k <= MAX_SPRITES_AT_ONCE; k++)
+        for (k = 1; k < MAX_SPRITES_AT_ONCE; k++)
         {
                 if (   spr[k].active) if (spr[k].owner == sprite) if (spr[k].brain == 8)
                 {

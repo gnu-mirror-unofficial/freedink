@@ -49,6 +49,9 @@
 
 - Can skip Mom's first dialog line when quickly starting a new game
 
+- Fix historical segfault in DinkC busy() (off-by-one array out of
+  bounds). Somehow the segfault wasn't triggered in the past.
+
 * Developer notes:
 
 - Move to C++
