@@ -25,12 +25,10 @@
 #include <config.h>
 #endif
 
-#include <stdlib.h>
-#include "live_screen.h"
-#include "gfx.h"
 #include "gfx_tiles.h"
-#include "io_util.h"
-#include "paths.h"
+
+#include "editor_screen.h"
+#include "gfx.h"
 #include "log.h"
 
 /* Animated tiles current status */
@@ -64,19 +62,19 @@ void gfx_tiles_draw(SDL_Surface** gfx_tiles, int srctileset_idx0, int srctile_sq
 /**
  * Draw all background tiles in the current screen
  */
-void gfx_tiles_draw_screen(SDL_Surface** gfx_tiles, struct editor_screen* ed_screen)
+void gfx_tiles_draw_screen(SDL_Surface** gfx_tiles, struct editor_screen_tilerefs* tilerefs)
 {
   int x = 0;
   for (; x < GFX_TILES_PER_SCREEN; x++)
     {
-      int srctileset_idx0 = ed_screen->t[x].square_full_idx0 / 128;
-      int srctile_square_idx0 = ed_screen->t[x].square_full_idx0 % 128;
+      int srctileset_idx0 = tilerefs[x].square_full_idx0 / 128;
+      int srctile_square_idx0 = tilerefs[x].square_full_idx0 % 128;
       gfx_tiles_draw(gfx_tiles, srctileset_idx0, srctile_square_idx0, x);
     }
 }
         
 /* Game-specific: animate background (water, fire, ...) */        
-void process_animated_tiles(SDL_Surface** gfx_tiles, struct editor_screen* ed_screen, Uint32 thisTickCount)
+void process_animated_tiles(SDL_Surface** gfx_tiles, struct editor_screen_tilerefs* tilerefs, Uint32 thisTickCount)
 {
   // Water:
   if (water_timer < thisTickCount)
@@ -88,7 +86,7 @@ void process_animated_tiles(SDL_Surface** gfx_tiles, struct editor_screen* ed_sc
       int x = 0;
       for (; x < 96; x++)
 	{
-	  int screen_square_full_idx0 = ed_screen->t[x].square_full_idx0;
+	  int screen_square_full_idx0 = tilerefs[x].square_full_idx0;
 	  int start_full_idx0 = (8-1) * 128; // 8th tileset -> 896
 	  if (screen_square_full_idx0 >= start_full_idx0
 	      && screen_square_full_idx0 < (start_full_idx0 + 128))
@@ -106,7 +104,7 @@ void process_animated_tiles(SDL_Surface** gfx_tiles, struct editor_screen* ed_sc
     int x = 0;
     for (; x < 96; x++)
       {
-	int screen_square_full_idx0 = ed_screen->t[x].square_full_idx0;
+	int screen_square_full_idx0 = tilerefs[x].square_full_idx0;
 	int start_full_idx0 = (19-1) * 128; // 19th tileset -> 2304
 	if (screen_square_full_idx0 >= start_full_idx0
 	    && screen_square_full_idx0 < (start_full_idx0 + 128))

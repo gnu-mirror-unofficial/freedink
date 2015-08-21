@@ -705,7 +705,7 @@ void draw_screen_game(void)
   kill_repeat_sounds();
   kill_all_scripts();
 
-  gfx_tiles_draw_screen(g_dmod.bgTilesets.slots, &cur_ed_screen);
+  gfx_tiles_draw_screen(g_dmod.bgTilesets.slots, cur_ed_screen.t);
 
   int script_id = 0;
   if (cur_ed_screen.ts_script_id > 0)
@@ -742,7 +742,7 @@ void draw_screen_game(void)
    stop_entire_game(). What's the difference with draw_screen_game()?? */
 void draw_screen_game_background(void)
 {
-  gfx_tiles_draw_screen(g_dmod.bgTilesets.slots, &cur_ed_screen);
+  gfx_tiles_draw_screen(g_dmod.bgTilesets.slots, cur_ed_screen.t);
   game_place_sprites_background();
 }
 
