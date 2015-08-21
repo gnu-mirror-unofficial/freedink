@@ -4595,6 +4595,7 @@ void AppFreeDinkedit::logic(void)
 /*     } else */
 /*     { */
       flip_it();
+      SDL_RenderPresent(renderer);
       /*
       //windowed mode, no flipping
       p.x = 0; p.y = 0;
