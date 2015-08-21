@@ -27,6 +27,7 @@
 #include "text.h"
 #include "live_sprites_manager.h"
 #include "gfx_fonts.h"
+SDL_Surface *GFX_backbuffer;
 
 extern int add_text_sprite(char* text, int script, int sprite_owner, int mx, int my);
 
