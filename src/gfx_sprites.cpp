@@ -242,7 +242,8 @@ void load_sprite_pak(char seq_path_prefix[100], int seq_no, int delay, int xoffs
 	 graphics in v1.08. */
 
       if (!truecolor)
-	SDL_SetPaletteColors(GFX_k[myslot].k->format->palette, GFX_ref_pal, 0, 256);
+	SDL_SetPaletteColors(GFX_k[myslot].k->format->palette,
+						 GFX_backbuffer->format->palette->colors, 0, 256);
 
       Uint8 *p = (Uint8 *)GFX_k[myslot].k->pixels;
       Uint8 *last = p + GFX_k[myslot].k->h * GFX_k[myslot].k->pitch;

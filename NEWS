@@ -52,6 +52,9 @@
 - Fix historical segfault in DinkC busy() (off-by-one array out of
   bounds). Somehow the segfault wasn't triggered in the past.
 
+- Sprites colors are more stable after a palette change and a savegame
+  load to a different palette (compatibility with 1.08)
+
 * Developer notes:
 
 - Move to C++

@@ -418,7 +418,8 @@ static SDL_Surface* load_bmp_internal(char *filename, SDL_RWops *rw, int from_me
       SDL_FreeSurface(image);
 	  image = converted;
 	  /* Disable palette conversion in future blits */
-      SDL_SetPaletteColors(image->format->palette, GFX_ref_pal, 0, 256);
+      SDL_SetPaletteColors(image->format->palette,
+						   GFX_backbuffer->format->palette->colors, 0, 256);
       return image;
     }
   else
@@ -743,7 +744,8 @@ void copy_bmp(char* name)
 	  image = converted;
 
       /* Next blit without palette conversion */
-      SDL_SetPaletteColors(image->format->palette, GFX_ref_pal, 0, 256);
+      SDL_SetPaletteColors(image->format->palette,
+						   GFX_backbuffer->format->palette->colors, 0, 256);
     }
 
   SDL_BlitSurface(image, NULL, GFX_background, NULL);
@@ -776,7 +778,8 @@ void show_bmp(char* name, int script)
 	  SDL_FreeSurface(image);
 	  image = converted;
 	  /* Disable palette conversion in future blits */
-      SDL_SetPaletteColors(image->format->palette, GFX_ref_pal, 0, 256);
+      SDL_SetPaletteColors(image->format->palette,
+						   GFX_backbuffer->format->palette->colors, 0, 256);
     }
 
   SDL_BlitSurface(image, NULL, GFX_tmp1, NULL);

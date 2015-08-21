@@ -60,12 +60,12 @@ CyclePalette(), etc.) and when applied to the screen
 (change_screen_palette). No original, non-overwritten palette
 currently exist in the game.
 
-False good idea: instead of setting the same palette to all surfaces,
-we could replace SDL_BlitSurface with a wrapper that sets identical
-palettes before the blits or more generally does not makes palette
-conversion during the blit.  But this wouldn't take care of on-load
-dithering, so we still need DisplayFormat and unified palettes, making
-such a wrapper unnecessary.
+Possible improvement: instead of setting the same palette to all
+surfaces, we could replace SDL_BlitSurface with a wrapper that sets
+identical palettes before the blits or more generally does not makes
+palette conversion during the blit.  But this wouldn't take care of
+on-load dithering, so we still need ConvertFormat and unified
+palettes.
 
 
 2 palette changing techniques replace the physical screen palette
@@ -77,8 +77,14 @@ such a wrapper unnecessary.
   copy_bmp_to_screen() is called pretty regularly in the game.
 
 - load_palette() introduced by v1.08 changes both the physical palette
-  and the reference palette. This makes it overall buggy since sprites
-  loaded after a palette change are dithered to that palette forever.
+  and the reference palette. Two notes of caution:
+
+  - sprites from non-dir.ff and loaded after a palette change are
+    dithered to that possibly-limited palette forever (dir.ff sprites
+    are loaded raw and not impacted)
+
+  - similarly, tiles look initially good, but on savegame load, they
+    are reloaded from disk and dithered, possibly losing definition
 
 
 When the SDL physical screen palette is changed (phys_palette applied
