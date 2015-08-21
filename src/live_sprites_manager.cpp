@@ -264,23 +264,11 @@ void kill_text_owned_by(int sprite)
 
 
 
-int does_sprite_have_text(int sprite)
-{
-  int k;
-        //Msg("getting callback # with %d..", sprite);
-        for (k = 1; k < MAX_SPRITES_AT_ONCE; k++)
-        {
-                if (   spr[k].active) if (spr[k].owner == sprite) if (spr[k].brain == 8)
-                {
-                        //Msg("Found it!  returning %d.", k);
-
-                        return(k);
-                }
-
-        }
-
-        return(0);
-
+int does_sprite_have_text(int sprite) {
+	for (int i = 1; i < MAX_SPRITES_AT_ONCE; i++)
+		if (spr[i].active && spr[i].owner == sprite && spr[i].brain == 8)
+			return i;
+	return 0;
 }
 
 
