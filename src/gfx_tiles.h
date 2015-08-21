@@ -40,8 +40,8 @@
 extern void tiles_load_default(SDL_Surface** gfx_tiles);
 extern void tiles_load_slot(SDL_Surface** gfx_tiles, char* relpath, int slot);
 extern void tiles_unload_all(SDL_Surface** gfx_tiles);
-extern void process_animated_tiles(SDL_Surface** gfx_tiles, Uint32 thisTickCount);
-extern void gfx_tiles_draw_screen(SDL_Surface** gfx_tiles);
+extern void process_animated_tiles(SDL_Surface** gfx_tiles, struct editor_screen* ed_screen, Uint32 thisTickCount);
+extern void gfx_tiles_draw_screen(SDL_Surface** gfx_tiles, struct editor_screen* ed_screen);
 extern void gfx_tiles_draw(int srctileset_idx0, int srctile_square_idx0, int dsttile_square_idx0);
 extern int gfx_tiles_memusage(SDL_Surface** gfx_tiles);
 

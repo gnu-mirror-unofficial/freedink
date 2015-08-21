@@ -402,7 +402,7 @@ void draw_screen_editor(void)
 
   lsm_kill_all_nonlive_sprites();
 
-  gfx_tiles_draw_screen(g_dmod.gfx_tiles);
+  gfx_tiles_draw_screen(g_dmod.gfx_tiles, &cur_ed_screen);
   place_sprites();
 }
 

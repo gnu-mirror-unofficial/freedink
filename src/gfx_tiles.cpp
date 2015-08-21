@@ -26,7 +26,7 @@
 #endif
 
 #include <stdlib.h>
-#include "live_screen.h" /* cur_ed_screen */
+#include "live_screen.h"
 #include "gfx.h"
 #include "gfx_tiles.h"
 #include "io_util.h"
@@ -129,19 +129,19 @@ void gfx_tiles_draw(SDL_Surface** gfx_tiles, int srctileset_idx0, int srctile_sq
 /**
  * Draw all background tiles in the current screen
  */
-void gfx_tiles_draw_screen(SDL_Surface** gfx_tiles)
+void gfx_tiles_draw_screen(SDL_Surface** gfx_tiles, struct editor_screen* ed_screen)
 {
   int x = 0;
   for (; x < GFX_TILES_PER_SCREEN; x++)
     {
-      int srctileset_idx0 = cur_ed_screen.t[x].square_full_idx0 / 128;
-      int srctile_square_idx0 = cur_ed_screen.t[x].square_full_idx0 % 128;
+      int srctileset_idx0 = ed_screen->t[x].square_full_idx0 / 128;
+      int srctile_square_idx0 = ed_screen->t[x].square_full_idx0 % 128;
       gfx_tiles_draw(gfx_tiles, srctileset_idx0, srctile_square_idx0, x);
     }
 }
         
 /* Game-specific: animate background (water, fire, ...) */        
-void process_animated_tiles(SDL_Surface** gfx_tiles, Uint32 thisTickCount)
+void process_animated_tiles(SDL_Surface** gfx_tiles, struct editor_screen* ed_screen, Uint32 thisTickCount)
 {
   // Water:
   if (water_timer < thisTickCount)
