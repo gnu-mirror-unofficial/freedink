@@ -1876,7 +1876,7 @@ void dc_load_palette(int script, int* yield, int* preturnint, char* bmp_file)
   // load a palette from any bmp
   if (gfx_palette_set_from_bmp(bmp_file) < 0)
     log_error("[DinkC] Couldn't load palette from '%s': %s", bmp_file, SDL_GetError());
-  gfx_palette_get_phys(GFX_real_pal);
+  gfx_palette_get_phys(GFX_ref_pal);
   
   //Store in save game
   strncpy(play.palette, bmp_file, 50);

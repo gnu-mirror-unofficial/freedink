@@ -462,9 +462,9 @@ void drawallhard( void)
 	      GFX_box_crap.h = 1;
 	      SDL_FillRect(GFX_backbuffer, &GFX_box_crap,
 			   SDL_MapRGB(GFX_backbuffer->format,
-				      GFX_real_pal[1].r,
-				      GFX_real_pal[1].g,
-				      GFX_real_pal[1].b));
+				      GFX_ref_pal[1].r,
+				      GFX_ref_pal[1].g,
+				      GFX_ref_pal[1].b));
 	    }
 	  }
 
@@ -487,9 +487,9 @@ void drawallhard( void)
 	      GFX_box_crap.h = 1;
 	      SDL_FillRect(GFX_backbuffer, &GFX_box_crap,
 			   SDL_MapRGB(GFX_backbuffer->format,
-				      GFX_real_pal[128].r,
-				      GFX_real_pal[128].g,
-				      GFX_real_pal[128].b));
+				      GFX_ref_pal[128].r,
+				      GFX_ref_pal[128].g,
+				      GFX_ref_pal[128].b));
 	    }
 	  }
 
@@ -512,9 +512,9 @@ void drawallhard( void)
 	      GFX_box_crap.h = 1;
 	      SDL_FillRect(GFX_backbuffer, &GFX_box_crap,
 			   SDL_MapRGB(GFX_backbuffer->format,
-				      GFX_real_pal[45].r,
-				      GFX_real_pal[45].g,
-				      GFX_real_pal[45].b));
+				      GFX_ref_pal[45].r,
+				      GFX_ref_pal[45].g,
+				      GFX_ref_pal[45].b));
 	    }
 	  }
 
@@ -541,9 +541,9 @@ void drawallhard( void)
 		  GFX_box_crap.h = 1;
 		  SDL_FillRect(GFX_backbuffer, &GFX_box_crap,
 			       SDL_MapRGB(GFX_backbuffer->format,
-					  GFX_real_pal[20].r,
-					  GFX_real_pal[20].g,
-					  GFX_real_pal[20].b));
+					  GFX_ref_pal[20].r,
+					  GFX_ref_pal[20].g,
+					  GFX_ref_pal[20].b));
 		}
 	      }
 	    else
@@ -566,9 +566,9 @@ void drawallhard( void)
 		  GFX_box_crap.h = 1;
 		  SDL_FillRect(GFX_backbuffer, &GFX_box_crap,
 			       SDL_MapRGB(GFX_backbuffer->format,
-					  GFX_real_pal[23].r,
-					  GFX_real_pal[23].g,
-					  GFX_real_pal[23].b));
+					  GFX_ref_pal[23].r,
+					  GFX_ref_pal[23].g,
+					  GFX_ref_pal[23].b));
 		}
 	      }
 	  }

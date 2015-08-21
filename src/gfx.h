@@ -60,7 +60,7 @@ extern SDL_Window* window;
 extern SDL_Renderer* renderer;
 extern SDL_Texture* render_texture;
 
-extern SDL_Color GFX_real_pal[256];
+extern SDL_Color GFX_ref_pal[256];
 extern /*bool*/int abort_this_flip;
 
 extern double truecolor_fade_brightness;

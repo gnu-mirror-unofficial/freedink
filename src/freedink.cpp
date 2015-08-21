@@ -466,7 +466,7 @@ void up_cycle(void)
 	  int tmp = -1;
 
 	  tmp = palette[kk].b; // 'int' to avoid 'char' overflow
-	  if (tmp != GFX_real_pal[kk].b)
+	  if (tmp != GFX_ref_pal[kk].b)
 	    {
 	      donethistime = 0;
 	      if (tmp > 246)
@@ -474,12 +474,12 @@ void up_cycle(void)
 	      else
 		tmp += 10;
 	    }
-	  if (tmp > GFX_real_pal[kk].b)
-	    tmp = GFX_real_pal[kk].b;
+	  if (tmp > GFX_ref_pal[kk].b)
+	    tmp = GFX_ref_pal[kk].b;
 	  palette[kk].b = tmp;
       
 	  tmp = palette[kk].g; // 'int' to avoid 'char' overflow
-	  if (tmp != GFX_real_pal[kk].g)
+	  if (tmp != GFX_ref_pal[kk].g)
 	    {
 	      donethistime = 0;
 	      if (tmp > 246)
@@ -487,12 +487,12 @@ void up_cycle(void)
 	      else
 		tmp += 10;
 	    }
-	  if (tmp > GFX_real_pal[kk].g)
-	    tmp = GFX_real_pal[kk].g;
+	  if (tmp > GFX_ref_pal[kk].g)
+	    tmp = GFX_ref_pal[kk].g;
 	  palette[kk].g = tmp;
       
 	  tmp = palette[kk].r; // 'int' to avoid 'char' overflow
-	  if (tmp != GFX_real_pal[kk].r)
+	  if (tmp != GFX_ref_pal[kk].r)
 	    {
 	      donethistime = 0;
 	      if (tmp > 246)
@@ -500,8 +500,8 @@ void up_cycle(void)
 	      else
 		tmp += 10;
 	    }
-	  if (tmp > GFX_real_pal[kk].r)
-	    tmp = GFX_real_pal[kk].r;
+	  if (tmp > GFX_ref_pal[kk].r)
+	    tmp = GFX_ref_pal[kk].r;
 	  palette[kk].r = tmp;
 	}
   
@@ -884,7 +884,7 @@ void process_show_bmp( void )
       
       
       // Return to canonical game palette
-      gfx_palette_set_phys(GFX_real_pal);
+      gfx_palette_set_phys(GFX_ref_pal);
       // The main flip_it() will be called, skip it - lpDDSBack is
       // not matching the palette anymore, it needs to be redrawn
       // first.

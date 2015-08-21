@@ -262,7 +262,7 @@
 	{
 	  if (gfx_palette_set_from_bmp(play.palette) < 0)
 	    log_error("Couldn't load palette from '%s': %s", play.palette, SDL_GetError());
-	  gfx_palette_get_phys(GFX_real_pal);
+	  gfx_palette_get_phys(GFX_ref_pal);
 	}
       
       /* Reload tiles */

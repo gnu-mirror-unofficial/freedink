@@ -339,63 +339,19 @@ print_text (TTF_Font * font, char *str, int x, int y, int w, SDL_Color /*&*/colo
   if (strlen (str) == 0)
     return;
   
-  /* Msg (("printing \"%s\"", str)); */
-
-
-  /* Rationale: text color is not affected by palette shifts (yellow
-     stays yellow even if we're using the negative palette from Lyna's
-     story) _but_ text color is the closest one in the final palette
-     color (so when after a fade_down(), the available colors are only
-     black and white, yellow becomes white, as yellow is just not
-     available, and white is closest than black). */
-  /* So we get the color index from cur_ed_screen_palette (final color
-     even after palette effects), and use the color value from
-     GFX_real_pal (reference palette used for all graphics before
-     palette effects). */
-  /* Previously this was implemented using BlitSurface palette
-     conversion (commit 2007-11-01) but this was terribly slow (full
-     palette conversion done 5 times per text (for the border effect)
-     and per frame). */
   if (!truecolor)
     {
-      SDL_PixelFormat fmt;
-      SDL_Palette pal;
-        pal.ncolors = 256;
-        SDL_Color tmppal[256];
-        gfx_palette_get_phys(tmppal);
-        pal.colors = tmppal;
-      fmt.palette = &pal;
-      Uint32 phys_index = SDL_MapRGB(&fmt, color.r, color.g, color.b);
+      // Text color isn't affected by palette changes - get final
+      // color directly from the physical palette
+      SDL_PixelFormat* fmt = gfx_palette_get_phys_format();
+      Uint32 phys_index = SDL_MapRGB(fmt, color.r, color.g, color.b);
       SDL_GetRGB(phys_index, GFX_backbuffer->format, &(color.r), &(color.g), &(color.b));
+	  SDL_FreeFormat(fmt);
     }
 
   /* Transparent, low quality - closest to the original engine. */
-  /* Besides, we do need a monochrome render, since we're doing nasty
-     tricks to set the color appropriately */
+  /* Also we do need a monochrome rendering for palette support above */
   tmp = TTF_RenderUTF8_Solid(font, str, color);
-
-  /* Bigger, with a box background */
-  // SDL_Color background = {0, 0, 0};
-  // tmp = TTF_RenderText_Shaded(font, str, color, background);
-  
-  /* High quality, 32bit+alpha, but I can't get the transparency
-     OK. Directly applying it on lpDDSBack messed with the colors of
-     the graphics behind the text, and trying to pre-convert it by
-     blitting it on a transparent surface missed some of the text
-     borders in the final result (i.e. multiple calls to print_text
-     with a small postponement to make the borders). */
-  // tmp = TTF_RenderText_Blended(font, str, color);
-  // {
-  //   // SDL_Surface *conv = SDL_DisplayFormat(tmp);
-  //   SDL_Surface *conv = SDL_CreateRGBSurface(SDL_SWSURFACE, tmp->w, tmp->h, 8,
-  // 			     			0, 0, 0, 0);
-  //   SDL_SetPalette(conv, SDL_LOGPAL, GFX_real_pal, 0, 256);
-  //   SDL_SetColorKey(conv, SDL_SRCCOLORKEY, 0);
-  //   SDL_FillRect(conv, NULL, 0);
-  //   SDL_BlitSurface(tmp, NULL, conv, NULL);
-  //   SDL_FreeSurface(tmp);
-  //   tmp = conv;
-  // }
 
   if (tmp == NULL)
     {

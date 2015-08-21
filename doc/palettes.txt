@@ -116,7 +116,7 @@ incorrect results)?
 
   - Lyna's Story (copy_bmp_to_screen): after meeting the Dead Dragon
     Carcass, you are sent to the Shadow World which is color-inverted
-    (except for pure white and pure black)
+    (except for pure white, pure black, and near-black)
 
   - Cycles of Evil (copy_bmp_to_screen): palette changes with seasons
     as the story progresses

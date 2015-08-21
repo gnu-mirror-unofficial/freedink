@@ -87,7 +87,7 @@ SDL_Surface *rgba_screen = NULL;
    physical screen may be changed (e.g. show_bmp()), but this
    canonical palette will stay constant. */
 /* PALETTEENTRY  real_pal[256]; */
-SDL_Color GFX_real_pal[256];
+SDL_Color GFX_ref_pal[256];
 
 /* Skip flipping the double buffer for this frame only - used when
    setting up show_bmp and copy_bmp */
@@ -270,7 +270,7 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
     log_error("Failed to load default palette from Tiles/Ts01.bmp");
 
   /* Set the reference palette */
-  gfx_palette_get_phys(GFX_real_pal);
+  gfx_palette_get_phys(GFX_ref_pal);
 
   /* Initialize graphic buffers */
   /* When a new image is loaded in DX, it's color-converted using the
@@ -280,7 +280,7 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
      the buffer's palette again, so we're sure there isn't any
      conversion even if we change the screen palette: */
   if (!truecolor) {
-    SDL_SetPaletteColors(GFX_backbuffer->format->palette, GFX_real_pal, 0, 256);
+    SDL_SetPaletteColors(GFX_backbuffer->format->palette, GFX_ref_pal, 0, 256);
 
     Uint32 render_texture_format;
     SDL_QueryTexture(render_texture, &render_texture_format, NULL, NULL, NULL);
@@ -409,35 +409,17 @@ static SDL_Surface* load_bmp_internal(char *filename, SDL_RWops *rw, int from_me
 
   if (!truecolor)
     {
-      /* Make a copy of the surface using the screen format (in
-	 particular: same color depth, which is needed when importing
-	 24bit graphics in 8bit mode). */
-      /* This copy is also necessary to make a palette conversion from
-	 the Dink palette (the one from the .bmp) to the
-	 'DX-bug-messed' Dink palette (GFX_real_pal with overwritten
-	 indexes 0 and 255). */
-      SDL_Surface *converted = SDL_ConvertSurface(image, GFX_tmp2->format, 0);
-
-      /* TODO: the following is probably unnecessary, I think that's
-	 exactly what SDL_DisplayFormat does: convert the surface to
-	 the screen's logical palette. Cf. test/sdl/paltest.c. */
-      {
-	/* In the end, the image must use the reference palette: that
-	   way no mistaken color conversion will occur during blits to
-	   other surfaces/buffers.  Blits should also be faster(?).
-	   Alternatively we could replace SDL_BlitSurface with a
-	   wrapper that sets identical palettes before the blits. */
-	SDL_SetPaletteColors(converted->format->palette, GFX_real_pal, 0, 256);
-	
-	/* Blit the copy back to the original, with a potentially
-	   different palette, which triggers color conversion to
-	   image's palette. */
-	gfx_blit_nocolorkey(image, NULL, converted, NULL);
-      }
+      /* Make a copy of the surface using the screen format: same
+         palette (with dithering), and same color depth (needed when
+         importing 24bit graphics in 8bit mode). */
+      SDL_PixelFormat* fmt = gfx_palette_get_phys_format();
+      SDL_Surface *converted = SDL_ConvertSurface(image, fmt, 0);
+	  SDL_FreeFormat(fmt);
       SDL_FreeSurface(image);
-      image = NULL;
-
-      return converted;
+	  image = converted;
+	  /* Disable palette conversion in future blits */
+      SDL_SetPaletteColors(image->format->palette, GFX_ref_pal, 0, 256);
+      return image;
     }
   else
     {
@@ -726,9 +708,9 @@ void fill_screen(int num)
     SDL_FillRect(GFX_background, NULL, num);
   else
     SDL_FillRect(GFX_background, NULL, SDL_MapRGB(GFX_background->format,
-						GFX_real_pal[num].r,
-						GFX_real_pal[num].g,
-						GFX_real_pal[num].b));
+						GFX_ref_pal[num].r,
+						GFX_ref_pal[num].g,
+						GFX_ref_pal[num].b));
 }
 
 
@@ -750,24 +732,18 @@ void copy_bmp(char* name)
   if (!truecolor)
     {
       gfx_palette_set_from_surface(image);
-      /* Grab back palette with DX bug overwrite */
-      SDL_Color phys_pal[256];
-      gfx_palette_get_phys(phys_pal);
 
       /* In case the DX bug messed the palette, let's convert the
 	 image to the new palette. This also converts 24->8bit if
 	 necessary. */
-      {
-	SDL_Surface* converted =  SDL_CreateRGBSurface(0, image->w,image->h,
-						       8, 0,0,0,0);
-	SDL_SetPaletteColors(converted->format->palette, phys_pal, 0, 256);
-	SDL_BlitSurface(image, NULL, converted, NULL);
-	SDL_FreeSurface(image);
-	image = converted;
-      }
+	  SDL_PixelFormat* fmt = gfx_palette_get_phys_format();
+	  SDL_Surface *converted = SDL_ConvertSurface(image, fmt, 0);
+	  SDL_FreeFormat(fmt);
+	  SDL_FreeSurface(image);
+	  image = converted;
 
       /* Next blit without palette conversion */
-      SDL_SetPaletteColors(image->format->palette, GFX_real_pal, 0, 256);
+      SDL_SetPaletteColors(image->format->palette, GFX_ref_pal, 0, 256);
     }
 
   SDL_BlitSurface(image, NULL, GFX_background, NULL);
@@ -790,22 +766,17 @@ void show_bmp(char* name, int script)
   if (!truecolor)
     {
       gfx_palette_set_from_surface(image);
-      SDL_Color phys_pal[256];
-      gfx_palette_get_phys(phys_pal);
 
       /* In case the DX bug messed the palette, let's convert the
 	 image to the new palette. This also converts 24->8bit if
 	 necessary. */
-      {
-	SDL_Surface* converted = SDL_ConvertSurfaceFormat(image, SDL_PIXELFORMAT_INDEX8, 0);
-	SDL_SetPaletteColors(converted->format->palette, phys_pal, 0, 256);
-	SDL_BlitSurface(image, NULL, converted, NULL);
-	SDL_FreeSurface(image);
-	image = converted;
-      }
-
-      /* Next blit without palette conversion */
-      SDL_SetPaletteColors(image->format->palette, GFX_real_pal, 0, 256);
+	  SDL_PixelFormat* fmt = gfx_palette_get_phys_format();
+	  SDL_Surface *converted = SDL_ConvertSurface(image, fmt, 0);
+	  SDL_FreeFormat(fmt);
+	  SDL_FreeSurface(image);
+	  image = converted;
+	  /* Disable palette conversion in future blits */
+      SDL_SetPaletteColors(image->format->palette, GFX_ref_pal, 0, 256);
     }
 
   SDL_BlitSurface(image, NULL, GFX_tmp1, NULL);

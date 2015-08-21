@@ -76,6 +76,17 @@ void gfx_palette_set_phys(SDL_Color* new_palette)
   phys_palette[255].b = 255;
 }
 
+/**
+ * Return physical palette as SDL_PixelFormat for easy SDL_MapRGB and
+ * SDL_ConvertSurface
+ */
+SDL_PixelFormat* gfx_palette_get_phys_format() {
+	SDL_PixelFormat* fmt = SDL_AllocFormat(SDL_PIXELFORMAT_INDEX8);
+	if (!fmt->palette)  // fmt is cached ref from SDL2
+		fmt->palette = SDL_AllocPalette(256);
+	gfx_palette_get_phys(fmt->palette->colors);
+	return fmt;
+}
 
 /* Generate a default/fallback 216 colors palette */
 void gfx_palette_reset()

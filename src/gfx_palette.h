@@ -31,6 +31,7 @@ extern int gfx_palette_set_from_bmp (char *file);
 
 extern void gfx_palette_get_phys(SDL_Color *palette);
 extern void gfx_palette_set_phys(SDL_Color *new_palette);
+extern SDL_PixelFormat* gfx_palette_get_phys_format();
 extern void gfx_palette_apply_phys();
 extern void gfx_palette_restore_phys();
 #endif
