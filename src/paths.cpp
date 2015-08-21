@@ -251,21 +251,18 @@ bool paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
       }
     else
       {
-	char *msg = NULL;
-	asprintf_append(&msg, "Error: cannot find reference directory (--refdir). I looked in:\n");
-	// lookup[0] already treated above
-	asprintf_append(&msg, "- %s [current dir]\n", lookup[1]);
-	asprintf_append(&msg, "- %s [build prefix]\n", lookup[2]);
-	asprintf_append(&msg, "- %s [hard-coded /usr/local/share/games prefix]\n", lookup[3]);
-	asprintf_append(&msg, "- %s [hard-coded /usr/local/share prefix]\n", lookup[4]);
-	asprintf_append(&msg, "- %s [hard-coded /usr/share/games prefix]\n", lookup[5]);
-	asprintf_append(&msg, "- %s [hard-coded /usr/share prefix]\n", lookup[6]);
-	asprintf_append(&msg, "The reference directory contains among others the "
-		"'dink/graphics/' and 'dink/tiles/' directories (as well as "
-		"D-Mods).");
-	log_error(msg);
-	free(msg);
-	return false;
+        log_error("Error: cannot find reference directory (--refdir). I looked in:\n"
+        // lookup[0] already treated above
+        "- %s [current dir]\n"
+        "- %s [build prefix]\n"
+        "- %s [hard-coded prefix]\n"
+        "- %s [hard-coded prefix]\n"
+        "- %s [hard-coded prefix]\n"
+        "- %s [hard-coded prefix]\n"
+        "The reference directory contains among others the "
+        "'dink/graphics/' and 'dink/tiles/' directories (as well as D-Mods)."
+        , lookup[1], lookup[2], lookup[3], lookup[4], lookup[5], lookup[6]);
+        return false;
       }
 
     free(lookup[1]); // paths_getcwd
