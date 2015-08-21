@@ -37,9 +37,6 @@
    so 128*(41-1)+12*8=5216 indexes used, instead of 12*8*41=3936 */
 #define GFX_TILES_NB_SQUARES (128*(GFX_TILES_NB_SETS-1)+GFX_TILES_SCREEN_W*GFX_TILES_SCREEN_H)
 
-extern void tiles_load_default(SDL_Surface** gfx_tiles);
-extern void tiles_load_slot(SDL_Surface** gfx_tiles, char* relpath, int slot);
-extern void tiles_unload_all(SDL_Surface** gfx_tiles);
 extern void process_animated_tiles(SDL_Surface** gfx_tiles, struct editor_screen* ed_screen, Uint32 thisTickCount);
 extern void gfx_tiles_draw_screen(SDL_Surface** gfx_tiles, struct editor_screen* ed_screen);
 extern void gfx_tiles_draw(int srctileset_idx0, int srctile_square_idx0, int dsttile_square_idx0);

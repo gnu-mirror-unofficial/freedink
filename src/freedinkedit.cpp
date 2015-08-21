@@ -402,7 +402,7 @@ void draw_screen_editor(void)
 
   lsm_kill_all_nonlive_sprites();
 
-  gfx_tiles_draw_screen(g_dmod.gfx_tiles, &cur_ed_screen);
+  gfx_tiles_draw_screen(g_dmod.bgTilesets.slots, &cur_ed_screen);
   place_sprites();
 }
 
@@ -427,7 +427,7 @@ void draw_current()
   src.h = GFX_TILES_SQUARE_SIZE;
   
   SDL_Rect dst = {590, 430};
-  SDL_BlitSurface(g_dmod.gfx_tiles[srctileset_idx0 + 1], &src, GFX_background, &dst);
+  SDL_BlitSurface(g_dmod.bgTilesets.slots[srctileset_idx0 + 1], &src, GFX_background, &dst);
 }
 
 
@@ -912,7 +912,7 @@ void loadtile(int tileset)
 
 /*   lpDDSTwo->BltFast(0, 0, tiles[tileset], &tilerect[tileset], DDBLTFAST_NOCOLORKEY |DDBLTFAST_WAIT); */
   // GFX
-  SDL_BlitSurface(g_dmod.gfx_tiles[tileset], NULL, GFX_background, NULL);
+  SDL_BlitSurface(g_dmod.bgTilesets.slots[tileset], NULL, GFX_background, NULL);
   cur_tileset = tileset;
 
   last_mode = tileset;
@@ -3141,7 +3141,7 @@ int gui_logic(int h) {
 					dst.h = 450;
 				  
 					cool = cur_tile / 128;
-					gfx_blit_stretch(g_dmod.gfx_tiles[cool+1], &src, GFX_background, &dst);
+					gfx_blit_stretch(g_dmod.bgTilesets.slots[cool+1], &src, GFX_background, &dst);
 				}
 
 				m4x = spr[h].x;

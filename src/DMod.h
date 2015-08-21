@@ -27,6 +27,7 @@
 using namespace std;
 
 #include "EditorMap.h"
+#include "BgTilesetsManager.h"
 
 class DMod {
 public:
@@ -35,7 +36,7 @@ public:
 	void unload();
 	
 	EditorMap map;
-	SDL_Surface* gfx_tiles[GFX_TILES_NB_SETS+1]; /* 1-indexed array */
+	BgTilesetsManager bgTilesets;
 };
 
 extern DMod g_dmod;

@@ -38,71 +38,6 @@ static unsigned int water_timer = 0;
 static int fire_flip = 0;
 
 
-/* Local functions */
-
-
-// Load the tiles from the BMPs
-void tiles_load_default(SDL_Surface** gfx_tiles) {
-  char crap[30];
-  char crap1[10];
-  int h;
-
-  log_info("loading tilescreens...");
-  for (h = 1; h <= GFX_TILES_NB_SETS; h++)
-    {
-      if (h < 10)
-	strcpy(crap1,"0");
-      else
-	strcpy(crap1, "");      
-      sprintf(crap, "tiles/Ts%s%d.BMP", crap1, h);
-
-      tiles_load_slot(gfx_tiles, crap, h);
-
-      if (gfx_tiles[h] == NULL)
-	exit(0);
-    }
-  
-  log_info("Done with tilescreens...");
-}
-
-void tiles_load_slot(SDL_Surface** gfx_tiles, char* relpath, int slot)
-{
-  FILE* in = paths_dmodfile_fopen(relpath, "rb");
-  if (in == NULL)
-    in = paths_fallbackfile_fopen(relpath, "rb");
-  
-  if (gfx_tiles[slot] != NULL)
-    {
-      SDL_FreeSurface(gfx_tiles[slot]);
-      gfx_tiles[slot] = NULL;
-    }
-
-  gfx_tiles[slot] = load_bmp_from_fp(in);
-
-  /* Note: attempting SDL_RLEACCEL showed no improvement for the
-     memory usage, including when using a transparent color and
-     blitting the surface once. It did show a decrease of 400kB (out
-     of 6000kB) when using transparent color 255, but in this case the
-     color is not supposed to be transparent. */
-
-  if (gfx_tiles[slot] == NULL) {
-    fprintf(stderr, "Couldn't find tilescreen %s: %s\n", relpath, SDL_GetError());
-  }
-}
-
-/**
- * Free memory used by tiles
- */
-void tiles_unload_all(SDL_Surface** gfx_tiles) {
-  int h = 0;
-  for (h=1; h <= GFX_TILES_NB_SETS; h++)
-    {
-      if (gfx_tiles[h] != NULL)
-	SDL_FreeSurface(gfx_tiles[h]);
-      gfx_tiles[h] = NULL;
-    }
-}
-
 /**
  * Draw tile number 'dsttile_square_id0x' (in [0, 96-1]) in the
  * current screen
@@ -153,7 +88,7 @@ void process_animated_tiles(SDL_Surface** gfx_tiles, struct editor_screen* ed_sc
       int x = 0;
       for (; x < 96; x++)
 	{
-	  int screen_square_full_idx0 = cur_ed_screen.t[x].square_full_idx0;
+	  int screen_square_full_idx0 = ed_screen->t[x].square_full_idx0;
 	  int start_full_idx0 = (8-1) * 128; // 8th tileset -> 896
 	  if (screen_square_full_idx0 >= start_full_idx0
 	      && screen_square_full_idx0 < (start_full_idx0 + 128))
@@ -171,23 +106,11 @@ void process_animated_tiles(SDL_Surface** gfx_tiles, struct editor_screen* ed_sc
     int x = 0;
     for (; x < 96; x++)
       {
-	int screen_square_full_idx0 = cur_ed_screen.t[x].square_full_idx0;
+	int screen_square_full_idx0 = ed_screen->t[x].square_full_idx0;
 	int start_full_idx0 = (19-1) * 128; // 19th tileset -> 2304
 	if (screen_square_full_idx0 >= start_full_idx0
 	    && screen_square_full_idx0 < (start_full_idx0 + 128))
 		gfx_tiles_draw(gfx_tiles, (19-1) + fire_flip, screen_square_full_idx0 % 128, x);
       }
   }
-}
-
-int gfx_tiles_memusage(SDL_Surface** gfx_tiles) {
-    int sum = 0;
-    int i = 0;
-    SDL_Surface* s = NULL;
-    for (; i < GFX_TILES_NB_SETS+1; i++) {
-		s = gfx_tiles[i];
-		if (s != NULL)
-			sum += s->h * s->pitch;
-	}
-    return sum;
 }

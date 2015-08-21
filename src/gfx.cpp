@@ -656,7 +656,7 @@ void gfx_log_meminfo()
   }
 
   {
-	  int sum = gfx_tiles_memusage(g_dmod.gfx_tiles);
+	  int sum = g_dmod.bgTilesets.getMemUsage();
 	  log_debug("GFX tiles  = %8d", sum);
 	  total += sum;
   }

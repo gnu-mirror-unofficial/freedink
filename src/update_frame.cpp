@@ -238,7 +238,7 @@ void updateFrame() {
 		
 		update_sound();
 		
-		process_animated_tiles(g_dmod.gfx_tiles, &cur_ed_screen, thisTickCount);
+		process_animated_tiles(g_dmod.bgTilesets.slots, &cur_ed_screen, thisTickCount);
 	}
 	
 	if (show_inventory) {
