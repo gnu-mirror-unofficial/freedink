@@ -322,6 +322,7 @@ int gfx_init(enum gfx_windowed_state windowed, char* splash_path)
     if (SDL_BlitSurface(GFX_background, NULL, GFX_backbuffer, NULL) < 0)
       log_error("Error blitting splash to back buffer");
 
+    SDL_RenderClear(renderer);
     flip_it();
 	SDL_RenderPresent(renderer);
   }

@@ -4594,6 +4594,7 @@ void AppFreeDinkedit::logic(void)
 
 /*     } else */
 /*     { */
+      SDL_RenderClear(renderer);
       flip_it();
       SDL_RenderPresent(renderer);
       /*
