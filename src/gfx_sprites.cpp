@@ -237,10 +237,10 @@ void load_sprite_pak(char seq_path_prefix[100], int seq_no, int delay, int xoffs
 	 sure a dir.ff LEFTALIGN has no transparency, otherwise the
 	 experience counter digits in the status bar will become
 	 transparent. */
-      /* Not doing the conversion in truecolor mode, because at least
+      /* Using bitmap's own palette in truecolor mode, because at least
 	 one D-Mod (The Blacksmith's Trail) ships with a 24bit, hence
-	 palette-less, tiles/ts01.bmp, and this doesn't mess up
-	 graphics in v1.08. */
+	 palette-less, tiles/ts01.bmp, and graphics stay clean in
+	 v1.08 -truecolor !-dinkpal. */
 
       if (!truecolor)
 	SDL_SetPaletteColors(GFX_k[myslot].k->format->palette,

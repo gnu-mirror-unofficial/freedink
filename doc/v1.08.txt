@@ -450,11 +450,18 @@ Changes not documented in whatsnew.txt
     %WINDIR%/dinksmallwood.ini overwrite.
     => Done by the installer rather than the engine
 
+[ ] Option -dinkpal: with -truecolor, modify dir.ff graphics assuming
+    they use the reference palette rather than their own palette,
+    during black->near-black and white->near-white changes.  Option is
+    *never* set by DFArc2.
+    => Option rarely used, and breaks "The Blackmith's Trail".
+       Implemented -truecolor with !-dinkpal.
+
 Changes eventually not implemented
 ----------------------------------
 
 * Dynamic (shell- and Perl4-style) scope in DinkC (referenced in "The
-  Three Pillars of Dink v1.08" link above). Good ridance ;)
+  Three Pillars of Dink v1.08" link above). Good riddance ;)
 
 dinkc.chm (additional information)
 ----------------------------------
