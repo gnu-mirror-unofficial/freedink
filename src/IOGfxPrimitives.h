@@ -31,9 +31,7 @@ public:
 };
 
 #include "SDL.h"
-extern SDL_Surface* load_bmp(char *filename);
 extern SDL_Surface* load_bmp_from_fp(FILE* in);
-extern SDL_Surface* load_bmp_from_mem(SDL_RWops *rw);
 extern int gfx_blit_nocolorkey(SDL_Surface *src, SDL_Rect *src_rect, SDL_Surface *dst, SDL_Rect *dst_rect);
 extern int gfx_blit_stretch(SDL_Surface *src, SDL_Rect *src_rect, SDL_Surface *dst, SDL_Rect *dst_rect);
 extern void gfx_toggle_fullscreen(void);

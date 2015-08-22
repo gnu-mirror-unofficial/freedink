@@ -283,20 +283,14 @@ int gfx_init(bool windowed, char* splash_path)
 
   /* Display splash picture, as early as possible */
   {
-    char* fullpath = paths_dmodfile(splash_path);
-    if (!exist(fullpath))
-      {
-	free(fullpath);
-	fullpath = paths_fallbackfile(splash_path);
-      }
-    SDL_Surface* splash = load_bmp(fullpath);
-    free(fullpath);
-    if (splash == NULL)
-      {
-	log_error("Cannot load base graphics %s", splash_path);
-      }
-    else
-      {
+    FILE* splash_file = paths_dmodfile_fopen(splash_path, "r");
+    if (splash_file == NULL) {
+      splash_file = paths_fallbackfile_fopen(splash_path, "r");
+    }
+    SDL_Surface* splash = load_bmp_from_fp(splash_file);
+    if (splash == NULL) {
+	  log_error("Cannot load base graphics %s", splash_path);
+    } else {
 	/* Copy splash to the background buffer so that D-Mod can
 	   start an effect from it (e.g. Pilgrim Quest's burning
 	   splash screen effect) */

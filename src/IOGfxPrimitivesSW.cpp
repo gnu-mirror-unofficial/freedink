@@ -23,18 +23,8 @@ IOGfxPrimitivesSW::~IOGfxPrimitivesSW() {
    reference palette so that all subsequent blits are faster (color
    convertion is avoided) - although the initial loading time will be
    somewhat longer. */
-static SDL_Surface* load_bmp_internal(char *filename, SDL_RWops *rw, int from_mem) {
-  SDL_Surface *image;
-
-  if (from_mem == 1)
-    {
-      image = IMG_Load_RW(rw, 1);
-    }
-  else
-    {
-      ciconvert(filename);
-      image = IMG_Load(filename);
-    }
+static SDL_Surface* load_bmp_internal(SDL_RWops *rw) {
+  SDL_Surface *image = IMG_Load_RW(rw, 1);
 
   if (image == NULL)
     {
@@ -69,26 +59,15 @@ static SDL_Surface* load_bmp_internal(char *filename, SDL_RWops *rw, int from_me
 
 }
 
-/* LoadBMP wrapper, from file */
-SDL_Surface* load_bmp(char *filename)
-{
-  return load_bmp_internal(filename, NULL, 0);
-}
-
 /* LoadBMP wrapper, from FILE pointer */
 SDL_Surface* load_bmp_from_fp(FILE* in)
 {
   if (in == NULL)
     return NULL;
   SDL_RWops *rw = SDL_RWFromFP(in, /*autoclose=*/SDL_TRUE);
-  return load_bmp_internal(NULL, rw, 1);
+  return load_bmp_internal(rw);
 }
 
-/* LoadBMP wrapper, from memory */
-SDL_Surface* load_bmp_from_mem(SDL_RWops *rw)
-{
-  return load_bmp_internal(NULL, rw, 1);
-}
 
 
 /**
