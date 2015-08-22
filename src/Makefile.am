@@ -31,14 +31,15 @@ COMMON_OBJS = app.cpp app.h bgm.cpp bgm.h BgTilesetsManager.cpp		\
 	editor_screen.h gfx.cpp gfx.h gfx_fade.cpp gfx_fade.h		\
 	gfx_tiles.cpp gfx_tiles.h gfx_palette.cpp gfx_palette.h		\
 	gfx_fonts.cpp gfx_fonts.h hardness_tiles.cpp hardness_tiles.h	\
-	IOGfxDisplay.cpp IOGfxDIsplay.h IOGfxPrimitives.cpp		\
-	IOGfxPrimitives.h IOGfxPrimitivesSW.cpp IOGfxPrimitivesSW.h	\
-	live_screen.cpp live_screen.h live_sprite.cpp live_sprite.h	\
-	live_sprites_manager.cpp live_sprites_manager.h rect.cpp	\
-	rect.h resources.cpp resources.h input.cpp input.h		\
-	freedink_xpm.cpp freedink_xpm.h paths.cpp paths.h log.cpp	\
-	log.h gfx_sprites.cpp gfx_sprites.h vgasys_fon.cpp		\
-	vgasys_fon.h SDL_android_main.c sfx.cpp sfx.h
+	IOGfxDisplay.cpp IOGfxDisplay.h IOGfxSurface.cpp		\
+	IOGfxSurface.h IOGfxSurfaceSW.cpp IOGfxSurfaceSW.h		\
+	IOGfxPrimitives.cpp IOGfxPrimitives.h IOGfxPrimitivesSW.cpp	\
+	IOGfxPrimitivesSW.h live_screen.cpp live_screen.h		\
+	live_sprite.cpp live_sprite.h live_sprites_manager.cpp		\
+	live_sprites_manager.h rect.cpp rect.h resources.cpp		\
+	resources.h input.cpp input.h freedink_xpm.cpp freedink_xpm.h	\
+	paths.cpp paths.h log.cpp log.h gfx_sprites.cpp gfx_sprites.h	\
+	vgasys_fon.cpp vgasys_fon.h SDL_android_main.c sfx.cpp sfx.h
 if ANDROID
   # Build .so JNI libs rather than executables
   # Define here rather than configure.ac, otherwise config.h gets confused
