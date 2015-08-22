@@ -37,3 +37,4 @@ gmon.out
 # Eclipse
 .project
 .cproject
+.settings/

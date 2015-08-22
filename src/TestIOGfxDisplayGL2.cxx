@@ -26,7 +26,6 @@
 
 #include "IOGfxDisplayGL2.h"
 #include "IOGfxGLFuncs.h"
-#include "SDL_image.h"
 
 class TestIOGraphics : public CxxTest::TestSuite {
 public:
@@ -38,23 +37,23 @@ public:
 	}
 
 	void test_graphics() {
-		IOGfxDisplayGL2 gc(800, 600, SDL_WINDOW_HIDDEN);
-		TS_ASSERT_EQUALS(gc.open(), true);
+		IOGfxDisplay* g = new IOGfxDisplayGL2(800, 600, SDL_WINDOW_HIDDEN);
+		TS_ASSERT_EQUALS(g->open(), true);
 
-		gc.clearWindow();
-		SDL_GL_SwapWindow(gc.window);
+		g->clearWindow();
+		SDL_GL_SwapWindow(g->window);
 
-		SDL_Surface* screenshot = gc.screenshot();
-		Uint8 r, g, b, a;
+		SDL_Surface* screenshot = dynamic_cast<IOGfxDisplayGL2*>(g)->screenshot();
+		Uint8 cr, cg, cb, ca;
 		SDL_GetRGBA(((Uint32*)screenshot->pixels)[0],
 					screenshot->format,
-					&r, &g, &b, &a);
-		TS_ASSERT_EQUALS(r, 0);
-		TS_ASSERT_EQUALS(b, 255);
-		TS_ASSERT_EQUALS(g, 0);
-		TS_ASSERT_EQUALS(a, 255);
+					&cr, &cg, &cb, &ca);
+		TS_ASSERT_EQUALS(cr, 0);
+		TS_ASSERT_EQUALS(cb, 255);
+		TS_ASSERT_EQUALS(cg, 0);
+		TS_ASSERT_EQUALS(ca, 255);
 		
 		SDL_FreeSurface(screenshot);
-		gc.close();
+		g->close();
 	}
 };

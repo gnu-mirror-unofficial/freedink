@@ -30,7 +30,11 @@
 #include "log.h"
 
 IOGfxDisplayGL2::IOGfxDisplayGL2(int w, int h, Uint32 flags)
-	: w(w), h(h), flags(flags) {
+	: IOGfxDisplay(w, h, flags | SDL_WINDOW_OPENGL) {
+}
+
+IOGfxDisplayGL2::~IOGfxDisplayGL2() {
+	close();
 }
 
 bool IOGfxDisplayGL2::open() {
@@ -44,36 +48,11 @@ bool IOGfxDisplayGL2::open() {
 void IOGfxDisplayGL2::close() {
 	if (gl) delete gl;
 	gl = NULL;
-
 	if (glcontext) SDL_GL_DeleteContext(glcontext);
 	glcontext = NULL;
 
 	if (window) SDL_DestroyWindow(window);
 	window = NULL;
-}
-
-IOGfxDisplayGL2::~IOGfxDisplayGL2() {
-	close();
-}
-
-bool IOGfxDisplayGL2::createWindow() {
-	window = SDL_CreateWindow(PACKAGE_STRING,
-		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		w, h,
-		flags | SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-	/* Note: SDL_WINDOW_FULLSCREEN[!_DESKTOP] may not respect aspect ratio */
-	if (window == NULL) {
-		log_error("Unable to create %dx%d window: %s\n",
-		          w, h, SDL_GetError());
-		return false;
-	}
-	return true;
-}
-
-void IOGfxDisplayGL2::logWindowInfo() {
-	log_info("Video driver: %s", SDL_GetCurrentVideoDriver());
-	log_info("Video fall-back surface (unused): %s",
-	         SDL_GetPixelFormatName(SDL_GetWindowPixelFormat(window)));
 }
 
 bool IOGfxDisplayGL2::createOpenGLContext() {
@@ -129,4 +108,8 @@ void IOGfxDisplayGL2::screenshot(const char* output_file) {
 	SDL_Surface* surface = screenshot();
 	SDL_SaveBMP(surface, output_file);
 	SDL_FreeSurface(surface);
+}
+
+void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer) {
+	// TODO
 }

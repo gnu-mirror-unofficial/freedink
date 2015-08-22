@@ -36,7 +36,8 @@
 #include "io_util.h"
 #include "gfx.h"
 #include "IOGfxPrimitives.h"
-#include "IOGfxDisplay.h"
+#include "IOGfxSurfaceSW.h"
+#include "IOGfxDisplaySW.h"
 #include "gfx_fade.h"
 #include "gfx_fonts.h"
 #include "gfx_palette.h"
@@ -49,6 +50,7 @@
 int truecolor = 0;
 
 SDL_Surface *GFX_backbuffer = NULL; /* Backbuffer */
+IOGfxSurface* IOGFX_backbuffer = NULL;
 
 /* GFX_lpDDSTwo: holds the base scene */
 /* Rationale attempt :*/
@@ -65,6 +67,7 @@ SDL_Surface *GFX_backbuffer = NULL; /* Backbuffer */
    on lpDDSBack, the double buffer which is directly used by the
    physical screen. */
 SDL_Surface *GFX_background = NULL;
+IOGfxSurface* IOGFX_background = NULL;
 
 /* Beuc: apparently used for the scrolling screen transition and more
    generaly as temporary buffers. Only used by the game, not the
@@ -74,14 +77,6 @@ SDL_Surface *GFX_background = NULL;
 SDL_Surface *GFX_tmp1 = NULL;
 /* Used in freedink.cpp and update_frame.cpp */
 SDL_Surface *GFX_tmp2 = NULL;
-
-/* Main window and associated renderer */
-SDL_Window* window = NULL;
-SDL_Renderer* renderer = NULL;
-/* Streaming texture to push software buffer -> hardware */
-SDL_Texture* render_texture = NULL;
-/* Intermediary texture to convert 8bit->32bit in non-truecolor */
-SDL_Surface *rgba_screen = NULL;
 
 /* Reference palette: this is the canonical Dink palette, loaded from
    TS01.bmp (for freedink) and esplash.bmp (for freedinkedit). The
@@ -102,105 +97,25 @@ Uint32 truecolor_fade_lasttick = 0;
 
 FPSmanager framerate_manager;
 
-void logRendererInfo(SDL_RendererInfo* info) {
-	log_info("  Renderer driver: %s", info->name);
-	log_info("  Renderer flags:");
-	if (info->flags & SDL_RENDERER_SOFTWARE)
-		log_info("    SDL_RENDERER_SOFTWARE");
-	if (info->flags & SDL_RENDERER_ACCELERATED)
-		log_info("    SDL_RENDERER_ACCELERATED");
-	if (info->flags & SDL_RENDERER_PRESENTVSYNC)
-		log_info("    SDL_RENDERER_PRESENTVSYNC");
-	if (info->flags & SDL_RENDERER_TARGETTEXTURE)
-		log_info("    SDL_RENDERER_TARGETTEXTURE");
-	log_info("  Renderer texture formats:");
-	for (unsigned int i = 0; i < info->num_texture_formats; i++)
-		log_info("    %s", SDL_GetPixelFormatName(info->texture_formats[i]));
-	log_info("  Renderer max texture width: %d", info->max_texture_width);
-	log_info("  Renderer max texture height: %d", info->max_texture_height);
-}
+/* Main window and associated renderer */
+IOGfxDisplaySW* display = NULL;
 
-void logRenderersInfo() {
-	log_info("Available renderers:");
-	for (int i = 0; i < SDL_GetNumRenderDrivers(); i++) {
-		SDL_RendererInfo info;
-		SDL_GetRenderDriverInfo(i, &info);
-		log_info("%d:\n", i);
-		logRendererInfo(&info);
-	}
-
-	log_info("current:\n");
-	SDL_RendererInfo info;
-	SDL_GetRendererInfo(renderer, &info);
-	logRendererInfo(&info);
-}
 
 /**
  * Graphics subsystem initalization
  */
-int gfx_init(bool windowed, char* splash_path)
-{
-  /* Init graphics subsystem */
-  if (SDL_WasInit(SDL_INIT_VIDEO) == 0 && SDL_InitSubSystem(SDL_INIT_VIDEO) == -1)
-    {
-      log_error("Video initialization error: %s", SDL_GetError());
-      return -1;
-    }
+int gfx_init(bool windowed, char* splash_path) {
+	/* Init graphics subsystem */
+	if (SDL_WasInit(SDL_INIT_VIDEO) == 0 && SDL_InitSubSystem(SDL_INIT_VIDEO) == -1) {
+		log_error("Video initialization error: %s", SDL_GetError());
+		return -1;
+	}
 
-  log_info("Truecolor mode: %s", truecolor ? "on" : "off");
+	log_info("Truecolor mode: %s", truecolor ? "on" : "off");
 
-  window = SDL_CreateWindow(PACKAGE_STRING,
-    SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-    640, 480,
-    windowed ? SDL_WINDOW_RESIZABLE : SDL_WINDOW_FULLSCREEN_DESKTOP);
-  /* Note: SDL_WINDOW_FULLSCREEN[!_DESKTOP] may not respect aspect ratio */
-  if (window == NULL)
-    {
-      log_error("Unable to create 640x480 window: %s\n", SDL_GetError());
-      return -1;
-    }
-
-  log_info("Video driver: %s", SDL_GetCurrentVideoDriver());
-  if (0) {
-    // Segfaults on quit:
-    //SDL_SetHint(SDL_HINT_FRAMEBUFFER_ACCELERATION, "opengl");
-    SDL_Surface* window_surface = SDL_GetWindowSurface(window);
-    log_info("Video fall-back surface (unused): %s",
-	     SDL_GetPixelFormatName(window_surface->format->format));
-  }
-  log_info("Video fall-back surface (unused): %s",
-	   SDL_GetPixelFormatName(SDL_GetWindowPixelFormat(window)));
-
-  /* Renderer */
-  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
-  /* TODO SDL2: make it configurable for speed: nearest/linear/DX-specific-best */
-  //SDL_SetHint(SDL_HINT_RENDER_DRIVER, "software");
-  /* TODO SDL2: make render driver configurable to ease software-mode testing */
-  renderer = SDL_CreateRenderer(window, -1/*autoselect*/, 0);
-  /* TODO SDL2: optionally pass SDL_RENDERER_PRESENTVSYNC to 3rd param */
-  if (renderer == NULL)
-    {
-      log_error("Unable to create renderer: %s\n", SDL_GetError());
-      return -1;
-    }
-  // Specify aspect ratio
-  SDL_RenderSetLogicalSize(renderer, 640, 480);
-
-  logRenderersInfo();
-
-  /* Window configuration */
-  {
-    SDL_Surface *icon = NULL;
-    if ((icon = IMG_ReadXPMFromArray(freedink_xpm)) == NULL)
-      {
-	log_error("Error loading icon: %s", IMG_GetError());
-      }
-    else
-      {
-	SDL_SetWindowIcon(window, icon);
-	SDL_FreeSurface(icon);
-      }
-  }
+	display = new IOGfxDisplaySW(GFX_RES_W, GFX_RES_H, windowed ? SDL_WINDOW_RESIZABLE : SDL_WINDOW_FULLSCREEN_DESKTOP);
+	/* Note: SDL_WINDOW_FULLSCREEN[!_DESKTOP] may not respect aspect ratio */
+	display->open();
 
   /* Create destination surface */
   {
@@ -218,36 +133,7 @@ int gfx_init(bool windowed, char* splash_path)
 	     SDL_GetPixelFormatName(GFX_backbuffer->format->format),
 	     bpp, Rmask, Gmask, Bmask, Amask);
   }
-
-  /* Surface is then transfered to destination texture */
-  {
-    render_texture = SDL_CreateTexture(renderer,
-      SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 640, 480);
-    if (render_texture == NULL) {
-      log_error("Unable to create render texture: %s", SDL_GetError());
-      return -1;
-    }
-
-    Uint32 format;
-    int access, w, h;
-    SDL_QueryTexture(render_texture, &format, &access, &w, &h);
-    log_info("Render texture: format: %s", SDL_GetPixelFormatName(format));
-    char* str_access;
-    switch(access) {
-    case SDL_TEXTUREACCESS_STATIC:
-      str_access = "SDL_TEXTUREACCESS_STATIC"; break;
-    case SDL_TEXTUREACCESS_STREAMING:
-      str_access = "SDL_TEXTUREACCESS_STREAMING"; break;
-    case SDL_TEXTUREACCESS_TARGET:
-      str_access = "SDL_TEXTUREACCESS_TARGET"; break;
-    default:
-      str_access = "Unknown!"; break;
-    }
-    log_info("Render texture: access: %s", str_access);
-    log_info("Render texture: width : %d", w);
-    log_info("Render texture: height: %d", h);
-  }
-
+  IOGFX_backbuffer = new IOGfxSurfaceSW(GFX_backbuffer);
 
   /* Default palette */
   gfx_palette_reset();
@@ -269,15 +155,9 @@ int gfx_init(bool windowed, char* splash_path)
   if (!truecolor) {
     SDL_SetPaletteColors(GFX_backbuffer->format->palette, GFX_ref_pal, 0, 256);
 
-    Uint32 render_texture_format;
-    SDL_QueryTexture(render_texture, &render_texture_format, NULL, NULL, NULL);
-    Uint32 Rmask, Gmask, Bmask, Amask; int bpp;
-    SDL_PixelFormatEnumToMasks(render_texture_format, &bpp,
-      &Rmask, &Gmask, &Bmask, &Amask);
-    rgba_screen = SDL_CreateRGBSurface(0, 640, 480, bpp,
-      Rmask, Gmask, Bmask, Amask);
   }
   GFX_background    = SDL_ConvertSurface(GFX_backbuffer, GFX_backbuffer->format, 0);
+  IOGFX_background = new IOGfxSurfaceSW(GFX_background);
   GFX_tmp1  = SDL_ConvertSurface(GFX_backbuffer, GFX_backbuffer->format, 0);
   GFX_tmp2 = SDL_ConvertSurface(GFX_backbuffer, GFX_backbuffer->format, 0);
 
@@ -303,9 +183,8 @@ int gfx_init(bool windowed, char* splash_path)
     if (SDL_BlitSurface(GFX_background, NULL, GFX_backbuffer, NULL) < 0)
       log_error("Error blitting splash to back buffer");
 
-    SDL_RenderClear(renderer);
+    display->clearWindow();
     flip_it();
-	SDL_RenderPresent(renderer);
   }
 
 
@@ -342,8 +221,8 @@ void gfx_quit()
 
   sprites_unload();
   
-  if (GFX_backbuffer   != NULL) SDL_FreeSurface(GFX_backbuffer);
-  if (GFX_background    != NULL) SDL_FreeSurface(GFX_background);
+  if (IOGFX_backbuffer != NULL) delete IOGFX_backbuffer;
+  if (IOGFX_background != NULL) delete IOGFX_background;
   if (GFX_tmp1  != NULL) SDL_FreeSurface(GFX_tmp1);
   if (GFX_tmp2 != NULL) SDL_FreeSurface(GFX_tmp2);
 
@@ -408,8 +287,8 @@ void gfx_log_meminfo()
 
 void gfx_toggle_fullscreen()
 {
-  SDL_SetWindowFullscreen(window,
-    (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN)
+  SDL_SetWindowFullscreen(display->window,
+    (SDL_GetWindowFlags(display->window) & SDL_WINDOW_FULLSCREEN)
     ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
   // Note: software renderer is buggy in SDL 2.0.2: it doesn't resize the surface
 }

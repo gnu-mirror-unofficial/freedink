@@ -399,7 +399,7 @@ void editor_load_screen(int num)
 /* Draw background from tiles */
 void draw_screen_editor(void)
 {
-  fill_screen(0);
+  SDL_FillRect(GFX_background, NULL, 0);
   fill_whole_hard();
 
   lsm_kill_all_nonlive_sprites();
@@ -4596,9 +4596,8 @@ void AppFreeDinkedit::logic(void)
 
 /*     } else */
 /*     { */
-      SDL_RenderClear(renderer);
+      display->clearWindow();
       flip_it();
-      SDL_RenderPresent(renderer);
       /*
       //windowed mode, no flipping
       p.x = 0; p.y = 0;

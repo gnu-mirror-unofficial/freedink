@@ -1316,7 +1316,9 @@ void dc_force_vision(int script, int* yield, int* preturnint, int vision)
 
 void dc_fill_screen(int script, int* yield, int* preturnint, int palette_index)
 {
-  fill_screen(palette_index);
+	if (palette_index < 0 || palette_index > 255)
+		palette_index = 0;
+	IOGFX_background->fill(palette_index, GFX_ref_pal);
 }
 
 void dc_load_game(int script, int* yield, int* preturnint, int game_slot)

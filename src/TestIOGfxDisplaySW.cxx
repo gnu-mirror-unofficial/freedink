@@ -1,5 +1,5 @@
 /**
- * Graphics primitives with OpenGL (ES) 2
+ * Test software screen
 
  * Copyright (C) 2015  Sylvain Beucler
 
@@ -20,34 +20,24 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef IOGRAPHICS_H
-#define IOGRAPHICS_H
-
-#include "SDL.h"
-
-#include "IOGfxDisplay.h"
-
-class IOGraphicsGLFuncs;
-
-class IOGfxDisplayGL2 : public IOGfxDisplay {
-public:
-	SDL_Texture* screen;
-	SDL_GLContext glcontext;
-	IOGraphicsGLFuncs* gl;
-
-	IOGfxDisplayGL2(int w, int h, Uint32 flags);
-	~IOGfxDisplayGL2();
-	bool open();
-	void close();
-
-	bool createOpenGLContext();
-	void logOpenGLInfo();
-
-	void clearWindow();
-	virtual void flip(IOGfxSurface* backbuffer);
-
-	SDL_Surface* screenshot();
-	void screenshot(const char* out_filename);
-};
-
+#ifdef HAVE_CONFIG_H
+#include <config.h>
 #endif
+
+#include "IOGfxDisplaySW.h"
+
+class TestIOGraphics : public CxxTest::TestSuite {
+public:
+	void setUp() {
+		TS_ASSERT_EQUALS(SDL_InitSubSystem(SDL_INIT_VIDEO), 0);
+	}
+	void tearDown() {
+		SDL_QuitSubSystem(SDL_INIT_VIDEO);
+	}
+
+	void test_graphics() {
+		IOGfxDisplay* g = new IOGfxDisplaySW(800, 600, SDL_WINDOW_HIDDEN);
+		TS_ASSERT_EQUALS(g->open(), true);
+		g->close();
+	}
+};

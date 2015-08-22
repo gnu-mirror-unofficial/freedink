@@ -26,6 +26,8 @@
 #include "SDL.h"
 #include "SDL2_framerate.h"
 #include "rect.h"
+#include "IOGfxSurface.h"
+#include "IOGfxDisplaySW.h"
 
 #define GFX_RES_W 640
 #define GFX_RES_H 480
@@ -36,14 +38,14 @@
 
 
 extern int truecolor;
-extern /*bool*/int windowed;
+extern IOGfxDisplaySW* display;
 extern SDL_Surface *GFX_backbuffer;
+extern IOGfxSurface* IOGFX_backbuffer;
 extern SDL_Surface *GFX_tmp1;
 extern SDL_Surface *GFX_tmp2;
 extern SDL_Surface *GFX_background;
+extern IOGfxSurface* IOGFX_background;
 extern SDL_Window* window;
-extern SDL_Renderer* renderer;
-extern SDL_Texture* render_texture;
 extern SDL_Surface *rgba_screen;
 
 extern SDL_Color GFX_ref_pal[256];

@@ -469,8 +469,7 @@ void process_item()
   
   //a special process callbacks for just stuff that was created in this mode? 
   // process_callbacks_special();
-  flip_it(); 
-  
+
   if (sjoy.button[ACTION_INVENTORY])
     {
       SoundPlayEffect(17, 22050,0,0,0);

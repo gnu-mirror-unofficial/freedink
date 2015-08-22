@@ -17,8 +17,6 @@ IOGfxPrimitivesSW::IOGfxPrimitivesSW() {
 IOGfxPrimitivesSW::~IOGfxPrimitivesSW() {
 }
 
-
-
 /* LoadBMP wrapper. Load a new graphic from file, and apply the
    reference palette so that all subsequent blits are faster (color
    convertion is avoided) - although the initial loading time will be
@@ -161,65 +159,20 @@ int gfx_blit_stretch(SDL_Surface *src_surf, SDL_Rect *src_rect,
 }
 
 
-void gfx_center_game_display(SDL_Renderer *rend, SDL_Rect* rect) {
-	int rend_w, rend_h;
-	SDL_RenderGetLogicalSize(rend, &rend_w, &rend_h);
-	int game_w = GFX_RES_W;
-	int game_h = GFX_RES_H;
-	double game_ratio = 1.0 * game_w / game_h;
-	double rend_ratio = 1.0 * rend_w / rend_h;
-	if (game_ratio < rend_ratio) {
-		// left/right bars
-		rect->w = game_w * rend_h / game_h;
-		rect->h = rend_h;
-		rect->x = (rend_w - rect->w) / 2;
-		rect->y = 0;
-	} else {
-		// top/bottom bars
-		rect->w = rend_w;
-		rect->h = game_h * rend_w / game_w;
-		rect->x = 0;
-		rect->y = (rend_h - rect->h) / 2;
-	}
-}
-
 /**
  * Refresh the physical screen, and apply a new palette or fade effect
  * if needed
  */
-void flip_it(void)
+void flip_it()
 {
   /* For now we do all operations on the CPU side and perform a big
      texture update at each frame; this is necessary to perform
      palette changes. */
-  // TODO SDL2: implement truecolor mode on GPU side
 
   if (truecolor_fade_brightness < 256)
     gfx_fade_apply(truecolor_fade_brightness);
 
-  /* Convert to destination buffer format */
-  SDL_Surface* source = GFX_backbuffer;
-  if (!truecolor) {
-    /* Convert 8-bit buffer for truecolor texture upload */
-	  source = rgba_screen;
-
-    /* Use "physical" screen palette */
-    SDL_Color pal_copy[256];
-    SDL_Color pal_phys[256];
-    memcpy(pal_copy, GFX_backbuffer->format->palette->colors, sizeof(pal_copy));
-    gfx_palette_get_phys(pal_phys);
-    SDL_SetPaletteColors(GFX_backbuffer->format->palette, pal_phys, 0, 256);
-
-    if (SDL_BlitSurface(GFX_backbuffer, NULL, rgba_screen, NULL) < 0) {
-      log_error("ERROR: 8-bit->truecolor conversion failed: %s", SDL_GetError());
-    }
-    SDL_SetPaletteColors(GFX_backbuffer->format->palette, pal_copy, 0, 256);
-  }
-
-  SDL_UpdateTexture(render_texture, NULL, source->pixels, source->pitch);
-  SDL_Rect dst;
-  gfx_center_game_display(renderer, &dst);
-  SDL_RenderCopy(renderer, render_texture, NULL, &dst);
+  display->flip(IOGFX_backbuffer);
 }
 
 void gfx_vlineRGB(SDL_Surface* s, Sint16 x, Sint16 y1, Sint16 y2, Uint8 r, Uint8 g, Uint8 b) {
@@ -248,20 +201,6 @@ void draw_box(rect box, int color)
     SDL_FillRect(GFX_backbuffer, &dst, color);
   }
 }
-
-void fill_screen(int num)
-{
-  /* Warning: palette indexes 0 and 255 are hard-coded
-     to black and white (cf. gfx_palette.c). */
-  if (!truecolor)
-    SDL_FillRect(GFX_background, NULL, num);
-  else
-    SDL_FillRect(GFX_background, NULL, SDL_MapRGB(GFX_background->format,
-						GFX_ref_pal[num].r,
-						GFX_ref_pal[num].g,
-						GFX_ref_pal[num].b));
-}
-
 
 /* Used to implement DinkC's copy_bmp_to_screen(). Difference with
    show_cmp: does not set showb.* (wait for button), install the image

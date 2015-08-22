@@ -31,15 +31,16 @@ COMMON_OBJS = app.cpp app.h bgm.cpp bgm.h BgTilesetsManager.cpp		\
 	editor_screen.h gfx.cpp gfx.h gfx_fade.cpp gfx_fade.h		\
 	gfx_tiles.cpp gfx_tiles.h gfx_palette.cpp gfx_palette.h		\
 	gfx_fonts.cpp gfx_fonts.h hardness_tiles.cpp hardness_tiles.h	\
-	IOGfxDisplay.cpp IOGfxDisplay.h IOGfxSurface.cpp		\
-	IOGfxSurface.h IOGfxSurfaceSW.cpp IOGfxSurfaceSW.h		\
-	IOGfxPrimitives.cpp IOGfxPrimitives.h IOGfxPrimitivesSW.cpp	\
-	IOGfxPrimitivesSW.h live_screen.cpp live_screen.h		\
-	live_sprite.cpp live_sprite.h live_sprites_manager.cpp		\
-	live_sprites_manager.h rect.cpp rect.h resources.cpp		\
-	resources.h input.cpp input.h freedink_xpm.cpp freedink_xpm.h	\
-	paths.cpp paths.h log.cpp log.h gfx_sprites.cpp gfx_sprites.h	\
-	vgasys_fon.cpp vgasys_fon.h SDL_android_main.c sfx.cpp sfx.h
+	IOGfxDisplay.cpp IOGfxDisplay.h IOGfxDisplaySW.cpp		\
+	IOGfxDisplaySW.h IOGfxSurface.cpp IOGfxSurface.h		\
+	IOGfxSurfaceSW.cpp IOGfxSurfaceSW.h IOGfxPrimitives.cpp		\
+	IOGfxPrimitives.h IOGfxPrimitivesSW.cpp IOGfxPrimitivesSW.h	\
+	live_screen.cpp live_screen.h live_sprite.cpp live_sprite.h	\
+	live_sprites_manager.cpp live_sprites_manager.h rect.cpp	\
+	rect.h resources.cpp resources.h input.cpp input.h		\
+	freedink_xpm.cpp freedink_xpm.h paths.cpp paths.h log.cpp	\
+	log.h gfx_sprites.cpp gfx_sprites.h vgasys_fon.cpp		\
+	vgasys_fon.h SDL_android_main.c sfx.cpp sfx.h
 if ANDROID
   # Build .so JNI libs rather than executables
   # Define here rather than configure.ac, otherwise config.h gets confused
@@ -126,8 +127,8 @@ if HAVE_TESTS
 check_PROGRAMS = test_str_util test_io_util TestEditorMap		\
 	test_editor_screen test_dinkini test_dinkc test_dinkc_console	\
 	test_dinkc_bindings test_live_sprites_manager test_brain_text	\
-	test_text TestIOGfxDisplayGL2 TestIOTouchDragAnywhere		\
-	test_integration
+	test_text TestIOGfxDisplayGL2 TestIOGfxDisplaySW		\
+	TestIOTouchDragAnywhere test_integration
 .cxx.cpp:
 	$(CXXTESTGEN) --error-printer \
 		--include test_android_workaround.h \
@@ -211,9 +212,14 @@ test_integration_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	game_state.cpp game_state.h i18n.cpp i18n.h inventory.cpp	\
 	inventory.h meminfo.cpp meminfo.h savegame.cpp savegame.h	\
 	status.cpp status.h text.cpp text.h test_integration.cpp
+TestIOGfxDisplaySW_SOURCES = TestIOGfxDisplaySW.cpp		\
+	IOGfxDisplaySW.cpp IOGfxDisplay.cpp IOGfxSurfaceSW.cpp	\
+	IOGfxSurface.cpp gfx_palette.cpp paths.cpp io_util.cpp	\
+	str_util.cpp log.cpp freedink_xpm.cpp
 TestIOGfxDisplayGL2_SOURCES = TestIOGfxDisplayGL2.cpp			\
-	IOGfxDisplayGL2.cpp IOGfxPrimitives.cpp IOGfxGLFuncs.cpp	\
-	IOGfxGLFuncs.h log.cpp
+	IOGfxDisplayGL2.cpp IOGfxDisplay.cpp IOGfxSurfaceSW.cpp		\
+	IOGfxSurface.cpp IOGfxGLFuncs.cpp IOGfxGLFuncs.h log.cpp	\
+	freedink_xpm.cpp
 # Tests to run
 TESTS = $(check_PROGRAMS)
 
@@ -226,7 +232,8 @@ if ANDROID
 LOG_DRIVER = $(SHELL) $(top_srcdir)/android/remote-test-driver
 # Needs graphics, will be marked as SKIP
 # Can be tested manually by replacing libmain.so with it
-TestIOGfxGL2_LDFLAGS = -shared
+TestIOGfxDisplayGL2_LDFLAGS = -shared
+TestIOGfxDisplaySW_LDFLAGS = -shared
 else
 # need to redefine it explicitely because we modified it for ANDROID :/
 LOG_DRIVER = $(SHELL) $(top_srcdir)/autotools/test-driver

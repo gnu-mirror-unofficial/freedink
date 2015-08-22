@@ -7,7 +7,9 @@
 class IOGfxSurfaceSW: public IOGfxSurface {
 public:
 	SDL_Surface* s;
+	IOGfxSurfaceSW(SDL_Surface* s);
 	virtual ~IOGfxSurfaceSW();
+	virtual void fill(int num, SDL_Color* palette);
 };
 
 #endif
