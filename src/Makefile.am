@@ -31,6 +31,8 @@ COMMON_OBJS = app.cpp app.h bgm.cpp bgm.h BgTilesetsManager.cpp		\
 	editor_screen.h gfx.cpp gfx.h gfx_fade.cpp gfx_fade.h		\
 	gfx_tiles.cpp gfx_tiles.h gfx_palette.cpp gfx_palette.h		\
 	gfx_fonts.cpp gfx_fonts.h hardness_tiles.cpp hardness_tiles.h	\
+	IOGfxDisplay.cpp IOGfxDIsplay.h IOGfxPrimitives.cpp		\
+	IOGfxPrimitives.h IOGfxPrimitivesSW.cpp IOGfxPrimitivesSW.h	\
 	live_screen.cpp live_screen.h live_sprite.cpp live_sprite.h	\
 	live_sprites_manager.cpp live_sprites_manager.h rect.cpp	\
 	rect.h resources.cpp resources.h input.cpp input.h		\
@@ -123,7 +125,8 @@ if HAVE_TESTS
 check_PROGRAMS = test_str_util test_io_util TestEditorMap		\
 	test_editor_screen test_dinkini test_dinkc test_dinkc_console	\
 	test_dinkc_bindings test_live_sprites_manager test_brain_text	\
-	test_text TestIOGfxGL2 TestIOTouchDragAnywhere test_integration
+	test_text TestIOGfxDisplayGL2 TestIOTouchDragAnywhere		\
+	test_integration
 .cxx.cpp:
 	$(CXXTESTGEN) --error-printer \
 		--include test_android_workaround.h \
@@ -207,8 +210,9 @@ test_integration_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	game_state.cpp game_state.h i18n.cpp i18n.h inventory.cpp	\
 	inventory.h meminfo.cpp meminfo.h savegame.cpp savegame.h	\
 	status.cpp status.h text.cpp text.h test_integration.cpp
-TestIOGfxGL2_SOURCES = TestIOGfxGL2.cpp IOGfxGL2.cpp IOGfxGL2.h		\
-	IOGfx.cpp IOGfx.h IOGfxGLFuncs.cpp IOGfxGLFuncs.h log.cpp
+TestIOGfxDisplayGL2_SOURCES = TestIOGfxDisplayGL2.cpp			\
+	IOGfxDisplayGL2.cpp IOGfxPrimitives.cpp IOGfxGLFuncs.cpp	\
+	IOGfxGLFuncs.h log.cpp
 # Tests to run
 TESTS = $(check_PROGRAMS)
 

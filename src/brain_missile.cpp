@@ -1,3 +1,4 @@
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -6,7 +7,7 @@
 #include "live_sprites_manager.h"
 #include "freedink.h"
 #include "game_engine.h"
-#include "gfx.h"
+#include "IOGfxPrimitives.h"
 #include "gfx_sprites.h"
 #include "sfx.h"
 #include "log.h"

@@ -50,6 +50,8 @@
 #include "DMod.h"
 #include "hardness_tiles.h"
 #include "fastfile.h"
+#include "IOGfxPrimitives.h"
+#include "IOGfxDisplay.h"
 #include "gfx.h"
 #include "editor_screen.h"
 #include "live_screen.h"

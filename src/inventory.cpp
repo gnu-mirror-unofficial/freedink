@@ -29,6 +29,7 @@
 #include "game_engine.h"
 #include "log.h"
 #include "str_util.h" /* compare */
+#include "IOGfxDisplay.h"
 #include "gfx.h" /* GFX_lpDDSBack */
 #include "gfx_sprites.h" /* draw_status_all, GFX_k */
 #include "dinkini.h" /* check_seq_status */

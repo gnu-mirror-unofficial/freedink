@@ -1,5 +1,5 @@
 /**
- * Graphics primitives with OpenGL (ES) 2
+ * Interface for graphics primitives
 
  * Copyright (C) 2015  Sylvain Beucler
 
@@ -20,40 +20,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef IOGRAPHICS_H
-#define IOGRAPHICS_H
+#include "IOGfxPrimitives.h"
 
-#include "SDL.h"
-
-#include "IOGfx.h"
-
-class IOGraphicsGLFuncs;
-
-class IOGfxGL2 : public IOGfx {
-public:
-	int w, h;
-	Uint32 flags;
-	
-	SDL_Window* window;
-	SDL_Renderer* renderer;
-	SDL_Texture* screen;
-	SDL_GLContext glcontext;
-	IOGraphicsGLFuncs* gl;
-
-	IOGfxGL2(int w, int h, Uint32 flags);
-	~IOGfxGL2();
-	bool open();
-	void close();
-
-	bool createWindow();
-	void logWindowInfo();
-
-	bool createOpenGLContext();
-	void logOpenGLInfo();
-
-	void clearWindow();
-	SDL_Surface* screenshot();
-	void screenshot(const char* out_filename);
-};
-
-#endif
+IOGfxPrimitives::~IOGfxPrimitives() {}

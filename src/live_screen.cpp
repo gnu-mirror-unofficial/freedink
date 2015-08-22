@@ -30,6 +30,7 @@
 #include "live_screen.h"
 #include "editor_screen.h"
 #include "hardness_tiles.h"
+#include "IOGfxPrimitives.h"
 #include "gfx.h"
 #include "gfx_sprites.h"
 #include "log.h"

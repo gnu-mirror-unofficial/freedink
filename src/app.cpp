@@ -360,8 +360,7 @@ int App::main(int argc, char *argv[]) {
   //atexit(app_quit);
 
   /* GFX */
-  if (gfx_init(windowed ? GFX_WINDOWED : GFX_FULLSCREEN,
-			   splash_path) < 0) {
+  if (gfx_init(windowed, splash_path) < 0) {
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, PACKAGE_STRING,
 							 log_getLastLog(), NULL);
 	return EXIT_FAILURE;

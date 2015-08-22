@@ -16,6 +16,7 @@
 #include "live_sprites_manager.h"
 #include "editor_screen.h"
 #include "gfx.h"
+#include "IOGfxDisplay.h"
 #include "input.h"
 #include "log.h"
 #include "sfx.h"

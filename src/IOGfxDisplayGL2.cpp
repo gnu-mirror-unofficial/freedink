@@ -24,16 +24,16 @@
 #include <config.h>
 #endif
 
-#include "IOGfxGL2.h"
+#include "IOGfxDisplayGL2.h"
 #include "IOGfxGLFuncs.h"
 
 #include "log.h"
 
-IOGfxGL2::IOGfxGL2(int w, int h, Uint32 flags)
+IOGfxDisplayGL2::IOGfxDisplayGL2(int w, int h, Uint32 flags)
 	: w(w), h(h), flags(flags) {
 }
 
-bool IOGfxGL2::open() {
+bool IOGfxDisplayGL2::open() {
 	if (!createWindow()) return false;
 	logWindowInfo();
 	if (!createOpenGLContext()) return false;
@@ -41,7 +41,7 @@ bool IOGfxGL2::open() {
 	return true;
 }
 
-void IOGfxGL2::close() {
+void IOGfxDisplayGL2::close() {
 	if (gl) delete gl;
 	gl = NULL;
 
@@ -52,11 +52,11 @@ void IOGfxGL2::close() {
 	window = NULL;
 }
 
-IOGfxGL2::~IOGfxGL2() {
+IOGfxDisplayGL2::~IOGfxDisplayGL2() {
 	close();
 }
 
-bool IOGfxGL2::createWindow() {
+bool IOGfxDisplayGL2::createWindow() {
 	window = SDL_CreateWindow(PACKAGE_STRING,
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		w, h,
@@ -70,13 +70,13 @@ bool IOGfxGL2::createWindow() {
 	return true;
 }
 
-void IOGfxGL2::logWindowInfo() {
+void IOGfxDisplayGL2::logWindowInfo() {
 	log_info("Video driver: %s", SDL_GetCurrentVideoDriver());
 	log_info("Video fall-back surface (unused): %s",
 	         SDL_GetPixelFormatName(SDL_GetWindowPixelFormat(window)));
 }
 
-bool IOGfxGL2::createOpenGLContext() {
+bool IOGfxDisplayGL2::createOpenGLContext() {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	glcontext = SDL_GL_CreateContext(window);
@@ -88,7 +88,7 @@ bool IOGfxGL2::createOpenGLContext() {
 	return true;
 }
 
-void IOGfxGL2::logOpenGLInfo() {
+void IOGfxDisplayGL2::logOpenGLInfo() {
 	int major, minor, profile;
 	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &major);
 	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &minor);
@@ -104,12 +104,12 @@ void IOGfxGL2::logOpenGLInfo() {
 	log_info("OpenGL %d.%d %s", major, minor, profile_str);
 }
 
-void IOGfxGL2::clearWindow() {
+void IOGfxDisplayGL2::clearWindow() {
 	gl->ClearColor(0,0,1,1);
 	gl->Clear(GL_COLOR_BUFFER_BIT);
 }
 
-SDL_Surface* IOGfxGL2::screenshot() {
+SDL_Surface* IOGfxDisplayGL2::screenshot() {
 	// assume 4-bytes alignment
 	SDL_Surface* surface = SDL_CreateRGBSurface(0,
 		w, h, 32,
@@ -125,7 +125,7 @@ SDL_Surface* IOGfxGL2::screenshot() {
 	return surface;
 }
 
-void IOGfxGL2::screenshot(const char* output_file) {
+void IOGfxDisplayGL2::screenshot(const char* output_file) {
 	SDL_Surface* surface = screenshot();
 	SDL_SaveBMP(surface, output_file);
 	SDL_FreeSurface(surface);

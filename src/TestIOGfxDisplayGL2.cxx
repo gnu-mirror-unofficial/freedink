@@ -24,7 +24,7 @@
 #include <config.h>
 #endif
 
-#include "IOGfxGL2.h"
+#include "IOGfxDisplayGL2.h"
 #include "IOGfxGLFuncs.h"
 #include "SDL_image.h"
 
@@ -38,7 +38,7 @@ public:
 	}
 
 	void test_graphics() {
-		IOGfxGL2 gc(800, 600, SDL_WINDOW_HIDDEN);
+		IOGfxDisplayGL2 gc(800, 600, SDL_WINDOW_HIDDEN);
 		TS_ASSERT_EQUALS(gc.open(), true);
 
 		gc.clearWindow();

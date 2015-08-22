@@ -30,7 +30,8 @@
 
 #include "SDL.h"
 #include <string.h> /* strlen */
-#include "gfx.h" /* gfx_blit_nocolorkey */
+#include "IOGfxPrimitives.h" /* gfx_blit_nocolorkey */
+#include "gfx.h"
 #include "gfx_sprites.h" /* GFX_k */
 #include "dinkini.h" /* check_seq_status */
 #include "live_sprites_manager.h" /* spr */

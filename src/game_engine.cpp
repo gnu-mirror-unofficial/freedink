@@ -39,6 +39,8 @@
 #include "log.h"
 #include "sfx.h"
 #include "bgm.h"
+#include "IOGfxPrimitives.h"
+#include "IOGfxDisplay.h"
 #include "gfx.h"
 #include "gfx_sprites.h"
 #include "hardness_tiles.h"

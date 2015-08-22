@@ -36,6 +36,8 @@
 
 #include "fastfile.h"
 
+#include "IOGfxPrimitives.h"
+#include "IOGfxDisplay.h"
 #include "gfx.h"
 #include "gfx_fonts.h"
 #include "gfx_palette.h"

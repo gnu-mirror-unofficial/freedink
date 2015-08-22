@@ -6,7 +6,7 @@
 #include "BgTilesetsManager.h"
 #include "paths.h"
 #include "log.h"
-#include "gfx.h"
+#include "IOGfxPrimitives.h"
 
 BgTilesetsManager::BgTilesetsManager() {
 	memset(&slots, 0, sizeof(slots));

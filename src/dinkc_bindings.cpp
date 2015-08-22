@@ -44,6 +44,7 @@
 #include "editor_screen.h"
 #include "dinkc.h"
 #include "freedink.h"
+#include "IOGfxPrimitives.h"
 #include "gfx.h"
 #include "gfx_fonts.h"
 #include "gfx_palette.h"

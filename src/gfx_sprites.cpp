@@ -31,6 +31,7 @@
 #include <string.h>
 #include "SDL_image.h"
 
+#include "IOGfxPrimitives.h"
 #include "gfx.h"
 
 #include "fastfile.h"
