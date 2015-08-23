@@ -844,10 +844,6 @@ void process_warp_man(void)
 
 void process_show_bmp( void )
 {
-  // We could disable this Blit (work is already done in show_bmp())
-  // but we want to display the shiny mark on the map below. Besides,
-  // after show_bmp(), other parts of the code drew sprites on
-  // lpDDSBack, so we need to regenerate it anyway.
   SDL_BlitSurface(GFX_tmp1, NULL, GFX_backbuffer, NULL);
   
   if (showb.showdot)

@@ -49,40 +49,36 @@
 /* Is the screen depth more than 8bit? */
 int truecolor = 0;
 
-SDL_Surface *GFX_backbuffer = NULL; /* Backbuffer */
+/* Backbuffer */
+SDL_Surface *GFX_backbuffer = NULL;
 IOGfxSurface* IOGFX_backbuffer = NULL;
 
-/* GFX_lpDDSTwo: holds the base scene */
-/* Rationale attempt :*/
-/* lpDDSTwo contains the background, which is reused for each new
-   frame. It is overwritten when switching to another screen. However,
-   it can change during a screen: 1) animated tiles (water & fire) 2)
-   when a sprite is written on the background (eg when an enemy dies)
-   3) with various hacks such as fill_screen() (and maybe
-   copy_bmp_to_screen()). */
+/* Base/background scene */
+/* Contains the background, which is reused for each new frame. It is
+   overwritten when switching to another screen. However, it can
+   change during a screen:
+   1) animated tiles (water & fire)
+   2) when a sprite is written on the background (eg when an enemy dies)
+   3) with various hacks such as fill_screen() and copy_bmp_to_screen() */
 /* Those changes may conflict with each other (eg: an animated tile
-   overwrites half the carcass of a dead enemy). We might want to fix
-   that. */
+   overwrites half the carcass of a dead enemy). */
 /* After the background is done, all the other operations are applied
-   on lpDDSBack, the double buffer which is directly used by the
+   on GFX_backbuffer, the double buffer which is directly used by the
    physical screen. */
 SDL_Surface *GFX_background = NULL;
 IOGfxSurface* IOGFX_background = NULL;
 
-/* Beuc: apparently used for the scrolling screen transition and more
-   generaly as temporary buffers. Only used by the game, not the
-   editor. */
-/* Used in freedink.cpp only + as a local/independent temporary buffer
-   in show_bmp&copy_bmp&process_show_bmp&load_sprite* */
+/* Temporary buffer for scrolling screen transition +
+   show_bmp/process_show_bmp */
 SDL_Surface *GFX_tmp1 = NULL;
-/* Used in freedink.cpp and update_frame.cpp */
+/* Temporary buffer for scrolling screen transition +
+   load_sprite* */
 SDL_Surface *GFX_tmp2 = NULL;
 
 /* Reference palette: this is the canonical Dink palette, loaded from
    TS01.bmp (for freedink) and esplash.bmp (for freedinkedit). The
    physical screen may be changed (e.g. show_bmp()), but this
    canonical palette will stay constant. */
-/* PALETTEENTRY  real_pal[256]; */
 SDL_Color GFX_ref_pal[256];
 
 /* Skip flipping the double buffer for this frame only - used when
