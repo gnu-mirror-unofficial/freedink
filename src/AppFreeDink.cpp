@@ -222,7 +222,7 @@ void AppFreeDink::logic() {
 		g_display->clear();
 		debug_renderer_render();
 		dinkc_console_renderer_render();
-		flip_it(); // game area
+		g_display->flip(IOGFX_backbuffer); // game area
 		freedink_controls_renderer_render(); // TODO: always display me on flip_it
 	}
 }

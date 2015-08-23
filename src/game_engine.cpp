@@ -762,7 +762,7 @@ static void draw_wait()
 	SDL_Rect dst = { 232, 0, -1, -1 };
 	SDL_BlitSurface(GFX_k[seq[423].frame[please_wait_toggle_frame]].k, NULL,
 			GFX_backbuffer, &dst);
-	flip_it();
+	g_display->flip(IOGFX_backbuffer);
       }
     if (please_wait_toggle_frame == 7)
       please_wait_toggle_frame = 8;

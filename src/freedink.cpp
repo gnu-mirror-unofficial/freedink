@@ -815,7 +815,7 @@ void process_warp_man(void)
 	{
 	  SDL_FillRect(GFX_backbuffer, NULL,
 		       SDL_MapRGB(GFX_backbuffer->format, 0, 0, 0));
-	  flip_it();
+	  g_display->flip(IOGFX_backbuffer);
 	  
 	  process_count = 0;
 	  int block = process_warp;

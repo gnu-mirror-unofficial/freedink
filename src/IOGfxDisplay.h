@@ -23,6 +23,7 @@ public:
 	virtual void close();
 
 	virtual void clear() = 0;
+	/* Refresh the physical screen, applying brightness and palette */
 	virtual void flip(IOGfxSurface* backbuffer) = 0;
 	virtual void onSizeChange(int w, int h) = 0;
 

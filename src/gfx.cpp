@@ -169,7 +169,7 @@ int gfx_init(bool windowed, char* splash_path) {
       log_error("Error blitting splash to back buffer");
 
     g_display->clear();
-    flip_it();
+    g_display->flip(IOGFX_backbuffer);
   }
 
 

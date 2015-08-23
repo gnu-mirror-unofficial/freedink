@@ -158,22 +158,13 @@ int gfx_blit_stretch(SDL_Surface *src_surf, SDL_Rect *src_rect,
 }
 
 
-/**
- * Refresh the physical screen, and apply a new palette or fade effect
- * if needed
- */
-void flip_it()
-{
-  g_display->flip(IOGFX_backbuffer);
-}
-
 void gfx_vlineRGB(SDL_Surface* s, Sint16 x, Sint16 y1, Sint16 y2, Uint8 r, Uint8 g, Uint8 b) {
 	SDL_Rect dst = { x, y1, 1, y2-y1 };
-	SDL_FillRect(GFX_background, &dst, SDL_MapRGB(s->format, r, g, b));
+	SDL_FillRect(s, &dst, SDL_MapRGB(s->format, r, g, b));
 }
 void gfx_hlineRGB(SDL_Surface* s, Sint16 x1, Sint16 x2, Sint16 y, Uint8 r, Uint8 g, Uint8 b) {
 	SDL_Rect dst = { x1, y, x2-x1, 1 };
-	SDL_FillRect(GFX_background, &dst, SDL_MapRGB(s->format, r, g, b));
+	SDL_FillRect(s, &dst, SDL_MapRGB(s->format, r, g, b));
 }
 
 void draw_box(rect box, int color)
