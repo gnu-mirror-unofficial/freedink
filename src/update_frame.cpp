@@ -365,7 +365,7 @@ void updateFrame() {
 
 	past:
 		check_seq_status(spr[h].seq);
-		draw_sprite_game(GFX_backbuffer, h);
+		draw_sprite_game(IOGFX_backbuffer, h);
 	} /* for 0->max_s */
 	
 	apply_mode();

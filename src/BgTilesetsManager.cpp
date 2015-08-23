@@ -43,53 +43,49 @@ void BgTilesetsManager::loadDefault() {
   log_info("Done with tilescreens...");
 }
 
-void BgTilesetsManager::loadSlot(int slot, char* relpath)
-{
-  FILE* in = paths_dmodfile_fopen(relpath, "rb");
-  if (in == NULL)
-    in = paths_fallbackfile_fopen(relpath, "rb");
-  
-  if (slots[slot] != NULL)
-    {
-      SDL_FreeSurface(slots[slot]);
-      slots[slot] = NULL;
-    }
+void BgTilesetsManager::loadSlot(int slot, char* relpath) {
+	FILE* in = paths_dmodfile_fopen(relpath, "rb");
+	if (in == NULL)
+		in = paths_fallbackfile_fopen(relpath, "rb");
 
-  SDL_Surface* image = ImageLoader::loadToFormat(in, GFX_backbuffer->format);
-  slots[slot] = g_display->upload(image);
+	if (slots[slot] != NULL) {
+		delete slots[slot];
+		slots[slot] = NULL;
+	}
 
-  /* Note: attempting SDL_RLEACCEL showed no improvement for the
-     memory usage, including when using a transparent color and
-     blitting the surface once. It did show a decrease of 400kB (out
-     of 6000kB) when using transparent color 255, but in this case the
-     color is not supposed to be transparent. */
+	SDL_Surface* image = ImageLoader::loadToFormat(in, GFX_backbuffer->format);
+	slots[slot] = g_display->upload(image);
 
-  if (slots[slot] == NULL) {
-    fprintf(stderr, "Couldn't find tilescreen %s: %s\n", relpath, SDL_GetError());
-  }
+	/* Note: attempting SDL_RLEACCEL showed no improvement for the
+	   memory usage, including when using a transparent color and
+	   blitting the surface once. It did show a decrease of 400kB (out
+	   of 6000kB) when using transparent color 255, but in this case the
+	   color is not supposed to be transparent. */
+
+	if (slots[slot] == NULL)
+		log_error("Couldn't find tilescreen %s: %s\n", relpath, SDL_GetError());
 }
 
 /**
  * Free memory used by tiles
  */
 void BgTilesetsManager::unloadAll() {
-  int h = 0;
-  for (h=1; h <= GFX_TILES_NB_SETS; h++)
-    {
-      if (slots[h] != NULL)
-	SDL_FreeSurface(slots[h]);
-      slots[h] = NULL;
-    }
+	int h = 0;
+	for (h=1; h <= GFX_TILES_NB_SETS; h++) {
+		if (slots[h] != NULL)
+			delete slots[h];
+		slots[h] = NULL;
+	}
 }
 
 int BgTilesetsManager::getMemUsage() {
-    int sum = 0;
-    int i = 0;
-    SDL_Surface* s = NULL;
-    for (; i < GFX_TILES_NB_SETS+1; i++) {
+	int sum = 0;
+	int i = 0;
+	IOGfxSurface* s = NULL;
+	for (; i < GFX_TILES_NB_SETS+1; i++) {
 		s = slots[i];
 		if (s != NULL)
-			sum += s->h * s->pitch;
+			sum += s->getMemUsage();
 	}
-    return sum;
+	return sum;
 }

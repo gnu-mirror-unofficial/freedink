@@ -40,7 +40,7 @@ static int fire_flip = 0;
  * Draw tile number 'dsttile_square_id0x' (in [0, 96-1]) in the
  * current screen
  */
-void gfx_tiles_draw(SDL_Surface** gfx_tiles, int srctileset_idx0, int srctile_square_idx0, int dsttile_square_idx0)
+void gfx_tiles_draw(IOGfxSurface** gfx_tiles, int srctileset_idx0, int srctile_square_idx0, int dsttile_square_idx0)
 {
   SDL_Rect src;
   int srctile_square_x = srctile_square_idx0 % GFX_TILES_SCREEN_W;
@@ -56,13 +56,13 @@ void gfx_tiles_draw(SDL_Surface** gfx_tiles, int srctileset_idx0, int srctile_sq
   dst.x = GFX_PLAY_LEFT + dsttile_x * GFX_TILES_SQUARE_SIZE;
   dst.y = GFX_PLAY_TOP  + dsttile_y * GFX_TILES_SQUARE_SIZE;
 
-  SDL_BlitSurface(gfx_tiles[srctileset_idx0 + 1], &src, GFX_background, &dst);
+  IOGFX_background->blit(gfx_tiles[srctileset_idx0 + 1], &src, &dst);
 }
 
 /**
  * Draw all background tiles in the current screen
  */
-void gfx_tiles_draw_screen(SDL_Surface** gfx_tiles, struct editor_screen_tilerefs* tilerefs)
+void gfx_tiles_draw_screen(IOGfxSurface** gfx_tiles, struct editor_screen_tilerefs* tilerefs)
 {
   int x = 0;
   for (; x < GFX_TILES_PER_SCREEN; x++)
@@ -74,7 +74,7 @@ void gfx_tiles_draw_screen(SDL_Surface** gfx_tiles, struct editor_screen_tileref
 }
         
 /* Game-specific: animate background (water, fire, ...) */        
-void process_animated_tiles(SDL_Surface** gfx_tiles, struct editor_screen_tilerefs* tilerefs, Uint32 thisTickCount)
+void process_animated_tiles(IOGfxSurface** gfx_tiles, struct editor_screen_tilerefs* tilerefs, Uint32 thisTickCount)
 {
   // Water:
   if (water_timer < thisTickCount)

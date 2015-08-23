@@ -25,6 +25,7 @@
 
 #include "SDL.h"
 #include "rect.h"
+#include "IOGfxSurface.h"
 
 /* Max number of sprites, minus 1 (GFX_k is indexed from 1) */
 #define MAX_SPRITES 4000
@@ -38,24 +39,17 @@
 #define MAX_FRAMES_PER_ABUSED_SEQUENCE 69
 #define MAX_SEQUENCES 1000 /* Max # of sprite animations */
   
-  /* Store sprites info */
-  struct pic_info
-  {
-    /*   LPDIRECTDRAWSURFACE k; // Sprites */
-    
-    rect box;     // Dimensions (0,0,width,height)
-    rect hardbox; // Square where Dink can't block if sprite is hard
-    
-    int yoffset;  // Center of the picture
-    int xoffset;
-  };
-  
-  struct GFX_pic_info
-  {
-    SDL_Surface *k; // Sprites
-    /* TODO: move pic_info to GFX_pic_info */
-  };
-  
+/* Store sprites info */
+struct pic_info {
+	rect box;     // Dimensions (0,0,width,height)
+	rect hardbox; // Square where Dink can't block if sprite is hard
+	int yoffset;  // Center of the picture
+	int xoffset;
+};
+struct GFX_pic_info {
+	IOGfxSurface* k; // Sprites
+};
+
   /* Sequence description */
   struct sequence
   {

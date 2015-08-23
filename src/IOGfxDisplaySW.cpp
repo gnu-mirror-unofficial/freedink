@@ -191,7 +191,7 @@ void IOGfxDisplaySW::flip(IOGfxSurface* backbuffer) {
 	   palette and fade_down/fade_up. */
 
 	/* Convert to destination buffer format */
-	SDL_Surface* source = dynamic_cast<IOGfxSurfaceSW*>(backbuffer)->s;
+	SDL_Surface* source = dynamic_cast<IOGfxSurfaceSW*>(backbuffer)->surf;
 
 	if (brightness < 256)
 		gfx_fade_apply(source, brightness);
@@ -225,6 +225,6 @@ void IOGfxDisplaySW::onSizeChange(int w, int h) {
 	SDL_RenderSetLogicalSize(renderer, w, h);
 }
 
-SDL_Surface* IOGfxDisplaySW::upload(SDL_Surface* image) {
-    return image;
+IOGfxSurface* IOGfxDisplaySW::upload(SDL_Surface* image) {
+    return new IOGfxSurfaceSW(image);
 }

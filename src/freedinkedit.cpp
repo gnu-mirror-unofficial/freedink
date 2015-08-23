@@ -52,6 +52,7 @@
 #include "fastfile.h"
 #include "IOGfxPrimitives.h"
 #include "IOGfxDisplay.h"
+#include "IOGfxSurface.h"
 #include "ImageLoader.h"
 #include "gfx.h"
 #include "editor_screen.h"
@@ -258,8 +259,7 @@ static bool skip_screen_clipping() {
 	return (g_editorMode == EDITOR_MODE_MINIMAP || g_editorMode == EDITOR_MODE_SPRITE_PICKER) && draw_screen_tiny < 1;
 }
 
-void draw_sprite(SDL_Surface *GFX_lpdest, int h)
-{
+void draw_sprite(IOGfxSurface* IOGFX_lpdest, int h) {
   rect box_crap,box_real;
 /*   HRESULT             ddrval; */
 /*   DDBLTFX     ddbltfx; */
@@ -285,7 +285,7 @@ void draw_sprite(SDL_Surface *GFX_lpdest, int h)
 	    dst.y = box_crap.top;
 	    dst.w = box_crap.right - box_crap.left;
 	    dst.h = box_crap.bottom - box_crap.top;
-	    gfx_blit_stretch(GFX_k[getpic(h)].k, &src, GFX_lpdest, &dst);
+	    IOGFX_lpdest->blitStretch(GFX_k[getpic(h)].k, &src, &dst);
 	  }
 
 /* 	  if (ddrval != DD_OK) */
@@ -350,7 +350,7 @@ void place_sprites()
 	      rect_copy(&spr[sprite].alt , &cur_ed_screen.sprite[j].alt);
 	      
 	      if (cur_ed_screen.sprite[j].type == 0)
-		draw_sprite(GFX_background, sprite);
+		draw_sprite(IOGFX_background, sprite);
 	      
 	      if (spr[sprite].hard == 0)
 		{
@@ -430,7 +430,7 @@ void draw_current()
   src.h = GFX_TILES_SQUARE_SIZE;
   
   SDL_Rect dst = {590, 430};
-  SDL_BlitSurface(g_dmod.bgTilesets.slots[srctileset_idx0 + 1], &src, GFX_background, &dst);
+  IOGFX_background->blit(g_dmod.bgTilesets.slots[srctileset_idx0 + 1], &src, &dst);
 }
 
 
@@ -599,7 +599,7 @@ void draw_hard( void)
 		SDL_Rect dst;
 		dst.x = 95 + x*9;
 		dst.y = y*9;
-		SDL_BlitSurface(GFX_k[seq[10].frame[2]].k, NULL, GFX_backbuffer, &dst);
+		IOGFX_backbuffer->blit(GFX_k[seq[10].frame[2]].k, NULL, &dst);
 	      }
 	    }
 
@@ -613,7 +613,7 @@ void draw_hard( void)
 		SDL_Rect dst;
 		dst.x = 95 + x*9;
 		dst.y = y*9;
-		SDL_BlitSurface(GFX_k[seq[10].frame[9]].k, NULL, GFX_backbuffer, &dst);
+		IOGFX_backbuffer->blit(GFX_k[seq[10].frame[9]].k, NULL, &dst);
 	      }
 	    }
 
@@ -627,7 +627,7 @@ void draw_hard( void)
 		SDL_Rect dst;
 		dst.x = 95 + x*9;
 		dst.y = y*9;
-		SDL_BlitSurface(GFX_k[seq[10].frame[10]].k, NULL, GFX_backbuffer, &dst);
+		IOGFX_backbuffer->blit(GFX_k[seq[10].frame[10]].k, NULL, &dst);
 	      }
 	    }
 	}
@@ -649,11 +649,9 @@ draw_this_map(EditorMap* pmap)
 	  // GFX
 	  {
 	    SDL_Rect dst;
-	    SDL_Surface *sprite;
-	    sprite = GFX_k[seq[10].frame[6]].k;
 	    dst.x = x * 20 - x/32*640;
 	    dst.y = x/32 * 20;
-	    gfx_blit_nocolorkey(sprite, NULL, GFX_background, &dst);
+	    IOGFX_background->blitNoColorKey(GFX_k[seq[10].frame[6]].k, NULL, &dst);
 	  }
 	}
       /* Red square - used screen */
@@ -664,10 +662,9 @@ draw_this_map(EditorMap* pmap)
 	  // GFX
 	  {
 	    SDL_Rect dst;
-	    SDL_Surface *sprite = GFX_k[seq[10].frame[7]].k;
 	    dst.x = x * 20 - x/32*640;
 	    dst.y = x/32 * 20;
-	    gfx_blit_nocolorkey(sprite, NULL, GFX_background, &dst);
+	    IOGFX_background->blitNoColorKey(GFX_k[seq[10].frame[7]].k, NULL, &dst);
 	  }
 	}
 
@@ -681,7 +678,7 @@ draw_this_map(EditorMap* pmap)
 	    SDL_Rect dst;
 	    dst.x = x * 20 - x/32*640;
 	    dst.y = x/32 * 20;
-	    SDL_BlitSurface(GFX_k[seq[10].frame[12]].k, NULL, GFX_background, &dst);
+	    IOGFX_background->blit(GFX_k[seq[10].frame[12]].k, NULL, &dst);
 	  }
 	}
       /* S mark - screen has screentype / is indoor */
@@ -694,7 +691,7 @@ draw_this_map(EditorMap* pmap)
 	    SDL_Rect dst;
 	    dst.x = x * 20 - x/32*640;
 	    dst.y = x/32 * 20;
-	    SDL_BlitSurface(GFX_k[seq[10].frame[13]].k, NULL, GFX_background, &dst);
+	    IOGFX_background->blit(GFX_k[seq[10].frame[13]].k, NULL, &dst);
 	  }
 	}
     }
@@ -915,7 +912,7 @@ void loadtile(int tileset)
 
 /*   lpDDSTwo->BltFast(0, 0, tiles[tileset], &tilerect[tileset], DDBLTFAST_NOCOLORKEY |DDBLTFAST_WAIT); */
   // GFX
-  SDL_BlitSurface(g_dmod.bgTilesets.slots[tileset], NULL, GFX_background, NULL);
+  IOGFX_background->blit(g_dmod.bgTilesets.slots[tileset], NULL, NULL);
   cur_tileset = tileset;
 
   last_mode = tileset;
@@ -1026,7 +1023,7 @@ void draw15(int num)
 		dst.y = y1 * 50;
 		dst.w = 50;
 		dst.h = 50;
-		gfx_blit_stretch(GFX_k[seq[se].frame[frame]].k, NULL, GFX_background, &dst);
+		IOGFX_background->blitStretch(GFX_k[seq[se].frame[frame]].k, NULL, &dst);
 	      }
 
 
@@ -1101,7 +1098,7 @@ void draw96(int def)
 	    dst.y = y1 * 50;
 	    dst.w = 50;
 	    dst.h = 50;
-	    gfx_blit_stretch(GFX_k[seq[se].frame[num]].k, NULL, GFX_background, &dst);
+	    IOGFX_background->blitStretch(GFX_k[seq[se].frame[num]].k, NULL, &dst);
 	  }
 
 /* 	  if (dd != DD_OK) Msg("Error with drawing sprite! Seq %d, Spr %d.",se,frame); */
@@ -1284,7 +1281,7 @@ if (spr[1].size == 100)
 
 
 
-void blit(int seq1, int frame, SDL_Surface *GFX_lpdest, int tx, int ty)
+void blit(int seq1, int frame, IOGfxSurface* IOGFX_lpdest, int tx, int ty)
 {
 /* RECT math; */
 
@@ -1297,7 +1294,7 @@ void blit(int seq1, int frame, SDL_Surface *GFX_lpdest, int tx, int ty)
 	  SDL_Rect dst;
 	  dst.x = tx;
 	  dst.y = ty;
-	  SDL_BlitSurface(GFX_k[seq[seq1].frame[frame]].k, NULL, GFX_lpdest, &dst);
+	  IOGFX_lpdest->blit(GFX_k[seq[seq1].frame[frame]].k, NULL, &dst);
 	}
 }
 
@@ -1362,7 +1359,7 @@ void check_in(void)
       in_int = &spr[1].size;
       in_max = 10; //max _length
       sprintf(in_default,"%d",spr[1].size); //set default
-      blit(30,1,GFX_backbuffer,250,170);
+      blit(30,1,IOGFX_backbuffer,250,170);
       Say("New Size?",260,175);
     }
 
@@ -1372,7 +1369,7 @@ void check_in(void)
       in_int = &sp_type;
       in_max = 10; //max _length
       sprintf(in_default,"%d",sp_type); //set default
-      blit(30,1,GFX_backbuffer,250,170);
+      blit(30,1,IOGFX_backbuffer,250,170);
       Say("New Type?",260,175);
       Say("Type controls the sprite's basic type - 0 means it is ornamental only"
 	  "(cannot walk behind or think) 1 - means normal sprite.  (for a tree or person)"
@@ -1385,7 +1382,7 @@ void check_in(void)
       in_int = &sp_brain;
       in_max = 10; //max _length
       sprintf(in_default,"%d",sp_brain); //set default
-      blit(30,1,GFX_backbuffer,250,170);
+      blit(30,1,IOGFX_backbuffer,250,170);
       Say("New Brain?",260,175);
       Say("Brains are a predefined way for this sprite to behave. 0 = No movement, 1 = Dink,"
 	  " 2 = Dumb Sprite Bouncer, 3 = Duck, 4 = Pig, 6 = repeat, 7 = one loop then kill,"
@@ -1399,7 +1396,7 @@ void check_in(void)
       in_int = &sp_speed;
       in_max = 10; //max _length
       sprintf(in_default,"%d",sp_speed); //set default
-      blit(30,1,GFX_backbuffer,250,170);
+      blit(30,1,IOGFX_backbuffer,250,170);
       Say("New Speed?",260,175);
       Say("Speed rating allows you to adjust how fast a certain sprite moves.  Works with"
 	  " most brains."
@@ -1412,7 +1409,7 @@ void check_in(void)
       in_int = &sp_timer;
       in_max = 10; //max _length
       sprintf(in_default,"%d",sp_timer); //set default
-      blit(30,1,GFX_backbuffer,250,170);
+      blit(30,1,IOGFX_backbuffer,250,170);
       Say("New Timing?",260,175);
       Say("This is the delay the CPU waits before processing the sprite after each cycle.  "
 	  "(in thousands of a second - so 33 would mean 30 times a second)"
@@ -1425,7 +1422,7 @@ void check_in(void)
       in_int = &sp_base_walk;
       in_max = 10; //max _length
       sprintf(in_default,"%d",sp_base_walk); //set default
-      blit(30,1,GFX_backbuffer,250,170);
+      blit(30,1,IOGFX_backbuffer,250,170);
       Say("New Base Walk?",260,175);
       Say("The base for which the CPU adds 1 through 9 to make the sprite move, depending on"
 	  " direction.  Must be a multiple of ten. (ie, 20 to look like a duck, 40 to look like a pig)"
@@ -1438,7 +1435,7 @@ void check_in(void)
       in_int = &sp_base_idle;
       in_max = 10; //max _length
       sprintf(in_default,"%d",sp_base_idle); //set default
-      blit(30,1,GFX_backbuffer,250,170);
+      blit(30,1,IOGFX_backbuffer,250,170);
       Say("New Base Idle?",260,175);
       Say("Some brains can optionally use extra sprites for their \'idle\' pose."
 	  ,10,10);
@@ -1450,7 +1447,7 @@ void check_in(void)
       in_int = &sp_que;
       in_max = 10; //max _length
       sprintf(in_default,"%d",sp_que); //set default
-      blit(30,1,GFX_backbuffer,250,170);
+      blit(30,1,IOGFX_backbuffer,250,170);
       Say("New Depth Que?",250,175);
       Say("From 1 to 20000, 0 for default.  (defaults to y cord)"
 	  ,10,10);
@@ -1462,7 +1459,7 @@ void check_in(void)
       in_int = &sp_hard;
       in_max = 10; //max _length
       sprintf(in_default,"%d",sp_hard); //set default
-      blit(30,1,GFX_backbuffer,250,170);
+      blit(30,1,IOGFX_backbuffer,250,170);
       Say("New Hardness?",260,175);
       Say("Sets how hardness works.  1 means normal, (monsters) 0 means added to background. (walls, trees)"
 	  ,10,10);
@@ -1474,7 +1471,7 @@ void check_in(void)
       in_int = &sp_is_warp;
       in_max = 10; //max _length
       sprintf(in_default,"%d",sp_is_warp); //set default
-      blit(30,1,GFX_backbuffer,250,170);
+      blit(30,1,IOGFX_backbuffer,250,170);
       Say("New Properties?",260,175);
       Say("Sets special properties for the hardblock.  0 = normal (just hard) 1 = warp."
 	  ,10,10);
@@ -1486,7 +1483,7 @@ void check_in(void)
       in_int = &sp_warp_map;
       in_max = 10; //max _length
       sprintf(in_default,"%d",sp_warp_map); //set default
-      blit(30,1,GFX_backbuffer,250,170);
+      blit(30,1,IOGFX_backbuffer,250,170);
       Say("Warp Map #",260,175);
       Say("These parms are valid if the hard block property setting is 1.  (warp)"
 	  ,10,10);
@@ -1498,7 +1495,7 @@ void check_in(void)
       in_int = &sp_warp_x;
       in_max = 10; //max _length
       sprintf(in_default,"%d",sp_warp_x); //set default
-      blit(30,1,GFX_backbuffer,250,170);
+      blit(30,1,IOGFX_backbuffer,250,170);
       Say("Warp X:",260,175);
       Say("The X location to warp to.  (20 to 619)"
 	  ,10,10);
@@ -1510,7 +1507,7 @@ void check_in(void)
       in_int = &sp_warp_y;
       in_max = 10; //max _length
       sprintf(in_default,"%d",sp_warp_y); //set default
-      blit(30,1,GFX_backbuffer,250,170);
+      blit(30,1,IOGFX_backbuffer,250,170);
       Say("Warp Y:",260,175);
       Say("The Y location to warp to.  (0 to 499)"
 	  ,10,10);
@@ -1522,7 +1519,7 @@ void check_in(void)
       in_int = &sp_parm_seq;
       in_max = 10; //max _length
       sprintf(in_default,"%d",sp_parm_seq); //set default
-      blit(30,1,GFX_backbuffer,250,170);
+      blit(30,1,IOGFX_backbuffer,250,170);
       Say("Sequence:",260,175);
       Say("This parm is used by some brains/settings if set.  A sequence is an animation #."
 	  ,10,10);
@@ -1534,7 +1531,7 @@ void check_in(void)
       sprintf(in_default, "%s", sp_script);
       in_max = 13;
       in_string = sp_script;
-      blit(30,1,GFX_backbuffer,250,170);
+      blit(30,1,IOGFX_backbuffer,250,170);
       Say("Script:",260,175);
       Say("Filename of script this sprite uses."
 	  ,10,10);
@@ -1546,7 +1543,7 @@ void check_in(void)
 	in_int = &sp_base_die;
 	in_max = 10; //max _length
 	sprintf(in_default,"%d",sp_base_die); //set default
-	blit(30,1,GFX_backbuffer,250,170);
+	blit(30,1,IOGFX_backbuffer,250,170);
 	Say("Base Death:",260,175);
 	Say("If this sprite dies, this will be used."
 	    ,10,10);
@@ -1558,7 +1555,7 @@ void check_in(void)
 	in_int = &sp_sound;
 	in_max = 10; //max _length
 	sprintf(in_default,"%d",sp_sound); //set default
-	blit(30,1,GFX_backbuffer,250,170);
+	blit(30,1,IOGFX_backbuffer,250,170);
 	Say("Sound:",260,175);
 	Say("This sprite will play this sound looped until it dies."
 	    ,10,10);
@@ -1570,7 +1567,7 @@ void check_in(void)
 	in_int = &sp_hitpoints;
 	in_max = 10; //max _length
 	sprintf(in_default,"%d",sp_hitpoints); //set default
-	blit(30,1,GFX_backbuffer,250,170);
+	blit(30,1,IOGFX_backbuffer,250,170);
 	Say("Hitpoints:",260,175);
 	Say("How strong is this creature?  (0 = not alive/invincible)"
 	    ,10,10);
@@ -1582,7 +1579,7 @@ void check_in(void)
 	in_int = &sp_nohit;
 	in_max = 10; //max _length
 	sprintf(in_default,"%d",sp_nohit); //set default
-	blit(30,1,GFX_backbuffer,250,170);
+	blit(30,1,IOGFX_backbuffer,250,170);
 	Say("Nohit:",260,175);
 	Say("Can this be punched? 0 if yes.  Either way it will"
 	    "still check for hit() if a script is attached."
@@ -1595,7 +1592,7 @@ void check_in(void)
 	in_int = &sp_touch_damage;
 	in_max = 10; //max _length
 	sprintf(in_default,"%d",sp_touch_damage); //set default
-	blit(30,1,GFX_backbuffer,250,170);
+	blit(30,1,IOGFX_backbuffer,250,170);
 	Say("Touch Damage:",260,175);
 	Say("If not 0, the hardbox of this sprite will cause this"
 	    "much damage if touched."
@@ -1608,7 +1605,7 @@ void check_in(void)
 	in_int = &sp_base_attack;
 	in_max = 10; //max _length
 	sprintf(in_default,"%d",sp_base_attack); //set default
-	blit(30,1,GFX_backbuffer,250,170);
+	blit(30,1,IOGFX_backbuffer,250,170);
 	Say("Base Attack:",260,175);
 	Say("If not -1, this monster can attack with this sprite base. (base + dir)"
 	    ,10,10);
@@ -1620,7 +1617,7 @@ void check_in(void)
 	in_int = &sp_defense;
 	in_max = 10; //max _length
 	sprintf(in_default,"%d",sp_defense); //set default
-	blit(30,1,GFX_backbuffer,250,170);
+	blit(30,1,IOGFX_backbuffer,250,170);
 	Say("Defense:",260,175);
 	Say("This will be deducted from any attack."
 	    ,10,10);
@@ -1632,7 +1629,7 @@ void check_in(void)
 	sprintf(in_default, "%s",  buf_path);
 	in_max = 80;
 	in_string = buf_path;
-	blit(30,1,GFX_backbuffer,250,170);
+	blit(30,1,IOGFX_backbuffer,250,170);
 	Say("Path:",260,175);
 	Say("Enter the path with trailing backslash to a dir containing"
 	    " another dink.dat and map.dat file to choose a replacement"
@@ -1647,7 +1644,7 @@ void check_in(void)
 	sprintf(in_default, "%s",  cur_ed_screen.script);
 	in_max = 20;
 	in_string = cur_ed_screen.script;
-	blit(30,1,GFX_backbuffer,250,170);
+	blit(30,1,IOGFX_backbuffer,250,170);
 	Say("Script:",260,175);
 	Say("This script will be run before the screen is drawn.  A good place"
 	    "to change the vision, ect."
@@ -1660,7 +1657,7 @@ void check_in(void)
 	in_int = &map_vision;
 	in_max = 10; //max _length
 	sprintf(in_default,"%d",map_vision); //set default
-	blit(30,1,GFX_backbuffer,250,170);
+	blit(30,1,IOGFX_backbuffer,250,170);
 	Say("Vision:",260,175);
 	Say("Current vision.  If not 0, any sprites you add will ONLY show up"
 	    " in the game if the vision level matches this one."
@@ -1672,7 +1669,7 @@ void check_in(void)
 	in_command = 1; //number
 	in_max = 10; //max _length
 	sprintf(in_default,"%d",*in_int); //set default
-	blit(30,1,GFX_backbuffer,250,170);
+	blit(30,1,IOGFX_backbuffer,250,170);
 	Say("Music # for screen?:",260,175);
 	Say("Will play #.MID for this screen if nothing else is playing."
 	    ,10,10);
@@ -1683,7 +1680,7 @@ void check_in(void)
 	in_command = 1; //number
 	in_max = 10; //max _length
 	sprintf(in_default,"%d",*in_int); //set default
-	blit(30,1,GFX_backbuffer,250,170);
+	blit(30,1,IOGFX_backbuffer,250,170);
 	Say("Screentype?:",260,175);
 	Say("Enter 1 for 'indoors'.  (so it won't show up on the player map)."
 	    ,10,10);
@@ -1713,16 +1710,7 @@ void change_tile(int tile, int num)
 
 void copy_front_to_two( void)
 {
-/*   RECT rcRect; */
-/*   rcRect.left = 0; */
-/*   rcRect.top = 0; */
-/*   rcRect.right = x; */
-/*   rcRect.bottom = y; */
-
-/*   lpDDSTwo->BltFast( 0, 0, lpDDSBack, */
-/* 		     &rcRect, DDBLTFAST_NOCOLORKEY | DDBLTFAST_WAIT); */
-  // GFX
-  SDL_BlitSurface(GFX_backbuffer, NULL, GFX_background, NULL);
+  IOGFX_background->blit(IOGFX_backbuffer, NULL, NULL);
 }
 
 
@@ -1752,7 +1740,7 @@ void shrink_screen_to_these_cords(int x1, int y1)
     dst.y = y1;
     dst.w = 20;
     dst.h = 20;
-    gfx_blit_stretch(GFX_background, &src, GFX_backbuffer, &dst);
+    IOGFX_backbuffer->blitStretch(IOGFX_background, &src, &dst);
   }
 }
 
@@ -3144,7 +3132,7 @@ int gui_logic(int h) {
 					dst.h = 450;
 				  
 					cool = cur_tile / 128;
-					gfx_blit_stretch(g_dmod.bgTilesets.slots[cool+1], &src, GFX_background, &dst);
+					IOGFX_background->blitStretch(g_dmod.bgTilesets.slots[cool+1], &src, &dst);
 				}
 
 				m4x = spr[h].x;
@@ -3543,7 +3531,7 @@ int gui_logic(int h) {
 					dst.y = 0;
 					dst.w = 450;
 					dst.h = 450;
-					gfx_blit_stretch(GFX_backbuffer, &src, GFX_background, &dst);
+					IOGFX_background->blitStretch(IOGFX_backbuffer, &src, &dst);
 				}
 
 				m4x = spr[h].x;
@@ -3938,9 +3926,9 @@ void AppFreeDinkedit::logic(void)
 	    if (!((h == 1) && (g_editorMode == EDITOR_MODE_SCREEN_HARDNESS_INIT)))
 	      {
 		if (draw_screen_tiny == -1)
-		  draw_sprite(GFX_backbuffer, h);
+		  draw_sprite(IOGFX_backbuffer, h);
 		else
-		  draw_sprite(GFX_background, h);
+		  draw_sprite(IOGFX_background, h);
 	      }
 
 	    //Msg("Drew %d.",h);
@@ -3965,7 +3953,7 @@ void AppFreeDinkedit::logic(void)
 			      SDL_Rect dst;
 			      dst.x = spr[h].x + 50*x + greba;
 			      dst.y = spr[h].y + 50*y;
-			      SDL_BlitSurface(GFX_k[getpic(h)].k, NULL, GFX_backbuffer, &dst);
+			      IOGFX_backbuffer->blit(GFX_k[getpic(h)].k, NULL, &dst);
 			    }
 			  }
 		      }
@@ -3988,7 +3976,7 @@ void AppFreeDinkedit::logic(void)
 			      SDL_Rect dst;
 			      dst.x = spr[h].x + 9*xx;
 			      dst.y = spr[h].y + 9*yy;
-			      SDL_BlitSurface(GFX_k[getpic(h)].k, NULL, GFX_backbuffer, &dst);
+			      IOGFX_backbuffer->blit(GFX_k[getpic(h)].k, NULL, &dst);
 			    }
 			  }
 		      }
@@ -4260,12 +4248,11 @@ void AppFreeDinkedit::logic(void)
 		  // GFX
 		  {
 		    SDL_Rect dst;
-		    SDL_Surface *sprite = GFX_k[seq[10].frame[5]].k;
 		    dst.x = box_crap.left;
 		    dst.y = box_crap.top;
 		    /* Simplified blit, no scaling, the sprite is already 50x50 */
 		    /* We need to avoid transparency though */
-		    gfx_blit_nocolorkey(sprite, NULL, GFX_backbuffer, &dst);
+		    IOGFX_backbuffer->blitNoColorKey(GFX_k[seq[10].frame[5]].k, NULL, &dst);
 		  }
 
 		  char crap5[200];

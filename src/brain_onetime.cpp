@@ -5,7 +5,7 @@
 #include "brain.h"
 #include "live_sprites_manager.h"
 #include "gfx.h"
-#include "game_engine.h" /* draw_sprite_game */
+#include "live_screen.h" /* draw_sprite_game */
 
 void one_time_brain(int h)
 {
@@ -26,7 +26,7 @@ void one_time_brain(int h)
 	
 	if (spr[h].seq == 0)
 	{
-	  draw_sprite_game(GFX_background, h);
+	  draw_sprite_game(IOGFX_background, h);
 		spr[h].active = /*false*/0;			
 		return;
 	}

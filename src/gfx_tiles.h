@@ -25,6 +25,7 @@
 
 /* #include <ddraw.h> */
 #include "SDL.h"
+#include "IOGfxSurface.h"
 
 #define GFX_TILES_NB_SETS 41
 
@@ -37,9 +38,9 @@
    so 128*(41-1)+12*8=5216 indexes used, instead of 12*8*41=3936 */
 #define GFX_TILES_NB_SQUARES (128*(GFX_TILES_NB_SETS-1)+GFX_TILES_SCREEN_W*GFX_TILES_SCREEN_H)
 
-extern void process_animated_tiles(SDL_Surface** gfx_tiles, struct editor_screen_tilerefs* tilerefs, Uint32 thisTickCount);
-extern void gfx_tiles_draw_screen(SDL_Surface** gfx_tiles, struct editor_screen_tilerefs* tilerefs);
+extern void process_animated_tiles(IOGfxSurface** gfx_tiles, struct editor_screen_tilerefs* tilerefs, Uint32 thisTickCount);
+extern void gfx_tiles_draw_screen(IOGfxSurface** gfx_tiles, struct editor_screen_tilerefs* tilerefs);
 extern void gfx_tiles_draw(int srctileset_idx0, int srctile_square_idx0, int dsttile_square_idx0);
-extern int gfx_tiles_memusage(SDL_Surface** gfx_tiles);
+extern int gfx_tiles_memusage(IOGfxSurface** gfx_tiles);
 
 #endif

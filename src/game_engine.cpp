@@ -496,7 +496,7 @@ void game_place_sprites()
 	      check_sprite_status_full(sprite);
 
 	      if (cur_ed_screen.sprite[j].type == 0)
-		draw_sprite_game(GFX_background, sprite);
+		draw_sprite_game(IOGFX_background, sprite);
 	      
 	      if (spr[sprite].hard == 0)
 		{
@@ -621,7 +621,7 @@ void game_place_sprites_background()
 					   cur_ed_screen.sprite[j].size);
 
 	      check_sprite_status_full(sprite);
-	      draw_sprite_game(GFX_background, sprite);
+	      draw_sprite_game(IOGFX_background, sprite);
 	      spr[sprite].active = 0;
 	    }
 	}
@@ -754,21 +754,18 @@ void draw_screen_game_background(void)
  * before switching to a screen that requires loading new graphics
  * from the disk.
  */
-static void draw_wait()
-{
-  if (screen_main_is_running) {
-    if (seq[423].frame[please_wait_toggle_frame] != 0)
-      {
-	SDL_Rect dst = { 232, 0, -1, -1 };
-	SDL_BlitSurface(GFX_k[seq[423].frame[please_wait_toggle_frame]].k, NULL,
-			GFX_backbuffer, &dst);
-	g_display->flip(IOGFX_backbuffer);
-      }
-    if (please_wait_toggle_frame == 7)
-      please_wait_toggle_frame = 8;
-    else
-      please_wait_toggle_frame = 7;
-  }
+static void draw_wait() {
+	if (screen_main_is_running) {
+		if (seq[423].frame[please_wait_toggle_frame] != 0) {
+			SDL_Rect dst = { 232, 0, -1, -1 };
+			IOGFX_backbuffer->blit(GFX_k[seq[423].frame[please_wait_toggle_frame]].k, NULL, &dst);
+			g_display->flip(IOGFX_backbuffer);
+		}
+		if (please_wait_toggle_frame == 7)
+			please_wait_toggle_frame = 8;
+		else
+			please_wait_toggle_frame = 7;
+	}
 }
 
 

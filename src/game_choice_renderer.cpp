@@ -33,17 +33,17 @@ void game_choice_renderer_render() {
 	{
 		SDL_Rect dst;
 		dst.x = px; dst.y = py;
-		SDL_BlitSurface(GFX_k[seq[30].frame[2]].k, NULL, GFX_backbuffer, &dst);
+		IOGFX_backbuffer->blit(GFX_k[seq[30].frame[2]].k, NULL, &dst);
 	}
 	{
 		SDL_Rect dst;
 		dst.x = px + 169; dst.y = py + 42;
-		SDL_BlitSurface(GFX_k[seq[30].frame[3]].k, NULL, GFX_backbuffer, &dst);
+		IOGFX_backbuffer->blit(GFX_k[seq[30].frame[3]].k, NULL, &dst);
 	}
 	{
 		SDL_Rect dst;
 		dst.x = px+169+180; dst.y = py+1;
-		if (SDL_BlitSurface(GFX_k[seq[30].frame[4]].k, NULL, GFX_backbuffer, &dst) < 0)
+		if (IOGFX_backbuffer->blit(GFX_k[seq[30].frame[4]].k, NULL, &dst) < 0)
 			log_error("Could not draw sprite %d: %s", seq[30].frame[4], SDL_GetError());
 	}
 
@@ -108,8 +108,8 @@ void game_choice_renderer_render() {
 	{
 		SDL_Rect dst;
 		dst.x = curxl; dst.y = curyl;
-		SDL_BlitSurface(GFX_k[seq[456].frame[game_choice.curf]].k, NULL, GFX_backbuffer, &dst);
+		IOGFX_backbuffer->blit(GFX_k[seq[456].frame[game_choice.curf]].k, NULL, &dst);
 		dst.x = curxr; dst.y = curyr;
-		SDL_BlitSurface(GFX_k[seq[457].frame[game_choice.curf]].k, NULL, GFX_backbuffer, &dst);
+		IOGFX_backbuffer->blit(GFX_k[seq[457].frame[game_choice.curf]].k, NULL, &dst);
 	}
 }

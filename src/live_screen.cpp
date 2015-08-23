@@ -386,7 +386,7 @@ unsigned char get_hard(int x1, int y1, int screenlock)
     return(/*false*/0);
 }
 
-void draw_sprite_game(SDL_Surface *GFX_lpdest, int h)
+void draw_sprite_game(IOGfxSurface *GFX_lpdest, int h)
 {
   if (spr[h].brain == 8)
     return; // text
@@ -417,7 +417,7 @@ void draw_sprite_game(SDL_Surface *GFX_lpdest, int h)
       dst.w = box_crap.right - box_crap.left;
       dst.h = box_crap.bottom - box_crap.top;
 
-      retval = gfx_blit_stretch(GFX_k[getpic(h)].k, &src, GFX_lpdest, &dst);
+      retval = GFX_lpdest->blitStretch(GFX_k[getpic(h)].k, &src, &dst);
       
       if (retval < 0) {
 	log_error("Could not draw sprite %d: %s", getpic(h), SDL_GetError());

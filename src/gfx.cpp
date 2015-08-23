@@ -136,14 +136,14 @@ int gfx_init(bool windowed, char* splash_path) {
   if (!truecolor) {
     SDL_SetPaletteColors(GFX_backbuffer->format->palette, GFX_ref_pal, 0, 256);
   }
-  GFX_background    = SDL_ConvertSurface(GFX_backbuffer, GFX_backbuffer->format, 0);
+  GFX_background   = SDL_ConvertSurface(GFX_backbuffer, GFX_backbuffer->format, 0);
   IOGFX_background = new IOGfxSurfaceSW(GFX_background);
-  GFX_tmp1  = SDL_ConvertSurface(GFX_backbuffer, GFX_backbuffer->format, 0);
+  GFX_tmp1 = SDL_ConvertSurface(GFX_backbuffer, GFX_backbuffer->format, 0);
   GFX_tmp2 = SDL_ConvertSurface(GFX_backbuffer, GFX_backbuffer->format, 0);
 
   /* Display splash picture, as early as possible */
   {
-	SDL_Surface* splash = NULL;
+	IOGfxSurface* splash = NULL;
     FILE* in = paths_dmodfile_fopen(splash_path, "r");
     if (in == NULL) {
       in = paths_fallbackfile_fopen(splash_path, "r");
@@ -159,9 +159,9 @@ int gfx_init(bool windowed, char* splash_path) {
 	/* Copy splash to the background buffer so that D-Mod can
 	   start an effect from it (e.g. Pilgrim Quest's burning
 	   splash screen effect) */
-	if (SDL_BlitSurface(splash, NULL, GFX_background, NULL) < 0)
+	if (IOGFX_background->blit(splash, NULL, NULL) < 0)
 	  log_error("Error blitting splash to temp buffer");
-	SDL_FreeSurface(splash);
+	delete splash;
       }
     
     /* Copy splash screen (again) to the screen during loading time */
@@ -179,7 +179,6 @@ int gfx_init(bool windowed, char* splash_path) {
 
   /* make all pointers to NULL */
   memset(&k, 0, sizeof(k));
-  memset(&GFX_k, 0, sizeof(GFX_k));
   memset(&seq, 0, sizeof(seq));
 
 
@@ -211,7 +210,8 @@ void gfx_quit()
   GFX_tmp1 = NULL;
   GFX_tmp2 = NULL;
 
-  g_display->close();
+  if (g_display != NULL)
+	  g_display->close();
   delete g_display;
 }
 
@@ -245,12 +245,12 @@ void gfx_log_meminfo()
   {
     int sum = 0;
     int i = 0;
-    SDL_Surface* s = NULL;
+    IOGfxSurface* s = NULL;
     for (; i < MAX_SPRITES; i++)
       {
 	s = GFX_k[i].k;
 	if (s != NULL)
-	  sum += s->h * s->pitch;
+		sum += s->getMemUsage();
 	// Note: this does not take SDL_RLEACCEL into account
       }
     log_debug("GFX bmp    = %8d", sum);

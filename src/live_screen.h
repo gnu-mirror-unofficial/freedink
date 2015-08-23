@@ -26,6 +26,7 @@
 
 #include "live_sprite.h"
 #include "editor_screen.h"
+#include "IOGfxSurface.h"
 
 /* base editor screen */
 extern struct editor_screen cur_ed_screen;
@@ -49,7 +50,7 @@ extern void fill_hardxy(rect box);
 
 extern void screen_rank_game_sprites(int* rank);
 /*bool*/int get_box (int h, rect * box_scaled, rect * box_real, bool skip_screen_clipping);
-extern void draw_sprite_game(SDL_Surface *GFX_lpdest, int h);
+extern void draw_sprite_game(IOGfxSurface* GFX_lpdest, int h);
 extern void grab_trick(int dir);
 extern bool transition(int fps_final);
 

@@ -119,7 +119,7 @@ void IOGfxDisplayGL2::onSizeChange(int w, int h) {
 	// TODO
 }
 
-SDL_Surface* IOGfxDisplayGL2::upload(SDL_Surface* image) {
+IOGfxSurface* IOGfxDisplayGL2::upload(SDL_Surface* image) {
 	// TODO
 	return NULL;
 }

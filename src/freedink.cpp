@@ -860,7 +860,7 @@ void process_show_bmp( void )
       // convert map# to a (x,y) position on a FreeDinkedit minimap
       dst.x = (x % 32) * 20;
       dst.y = (x / 32) * 20;
-      SDL_BlitSurface(GFX_k[seq[mseq].frame[mframe]].k, NULL, GFX_backbuffer, &dst);
+      IOGFX_backbuffer->blit(GFX_k[seq[mseq].frame[mframe]].k, NULL, &dst);
     }
   
   

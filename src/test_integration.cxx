@@ -44,6 +44,8 @@
 #include "editor_screen.h"
 #include "freedink.h"
 #include "paths.h"
+#include "gfx.h"
+#include "IOGfxSurfaceSW.h"
 
 /* test headers */
 void dc_fade_down(int script, int* yield, int* preturnint);
@@ -56,7 +58,9 @@ public:
     //SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
     ts_paths_init();
     memset(&g_dmod.map.ts_loc_mem, 0, sizeof(g_dmod.map.ts_loc_mem));
-    
+	GFX_background = SDL_CreateRGBSurface(0, 1, 1, 32, 0,0,0,0);
+	IOGFX_background = new IOGfxSurfaceSW(GFX_background);
+
     dinkc_init();
     dinkc_bindings_init();
     make_int("&tsx", 123451, DINKC_GLOBAL_SCOPE, 0);
