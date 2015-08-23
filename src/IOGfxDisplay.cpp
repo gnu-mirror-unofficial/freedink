@@ -14,6 +14,19 @@ IOGfxDisplay::IOGfxDisplay(int w, int h, Uint32 flags)
 }
 
 IOGfxDisplay::~IOGfxDisplay() {
+	close();  // non-virtual call
+}
+
+bool IOGfxDisplay::open() {
+	if (!createWindow()) return false;
+	logWindowInfo();
+
+	return true;
+}
+
+void IOGfxDisplay::close() {
+	if (window) SDL_DestroyWindow(window);
+	window = NULL;
 }
 
 bool IOGfxDisplay::createWindow() {

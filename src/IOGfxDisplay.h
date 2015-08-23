@@ -14,20 +14,20 @@ public:
 public:
 	IOGfxDisplay(int w, int h, Uint32 flags);
 	virtual ~IOGfxDisplay();
-	virtual bool open() = 0;
-	virtual void close() = 0;
-	virtual void toggleFullScreen();
-	virtual void toggleScreenKeyboard();
 
-	virtual bool createWindow();
-	virtual void logWindowInfo();
+	virtual bool open();
+	virtual void close();
 
 	virtual void clear() = 0;
 	virtual void flip(IOGfxSurface* backbuffer) = 0;
 	virtual void onSizeChange(int w, int h) = 0;
+
+	bool createWindow();
+	void logWindowInfo();
+	void toggleFullScreen();
+	void toggleScreenKeyboard();
 };
 
-extern void gfx_toggle_fullscreen();
 extern void flip_it(void);
 
 #endif

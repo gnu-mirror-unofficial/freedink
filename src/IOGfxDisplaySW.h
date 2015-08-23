@@ -17,6 +17,7 @@ public:
 
 	virtual bool open();
 	virtual void close();
+
 	virtual void clear();
 	virtual void flip(IOGfxSurface* backbuffer);
 	virtual void onSizeChange(int w, int h);

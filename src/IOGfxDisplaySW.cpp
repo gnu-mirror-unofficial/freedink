@@ -14,11 +14,11 @@ IOGfxDisplaySW::IOGfxDisplaySW(int w, int h, Uint32 flags)
 }
 
 IOGfxDisplaySW::~IOGfxDisplaySW() {
+	close();
 }
 
 bool IOGfxDisplaySW::open() {
-	if (!createWindow()) return false;
-	logWindowInfo();
+	if (!IOGfxDisplay::open()) return false;
 
 	if (!createRenderer()) return false;
 	logRenderersInfo();
@@ -35,6 +35,8 @@ void IOGfxDisplaySW::close() {
 
 	if (renderer) SDL_DestroyRenderer(renderer);
 	renderer = NULL;
+
+	IOGfxDisplay::close();
 }
 
 void IOGfxDisplaySW::clear() {

@@ -37,15 +37,16 @@ public:
 
 	IOGfxDisplayGL2(int w, int h, Uint32 flags);
 	~IOGfxDisplayGL2();
-	bool open();
-	void close();
+
+	virtual bool open();
+	virtual void close();
+
+	virtual void clear();
+	virtual void flip(IOGfxSurface* backbuffer);
+	virtual void onSizeChange(int w, int h);
 
 	bool createOpenGLContext();
 	void logOpenGLInfo();
-
-	void clear();
-	virtual void flip(IOGfxSurface* backbuffer);
-	virtual void onSizeChange(int w, int h);
 
 	SDL_Surface* screenshot();
 	void screenshot(const char* out_filename);

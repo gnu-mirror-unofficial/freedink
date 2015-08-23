@@ -39,10 +39,11 @@ IOGfxDisplayGL2::~IOGfxDisplayGL2() {
 }
 
 bool IOGfxDisplayGL2::open() {
-	if (!createWindow()) return false;
-	logWindowInfo();
+	if (!IOGfxDisplay::open()) return false;
+
 	if (!createOpenGLContext()) return false;
 	logOpenGLInfo();
+
 	return true;
 }
 
@@ -52,8 +53,7 @@ void IOGfxDisplayGL2::close() {
 	if (glcontext) SDL_GL_DeleteContext(glcontext);
 	glcontext = NULL;
 
-	if (window) SDL_DestroyWindow(window);
-	window = NULL;
+	IOGfxDisplay::close();
 }
 
 bool IOGfxDisplayGL2::createOpenGLContext() {
