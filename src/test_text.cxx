@@ -26,6 +26,7 @@
 
 #include "text.h"
 #include "live_sprites_manager.h"
+#include "gfx.h"
 #include "gfx_fonts.h"
 SDL_Surface *GFX_backbuffer;
 
@@ -81,36 +82,35 @@ public:
 		TS_ASSERT_EQUALS(spr[3].script, 123);
 		TS_ASSERT_EQUALS(spr[3].damage, -1);
 		TS_ASSERT_EQUALS(spr[3].kill_ttl, 2700);
-		text_draw(3);
+		text_draw(3, 256);
 		
 		TS_ASSERT_EQUALS(say_text("Hello", 2, 0), 4);
-		text_draw(4);
+		text_draw(4, 256);
 
 		// Crash tests
 
 		TS_ASSERT_EQUALS(say_text("Hello1000", 1000, 0), 5);
-		text_draw(5);
+		text_draw(5, 256);
 
 		TS_ASSERT_EQUALS(say_text("Hello1200", 1200, 0), 6);
-		text_draw(6);
+		text_draw(6, 256);
 
 		TS_ASSERT_EQUALS(say_text("Hello100000", 100000, 0), 7);
-		text_draw(7);
+		text_draw(7, 256);
 	}
 
 	void test_fade() {
 		TS_ASSERT_EQUALS(add_sprite(0, 0, 0, 0, 0), 1);
 		TS_ASSERT_EQUALS(add_text_sprite("Fading", 0, 1, 0, 0), 2);
-		text_draw(2);
+		text_draw(2, 256);
 		TS_ASSERT_EQUALS(g_colorIndex, 14);
 		TS_ASSERT_EQUALS(add_text_sprite("`2Fading", 0, 1, 0, 0), 3);
-		text_draw(3);
+		text_draw(3, 256);
 		TS_ASSERT_EQUALS(g_colorIndex, 2);
 		
-		truecolor_fade_brightness = 0;
-		text_draw(2);
+		text_draw(2, 0);
 		TS_ASSERT_EQUALS(g_colorIndex, 15);
-		text_draw(3);
+		text_draw(3, 0);
 		TS_ASSERT_EQUALS(g_colorIndex, 15);
 	}
 
@@ -120,14 +120,14 @@ public:
 		spr[2].damage = 10;
 		
 		spr[2].brain_parm = 1;
-		text_draw(2);
+		text_draw(2, 256);
 		TS_ASSERT_EQUALS(g_r, 255);
 		TS_ASSERT_EQUALS(g_g, 255);
 		TS_ASSERT_EQUALS(g_b, 255);
 
 		spr[2].brain_parm = 5000;
 		spr[2].damage = 10;
-		text_draw(2);
+		text_draw(2, 256);
 		TS_ASSERT_EQUALS(g_colorIndex, 14);
 	}
 };

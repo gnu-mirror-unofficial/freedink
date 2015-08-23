@@ -28,14 +28,14 @@ COMMON_OBJS = app.cpp app.h bgm.cpp bgm.h BgTilesetsManager.cpp		\
 	BgTilesetsManager.h dinkini.cpp dinkini.h DMod.cpp DMod.h	\
 	fastfile.cpp fastfile.h str_util.cpp str_util.h io_util.cpp	\
 	io_util.h EditorMap.cpp EditorMap.h editor_screen.cpp		\
-	editor_screen.h gfx.cpp gfx.h gfx_fade.cpp gfx_fade.h		\
-	gfx_tiles.cpp gfx_tiles.h gfx_palette.cpp gfx_palette.h		\
-	gfx_fonts.cpp gfx_fonts.h hardness_tiles.cpp hardness_tiles.h	\
-	IOGfxDisplay.cpp IOGfxDisplay.h IOGfxDisplaySW.cpp		\
-	IOGfxDisplaySW.h IOGfxSurface.cpp IOGfxSurface.h		\
-	IOGfxSurfaceSW.cpp IOGfxSurfaceSW.h IOGfxPrimitives.cpp		\
-	IOGfxPrimitives.h IOGfxPrimitivesSW.cpp IOGfxPrimitivesSW.h	\
-	live_screen.cpp live_screen.h live_sprite.cpp live_sprite.h	\
+	editor_screen.h gfx.cpp gfx.h gfx_tiles.cpp gfx_tiles.h		\
+	gfx_palette.cpp gfx_palette.h gfx_fonts.cpp gfx_fonts.h		\
+	hardness_tiles.cpp hardness_tiles.h IOGfxDisplay.cpp		\
+	IOGfxDisplay.h IOGfxDisplaySW.cpp IOGfxDisplaySW.h		\
+	IOGfxSurface.cpp IOGfxSurface.h IOGfxSurfaceSW.cpp		\
+	IOGfxSurfaceSW.h IOGfxPrimitives.cpp IOGfxPrimitives.h		\
+	IOGfxPrimitivesSW.cpp IOGfxPrimitivesSW.h live_screen.cpp	\
+	live_screen.h live_sprite.cpp live_sprite.h			\
 	live_sprites_manager.cpp live_sprites_manager.h rect.cpp	\
 	rect.h resources.cpp resources.h input.cpp input.h		\
 	freedink_xpm.cpp freedink_xpm.h paths.cpp paths.h log.cpp	\
@@ -190,11 +190,11 @@ test_brain_text_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	brain_onetime.cpp brain_people.cpp brain_pig.cpp		\
 	brain_repeat.cpp brain_scale.cpp brain_shadow.cpp		\
 	brain_text.cpp dinkc_bindings.cpp dinkc_bindings.h dinkc.cpp	\
-	dinkc.h dinkc_console.cpp dinkc_console.h freedink.cpp		\
-	game_choice.cpp game_choice.h game_engine.cpp game_engine.h	\
-	game_state.cpp game_state.h i18n.cpp i18n.h inventory.cpp	\
-	inventory.h meminfo.cpp meminfo.h savegame.cpp savegame.h	\
-	status.cpp status.h text.cpp text.h test_brain_text.cpp
+	dinkc.h dinkc_console.cpp freedink.cpp game_choice.cpp		\
+	game_choice.h game_engine.cpp game_engine.h game_state.cpp	\
+	game_state.h i18n.cpp i18n.h inventory.cpp inventory.h		\
+	meminfo.cpp meminfo.h savegame.cpp savegame.h status.cpp	\
+	status.h text.cpp text.h test_brain_text.cpp
 test_text_SOURCES = test_text.cpp text.cpp live_sprites_manager.cpp	\
 	dinkini.cpp live_sprite.cpp rect.cpp gfx_sprites.cpp		\
 	str_util.cpp io_util.cpp fastfile.cpp paths.cpp

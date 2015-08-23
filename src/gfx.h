@@ -49,7 +49,6 @@ extern IOGfxSurface* IOGFX_background;
 extern SDL_Color GFX_ref_pal[256];
 extern /*bool*/int abort_this_flip;
 
-extern double truecolor_fade_brightness;
 extern Uint32 truecolor_fade_lasttick;
 
 

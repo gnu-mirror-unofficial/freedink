@@ -12,7 +12,7 @@ private:
 	SDL_Surface *rgba_screen;
 
 public:
-	IOGfxDisplaySW(int w, int h, Uint32 flags);
+	IOGfxDisplaySW(int w, int h, bool truecolor, Uint32 flags);
 	virtual ~IOGfxDisplaySW();
 
 	virtual bool open();

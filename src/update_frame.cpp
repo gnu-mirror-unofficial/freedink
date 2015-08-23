@@ -399,7 +399,7 @@ void updateFrame() {
 	for (int j = 0; j <= max_s; j++) {
 	    int sprite = rank[j];
 	    if (sprite > 0 && spr[sprite].active && spr[sprite].brain == 8)
-			text_draw(sprite);
+			text_draw(sprite, g_display->brightness);
 	}
     
     

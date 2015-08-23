@@ -43,7 +43,6 @@
 #include "gfx_palette.h"
 #include "gfx_sprites.h"
 #include "gfx_tiles.h"
-#include "gfx_fade.h"
 #include "bgm.h"
 #include "sfx.h"
 #include "update_frame.h"
@@ -427,10 +426,10 @@ void CyclePalette()
 	  int delta = game_GetTicks() - truecolor_fade_lasttick;
 	  /* Complete fade in 400ms */
 	  truecolor_fade_lasttick = game_GetTicks();
-	  truecolor_fade_brightness -= delta * 256 / 400.0;
+	  g_display->brightness -= delta * 256 / 400.0;
 	}
-      if (truecolor_fade_brightness <= 0)
-	truecolor_fade_brightness = 0;
+      if (g_display->brightness <= 0)
+    	  g_display->brightness = 0;
       
     }
 
@@ -523,11 +522,11 @@ void up_cycle(void)
 	  int delta = game_GetTicks() - truecolor_fade_lasttick;
 	  /* Complete fade in 400ms */
 	  truecolor_fade_lasttick = game_GetTicks();
-	  truecolor_fade_brightness += delta * 256 / 400.0;
+	  g_display->brightness += delta * 256 / 400.0;
 	}
-      if (truecolor_fade_brightness >= 256)
+      if (g_display->brightness >= 256)
 	{
-	  truecolor_fade_brightness = 256;
+    	  g_display->brightness = 256;
 	  donethistime = 1;
 	}
     }
@@ -812,7 +811,7 @@ void process_warp_man(void)
 	 v1.08, we don't wait for a full fadedown, which is long and
 	 can be not very smooth on old computers. */
       if ((!truecolor && process_count > 5)
-	  || (truecolor && truecolor_fade_brightness <= 180))
+	  || (truecolor && g_display->brightness <= 180))
 	{
 	  SDL_FillRect(GFX_backbuffer, NULL,
 		       SDL_MapRGB(GFX_backbuffer->format, 0, 0, 0));

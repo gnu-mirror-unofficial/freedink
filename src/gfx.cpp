@@ -38,7 +38,6 @@
 #include "IOGfxPrimitives.h"
 #include "IOGfxSurfaceSW.h"
 #include "IOGfxDisplaySW.h"
-#include "gfx_fade.h"
 #include "gfx_fonts.h"
 #include "gfx_palette.h"
 #include "gfx_sprites.h"
@@ -86,8 +85,6 @@ SDL_Color GFX_ref_pal[256];
 /*bool*/int abort_this_flip = /*false*/0;
 
 
-/* True color fade in [0,256]; 0 is completely dark, 256 is unaltered */
-double truecolor_fade_brightness = 256;
 /* Time elapsed since last fade computation; 0 is disabled */
 Uint32 truecolor_fade_lasttick = 0;
 
@@ -101,9 +98,8 @@ IOGfxDisplaySW* g_display = NULL;
  * Graphics subsystem initalization
  */
 int gfx_init(bool windowed, char* splash_path) {
-	log_info("Truecolor mode: %s", truecolor ? "on" : "off");
-
-	g_display = new IOGfxDisplaySW(GFX_RES_W, GFX_RES_H, windowed ? SDL_WINDOW_RESIZABLE : SDL_WINDOW_FULLSCREEN_DESKTOP);
+	g_display = new IOGfxDisplaySW(GFX_RES_W, GFX_RES_H, truecolor,
+			windowed ? SDL_WINDOW_RESIZABLE : SDL_WINDOW_FULLSCREEN_DESKTOP);
 	/* Note: SDL_WINDOW_FULLSCREEN[!_DESKTOP] may not respect aspect ratio */
 	g_display->open();
 
@@ -144,7 +140,6 @@ int gfx_init(bool windowed, char* splash_path) {
      conversion even if we change the screen palette: */
   if (!truecolor) {
     SDL_SetPaletteColors(GFX_backbuffer->format->palette, GFX_ref_pal, 0, 256);
-
   }
   GFX_background    = SDL_ConvertSurface(GFX_backbuffer, GFX_backbuffer->format, 0);
   IOGFX_background = new IOGfxSurfaceSW(GFX_background);
@@ -182,9 +177,6 @@ int gfx_init(bool windowed, char* splash_path) {
   if (gfx_fonts_init() < 0)
     return -1; /* error message set in gfx_fonts_init */
 
-  /* Compute fade cache if necessary */
-  gfx_fade_init();
-
   /* make all pointers to NULL */
   memset(&k, 0, sizeof(k));
   memset(&GFX_k, 0, sizeof(GFX_k));
@@ -205,8 +197,6 @@ int gfx_init(bool windowed, char* splash_path) {
  */
 void gfx_quit()
 {
-  gfx_fade_quit();
-
   gfx_fonts_quit();
 
   sprites_unload();

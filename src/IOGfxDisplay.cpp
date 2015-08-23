@@ -9,8 +9,10 @@
 #include "log.h"
 #include "freedink_xpm.h"
 
-IOGfxDisplay::IOGfxDisplay(int w, int h, Uint32 flags)
-	: w(w), h(h), flags(flags), initializedVideo(false), window(NULL) {
+IOGfxDisplay::IOGfxDisplay(int w, int h, bool truecolor, Uint32 flags)
+	: w(w), h(h), truecolor(truecolor), flags(flags),
+	  initializedVideo(false), window(NULL),
+	  brightness(256) {
 }
 
 IOGfxDisplay::~IOGfxDisplay() {
@@ -25,6 +27,8 @@ bool IOGfxDisplay::open() {
 		}
 		initializedVideo = true;
 	}
+
+	log_info("Truecolor mode: %s", truecolor ? "on" : "off");
 
 	if (!createWindow()) return false;
 	logWindowInfo();

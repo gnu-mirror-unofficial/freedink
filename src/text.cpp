@@ -102,7 +102,7 @@ int say_text_xy(char* text, int mx, int my, int script)
 
 
 /* Get sprite #h, grab its text and display it */
-void text_draw(int h) {
+void text_draw(int h, double brightness) {
 	char crap[200];
 	char *cr;
 	rect rcRect;
@@ -164,7 +164,7 @@ void text_draw(int h) {
 	
 	
 	/* During a fadedown/fadeup, use white text to mimic v1.07 */
-	if (truecolor_fade_brightness < 256)
+	if (brightness < 256)
 		color = 15;
 	
 	

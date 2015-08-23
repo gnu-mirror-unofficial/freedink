@@ -9,7 +9,6 @@
 
 #include "gfx.h"
 #include "gfx_palette.h"
-#include "gfx_fade.h"
 
 IOGfxPrimitivesSW::IOGfxPrimitivesSW() {
 }
@@ -165,13 +164,6 @@ int gfx_blit_stretch(SDL_Surface *src_surf, SDL_Rect *src_rect,
  */
 void flip_it()
 {
-  /* For now we do all operations on the CPU side and perform a big
-     texture update at each frame; this is necessary to perform
-     palette changes. */
-
-  if (truecolor_fade_brightness < 256)
-    gfx_fade_apply(truecolor_fade_brightness);
-
   g_display->flip(IOGFX_backbuffer);
 }
 

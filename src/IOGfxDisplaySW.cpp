@@ -8,8 +8,8 @@
 
 #include "log.h"
 
-IOGfxDisplaySW::IOGfxDisplaySW(int w, int h, Uint32 flags)
-	: IOGfxDisplay(w, h, flags), renderer(NULL),
+IOGfxDisplaySW::IOGfxDisplaySW(int w, int h, bool truecolor, Uint32 flags)
+	: IOGfxDisplay(w, h, truecolor, flags), renderer(NULL),
 	  render_texture(NULL), rgba_screen(NULL) {
 }
 
@@ -154,9 +154,47 @@ void IOGfxDisplaySW::center_game_display(SDL_Renderer *rend, SDL_Rect* rect) {
 	}
 }
 
+
+void gfx_fade_apply(SDL_Surface* screen, int brightness)
+{
+	/* Check SDL_blit.h in the SDL source code for guidance */
+	SDL_LockSurface(screen);
+	/* Progress per pixel rather than per byte */
+	int remainder = (screen->pitch - (screen->w * screen->format->BytesPerPixel))
+			  / screen->format->BytesPerPixel;
+	/* Using aligned Uint32 is faster than working with Uint8 values */
+	Uint32 *p = (Uint32*)screen->pixels;
+	int height = screen->h;
+	while (height--) {
+		int x;
+		for (x = 0; x < screen->w; x++) {
+			/* Assume that pixel order is RGBA */
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+			if (*p != 0x00FFFFFF) { // skip white
+#else
+			if (*p != 0xFFFFFF00) { // TODO: I need a PPC tester for this
+#endif
+				*((Uint8*)p)   = *((Uint8*)p)   * brightness >> 8;
+				*((Uint8*)p+1) = *((Uint8*)p+1) * brightness >> 8;
+				*((Uint8*)p+2) = *((Uint8*)p+2) * brightness >> 8;
+			}
+			p++;
+		}
+		p += remainder;
+	}
+	SDL_UnlockSurface(screen);
+}
+
 void IOGfxDisplaySW::flip(IOGfxSurface* backbuffer) {
+	/* For now we do all operations on the CPU side and perform a big
+	   texture update at each frame; this is necessary to support
+	   palette and fade_down/fade_up. */
+
 	/* Convert to destination buffer format */
 	SDL_Surface* source = dynamic_cast<IOGfxSurfaceSW*>(backbuffer)->s;
+
+	if (brightness < 256)
+		gfx_fade_apply(source, brightness);
 
 	if (source->format->format == SDL_PIXELFORMAT_INDEX8) {
 		/* Convert 8-bit buffer for truecolor texture upload */

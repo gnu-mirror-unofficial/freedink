@@ -35,7 +35,7 @@ public:
 	IOGraphicsGLFuncs* gl;
 	SDL_Texture* screen;
 
-	IOGfxDisplayGL2(int w, int h, Uint32 flags);
+	IOGfxDisplayGL2(int w, int h, bool truecolor, Uint32 flags);
 	~IOGfxDisplayGL2();
 
 	virtual bool open();

@@ -36,7 +36,7 @@ public:
 	}
 
 	void test_graphics() {
-		IOGfxDisplay* g = new IOGfxDisplaySW(800, 600, SDL_WINDOW_HIDDEN);
+		IOGfxDisplay* g = new IOGfxDisplaySW(800, 600, true, SDL_WINDOW_HIDDEN);
 		TS_ASSERT_EQUALS(g->open(), true);
 		g->close();
 	}

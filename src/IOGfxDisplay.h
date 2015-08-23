@@ -8,12 +8,15 @@
 class IOGfxDisplay {
 public:
 	int w, h;
+	bool truecolor;
 	Uint32 flags;
 	bool initializedVideo;
 	SDL_Window* window;
+	/* True color fade in [0,256]; 0 is completely dark, 256 is unaltered */
+	double brightness; // TODO: move to unsigned short
 
 public:
-	IOGfxDisplay(int w, int h, Uint32 flags);
+	IOGfxDisplay(int w, int h, bool truecolor, Uint32 flags);
 	virtual ~IOGfxDisplay();
 
 	virtual bool open();
