@@ -24,6 +24,8 @@
 #include <config.h>
 #endif
 
+#include <cxxtest/TestSuite.h>
+
 #include "IOGfxDisplayGL2.h"
 #include "IOGfxGLFuncs.h"
 

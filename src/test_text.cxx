@@ -24,6 +24,8 @@
 #include <config.h>
 #endif
 
+#include <cxxtest/TestSuite.h>
+
 #include "text.h"
 #include "live_sprites_manager.h"
 #include "gfx.h"

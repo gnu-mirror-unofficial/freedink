@@ -24,19 +24,13 @@
 #ifndef _FASTFILE_H
 #define _FASTFILE_H
 
-  typedef struct FF_Handle *HFASTFILE;
+  struct FF_Handle;
 
   extern int FastFileInit(char *filename, int max_handles);
   extern void FastFileFini(void);
-  extern HFASTFILE FastFileOpen(char *name);
-  extern int FastFileClose(struct FF_Handle *pfe);
-  extern SDL_RWops* FastFileLock(struct FF_Handle *pfe);
+  extern struct FF_Handle* FastFileOpen(char *name);
+  extern int FastFileClose(struct FF_Handle* pfe);
+  extern SDL_RWops* FastFileLock(struct FF_Handle* pfe);
   extern int FastFileLen(void *i);
-#if 0
-  extern int FastFileUnlock(void *pfe, int off, int len);
-  extern int FastFileRead (void *pfh, void *ptr, int size);
-  extern int FastFileSeek (void *pfe, int off, int how);
-  extern long FastFileTell (void *pfe);
-#endif
 
 #endif

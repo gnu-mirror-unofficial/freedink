@@ -24,6 +24,8 @@
 #include <config.h>
 #endif
 
+#include <cxxtest/TestSuite.h>
+
 #include "dinkini.h"
 #include "SDL.h"
 #include "IOGfxDisplay.h"

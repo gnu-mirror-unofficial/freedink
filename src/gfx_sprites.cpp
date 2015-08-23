@@ -175,42 +175,37 @@ void load_sprite_pak(char seq_path_prefix[100], int seq_no, int delay, int xoffs
       if (oo < 10) leading_zero = "0"; else leading_zero = "";
       sprintf(crap, "%s%s%d.bmp", fname, leading_zero, oo);
 
-      HFASTFILE pfile = FastFileOpen(crap);
+      FF_Handle* pfile = FastFileOpen(crap);
 
       if (pfile == NULL)
-	/* File not present in this fastfile - either missing file or
-	   end of sequence */
-	break;
+        /* File not present in this fastfile - either missing file or
+           end of sequence */
+        break;
       
       // GFX
       SDL_RWops *rw = FastFileLock(pfile);
-      if (rw == NULL)
-	{
-	  /* rwops error? */
-	  log_error("Failed to open '%s' in fastfile '%s'", crap, fullpath);
-	}
-      else
-	{
-	  /* We use IMG_Load_RW instead of SDL_LoadBMP because there
-	     is no _RW access in plain SDL. However there is no
-	     intent to support anything else than 8bit BMPs. */
-	  GFX_k[myslot].k = IMG_Load_RW(rw, 1); // auto free()
-	  if (GFX_k[myslot].k == NULL)
-	    log_error("Failed to load %s from fastfile %s: %s", crap, fullpath, SDL_GetError());
-	}
-      if (GFX_k[myslot].k == NULL)
-	{
-	  log_error("Failed to load %s from fastfile %s (see error above)", crap, fullpath);
-	  FastFileClose(pfile);
-	  break;
-	}
-      if (GFX_k[myslot].k->format->BitsPerPixel != 8)
-	{
-	  log_error("Failed to load %s from fastfile %s:"
-		    " only 8bit paletted bitmaps are supported in dir.ff archives.",
-		    crap, fullpath);
-	  SDL_FreeSurface(GFX_k[myslot].k);
-	  continue;
+      if (rw == NULL) {
+        /* rwops error? */
+        log_error("Failed to open '%s' in fastfile '%s'", crap, fullpath);
+      } else {
+        /* We use IMG_Load_RW instead of SDL_LoadBMP because there
+           is no _RW access in plain SDL. However there is no
+           intent to support anything else than 8bit BMPs. */
+    	GFX_k[myslot].k = IMG_Load_RW(rw, 1); // auto free()
+        if (GFX_k[myslot].k == NULL)
+          log_error("Failed to load %s from fastfile %s: %s", crap, fullpath, SDL_GetError());
+      }
+      if (GFX_k[myslot].k == NULL) {
+        log_error("Failed to load %s from fastfile %s (see error above)", crap, fullpath);
+        FastFileClose(pfile);
+        break;
+      }
+      if (GFX_k[myslot].k->format->BitsPerPixel != 8) {
+        log_error("Failed to load %s from fastfile %s:"
+          " only 8bit paletted bitmaps are supported in dir.ff archives.",
+          crap, fullpath);
+      SDL_FreeSurface(GFX_k[myslot].k);
+      continue;
 	}
       
       // Palettes and transparency

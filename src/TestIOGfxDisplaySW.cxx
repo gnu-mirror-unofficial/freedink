@@ -24,6 +24,8 @@
 #include <config.h>
 #endif
 
+#include <cxxtest/TestSuite.h>
+
 #include "IOGfxDisplaySW.h"
 
 class TestIOGraphics : public CxxTest::TestSuite {
