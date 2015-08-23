@@ -26,6 +26,7 @@ public:
 	/* Refresh the physical screen, applying brightness and palette */
 	virtual void flip(IOGfxSurface* backbuffer) = 0;
 	virtual void onSizeChange(int w, int h) = 0;
+	virtual SDL_Surface* upload(SDL_Surface* s) = 0;
 
 	bool createWindow();
 	void logWindowInfo();

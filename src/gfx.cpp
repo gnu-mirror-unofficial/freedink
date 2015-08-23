@@ -38,6 +38,7 @@
 #include "IOGfxPrimitives.h"
 #include "IOGfxSurfaceSW.h"
 #include "IOGfxDisplaySW.h"
+#include "ImageLoader.h"
 #include "gfx_fonts.h"
 #include "gfx_palette.h"
 #include "gfx_sprites.h"
@@ -74,12 +75,6 @@ SDL_Surface *GFX_tmp1 = NULL;
    load_sprite* */
 SDL_Surface *GFX_tmp2 = NULL;
 
-/* Reference palette: this is the canonical Dink palette, loaded from
-   TS01.bmp (for freedink) and esplash.bmp (for freedinkedit). The
-   physical screen may be changed (e.g. show_bmp()), but this
-   canonical palette will stay constant. */
-SDL_Color GFX_ref_pal[256];
-
 /* Skip flipping the double buffer for this frame only - used when
    setting up show_bmp and copy_bmp */
 /*bool*/int abort_this_flip = /*false*/0;
@@ -91,7 +86,7 @@ Uint32 truecolor_fade_lasttick = 0;
 FPSmanager framerate_manager;
 
 /* Main window and associated renderer */
-IOGfxDisplaySW* g_display = NULL;
+IOGfxDisplay* g_display = NULL;
 
 
 /**
@@ -148,11 +143,16 @@ int gfx_init(bool windowed, char* splash_path) {
 
   /* Display splash picture, as early as possible */
   {
-    FILE* splash_file = paths_dmodfile_fopen(splash_path, "r");
-    if (splash_file == NULL) {
-      splash_file = paths_fallbackfile_fopen(splash_path, "r");
+	SDL_Surface* splash = NULL;
+    FILE* in = paths_dmodfile_fopen(splash_path, "r");
+    if (in == NULL) {
+      in = paths_fallbackfile_fopen(splash_path, "r");
     }
-    SDL_Surface* splash = load_bmp_from_fp(splash_file);
+    if (in != NULL) {
+      SDL_RWops* rw = SDL_RWFromFP(in, /*autoclose=*/SDL_TRUE);
+      SDL_Surface* image = IMG_Load_RW(rw, 1);
+      splash = g_display->upload(image);
+    }
     if (splash == NULL) {
 	  log_error("Cannot load base graphics %s", splash_path);
     } else {

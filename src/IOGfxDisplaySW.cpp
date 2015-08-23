@@ -224,3 +224,7 @@ void IOGfxDisplaySW::flip(IOGfxSurface* backbuffer) {
 void IOGfxDisplaySW::onSizeChange(int w, int h) {
 	SDL_RenderSetLogicalSize(renderer, w, h);
 }
+
+SDL_Surface* IOGfxDisplaySW::upload(SDL_Surface* image) {
+    return image;
+}

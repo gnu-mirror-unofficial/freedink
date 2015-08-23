@@ -38,7 +38,7 @@
 
 
 extern int truecolor;
-extern IOGfxDisplaySW* g_display;
+extern IOGfxDisplay* g_display;
 extern SDL_Surface *GFX_backbuffer;
 extern IOGfxSurface* IOGFX_backbuffer;
 extern SDL_Surface *GFX_tmp1;
@@ -46,7 +46,6 @@ extern SDL_Surface *GFX_tmp2;
 extern SDL_Surface *GFX_background;
 extern IOGfxSurface* IOGFX_background;
 
-extern SDL_Color GFX_ref_pal[256];
 extern /*bool*/int abort_this_flip;
 
 extern Uint32 truecolor_fade_lasttick;

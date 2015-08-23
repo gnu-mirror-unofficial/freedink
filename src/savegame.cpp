@@ -38,6 +38,7 @@
 #include "input.h"
 #include "gfx.h"
 #include "gfx_palette.h"
+#include "ImageLoader.h"
 
 /*bool*/int add_time_to_saved_game(int num)
 {

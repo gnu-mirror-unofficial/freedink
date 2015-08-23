@@ -44,6 +44,7 @@ public:
 	virtual void clear();
 	virtual void flip(IOGfxSurface* backbuffer);
 	virtual void onSizeChange(int w, int h);
+	virtual SDL_Surface* upload(SDL_Surface* image);
 
 	bool createOpenGLContext();
 	void logOpenGLInfo();

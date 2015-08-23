@@ -25,9 +25,9 @@
 #endif
 
 #include "IOGfxDisplayGL2.h"
-#include "IOGfxGLFuncs.h"
 
 #include "log.h"
+#include "IOGfxGLFuncs.h"
 
 IOGfxDisplayGL2::IOGfxDisplayGL2(int w, int h, bool truecolor, Uint32 flags)
 	: IOGfxDisplay(w, h, truecolor, flags | SDL_WINDOW_OPENGL),
@@ -117,4 +117,9 @@ void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer) {
 
 void IOGfxDisplayGL2::onSizeChange(int w, int h) {
 	// TODO
+}
+
+SDL_Surface* IOGfxDisplayGL2::upload(SDL_Surface* image) {
+	// TODO
+	return NULL;
 }

@@ -52,6 +52,7 @@
 #include "fastfile.h"
 #include "IOGfxPrimitives.h"
 #include "IOGfxDisplay.h"
+#include "ImageLoader.h"
 #include "gfx.h"
 #include "editor_screen.h"
 #include "live_screen.h"

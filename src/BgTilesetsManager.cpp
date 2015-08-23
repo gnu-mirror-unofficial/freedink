@@ -6,7 +6,10 @@
 #include "BgTilesetsManager.h"
 #include "paths.h"
 #include "log.h"
-#include "IOGfxPrimitives.h"
+#include "gfx.h"
+#include "ImageLoader.h"
+#include "IOGfxDisplay.h"
+#include "SDL_image.h"
 
 BgTilesetsManager::BgTilesetsManager() {
 	memset(&slots, 0, sizeof(slots));
@@ -52,7 +55,8 @@ void BgTilesetsManager::loadSlot(int slot, char* relpath)
       slots[slot] = NULL;
     }
 
-  slots[slot] = load_bmp_from_fp(in);
+  SDL_Surface* image = ImageLoader::loadToFormat(in, GFX_backbuffer->format);
+  slots[slot] = g_display->upload(image);
 
   /* Note: attempting SDL_RLEACCEL showed no improvement for the
      memory usage, including when using a transparent color and

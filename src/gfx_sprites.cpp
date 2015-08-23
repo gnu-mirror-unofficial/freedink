@@ -33,6 +33,7 @@
 
 #include "IOGfxPrimitives.h"
 #include "gfx.h"
+#include "ImageLoader.h"
 
 #include "fastfile.h"
 #include "io_util.h"
@@ -487,8 +488,8 @@ void load_sprites(char seq_path_prefix[100], int seq_no, int delay, int xoffset,
       else
 	in = paths_dmodfile_fopen(crap, "rb");
 
-      GFX_k[myslot].k = load_bmp_from_fp(in);
-
+      SDL_Surface* image = ImageLoader::loadToFormat(in, GFX_backbuffer->format);
+  	  GFX_k[myslot].k = g_display->upload(image);
       if (GFX_k[myslot].k == NULL)
 	{
 	  // end of sequence

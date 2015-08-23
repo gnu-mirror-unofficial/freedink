@@ -30,16 +30,16 @@ COMMON_OBJS = app.cpp app.h bgm.cpp bgm.h BgTilesetsManager.cpp		\
 	io_util.h EditorMap.cpp EditorMap.h editor_screen.cpp		\
 	editor_screen.h gfx.cpp gfx.h gfx_tiles.cpp gfx_tiles.h		\
 	gfx_palette.cpp gfx_palette.h gfx_fonts.cpp gfx_fonts.h		\
-	hardness_tiles.cpp hardness_tiles.h IOGfxDisplay.cpp		\
-	IOGfxDisplay.h IOGfxDisplaySW.cpp IOGfxDisplaySW.h		\
-	IOGfxSurface.cpp IOGfxSurface.h IOGfxSurfaceSW.cpp		\
-	IOGfxSurfaceSW.h IOGfxPrimitivesSW.cpp live_screen.cpp		\
-	live_screen.h live_sprite.cpp live_sprite.h			\
-	live_sprites_manager.cpp live_sprites_manager.h rect.cpp	\
-	rect.h resources.cpp resources.h input.cpp input.h		\
-	freedink_xpm.cpp freedink_xpm.h paths.cpp paths.h log.cpp	\
-	log.h gfx_sprites.cpp gfx_sprites.h vgasys_fon.cpp		\
-	vgasys_fon.h SDL_android_main.c sfx.cpp sfx.h
+	hardness_tiles.cpp hardness_tiles.h ImageLoader.cpp		\
+	ImageLoader.h IOGfxDisplay.cpp IOGfxDisplay.h			\
+	IOGfxDisplaySW.cpp IOGfxDisplaySW.h IOGfxSurface.cpp		\
+	IOGfxSurface.h IOGfxSurfaceSW.cpp IOGfxSurfaceSW.h		\
+	IOGfxPrimitivesSW.cpp live_screen.cpp live_screen.h		\
+	live_sprite.cpp live_sprite.h live_sprites_manager.cpp		\
+	live_sprites_manager.h rect.cpp rect.h resources.cpp		\
+	resources.h input.cpp input.h freedink_xpm.cpp freedink_xpm.h	\
+	paths.cpp paths.h log.cpp log.h gfx_sprites.cpp gfx_sprites.h	\
+	vgasys_fon.cpp vgasys_fon.h SDL_android_main.c sfx.cpp sfx.h
 if ANDROID
   # Build .so JNI libs rather than executables
   # Define here rather than configure.ac, otherwise config.h gets confused
@@ -149,9 +149,9 @@ TestEditorMap_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	game_state.cpp game_state.h i18n.cpp i18n.h inventory.cpp	\
 	inventory.h meminfo.cpp meminfo.h savegame.cpp savegame.h	\
 	status.cpp status.h text.cpp text.h TestEditorMap.cpp
-test_dinkini_SOURCES = dinkini.cpp rect.cpp gfx_sprites.cpp		\
-	fastfile.cpp str_util.cpp io_util.cpp paths.cpp	\
-	log.cpp test_dinkini.cpp
+test_dinkini_SOURCES = dinkini.cpp rect.cpp gfx_sprites.cpp	\
+	ImageLoader.cpp fastfile.cpp str_util.cpp io_util.cpp	\
+	paths.cpp log.cpp test_dinkini.cpp
 test_dinkc_SOURCES = dinkc.cpp str_util.cpp paths.cpp io_util.cpp	\
 	i18n.cpp test_dinkc.cpp
 test_dinkc_console_SOURCES = test_dinkc_console.cpp dinkc_console.cpp	\
@@ -196,7 +196,8 @@ test_brain_text_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	status.h text.cpp text.h test_brain_text.cpp
 test_text_SOURCES = test_text.cpp text.cpp live_sprites_manager.cpp	\
 	dinkini.cpp live_sprite.cpp rect.cpp gfx_sprites.cpp		\
-	str_util.cpp io_util.cpp fastfile.cpp paths.cpp
+	ImageLoader.cpp str_util.cpp io_util.cpp fastfile.cpp		\
+	paths.cpp
 TestIOTouchDragAnywhere_SOURCES = TestIOTouchDragAnywhere.cpp	\
 	IOTouchDragAnywhere.cpp
 test_integration_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\

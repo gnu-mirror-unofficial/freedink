@@ -9,56 +9,6 @@
 #include "gfx.h"
 #include "gfx_palette.h"
 
-/* LoadBMP wrapper. Load a new graphic from file, and apply the
-   reference palette so that all subsequent blits are faster (color
-   convertion is avoided) - although the initial loading time will be
-   somewhat longer. */
-static SDL_Surface* load_bmp_internal(SDL_RWops *rw) {
-  SDL_Surface *image = IMG_Load_RW(rw, 1);
-
-  if (image == NULL)
-    {
-      /* fprintf(stderr, "load_bmp_internal: %s\n", SDL_GetError()); */
-      /* Maybe it's just because we're at the end of a sequence */
-      return NULL;
-    }
-
-  if (!truecolor)
-    {
-      /* Make a copy of the surface using the screen format: same
-         palette (with dithering), and same color depth (needed when
-         importing 24bit graphics in 8bit mode). */
-      SDL_PixelFormat* fmt = gfx_palette_get_phys_format();
-      SDL_Surface *converted = SDL_ConvertSurface(image, fmt, 0);
-	  SDL_FreeFormat(fmt);
-      SDL_FreeSurface(image);
-	  image = converted;
-	  /* Disable palette conversion in future blits */
-      SDL_SetPaletteColors(image->format->palette,
-						   GFX_backbuffer->format->palette->colors, 0, 256);
-      return image;
-    }
-  else
-    {
-      /* In truecolor mode, converting a 8bit image to truecolor does
-	 not bring noticeable performance increase or decrease, but
-	 does increase memory usage by at least 10MB so let's use the
-	 loaded image as-is. No need for palette conversion either. */
-      return image;
-    }
-}
-
-/* LoadBMP wrapper, from FILE pointer */
-SDL_Surface* load_bmp_from_fp(FILE* in)
-{
-  if (in == NULL)
-    return NULL;
-  SDL_RWops *rw = SDL_RWFromFP(in, /*autoclose=*/SDL_TRUE);
-  return load_bmp_internal(rw);
-}
-
-
-
 /**
  * Temporary disable src's transparency and blit it to dst
  */

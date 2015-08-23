@@ -45,6 +45,7 @@
 #include "dinkc.h"
 #include "freedink.h"
 #include "IOGfxPrimitives.h"
+#include "ImageLoader.h"
 #include "gfx.h"
 #include "gfx_fonts.h"
 #include "gfx_palette.h"
