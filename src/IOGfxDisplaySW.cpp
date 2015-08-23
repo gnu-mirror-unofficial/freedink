@@ -161,7 +161,7 @@ void IOGfxDisplaySW::flip(IOGfxSurface* backbuffer) {
 	if (source->format->format == SDL_PIXELFORMAT_INDEX8) {
 		/* Convert 8-bit buffer for truecolor texture upload */
 
-		/* Use "physical" screen palette */
+		/* Use "physical" screen palette - use SDL_SetPaletteColors to invalidate SDL cache */
 		SDL_Color pal_bak[256];
 		SDL_Color pal_phys[256];
 		memcpy(pal_bak, source->format->palette->colors, sizeof(pal_bak));
