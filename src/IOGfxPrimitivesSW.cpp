@@ -1,4 +1,3 @@
-#include "IOGfxPrimitivesSW.h"
 #include "SDL.h"
 #include "SDL_image.h"
 #include "SDL2_rotozoom.h"
@@ -9,12 +8,6 @@
 
 #include "gfx.h"
 #include "gfx_palette.h"
-
-IOGfxPrimitivesSW::IOGfxPrimitivesSW() {
-}
-
-IOGfxPrimitivesSW::~IOGfxPrimitivesSW() {
-}
 
 /* LoadBMP wrapper. Load a new graphic from file, and apply the
    reference palette so that all subsequent blits are faster (color
@@ -53,7 +46,6 @@ static SDL_Surface* load_bmp_internal(SDL_RWops *rw) {
 	 loaded image as-is. No need for palette conversion either. */
       return image;
     }
-
 }
 
 /* LoadBMP wrapper, from FILE pointer */
@@ -155,34 +147,6 @@ int gfx_blit_stretch(SDL_Surface *src_surf, SDL_Rect *src_rect,
       retval = SDL_BlitSurface(src_surf, src_rect, dst_surf, dst_rect);
     }
   return retval;
-}
-
-
-void gfx_vlineRGB(SDL_Surface* s, Sint16 x, Sint16 y1, Sint16 y2, Uint8 r, Uint8 g, Uint8 b) {
-	SDL_Rect dst = { x, y1, 1, y2-y1 };
-	SDL_FillRect(s, &dst, SDL_MapRGB(s->format, r, g, b));
-}
-void gfx_hlineRGB(SDL_Surface* s, Sint16 x1, Sint16 x2, Sint16 y, Uint8 r, Uint8 g, Uint8 b) {
-	SDL_Rect dst = { x1, y, x2-x1, 1 };
-	SDL_FillRect(s, &dst, SDL_MapRGB(s->format, r, g, b));
-}
-
-void draw_box(rect box, int color)
-{
-/*   DDBLTFX     ddbltfx; */
-
-/*   ddbltfx.dwSize = sizeof(ddbltfx); */
-/*   ddbltfx.dwFillColor = color; */
-
-/*   ddrval = lpDDSBack->Blt(&box ,NULL, NULL, DDBLT_COLORFILL| DDBLT_WAIT, &ddbltfx); */
-  // GFX
-  {
-    SDL_Rect dst;
-    dst.x = box.left; dst.y = box.top;
-    dst.w = box.right - box.left;
-    dst.h = box.bottom - box.top;
-    SDL_FillRect(GFX_backbuffer, &dst, color);
-  }
 }
 
 /* Used to implement DinkC's copy_bmp_to_screen(). Difference with

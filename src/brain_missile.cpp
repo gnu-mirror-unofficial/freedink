@@ -7,7 +7,7 @@
 #include "live_sprites_manager.h"
 #include "freedink.h"
 #include "game_engine.h"
-#include "IOGfxPrimitives.h"
+#include "gfx.h"
 #include "gfx_sprites.h"
 #include "sfx.h"
 #include "log.h"
@@ -122,7 +122,8 @@ void missile_brain(int h, /*bool*/int repeat)
 	    if (spr[h].range != 0)
 	      rect_inflate(&box, spr[h].range,spr[h].range);
 	    
-	    if (debug_mode) draw_box(box, 33);
+	    if (debug_mode)
+	    	IOGFX_backbuffer->drawBox(box, 33);
 	    
 	    if (inside_box(spr[h].x, spr[h].y, box))
 	      {

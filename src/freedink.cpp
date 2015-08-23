@@ -645,7 +645,7 @@ void up_cycle(void)
 					
 				}
 				
-				if (debug_mode) draw_box(box, 33);
+				if (debug_mode) IOGFX_backbuffer->drawBox(box, 33);
 				
 				if (inside_box(spr[h].x, spr[h].y, box))
 				{	
@@ -749,7 +749,7 @@ void run_through_touch_damage_list(int h)
 			box.top -= 2;
 			box.bottom += 2;
 			if (debug_mode)		
-				draw_box(box, 33);
+				IOGFX_backbuffer->drawBox(box, 33);
 			
 			
 			if (inside_box(spr[h].x, spr[h].y, box))

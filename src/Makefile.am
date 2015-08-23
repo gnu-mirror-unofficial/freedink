@@ -33,8 +33,7 @@ COMMON_OBJS = app.cpp app.h bgm.cpp bgm.h BgTilesetsManager.cpp		\
 	hardness_tiles.cpp hardness_tiles.h IOGfxDisplay.cpp		\
 	IOGfxDisplay.h IOGfxDisplaySW.cpp IOGfxDisplaySW.h		\
 	IOGfxSurface.cpp IOGfxSurface.h IOGfxSurfaceSW.cpp		\
-	IOGfxSurfaceSW.h IOGfxPrimitives.cpp IOGfxPrimitives.h		\
-	IOGfxPrimitivesSW.cpp IOGfxPrimitivesSW.h live_screen.cpp	\
+	IOGfxSurfaceSW.h IOGfxPrimitivesSW.cpp live_screen.cpp		\
 	live_screen.h live_sprite.cpp live_sprite.h			\
 	live_sprites_manager.cpp live_sprites_manager.h rect.cpp	\
 	rect.h resources.cpp resources.h input.cpp input.h		\

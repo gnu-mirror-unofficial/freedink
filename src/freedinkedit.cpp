@@ -958,9 +958,9 @@ return(0);
 static void draw_sprite_picker_grid(void)
 {
 	for (int x = 1; x <= 12; x++)
-		gfx_vlineRGB(GFX_background, x*50-1, 0,400, 123,132,99);
+		IOGFX_background->vlineRGB(x*50-1, 0,400, 123,132,99);
 	for (int y = 1; y <= 8; y++)
-		gfx_hlineRGB(GFX_background, 0,600, y*50-1, 123,132,99);
+		IOGFX_background->hlineRGB(0,600, y*50-1, 123,132,99);
 }
 
 /* Main sprite selection screen - display a page of the sequence
