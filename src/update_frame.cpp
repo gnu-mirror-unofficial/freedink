@@ -261,8 +261,8 @@ void updateFrame() {
 	max_s = last_sprite_created;
 	screen_rank_game_sprites(rank);
 	
-	//Blit from Two, which holds the base scene.
-	SDL_BlitSurface(GFX_background, NULL, GFX_backbuffer, NULL);
+	//Blit from background, which holds the base scene.
+	IOGFX_backbuffer->blit(IOGFX_background, NULL, NULL);
 	
 	
 	if (stop_entire_game == 1) {
@@ -386,7 +386,7 @@ void updateFrame() {
 	  get_frame = false;
 	  transition_in_progress = 1;
 	  SDL_Rect src = { playl, 0, 620 - playl, 400 };
-	  SDL_BlitSurface(GFX_backbuffer, &src, GFX_tmp2, NULL);
+	  IOGFX_tmp2->blit(IOGFX_backbuffer, &src, NULL);
 	  abort_this_flip = 1;
 	  return;
 	}

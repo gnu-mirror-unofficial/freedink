@@ -21,6 +21,7 @@ public:
 
 	virtual bool open();
 	virtual void close();
+	virtual Uint32 getFormat();
 
 	virtual void clear() = 0;
 	/* Refresh the physical screen, applying brightness and palette */

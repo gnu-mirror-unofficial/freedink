@@ -46,6 +46,13 @@ void IOGfxDisplay::close() {
 	}
 }
 
+Uint32 IOGfxDisplay::getFormat() {
+    if (!truecolor)
+    	return SDL_PIXELFORMAT_INDEX8;
+    else
+    	return SDL_PIXELFORMAT_RGB888;
+}
+
 bool IOGfxDisplay::createWindow() {
 	window = SDL_CreateWindow(PACKAGE_STRING,
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,

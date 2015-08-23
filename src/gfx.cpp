@@ -65,15 +65,14 @@ IOGfxSurface* IOGFX_backbuffer = NULL;
 /* After the background is done, all the other operations are applied
    on GFX_backbuffer, the double buffer which is directly used by the
    physical screen. */
-SDL_Surface *GFX_background = NULL;
 IOGfxSurface* IOGFX_background = NULL;
 
 /* Temporary buffer for scrolling screen transition +
    show_bmp/process_show_bmp */
-SDL_Surface *GFX_tmp1 = NULL;
+IOGfxSurface* IOGFX_tmp1 = NULL;
 /* Temporary buffer for scrolling screen transition +
    load_sprite* */
-SDL_Surface *GFX_tmp2 = NULL;
+IOGfxSurface* IOGFX_tmp2 = NULL;
 
 /* Skip flipping the double buffer for this frame only - used when
    setting up show_bmp and copy_bmp */
@@ -98,48 +97,52 @@ int gfx_init(bool windowed, char* splash_path) {
 	/* Note: SDL_WINDOW_FULLSCREEN[!_DESKTOP] may not respect aspect ratio */
 	g_display->open();
 
-  /* Create destination surface */
-  {
-    Uint32 Rmask=0, Gmask=0, Bmask=0, Amask=0; int bpp=0;
-    if (!truecolor) {
-      SDL_PixelFormatEnumToMasks(SDL_PIXELFORMAT_INDEX8, &bpp,
-				 &Rmask, &Gmask, &Bmask, &Amask);
-    } else {
-      SDL_PixelFormatEnumToMasks(SDL_PIXELFORMAT_RGB888, &bpp,
-				 &Rmask, &Gmask, &Bmask, &Amask);
-    }
-    GFX_backbuffer = SDL_CreateRGBSurface(0, 640, 480, bpp,
-      Rmask, Gmask, Bmask, Amask);
-    log_info("Main buffer: %s %d-bit R=0x%08x G=0x%08x B=0x%08x A=0x%08x",
-	     SDL_GetPixelFormatName(GFX_backbuffer->format->format),
-	     bpp, Rmask, Gmask, Bmask, Amask);
-  }
-  IOGFX_backbuffer = new IOGfxSurfaceSW(GFX_backbuffer);
+	/* Create destination surface */
+	SDL_Surface* GFX_backbuffer = NULL;
+	{
+		Uint32 Rmask=0, Gmask=0, Bmask=0, Amask=0; int bpp=0;
+		SDL_PixelFormatEnumToMasks(g_display->getFormat(), &bpp,
+				&Rmask, &Gmask, &Bmask, &Amask);
+		ImageLoader::blitFormat = SDL_CreateRGBSurface(0, 1, 1, bpp,
+				Rmask, Gmask, Bmask, Amask);
+		GFX_backbuffer = SDL_CreateRGBSurface(0, 640, 480, bpp,
+				Rmask, Gmask, Bmask, Amask);
 
-  /* Default palette */
-  gfx_palette_reset();
+		log_info("Main buffer: %s %d-bit R=0x%08x G=0x%08x B=0x%08x A=0x%08x",
+				SDL_GetPixelFormatName(GFX_backbuffer->format->format),
+				bpp, Rmask, Gmask, Bmask, Amask);
+	}
 
-  /* Create and set the physical palette */
-  if (gfx_palette_set_from_bmp("Tiles/Ts01.bmp") < 0)
-    log_error("Failed to load default palette from Tiles/Ts01.bmp");
+	/* Default palette */
+	gfx_palette_reset();
 
-  /* Set the reference palette */
-  gfx_palette_get_phys(GFX_ref_pal);
+	/* Create and set the physical palette */
+	if (gfx_palette_set_from_bmp("Tiles/Ts01.bmp") < 0)
+		log_error("Failed to load default palette from Tiles/Ts01.bmp");
 
-  /* Initialize graphic buffers */
-  /* When a new image is loaded in DX, it's color-converted using the
-     main palette (possibly altering the colors to match the palette);
-     currently we emulate that by wrapping SDL_LoadBMP, converting
-     image to the internal palette at load time - and we never change
-     the buffer's palette again, so we're sure there isn't any
-     conversion even if we change the screen palette: */
-  if (!truecolor) {
-    SDL_SetPaletteColors(GFX_backbuffer->format->palette, GFX_ref_pal, 0, 256);
-  }
-  GFX_background   = SDL_ConvertSurface(GFX_backbuffer, GFX_backbuffer->format, 0);
-  IOGFX_background = new IOGfxSurfaceSW(GFX_background);
-  GFX_tmp1 = SDL_ConvertSurface(GFX_backbuffer, GFX_backbuffer->format, 0);
-  GFX_tmp2 = SDL_ConvertSurface(GFX_backbuffer, GFX_backbuffer->format, 0);
+	/* Set the reference palette */
+	gfx_palette_get_phys(GFX_ref_pal);
+
+	/* Initialize graphic buffers */
+	/* When a new image is loaded in DX, it's color-converted using the
+	   main palette (possibly altering the colors to match the palette);
+	   currently we emulate that by wrapping SDL_LoadBMP, converting
+	   image to the internal palette at load time - and we never change
+	   the buffer's palette again, so we're sure there isn't any
+	   conversion even if we change the screen palette: */
+	if (!truecolor) {
+		SDL_SetPaletteColors(ImageLoader::blitFormat->format->palette, GFX_ref_pal, 0, 256);
+		SDL_SetPaletteColors(GFX_backbuffer->format->palette, GFX_ref_pal, 0, 256);
+	}
+	SDL_Surface* GFX_background = SDL_ConvertSurface(GFX_backbuffer, GFX_backbuffer->format, 0);
+	SDL_Surface* GFX_tmp1 = SDL_ConvertSurface(GFX_backbuffer, GFX_backbuffer->format, 0);
+	SDL_Surface* GFX_tmp2 = SDL_ConvertSurface(GFX_backbuffer, GFX_backbuffer->format, 0);
+
+	IOGFX_backbuffer = g_display->upload(GFX_backbuffer);
+	IOGFX_background = g_display->upload(GFX_background);
+	IOGFX_tmp1 = g_display->upload(GFX_tmp1);
+	IOGFX_tmp2 = g_display->upload(GFX_tmp2);
+
 
   /* Display splash picture, as early as possible */
   {
@@ -202,17 +205,18 @@ void gfx_quit()
   
   if (IOGFX_backbuffer != NULL) delete IOGFX_backbuffer;
   if (IOGFX_background != NULL) delete IOGFX_background;
-  if (GFX_tmp1  != NULL) SDL_FreeSurface(GFX_tmp1);
-  if (GFX_tmp2 != NULL) SDL_FreeSurface(GFX_tmp2);
+  if (IOGFX_tmp1  != NULL) delete IOGFX_tmp1;
+  if (IOGFX_tmp2 != NULL) delete IOGFX_tmp2;
 
-  GFX_backbuffer = NULL;
-  GFX_background = NULL;
-  GFX_tmp1 = NULL;
-  GFX_tmp2 = NULL;
+  IOGFX_backbuffer = NULL;
+  IOGFX_background = NULL;
+  IOGFX_tmp1 = NULL;
+  IOGFX_tmp2 = NULL;
 
   if (g_display != NULL)
 	  g_display->close();
   delete g_display;
+  g_display = NULL;
 }
 
 /**
@@ -224,20 +228,20 @@ void gfx_log_meminfo()
 
   {
     int sum = 0;
-    sum = GFX_backbuffer->h * GFX_backbuffer->pitch;
+    sum = IOGFX_backbuffer->getMemUsage();
     log_debug("GFX screen = %8d", sum);
     total += sum;
   }
   
   {
     int sum = 0;
-    SDL_Surface* s = NULL;
-    s = GFX_background;
-    sum += s->h * s->pitch;
-    s = GFX_tmp1;
-    sum += s->h * s->pitch;
-    s = GFX_tmp2;
-    sum += s->h * s->pitch;
+    IOGfxSurface* s = NULL;
+    s = IOGFX_background;
+    sum += s->getMemUsage();
+    s = IOGFX_tmp1;
+    sum += s->getMemUsage();
+    s = IOGFX_tmp2;
+    sum += s->getMemUsage();
     log_debug("GFX buf    = %8d", sum);
     total += sum;
   }
@@ -251,7 +255,6 @@ void gfx_log_meminfo()
 	s = GFX_k[i].k;
 	if (s != NULL)
 		sum += s->getMemUsage();
-	// Note: this does not take SDL_RLEACCEL into account
       }
     log_debug("GFX bmp    = %8d", sum);
     total += sum;

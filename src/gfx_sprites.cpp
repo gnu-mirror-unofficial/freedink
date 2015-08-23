@@ -232,7 +232,7 @@ void load_sprite_pak(char seq_path_prefix[100], int seq_no, int delay, int xoffs
 
 		if (!truecolor)
 			SDL_SetPaletteColors(surf->format->palette,
-					GFX_backbuffer->format->palette->colors, 0, 256);
+					ImageLoader::blitFormat->format->palette->colors, 0, 256);
 
 		Uint8 *p = (Uint8 *)surf->pixels;
 		Uint8 *last = p + surf->h * surf->pitch;
@@ -261,7 +261,7 @@ void load_sprite_pak(char seq_path_prefix[100], int seq_no, int delay, int xoffs
 			SDL_SetColorKey(surf, SDL_TRUE, 255);
 			SDL_SetSurfaceRLE(surf, 1);
 			/* Force RLE encoding now to save memory space */
-			SDL_BlitSurface(surf, NULL, GFX_tmp2, NULL);
+			SDL_BlitSurface(surf, NULL, ImageLoader::blitFormat, NULL);
 		} else {
 			// brighten black and set white as transparent
 			while (p < last) {
@@ -272,7 +272,7 @@ void load_sprite_pak(char seq_path_prefix[100], int seq_no, int delay, int xoffs
 			SDL_SetColorKey(surf, SDL_TRUE, 0);
 			SDL_SetSurfaceRLE(surf, 1);
 			/* Force RLE encoding now to save memory space */
-			SDL_BlitSurface(surf, NULL, GFX_tmp2, NULL);
+			SDL_BlitSurface(surf, NULL, ImageLoader::blitFormat, NULL);
 		}
 
 		k[myslot].box.top = 0;
@@ -441,7 +441,7 @@ void load_sprites(char seq_path_prefix[100], int seq_no, int delay, int xoffset,
 		else
 			in = paths_dmodfile_fopen(crap, "rb");
 
-		SDL_Surface* surf = ImageLoader::loadToFormat(in, GFX_backbuffer->format);
+		SDL_Surface* surf = ImageLoader::loadToBlitFormat(in);
 		if (surf == NULL) {
 			// end of sequence
 			break;
@@ -461,7 +461,7 @@ void load_sprites(char seq_path_prefix[100], int seq_no, int delay, int xoffset,
 
 		/* Force RLE encoding now to save memory space */
 		SDL_SetSurfaceRLE(surf, 1);
-		SDL_BlitSurface(surf, NULL, GFX_tmp2, NULL);
+		SDL_BlitSurface(surf, NULL, ImageLoader::blitFormat, NULL);
 		/* Note: there is definitely a performance improvement when
 	 using RLEACCEL under truecolor mode (~80%CPU -> 70%CPU) */
 

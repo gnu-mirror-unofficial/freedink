@@ -8,79 +8,74 @@
 
 #include "gfx.h"
 #include "gfx_palette.h"
+#include "ImageLoader.h"
 
 /* Used to implement DinkC's copy_bmp_to_screen(). Difference with
    show_cmp: does not set showb.* (wait for button), install the image
    to lpDDSTwo (background) and not lpDDSBack (screen double
    buffer) */
-void copy_bmp(char* name)
-{
-  char* fullpath = paths_dmodfile(name);
-  SDL_Surface* image = IMG_Load(fullpath);
-  if (image == NULL)
-    {
-      log_error("Couldn't load '%s': %s", name, SDL_GetError());
-      return;
-    }
+void copy_bmp(char* name) {
+	char* fullpath = paths_dmodfile(name);
+	SDL_Surface* image = IMG_Load(fullpath);
+	if (image == NULL) {
+		log_error("Couldn't load '%s': %s", name, SDL_GetError());
+		return;
+	}
 
-  /* Set physical screen palette */
-  if (!truecolor)
-    {
-      gfx_palette_set_from_surface(image);
+	/* Set physical screen palette */
+	if (!truecolor) {
+		gfx_palette_set_from_surface(image);
 
-      /* In case the DX bug messed the palette, let's convert the
-	 image to the new palette. This also converts 24->8bit if
-	 necessary. */
-	  SDL_PixelFormat* fmt = gfx_palette_get_phys_format();
-	  SDL_Surface *converted = SDL_ConvertSurface(image, fmt, 0);
-	  SDL_FreeFormat(fmt);
-	  SDL_FreeSurface(image);
-	  image = converted;
+		/* In case the DX bug messed the palette, let's convert the
+		   image to the new palette. This also converts 24->8bit if
+		   necessary. */
+		SDL_PixelFormat* fmt = gfx_palette_get_phys_format();
+		SDL_Surface *converted = SDL_ConvertSurface(image, fmt, 0);
+		SDL_FreeFormat(fmt);
+		SDL_FreeSurface(image);
+		image = converted;
 
-      /* Next blit without palette conversion */
-      SDL_SetPaletteColors(image->format->palette,
-						   GFX_backbuffer->format->palette->colors, 0, 256);
-    }
+		/* Next blit without palette conversion */
+		SDL_SetPaletteColors(image->format->palette,
+				ImageLoader::blitFormat->format->palette->colors, 0, 256);
+	}
+	IOGfxSurface* surf = g_display->upload(image);
+	IOGFX_background->blit(surf, NULL, NULL);
+	delete surf;
 
-  SDL_BlitSurface(image, NULL, GFX_background, NULL);
-  SDL_FreeSurface(image);
-
-  abort_this_flip = /*true*/1;
+	abort_this_flip = /*true*/1;
 }
 
-void show_bmp(char* name, int script)
-{
-  char* fullpath = paths_dmodfile(name);
-  SDL_Surface* image = IMG_Load(fullpath);
-  if (image == NULL)
-    {
-      log_error("Couldn't load '%s': %s", name, SDL_GetError());
-      return;
-    }
+void show_bmp(char* name, int script) {
+	char* fullpath = paths_dmodfile(name);
+	SDL_Surface* image = IMG_Load(fullpath);
+	if (image == NULL) {
+		log_error("Couldn't load '%s': %s", name, SDL_GetError());
+		return;
+	}
 
-  /* Set physical screen palette */
-  if (!truecolor)
-    {
-      gfx_palette_set_from_surface(image);
+	/* Set physical screen palette */
+	if (!truecolor) {
+		gfx_palette_set_from_surface(image);
 
-      /* In case the DX bug messed the palette, let's convert the
-	 image to the new palette. This also converts 24->8bit if
-	 necessary. */
-	  SDL_PixelFormat* fmt = gfx_palette_get_phys_format();
-	  SDL_Surface *converted = SDL_ConvertSurface(image, fmt, 0);
-	  SDL_FreeFormat(fmt);
-	  SDL_FreeSurface(image);
-	  image = converted;
-	  /* Disable palette conversion in future blits */
-      SDL_SetPaletteColors(image->format->palette,
-						   GFX_backbuffer->format->palette->colors, 0, 256);
-    }
+		/* In case the DX bug messed the palette, let's convert the
+		   image to the new palette. This also converts 24->8bit if
+		   necessary. */
+		SDL_PixelFormat* fmt = gfx_palette_get_phys_format();
+		SDL_Surface *converted = SDL_ConvertSurface(image, fmt, 0);
+		SDL_FreeFormat(fmt);
+		SDL_FreeSurface(image);
+		image = converted;
+		/* Disable palette conversion in future blits */
+		SDL_SetPaletteColors(image->format->palette,
+				ImageLoader::blitFormat->format->palette->colors, 0, 256);
+	}
+	IOGfxSurface* surf = g_display->upload(image);
+	IOGFX_tmp1->blit(surf, NULL, NULL);
+	delete surf;
 
-  SDL_BlitSurface(image, NULL, GFX_tmp1, NULL);
-  SDL_FreeSurface(image);
-
-  // After show_bmp(), and before the flip_it() call in updateFrame(),
-  // other parts of the code will draw sprites on lpDDSBack and mess
-  // the showbmp(). So skip the next flip_it().
-  abort_this_flip = /*true*/1;
+	// After show_bmp(), and before the flip_it() call in updateFrame(),
+	// other parts of the code will draw sprites on lpDDSBack and mess
+	// the showbmp(). So skip the next flip_it().
+	abort_this_flip = /*true*/1;
 }

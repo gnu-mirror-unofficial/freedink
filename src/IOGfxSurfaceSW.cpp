@@ -13,13 +13,18 @@ IOGfxSurfaceSW::~IOGfxSurfaceSW() {
 	SDL_FreeSurface(surf);
 }
 
-void IOGfxSurfaceSW::fill(int num, SDL_Color* palette) {
+/* Function specifically made for Dink'C fill_screen() */
+void IOGfxSurfaceSW::fill_screen(int num, SDL_Color* palette) {
 	/* Warning: palette indexes 0 and 255 are hard-coded
 	   to black and white (cf. gfx_palette.c). */
 	if (surf->format->format == SDL_PIXELFORMAT_INDEX8)
 		SDL_FillRect(surf, NULL, num);
 	else
 		SDL_FillRect(surf, NULL, SDL_MapRGB(surf->format, palette[num].r, palette[num].g, palette[num].b));
+}
+
+void IOGfxSurfaceSW::fillRect(const SDL_Rect *rect, Uint8 r, Uint8 g, Uint8 b) {
+	SDL_FillRect(surf, rect, SDL_MapRGB(surf->format, r, g, b));
 }
 
 void IOGfxSurfaceSW::vlineRGB(Sint16 x, Sint16 y1, Sint16 y2, Uint8 r, Uint8 g, Uint8 b) {

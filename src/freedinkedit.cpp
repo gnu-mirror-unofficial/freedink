@@ -400,7 +400,7 @@ void editor_load_screen(int num)
 /* Draw background from tiles */
 void draw_screen_editor(void)
 {
-  SDL_FillRect(GFX_background, NULL, 0);
+  IOGFX_background->fillRect(NULL, 0,0,0);
   fill_whole_hard();
 
   lsm_kill_all_nonlive_sprites();
@@ -463,11 +463,7 @@ void drawallhard( void)
 	      GFX_box_crap.y = y1;
 	      GFX_box_crap.w = 1;
 	      GFX_box_crap.h = 1;
-	      SDL_FillRect(GFX_backbuffer, &GFX_box_crap,
-			   SDL_MapRGB(GFX_backbuffer->format,
-				      GFX_ref_pal[1].r,
-				      GFX_ref_pal[1].g,
-				      GFX_ref_pal[1].b));
+	      IOGFX_backbuffer->fillRect(&GFX_box_crap, GFX_ref_pal[1].r, GFX_ref_pal[1].g, GFX_ref_pal[1].b);
 	    }
 	  }
 
@@ -488,11 +484,7 @@ void drawallhard( void)
 	      GFX_box_crap.y = y1;
 	      GFX_box_crap.w = 1;
 	      GFX_box_crap.h = 1;
-	      SDL_FillRect(GFX_backbuffer, &GFX_box_crap,
-			   SDL_MapRGB(GFX_backbuffer->format,
-				      GFX_ref_pal[128].r,
-				      GFX_ref_pal[128].g,
-				      GFX_ref_pal[128].b));
+	      IOGFX_backbuffer->fillRect(&GFX_box_crap, GFX_ref_pal[128].r, GFX_ref_pal[128].g, GFX_ref_pal[128].b);
 	    }
 	  }
 
@@ -513,11 +505,7 @@ void drawallhard( void)
 	      GFX_box_crap.y = y1;
 	      GFX_box_crap.w = 1;
 	      GFX_box_crap.h = 1;
-	      SDL_FillRect(GFX_backbuffer, &GFX_box_crap,
-			   SDL_MapRGB(GFX_backbuffer->format,
-				      GFX_ref_pal[45].r,
-				      GFX_ref_pal[45].g,
-				      GFX_ref_pal[45].b));
+	      IOGFX_backbuffer->fillRect(&GFX_box_crap, GFX_ref_pal[45].r, GFX_ref_pal[45].g, GFX_ref_pal[45].b);
 	    }
 	  }
 
@@ -542,11 +530,7 @@ void drawallhard( void)
 		  GFX_box_crap.y = y1;
 		  GFX_box_crap.w = 1;
 		  GFX_box_crap.h = 1;
-		  SDL_FillRect(GFX_backbuffer, &GFX_box_crap,
-			       SDL_MapRGB(GFX_backbuffer->format,
-					  GFX_ref_pal[20].r,
-					  GFX_ref_pal[20].g,
-					  GFX_ref_pal[20].b));
+		  IOGFX_backbuffer->fillRect(&GFX_box_crap, GFX_ref_pal[20].r, GFX_ref_pal[20].g, GFX_ref_pal[20].b);
 		}
 	      }
 	    else
@@ -567,11 +551,7 @@ void drawallhard( void)
 		  GFX_box_crap.y = y1;
 		  GFX_box_crap.w = 1;
 		  GFX_box_crap.h = 1;
-		  SDL_FillRect(GFX_backbuffer, &GFX_box_crap,
-			       SDL_MapRGB(GFX_backbuffer->format,
-					  GFX_ref_pal[23].r,
-					  GFX_ref_pal[23].g,
-					  GFX_ref_pal[23].b));
+		  IOGFX_backbuffer->fillRect(&GFX_box_crap, GFX_ref_pal[23].r, GFX_ref_pal[23].g, GFX_ref_pal[23].b);
 		}
 	      }
 	  }
@@ -892,7 +872,7 @@ void loadtile(int tileset)
 /*   ddbltfx.dwSize = sizeof(ddbltfx); */
 /*   lpDDSTwo->Blt(NULL,NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx); */
   // GFX
-  SDL_FillRect(GFX_background, NULL, SDL_MapRGB(GFX_background->format, 0, 0, 0));
+  IOGFX_background->fillRect(NULL, 0,0,0);
 
   spr[1].seq = 3; spr[1].seq_orig = 3;
   //  if (mode == 3)
@@ -983,7 +963,7 @@ void draw15(int num)
 /*   ddbltfx.dwFillColor = 0; */
 /*   crap = lpDDSTwo->Blt(NULL ,NULL,NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx); */
   // GFX
-  SDL_FillRect(GFX_background, NULL, SDL_MapRGB(GFX_background->format, 0, 0, 0));
+  IOGFX_background->fillRect(NULL, 0,0,0);
 
 /*   ZeroMemory(&ddbltfx, sizeof(ddbltfx)); */
 /*   ddbltfx.dwSize = sizeof( ddbltfx); */
@@ -1057,7 +1037,7 @@ void draw96(int def)
 /*   ddbltfx.dwFillColor = 0; */
 /*   crap = lpDDSTwo->Blt(NULL ,NULL,NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx); */
   // GFX
-  SDL_FillRect(GFX_background, NULL, SDL_MapRGB(GFX_background->format, 0, 0, 0));
+  IOGFX_background->fillRect(NULL, 0,0,0);
 
 /*   ZeroMemory(&ddbltfx, sizeof(ddbltfx)); */
 /*   ddbltfx.dwSize = sizeof( ddbltfx); */
@@ -1850,8 +1830,7 @@ void draw_hard_tile(int x1, int y1, int tile)
 		+ 20/* status bar length */;
 	      dst.y = y1 + y;
 	      /* TODO: not very efficient */
-	      SDL_FillRect(GFX_backbuffer, &dst,
-			   SDL_MapRGB(GFX_backbuffer->format, 255, 255, 255));
+	      IOGFX_backbuffer->fillRect(&dst, 255,255,255);
 	    }
 	}
     }
@@ -2320,7 +2299,7 @@ int gui_logic(int h) {
 						dst.y = box_crap.top;
 						dst.w = box_crap.right - box_crap.left;
 						dst.h = 5;
-						SDL_FillRect(GFX_backbuffer, &dst, SDL_MapRGB(GFX_background->format, 33, 41, 16));
+						IOGFX_backbuffer->fillRect(&dst, 33,41,16);
 					}
 
 					get_box(sprite, &box_crap, &box_real, skip_screen_clipping());
@@ -2333,7 +2312,7 @@ int gui_logic(int h) {
 						dst.y = box_crap.top;
 						dst.w = 5;
 						dst.h = box_crap.bottom - box_crap.top;
-						SDL_FillRect(GFX_backbuffer, &dst, SDL_MapRGB(GFX_background->format, 33, 41, 16));
+						IOGFX_backbuffer->fillRect(&dst, 33,41,16);
 					}
 
 					get_box(sprite, &box_crap, &box_real, skip_screen_clipping());
@@ -2346,7 +2325,7 @@ int gui_logic(int h) {
 						dst.y = box_crap.top;
 						dst.w = 5;
 						dst.h = box_crap.bottom - box_crap.top;
-						SDL_FillRect(GFX_backbuffer, &dst, SDL_MapRGB(GFX_background->format, 33, 41, 16));
+						IOGFX_backbuffer->fillRect(&dst, 33,41,16);
 					}
 
 					get_box(sprite, &box_crap, &box_real, skip_screen_clipping());
@@ -2359,7 +2338,7 @@ int gui_logic(int h) {
 						dst.y = box_crap.bottom - 5;
 						dst.w = box_crap.right - box_crap.left;
 						dst.h = 5;
-						SDL_FillRect(GFX_backbuffer, &dst, SDL_MapRGB(GFX_background->format, 33, 41, 16));
+						IOGFX_backbuffer->fillRect(&dst, 33,41,16);
 					}
 
 					// if (ddrval != DD_OK) dderror(ddrval);
@@ -2695,7 +2674,7 @@ int gui_logic(int h) {
 					/* ddbltfx.dwFillColor = 255; */
 					/* crap = lpDDSTwo->Blt(NULL ,NULL,NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx); */
 					// GFX
-					SDL_FillRect(GFX_background, NULL, SDL_MapRGB(GFX_background->format, 255, 255, 255));
+					IOGFX_background->fillRect(NULL, 255,255,255);
 
 					holdx = (spr[1].x / 50);
 					int holdy = (spr[1].y / 50)+1;
@@ -3723,7 +3702,7 @@ void AppFreeDinkedit::logic(void)
 /*       ddrval = lpDDSBack->BltFast( 0, 0, lpDDSTwo, */
 /* 				   &rcRect, DDBLTFAST_NOCOLORKEY | DDBLTFAST_WAIT); */
       // GFX
-      SDL_BlitSurface(GFX_background, NULL, GFX_backbuffer, NULL);
+      IOGFX_backbuffer->blit(IOGFX_background, NULL, NULL);
 
 
 /*       if( ddrval == DD_OK ) */
@@ -4013,7 +3992,7 @@ void AppFreeDinkedit::logic(void)
 /* 				  &rcRect, DDBLTFAST_NOCOLORKEY | DDBLTFAST_WAIT); */
 /*       if (ddrval != DD_OK) dderror(ddrval); */
       // GFX
-      SDL_BlitSurface(GFX_backbuffer, NULL, GFX_background, NULL);
+      IOGFX_background->blit(IOGFX_backbuffer, NULL, NULL);
 
       lsm_kill_all_nonlive_sprites();
     }
@@ -4311,7 +4290,7 @@ void AppFreeDinkedit::logic(void)
 	    dst.y = spr[2].y;
 	    dst.w = 40;
 	    dst.h = 1;
-	    SDL_FillRect(GFX_backbuffer, &dst, SDL_MapRGB(GFX_background->format, 41, 0, 49));
+	    IOGFX_backbuffer->fillRect(&dst, 41, 0, 49);
 	  }
 
 /* 	  box_crap.top = spr[2].y-20; */
@@ -4329,7 +4308,7 @@ void AppFreeDinkedit::logic(void)
 	    dst.y = spr[2].y - 20;
 	    dst.w = 1;
 	    dst.h = 40;
-	    SDL_FillRect(GFX_backbuffer, &dst, SDL_MapRGB(GFX_background->format, 41, 0, 49));
+	    IOGFX_backbuffer->fillRect(&dst, 41, 0, 49);
 	  }
 	}
 
@@ -4351,7 +4330,7 @@ void AppFreeDinkedit::logic(void)
 	    dst.y = k[seq[sp_seq].frame[sp_frame]].hardbox.top + 200;
 	    dst.w = k[seq[sp_seq].frame[sp_frame]].hardbox.right - k[seq[sp_seq].frame[sp_frame]].hardbox.left;
 	    dst.h = k[seq[sp_seq].frame[sp_frame]].hardbox.bottom - k[seq[sp_seq].frame[sp_frame]].hardbox.top;
-	    SDL_FillRect(GFX_backbuffer, &dst, SDL_MapRGB(GFX_background->format, 41, 0, 49));
+	    IOGFX_backbuffer->fillRect(&dst, 41, 0, 49);
 	  }
 	}
     }
@@ -4510,7 +4489,7 @@ void AppFreeDinkedit::logic(void)
 /*       if (ddrval != DD_OK) dderror(ddrval); */
       // GFX
       // TODO: use copy_front_to_two()
-      SDL_BlitSurface(GFX_backbuffer, NULL, GFX_background, NULL);
+	  IOGFX_background->blit(IOGFX_backbuffer, NULL, NULL);
 
 
       strcpy(in_temp,in_default);

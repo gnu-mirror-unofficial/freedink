@@ -39,11 +39,9 @@
 
 extern int truecolor;
 extern IOGfxDisplay* g_display;
-extern SDL_Surface *GFX_backbuffer;
 extern IOGfxSurface* IOGFX_backbuffer;
-extern SDL_Surface *GFX_tmp1;
-extern SDL_Surface *GFX_tmp2;
-extern SDL_Surface *GFX_background;
+extern IOGfxSurface* IOGFX_tmp1;
+extern IOGfxSurface* IOGFX_tmp2;
 extern IOGfxSurface* IOGFX_background;
 
 extern /*bool*/int abort_this_flip;

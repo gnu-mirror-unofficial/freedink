@@ -53,7 +53,7 @@ void BgTilesetsManager::loadSlot(int slot, char* relpath) {
 		slots[slot] = NULL;
 	}
 
-	SDL_Surface* image = ImageLoader::loadToFormat(in, GFX_backbuffer->format);
+	SDL_Surface* image = ImageLoader::loadToBlitFormat(in);
 	slots[slot] = g_display->upload(image);
 
 	/* Note: attempting SDL_RLEACCEL showed no improvement for the

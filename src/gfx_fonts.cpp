@@ -41,6 +41,7 @@
 #include "paths.h"
 #include "gfx_fonts.h"
 #include "gfx_palette.h"
+#include "ImageLoader.h"
 #include "vgasys_fon.h"
 #include "log.h"
 
@@ -345,7 +346,7 @@ print_text (TTF_Font * font, char *str, int x, int y, int w, SDL_Color /*&*/colo
       // color directly from the physical palette
       SDL_PixelFormat* fmt = gfx_palette_get_phys_format();
       Uint32 phys_index = SDL_MapRGB(fmt, color.r, color.g, color.b);
-      SDL_GetRGB(phys_index, GFX_backbuffer->format, &(color.r), &(color.g), &(color.b));
+      SDL_GetRGB(phys_index, ImageLoader::blitFormat->format, &(color.r), &(color.g), &(color.b));
 	  SDL_FreeFormat(fmt);
     }
 
@@ -372,9 +373,10 @@ print_text (TTF_Font * font, char *str, int x, int y, int w, SDL_Color /*&*/colo
   src.x = src.y = 0;
   src.w = w; // truncate text if outside the box
   src.h = tmp->h;
-  SDL_BlitSurface(tmp, &src, GFX_backbuffer, &dst);
+  IOGfxSurface* tmp2 = g_display->upload(tmp);
+  IOGFX_backbuffer->blit(tmp2, &src, &dst);
 
-  SDL_FreeSurface (tmp);
+  delete tmp2;
 }
 
 /**
@@ -589,9 +591,10 @@ print_text_wrap_debug(const char *text, int x, int y)
 	*pc= '\0';
 
       SDL_Rect dst = {x, y + res_height, -1, -1};
-      SDL_Surface *rendered_text = TTF_RenderUTF8_Shaded(system_font, pline, text_color, bgcolor);
-      SDL_BlitSurface(rendered_text, NULL, GFX_backbuffer, &dst);
-      SDL_FreeSurface(rendered_text);
+      SDL_Surface* rendered_text = TTF_RenderUTF8_Shaded(system_font, pline, text_color, bgcolor);
+      IOGfxSurface* rendered_text2 = g_display->upload(rendered_text);
+      IOGFX_backbuffer->blit(rendered_text2, NULL, &dst);
+      delete rendered_text2;
 
       res_height += lineskip;
 

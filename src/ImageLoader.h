@@ -7,7 +7,8 @@ extern SDL_Color GFX_ref_pal[256];
 
 class ImageLoader {
 public:
-	static SDL_Surface* loadToFormat(FILE* in, SDL_PixelFormat* refFmt);
+	static SDL_Surface* blitFormat;
+	static SDL_Surface* loadToBlitFormat(FILE* in);
 };
 
 #endif

@@ -47,10 +47,6 @@
 #include "gfx.h"
 #include "IOGfxSurfaceSW.h"
 
-/* test headers */
-void dc_fade_down(int script, int* yield, int* preturnint);
-void dc_fade_up(int script, int* yield, int* preturnint);
-
 class TestIntegration : public CxxTest::TestSuite {
 public:
   // See also http://www.dinknetwork.com/forum.cgi?MID=186069#186263
@@ -58,8 +54,10 @@ public:
     //SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
     ts_paths_init();
     memset(&g_dmod.map.ts_loc_mem, 0, sizeof(g_dmod.map.ts_loc_mem));
-	GFX_background = SDL_CreateRGBSurface(0, 1, 1, 32, 0,0,0,0);
+	SDL_Surface* GFX_background = SDL_CreateRGBSurface(0, 1, 1, 32, 0,0,0,0);
 	IOGFX_background = new IOGfxSurfaceSW(GFX_background);
+	SDL_Surface* GFX_tmp1 = SDL_CreateRGBSurface(0, 1, 1, 32, 0,0,0,0);
+	IOGFX_tmp1 = new IOGfxSurfaceSW(GFX_tmp1);
 
     dinkc_init();
     dinkc_bindings_init();

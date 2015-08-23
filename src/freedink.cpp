@@ -814,8 +814,7 @@ void process_warp_man(void)
       if ((!truecolor && process_count > 5)
 	  || (truecolor && g_display->brightness <= 180))
 	{
-	  SDL_FillRect(GFX_backbuffer, NULL,
-		       SDL_MapRGB(GFX_backbuffer->format, 0, 0, 0));
+	  IOGFX_backbuffer->fillRect(NULL, 0,0,0);
 	  g_display->flip(IOGFX_backbuffer);
 	  
 	  process_count = 0;
@@ -844,7 +843,7 @@ void process_warp_man(void)
 
 void process_show_bmp( void )
 {
-  SDL_BlitSurface(GFX_tmp1, NULL, GFX_backbuffer, NULL);
+  IOGFX_backbuffer->blit(IOGFX_tmp1, NULL, NULL);
   
   if (showb.showdot)
     {
