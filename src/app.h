@@ -37,7 +37,7 @@ public:
 	bool windowed;
 
 	App();
-	~App();
+	virtual ~App();
 
 	virtual void init() = 0;
 	virtual void input(SDL_Event* ev) = 0;

@@ -564,9 +564,9 @@ void dc_set_callback_random(int script, int* yield, int* preturnint, char* proce
 
 void dc_set_dink_speed(int script, int* yield, int* preturnint, int speed)
 {
-  if (dversion >= 108 && speed == 0)
-    ; // do nothing
-  else
+  if (dversion < 108)
+    dinkspeed = speed;
+  else if (speed != 0)
     dinkspeed = speed;
 }
 

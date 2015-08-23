@@ -153,10 +153,11 @@ void add_hardness (int sprite, int num)
       int yy;
       for (yy = spr[sprite].y + k[getpic(sprite)].hardbox.top; yy < spr[sprite].y + k[getpic(sprite)].hardbox.bottom; yy++)
 	{
-	  if ( (xx-20 > 600) | (xx-20 < 0)| (yy > 400) | (yy < 0))
-	    ; /* Nothing */
-	  else
+	  if ( (xx-20 > 600) | (xx-20 < 0)| (yy > 400) | (yy < 0)) {
+	    /* Nothing */
+	  } else {
 	    screen_hitmap[xx-20][yy] = num;
+	  }
 	}
     }
 }

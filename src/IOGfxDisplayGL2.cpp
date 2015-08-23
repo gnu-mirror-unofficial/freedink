@@ -30,7 +30,8 @@
 #include "log.h"
 
 IOGfxDisplayGL2::IOGfxDisplayGL2(int w, int h, Uint32 flags)
-	: IOGfxDisplay(w, h, flags | SDL_WINDOW_OPENGL) {
+	: IOGfxDisplay(w, h, flags | SDL_WINDOW_OPENGL),
+	  glcontext(NULL), gl(NULL), screen(NULL) {
 }
 
 IOGfxDisplayGL2::~IOGfxDisplayGL2() {

@@ -31,9 +31,9 @@ class IOGraphicsGLFuncs;
 
 class IOGfxDisplayGL2 : public IOGfxDisplay {
 public:
-	SDL_Texture* screen;
 	SDL_GLContext glcontext;
 	IOGraphicsGLFuncs* gl;
+	SDL_Texture* screen;
 
 	IOGfxDisplayGL2(int w, int h, Uint32 flags);
 	~IOGfxDisplayGL2();

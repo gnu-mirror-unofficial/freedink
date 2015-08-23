@@ -3260,7 +3260,7 @@ int gui_logic(int h) {
 				loadtile(tile_no);
 
 			/* Exception: tile #41 = Alt+[top-left key below escape] */
-			if (SDL_GetModState()&KMOD_ALT
+			if ((SDL_GetModState()&KMOD_ALT)
 				&& input_getscancodestate(SDL_SCANCODE_GRAVE))
 				loadtile(41);
 			/* alternatives */
@@ -4767,7 +4767,7 @@ void AppFreeDinkedit::input(SDL_Event* ev) {
     // always tell the game when the player releases a key
     input_update(ev);
   } else if ((ev->type == SDL_KEYDOWN || ev->type == SDL_KEYUP)
-      && ev->key.keysym.mod & KMOD_ALT) {
+      && (ev->key.keysym.mod & KMOD_ALT)) {
     freedinkedit_input_global_shortcuts(ev);
   } else {
     // forward all events to the editor
