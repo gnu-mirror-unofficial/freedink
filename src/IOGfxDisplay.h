@@ -9,6 +9,7 @@ class IOGfxDisplay {
 public:
 	int w, h;
 	Uint32 flags;
+	bool initializedVideo;
 	SDL_Window* window;
 
 public:

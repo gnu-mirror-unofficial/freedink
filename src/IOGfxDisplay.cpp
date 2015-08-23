@@ -10,7 +10,7 @@
 #include "freedink_xpm.h"
 
 IOGfxDisplay::IOGfxDisplay(int w, int h, Uint32 flags)
-	: w(w), h(h), flags(flags), window(NULL) {
+	: w(w), h(h), flags(flags), initializedVideo(false), window(NULL) {
 }
 
 IOGfxDisplay::~IOGfxDisplay() {
@@ -18,6 +18,14 @@ IOGfxDisplay::~IOGfxDisplay() {
 }
 
 bool IOGfxDisplay::open() {
+	if (!SDL_WasInit(SDL_INIT_VIDEO)) {
+		if (SDL_InitSubSystem(SDL_INIT_VIDEO) == -1) {
+			log_error("Video initialization error: %s", SDL_GetError());
+			return false;
+		}
+		initializedVideo = true;
+	}
+
 	if (!createWindow()) return false;
 	logWindowInfo();
 
@@ -27,6 +35,11 @@ bool IOGfxDisplay::open() {
 void IOGfxDisplay::close() {
 	if (window) SDL_DestroyWindow(window);
 	window = NULL;
+
+	if (initializedVideo) {
+		SDL_QuitSubSystem(SDL_INIT_VIDEO);
+		initializedVideo = false;
+	}
 }
 
 bool IOGfxDisplay::createWindow() {

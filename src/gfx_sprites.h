@@ -53,8 +53,7 @@
   struct GFX_pic_info
   {
     SDL_Surface *k; // Sprites
-    /* TODO: move pic_info to GFX_pic_info; if possible, replace 'box'
-       with k->h and k->w in the code */
+    /* TODO: move pic_info to GFX_pic_info */
   };
   
   /* Sequence description */

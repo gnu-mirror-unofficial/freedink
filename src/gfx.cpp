@@ -1,5 +1,5 @@
 /**
- * Graphics
+ * Graphics data to sort out
 
  * Copyright (C) 2007, 2008, 2009, 2010, 2014, 2015  Sylvain Beucler
 
@@ -94,24 +94,18 @@ Uint32 truecolor_fade_lasttick = 0;
 FPSmanager framerate_manager;
 
 /* Main window and associated renderer */
-IOGfxDisplaySW* display = NULL;
+IOGfxDisplaySW* g_display = NULL;
 
 
 /**
  * Graphics subsystem initalization
  */
 int gfx_init(bool windowed, char* splash_path) {
-	/* Init graphics subsystem */
-	if (SDL_WasInit(SDL_INIT_VIDEO) == 0 && SDL_InitSubSystem(SDL_INIT_VIDEO) == -1) {
-		log_error("Video initialization error: %s", SDL_GetError());
-		return -1;
-	}
-
 	log_info("Truecolor mode: %s", truecolor ? "on" : "off");
 
-	display = new IOGfxDisplaySW(GFX_RES_W, GFX_RES_H, windowed ? SDL_WINDOW_RESIZABLE : SDL_WINDOW_FULLSCREEN_DESKTOP);
+	g_display = new IOGfxDisplaySW(GFX_RES_W, GFX_RES_H, windowed ? SDL_WINDOW_RESIZABLE : SDL_WINDOW_FULLSCREEN_DESKTOP);
 	/* Note: SDL_WINDOW_FULLSCREEN[!_DESKTOP] may not respect aspect ratio */
-	display->open();
+	g_display->open();
 
   /* Create destination surface */
   {
@@ -179,7 +173,7 @@ int gfx_init(bool windowed, char* splash_path) {
     if (SDL_BlitSurface(GFX_background, NULL, GFX_backbuffer, NULL) < 0)
       log_error("Error blitting splash to back buffer");
 
-    display->clear();
+    g_display->clear();
     flip_it();
   }
 
@@ -227,8 +221,8 @@ void gfx_quit()
   GFX_tmp1 = NULL;
   GFX_tmp2 = NULL;
 
-  delete display;
-  SDL_QuitSubSystem(SDL_INIT_VIDEO);
+  g_display->close();
+  delete g_display;
 }
 
 /**

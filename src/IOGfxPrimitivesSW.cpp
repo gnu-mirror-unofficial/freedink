@@ -172,7 +172,7 @@ void flip_it()
   if (truecolor_fade_brightness < 256)
     gfx_fade_apply(truecolor_fade_brightness);
 
-  display->flip(IOGFX_backbuffer);
+  g_display->flip(IOGFX_backbuffer);
 }
 
 void gfx_vlineRGB(SDL_Surface* s, Sint16 x, Sint16 y1, Sint16 y2, Uint8 r, Uint8 g, Uint8 b) {

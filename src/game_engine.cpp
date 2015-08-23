@@ -775,10 +775,10 @@ static void draw_wait()
 void set_mode(int new_mode) {
   mode = new_mode;
   if (mode == 3 && !keep_mouse) {
-    SDL_SetWindowGrab(display->window, SDL_FALSE);
+    SDL_SetWindowGrab(g_display->window, SDL_FALSE);
   } else {
     /* Jail window cursor (Alt+Tab still works) */
-    SDL_SetWindowGrab(display->window, SDL_TRUE);
+    SDL_SetWindowGrab(g_display->window, SDL_TRUE);
   }
 }
 
@@ -808,7 +808,7 @@ void apply_mode0() {
 	spr[1].active = /*TRUE*/1;
 	spr[1].custom = new std::map<std::string, int>;
 
-	SDL_WarpMouseInWindow(display->window, spr[1].x, spr[1].y);
+	SDL_WarpMouseInWindow(g_display->window, spr[1].x, spr[1].y);
 
 	int version_text = add_sprite(0, 450, 8, 0, 0);
 	spr[version_text].hard = 1;
@@ -843,7 +843,7 @@ void apply_mode() {
 void set_keep_mouse(int on) {
   keep_mouse = on;
   if (!on)
-    SDL_SetWindowGrab(display->window, SDL_FALSE);
+    SDL_SetWindowGrab(g_display->window, SDL_FALSE);
 }
 
 

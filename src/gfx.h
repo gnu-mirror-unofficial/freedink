@@ -38,7 +38,7 @@
 
 
 extern int truecolor;
-extern IOGfxDisplaySW* display;
+extern IOGfxDisplaySW* g_display;
 extern SDL_Surface *GFX_backbuffer;
 extern IOGfxSurface* IOGFX_backbuffer;
 extern SDL_Surface *GFX_tmp1;
