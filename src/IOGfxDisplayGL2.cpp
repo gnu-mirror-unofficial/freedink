@@ -84,7 +84,7 @@ void IOGfxDisplayGL2::logOpenGLInfo() {
 	log_info("OpenGL %d.%d %s", major, minor, profile_str);
 }
 
-void IOGfxDisplayGL2::clearWindow() {
+void IOGfxDisplayGL2::clear() {
 	gl->ClearColor(0,0,1,1);
 	gl->Clear(GL_COLOR_BUFFER_BIT);
 }
@@ -112,5 +112,9 @@ void IOGfxDisplayGL2::screenshot(const char* output_file) {
 }
 
 void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer) {
+	// TODO
+}
+
+void IOGfxDisplayGL2::onSizeChange(int w, int h) {
 	// TODO
 }

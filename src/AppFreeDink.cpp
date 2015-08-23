@@ -66,7 +66,7 @@ static void freedink_input_global_shortcuts(SDL_Event* ev) {
 		return;
 	
 	if (ev->key.keysym.scancode == SDL_SCANCODE_RETURN) {
-		gfx_toggle_fullscreen();
+		display->toggleFullScreen();
 	} else if (ev->key.keysym.sym == SDLK_q) {
 		//shutdown game
 		SDL_Event ev;
@@ -94,7 +94,7 @@ void freedink_input_window(SDL_Event* ev) {
 		if (ev->window.event == SDL_WINDOWEVENT_RESIZED) {
 			int w = ev->window.data1;
 			int h = ev->window.data2;
-			SDL_RenderSetLogicalSize(display->renderer, w, h);
+			display->onSizeChange(w, h);
 		}
 	}
 }
@@ -182,10 +182,7 @@ AppFreeDink::~AppFreeDink() {
 void AppFreeDink::input(SDL_Event* ev) {
 	// Show IME (virtual keyboard) on Android
 	if (ev->type == SDL_KEYDOWN && ev->key.keysym.scancode == SDL_SCANCODE_MENU) {
-		if (!SDL_IsScreenKeyboardShown(display->window))
-			SDL_StartTextInput();
-		else
-			SDL_StopTextInput();
+		display->toggleScreenKeyboard();
 	}
 	if (ev->type == SDL_KEYDOWN && ev->key.keysym.scancode == SDL_SCANCODE_AC_BACK) {
 		// quit for now
@@ -222,7 +219,7 @@ void AppFreeDink::logic() {
 
 	/* Renderers */
 	if (!abort_this_flip) {
-		SDL_RenderClear(display->renderer);
+		display->clear();
 		debug_renderer_render();
 		dinkc_console_renderer_render();
 		flip_it(); // game area

@@ -40,7 +40,7 @@ public:
 		IOGfxDisplay* g = new IOGfxDisplayGL2(800, 600, SDL_WINDOW_HIDDEN);
 		TS_ASSERT_EQUALS(g->open(), true);
 
-		g->clearWindow();
+		g->clear();
 		SDL_GL_SwapWindow(g->window);
 
 		SDL_Surface* screenshot = dynamic_cast<IOGfxDisplayGL2*>(g)->screenshot();

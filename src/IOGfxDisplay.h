@@ -11,16 +11,20 @@ public:
 	Uint32 flags;
 	SDL_Window* window;
 
+public:
 	IOGfxDisplay(int w, int h, Uint32 flags);
 	virtual ~IOGfxDisplay();
 	virtual bool open() = 0;
 	virtual void close() = 0;
+	virtual void toggleFullScreen();
+	virtual void toggleScreenKeyboard();
 
 	virtual bool createWindow();
 	virtual void logWindowInfo();
 
-	virtual void clearWindow() = 0;
+	virtual void clear() = 0;
 	virtual void flip(IOGfxSurface* backbuffer) = 0;
+	virtual void onSizeChange(int w, int h) = 0;
 };
 
 extern void gfx_toggle_fullscreen();

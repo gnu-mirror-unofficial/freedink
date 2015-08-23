@@ -183,7 +183,7 @@ int gfx_init(bool windowed, char* splash_path) {
     if (SDL_BlitSurface(GFX_background, NULL, GFX_backbuffer, NULL) < 0)
       log_error("Error blitting splash to back buffer");
 
-    display->clearWindow();
+    display->clear();
     flip_it();
   }
 
@@ -231,6 +231,7 @@ void gfx_quit()
   GFX_tmp1 = NULL;
   GFX_tmp2 = NULL;
 
+  delete display;
   SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
@@ -283,12 +284,4 @@ void gfx_log_meminfo()
   }
 
   log_debug("GFX total  = %8d (+ ~150kB fonts)", total);
-}
-
-void gfx_toggle_fullscreen()
-{
-  SDL_SetWindowFullscreen(display->window,
-    (SDL_GetWindowFlags(display->window) & SDL_WINDOW_FULLSCREEN)
-    ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
-  // Note: software renderer is buggy in SDL 2.0.2: it doesn't resize the surface
 }

@@ -4596,7 +4596,7 @@ void AppFreeDinkedit::logic(void)
 
 /*     } else */
 /*     { */
-      display->clearWindow();
+      display->clear();
       flip_it();
       /*
       //windowed mode, no flipping
@@ -4757,7 +4757,7 @@ void freedinkedit_input_global_shortcuts(SDL_Event* ev) {
 
   if (ev->key.keysym.scancode == SDL_SCANCODE_RETURN)
     {
-      gfx_toggle_fullscreen();
+      display->toggleFullScreen();
     }
 }
 

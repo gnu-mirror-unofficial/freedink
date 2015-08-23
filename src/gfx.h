@@ -45,8 +45,6 @@ extern SDL_Surface *GFX_tmp1;
 extern SDL_Surface *GFX_tmp2;
 extern SDL_Surface *GFX_background;
 extern IOGfxSurface* IOGFX_background;
-extern SDL_Window* window;
-extern SDL_Surface *rgba_screen;
 
 extern SDL_Color GFX_ref_pal[256];
 extern /*bool*/int abort_this_flip;

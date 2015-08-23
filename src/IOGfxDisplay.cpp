@@ -52,3 +52,18 @@ void IOGfxDisplay::logWindowInfo() {
 	}
 }
 
+void IOGfxDisplay::toggleFullScreen() {
+	SDL_SetWindowFullscreen(window,
+			(SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN)
+			? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
+	// Note: software renderer is buggy in SDL 2.0.2: it doesn't resize the surface
+}
+
+void IOGfxDisplay::toggleScreenKeyboard() {
+	if (SDL_HasScreenKeyboardSupport()) {
+		if (!SDL_IsScreenKeyboardShown(window))
+			SDL_StartTextInput();
+		else
+			SDL_StopTextInput();
+	}
+}

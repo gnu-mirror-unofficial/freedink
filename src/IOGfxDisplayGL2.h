@@ -43,8 +43,9 @@ public:
 	bool createOpenGLContext();
 	void logOpenGLInfo();
 
-	void clearWindow();
+	void clear();
 	virtual void flip(IOGfxSurface* backbuffer);
+	virtual void onSizeChange(int w, int h);
 
 	SDL_Surface* screenshot();
 	void screenshot(const char* out_filename);

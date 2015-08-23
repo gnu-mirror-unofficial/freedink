@@ -9,7 +9,8 @@
 #include "log.h"
 
 IOGfxDisplaySW::IOGfxDisplaySW(int w, int h, Uint32 flags)
-	: IOGfxDisplay(w, h, flags), renderer(NULL) {
+	: IOGfxDisplay(w, h, flags), renderer(NULL),
+	  render_texture(NULL), rgba_screen(NULL) {
 }
 
 IOGfxDisplaySW::~IOGfxDisplaySW() {
@@ -34,12 +35,9 @@ void IOGfxDisplaySW::close() {
 
 	if (renderer) SDL_DestroyRenderer(renderer);
 	renderer = NULL;
-
-	if (window) SDL_DestroyWindow(window);
-	window = NULL;
 }
 
-void IOGfxDisplaySW::clearWindow() {
+void IOGfxDisplaySW::clear() {
     SDL_RenderClear(renderer);
 }
 
@@ -181,4 +179,8 @@ void IOGfxDisplaySW::flip(IOGfxSurface* backbuffer) {
 	center_game_display(renderer, &dst);
 	SDL_RenderCopy(renderer, render_texture, NULL, &dst);
 	SDL_RenderPresent(renderer);
+}
+
+void IOGfxDisplaySW::onSizeChange(int w, int h) {
+	SDL_RenderSetLogicalSize(renderer, w, h);
 }
