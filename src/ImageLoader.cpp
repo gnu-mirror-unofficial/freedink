@@ -10,8 +10,14 @@
 SDL_Color GFX_ref_pal[256];
 /* Reference blit surface that all others should mimic to avoid palette dithering;
  * GFX_ref_pal may change, but not this surface's palette */
+// TODO: make IOGfxDisplaySW->blit *not* do any palette conversion, so we can get rid of this global
 SDL_Surface* ImageLoader::blitFormat = NULL;
 
+/**
+ * Load image to the current display format (indexed or truecolor)
+ * This isn't centralized in display->upload() because dir.ff are handled differently,
+ * and this is done independently of the target display renderer.
+ */
 SDL_Surface* ImageLoader::loadToBlitFormat(FILE* in) {
 	if (in == NULL)
 		return NULL;
@@ -33,5 +39,9 @@ SDL_Surface* ImageLoader::loadToBlitFormat(FILE* in) {
 		/* Disable palette conversion in future blits */
 		SDL_SetPaletteColors(image->format->palette, blitFormat->format->palette->colors, 0, 256);
 	}
+
+	/* Disable alpha in 32bit BMPs, like the original engine */
+	SDL_SetSurfaceBlendMode(image, SDL_BLENDMODE_NONE);
+
 	return image;
 }

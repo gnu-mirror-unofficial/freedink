@@ -222,7 +222,7 @@ FastFileOpen(char *name)
   long fCount;
   long hCount;
 
-  /* Check for the file, dont' include directory */
+  /* Check for the file, don't include directory */
   for (fCount = 0; fCount < (long)g_numEntries - 1; fCount++)
     {
       if (strcasecmp(g_Entries[fCount].name, name) == 0)

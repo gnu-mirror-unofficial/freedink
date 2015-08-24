@@ -230,6 +230,7 @@ void load_sprite_pak(char seq_path_prefix[100], int seq_no, int delay, int xoffs
 		   24bit, hence palette-less, tiles/ts01.bmp, and graphics
 		   stay clean in v1.08 -truecolor !-dinkpal. */
 
+		/* Disable palette conversion in future blits */
 		if (!truecolor)
 			SDL_SetPaletteColors(surf->format->palette,
 					ImageLoader::blitFormat->format->palette->colors, 0, 256);
@@ -259,9 +260,6 @@ void load_sprite_pak(char seq_path_prefix[100], int seq_no, int delay, int xoffs
 				p++;
 			}
 			SDL_SetColorKey(surf, SDL_TRUE, 255);
-			SDL_SetSurfaceRLE(surf, 1);
-			/* Force RLE encoding now to save memory space */
-			SDL_BlitSurface(surf, NULL, ImageLoader::blitFormat, NULL);
 		} else {
 			// brighten black and set white as transparent
 			while (p < last) {
@@ -270,9 +268,6 @@ void load_sprite_pak(char seq_path_prefix[100], int seq_no, int delay, int xoffs
 				p++;
 			}
 			SDL_SetColorKey(surf, SDL_TRUE, 0);
-			SDL_SetSurfaceRLE(surf, 1);
-			/* Force RLE encoding now to save memory space */
-			SDL_BlitSurface(surf, NULL, ImageLoader::blitFormat, NULL);
 		}
 
 		k[myslot].box.top = 0;
@@ -448,9 +443,6 @@ void load_sprites(char seq_path_prefix[100], int seq_no, int delay, int xoffset,
 		}
 
 		/** Configure current frame **/
-
-		/* Disable alpha in 32bit BMPs, like the original engine */
-		SDL_SetSurfaceBlendMode(surf, SDL_BLENDMODE_NONE);
 		/* Set transparent color: either black or white */
 		if (black)
 			SDL_SetColorKey(surf, SDL_TRUE,
@@ -458,13 +450,6 @@ void load_sprites(char seq_path_prefix[100], int seq_no, int delay, int xoffset,
 		else
 			SDL_SetColorKey(surf, SDL_TRUE,
 					SDL_MapRGB(surf->format, 255, 255, 255));
-
-		/* Force RLE encoding now to save memory space */
-		SDL_SetSurfaceRLE(surf, 1);
-		SDL_BlitSurface(surf, NULL, ImageLoader::blitFormat, NULL);
-		/* Note: there is definitely a performance improvement when
-	 using RLEACCEL under truecolor mode (~80%CPU -> 70%CPU) */
-
 
 		/* Fill in .box; this was previously done in DDSethLoad; in
 		   the future we could get rid of the .box field and rely

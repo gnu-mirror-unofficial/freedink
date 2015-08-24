@@ -387,7 +387,7 @@ IOGfxSurface* IOGfxDisplayGL2::upload(SDL_Surface* surf) {
 	log_info("surf->h=%d", surf->h);
 	log_info("surf->format->bits=%d", surf->format->BitsPerPixel);
 	if (truecolor) {
-		// Convert to truecolor and drop alpha channel (compat v1.08)
+		// Dink images get alpha disabled, so use 24-bit for simplicity
 		if (surf->format->BitsPerPixel != 24) {
 			SDL_PixelFormat fmt;
 			fmt.BitsPerPixel = 24;

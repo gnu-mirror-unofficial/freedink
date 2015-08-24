@@ -96,42 +96,43 @@ void IOGfxDisplaySW::logRenderersInfo() {
  * Screen-like destination texture
  */
 bool IOGfxDisplaySW::createRenderTexture() {
-  render_texture = SDL_CreateTexture(renderer,
-    SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, w, h);
-  if (render_texture == NULL) {
-    log_error("Unable to create render texture: %s", SDL_GetError());
-    return false;
-  }
+	render_texture = SDL_CreateTexture(renderer,
+		SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, w, h);
+	if (render_texture == NULL) {
+		log_error("Unable to create render texture: %s", SDL_GetError());
+		return false;
+	}
 
-  Uint32 render_texture_format;
-  Uint32 Rmask, Gmask, Bmask, Amask; int bpp;
-  SDL_QueryTexture(render_texture, &render_texture_format, NULL, NULL, NULL);
-  SDL_PixelFormatEnumToMasks(render_texture_format, &bpp,
-    &Rmask, &Gmask, &Bmask, &Amask);
-  rgba_screen = SDL_CreateRGBSurface(0, w, h, bpp, Rmask, Gmask, Bmask, Amask);
+	Uint32 render_texture_format;
+	Uint32 Rmask, Gmask, Bmask, Amask; int bpp;
+	SDL_QueryTexture(render_texture, &render_texture_format, NULL, NULL, NULL);
+	SDL_PixelFormatEnumToMasks(render_texture_format, &bpp,
+			&Rmask, &Gmask, &Bmask, &Amask);
+	if (!truecolor)
+		rgba_screen = SDL_CreateRGBSurface(0, w, h, bpp, Rmask, Gmask, Bmask, Amask);
 
-  return true;
+	return true;
 }
 
 void IOGfxDisplaySW::logRenderTextureInfo() {
-  Uint32 format;
-  int access, w, h;
-  SDL_QueryTexture(render_texture, &format, &access, &w, &h);
-  log_info("Render texture: format: %s", SDL_GetPixelFormatName(format));
-  char* str_access;
-  switch(access) {
-  case SDL_TEXTUREACCESS_STATIC:
-    str_access = "SDL_TEXTUREACCESS_STATIC"; break;
-  case SDL_TEXTUREACCESS_STREAMING:
-    str_access = "SDL_TEXTUREACCESS_STREAMING"; break;
-  case SDL_TEXTUREACCESS_TARGET:
-    str_access = "SDL_TEXTUREACCESS_TARGET"; break;
-  default:
-    str_access = "Unknown!"; break;
-  }
-  log_info("Render texture: access: %s", str_access);
-  log_info("Render texture: width : %d", w);
-  log_info("Render texture: height: %d", h);
+	Uint32 format;
+	int access, w, h;
+	SDL_QueryTexture(render_texture, &format, &access, &w, &h);
+	log_info("Render texture: format: %s", SDL_GetPixelFormatName(format));
+	char* str_access;
+	switch(access) {
+	case SDL_TEXTUREACCESS_STATIC:
+		str_access = "SDL_TEXTUREACCESS_STATIC"; break;
+	case SDL_TEXTUREACCESS_STREAMING:
+		str_access = "SDL_TEXTUREACCESS_STREAMING"; break;
+	case SDL_TEXTUREACCESS_TARGET:
+		str_access = "SDL_TEXTUREACCESS_TARGET"; break;
+	default:
+		str_access = "Unknown!"; break;
+	}
+	log_info("Render texture: access: %s", str_access);
+	log_info("Render texture: width : %d", w);
+	log_info("Render texture: height: %d", h);
 }
 
 void IOGfxDisplaySW::center_game_display(SDL_Renderer *rend, SDL_Rect* rect) {
@@ -155,8 +156,7 @@ void IOGfxDisplaySW::center_game_display(SDL_Renderer *rend, SDL_Rect* rect) {
 }
 
 
-void gfx_fade_apply(SDL_Surface* screen, int brightness)
-{
+void gfx_fade_apply(SDL_Surface* screen, int brightness) {
 	/* Check SDL_blit.h in the SDL source code for guidance */
 	SDL_LockSurface(screen);
 	/* Progress per pixel rather than per byte */
@@ -226,5 +226,11 @@ void IOGfxDisplaySW::onSizeChange(int w, int h) {
 }
 
 IOGfxSurface* IOGfxDisplaySW::upload(SDL_Surface* image) {
-    return new IOGfxSurfaceSW(image);
+	/* Set RLE encoding to save memory space and improve perfs if colorkey */
+	SDL_SetSurfaceRLE(image, SDL_TRUE);
+	/* Force RLE-encode */
+	SDL_LockSurface(image);
+	SDL_UnlockSurface(image);
+
+	return new IOGfxSurfaceSW(image);
 }
