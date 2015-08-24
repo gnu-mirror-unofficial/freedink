@@ -2,15 +2,19 @@
 #define IOGFXSURFACESW_H
 
 #include "IOGfxSurface.h"
+
 #include "SDL.h"
+
+#include "IOGfxDisplayGL2.h"
 #include "IOGfxGLFuncs.h"
 
 class IOGfxSurfaceGL2: public IOGfxSurface {
 public:
+	IOGfxDisplayGL2* display;
 	GLuint texture;
-	IOGfxGLFuncs* gl;
+	int w, h;
 
-	IOGfxSurfaceGL2(SDL_Surface* s, IOGfxGLFuncs* gl);
+	IOGfxSurfaceGL2(IOGfxDisplayGL2* display, GLuint texture, int w, int h);
 	virtual ~IOGfxSurfaceGL2();
 	virtual void fill_screen(int num, SDL_Color* palette);
 	virtual void fillRect(const SDL_Rect *rect, Uint8 r, Uint8 g, Uint8 b);

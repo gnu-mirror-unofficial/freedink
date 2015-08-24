@@ -229,7 +229,10 @@ bool IOGfxDisplayGL2::createProgram() {
 		"uniform sampler2D texture;                       \n"
 		"                                                 \n"
 		"void main(void) {                                \n"
-		"  gl_FragColor = texture2D(texture, f_texcoord); \n"
+		"  vec4 f = texture2D(texture, f_texcoord);       \n"
+		"  if (f.r == 1.0 && f.g == 1.0 && f.b == 1.0)    \n"
+		"    f.a = 0.0;                                   \n"
+		"  gl_FragColor = f;                              \n"
 		"}                                                \n";
 
 	GLuint vs, fs;
@@ -275,7 +278,7 @@ bool IOGfxDisplayGL2::getLocations() {
 }
 
 void IOGfxDisplayGL2::clear() {
-	gl->ClearColor(0,0,1,1);
+	gl->ClearColor(0,0,0,1);
 	gl->Clear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -304,7 +307,8 @@ void IOGfxDisplayGL2::screenshot(const char* output_file) {
 void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer) {
 	if (backbuffer == NULL)
 		SDL_SetError("IOGfxDisplayGL2::flip: passed a NULL surface");
-	GLuint texture = dynamic_cast<IOGfxSurfaceGL2*>(backbuffer)->texture;
+	IOGfxSurfaceGL2* surf = dynamic_cast<IOGfxSurfaceGL2*>(backbuffer);
+	GLuint texture = surf->texture;
 	gl->UseProgram(program);
 
 	gl->ActiveTexture(GL_TEXTURE0);
@@ -315,7 +319,7 @@ void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer) {
 	glm::mat4 m_transform;
 	m_transform = glm::translate(glm::mat4(1), glm::vec3(0.375, 0.375, 0.))
 		* glm::translate(glm::mat4(1.0f), glm::vec3(150, 150, 0.0))
-		* glm::scale(glm::mat4(1.0f), glm::vec3(400.0, 400.0, 0.0));
+		* glm::scale(glm::mat4(1.0f), glm::vec3(surf->w, surf->h, 0.0));
 	glm::mat4 mvp = projection * m_transform; // * view * model * anim;
 	gl->UniformMatrix4fv(uniform_mvp, 1, GL_FALSE, glm::value_ptr(mvp));
 	log_debug("%f %f %f %f", mvp[0][0], mvp[0][1], mvp[0][2], mvp[0][3]);
@@ -371,6 +375,52 @@ void IOGfxDisplayGL2::onSizeChange(int w, int h) {
 	gl->Viewport(0, 0, w, h);
 }
 
-IOGfxSurface* IOGfxDisplayGL2::upload(SDL_Surface* image) {
-	return new IOGfxSurfaceGL2(image, gl);
+IOGfxSurface* IOGfxDisplayGL2::upload(SDL_Surface* surf) {
+	GLuint texture = -1;
+	gl->GenTextures(1, &texture);
+	gl->BindTexture(GL_TEXTURE_2D, texture);
+	gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	log_info("surf->w=%d", surf->w);
+	log_info("surf->h=%d", surf->h);
+	log_info("surf->format->bits=%d", surf->format->BitsPerPixel);
+	if (truecolor) {
+		// Convert to truecolor and drop alpha channel (compat v1.08)
+		if (surf->format->BitsPerPixel != 24) {
+			SDL_PixelFormat fmt;
+			fmt.BitsPerPixel = 24;
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+			fmt.Rmask = 0xFF000000;
+			fmt.Gmask = 0x00FF0000;
+			fmt.Bmask = 0x0000FF00;
+			fmt.Amask = 0x00000000;
+#else
+			fmt.Rmask = 0x000000FF;
+			fmt.Gmask = 0x0000FF00;
+			fmt.Bmask = 0x00FF0000;
+			fmt.Amask = 0x00000000;
+#endif
+			SDL_Surface* surf24 = SDL_CreateRGBSurface(0, surf->w, surf->h, fmt.BitsPerPixel,
+                    fmt.Rmask, fmt.Gmask, fmt.Bmask, fmt.Amask);
+			SDL_BlitSurface(surf, NULL, surf24, NULL);
+
+			SDL_FreeSurface(surf);
+			surf = surf24;
+		}
+		gl->TexImage2D(GL_TEXTURE_2D, // target
+				0,       // level, 0 = base, no minimap,
+				GL_RGB,  // internalformat
+				surf->w, // width
+				surf->h, // height
+				0,       // border, always 0 in OpenGL ES
+				GL_RGB,  // format
+				GL_UNSIGNED_BYTE, // type
+				surf->pixels);
+	}
+	int w = surf->w;
+	int h = surf->h;
+	SDL_FreeSurface(surf);
+	return new IOGfxSurfaceGL2(this, texture, w, h);
 }

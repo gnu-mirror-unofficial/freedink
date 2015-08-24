@@ -4,45 +4,12 @@
 #include "log.h"
 #include "IOGfxGLFuncs.h"
 
-IOGfxSurfaceGL2::IOGfxSurfaceGL2(SDL_Surface* surf, IOGfxGLFuncs* gl)
-	: gl(gl) {
-	gl->GenTextures(1, &texture);
-	gl->BindTexture(GL_TEXTURE_2D, texture);
-	gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	log_info("surf->w=%d", surf->w);
-	log_info("surf->h=%d", surf->h);
-	log_info("surf->format->bits=%d", surf->format->BitsPerPixel);
-	if (surf->format->BitsPerPixel == 24) {
-		gl->TexImage2D(GL_TEXTURE_2D, // target
-				0,	     // level, 0 = base, no minimap,
-				GL_RGB,  // internalformat
-				surf->w, // width
-				surf->h, // height
-				0,	     // border, always 0 in OpenGL ES
-				GL_RGB,  // format
-				GL_UNSIGNED_BYTE, // type
-				surf->pixels);
-	} else if (surf->format->BitsPerPixel == 32) {
-		gl->TexImage2D(GL_TEXTURE_2D, // target
-				0,	     // level, 0 = base, no minimap,
-				GL_RGBA, // internalformat
-				surf->w, // width
-				surf->h, // height
-				0,	     // border, always 0 in OpenGL ES
-				GL_RGBA, // format
-				GL_UNSIGNED_BYTE, // type
-				surf->pixels);
-	} else {
-		log_error("Unsupported image format: %d-bit", surf->format->BitsPerPixel);
-	}
-	SDL_FreeSurface(surf);
+IOGfxSurfaceGL2::IOGfxSurfaceGL2(IOGfxDisplayGL2* display, GLuint texture, int w, int h)
+	: display(display), texture(texture), w(w), h(h) {
 }
 
 IOGfxSurfaceGL2::~IOGfxSurfaceGL2() {
-	gl->DeleteTextures(1, &texture);
+	display->gl->DeleteTextures(1, &texture);
 }
 
 /* Function specifically made for Dink'C fill_screen() */

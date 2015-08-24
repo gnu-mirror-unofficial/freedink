@@ -29,6 +29,7 @@
 #include "IOGfxDisplayGL2.h"
 #include "IOGfxGLFuncs.h"
 #include "SDL_image.h"
+#include "freedink_xpm.h"
 
 class TestIOGraphics : public CxxTest::TestSuite {
 public:
@@ -57,16 +58,32 @@ public:
 					screenshot->format,
 					&cr, &cg, &cb, &ca);
 		TS_ASSERT_EQUALS(cr, 0);
-		TS_ASSERT_EQUALS(cb, 255);
+		TS_ASSERT_EQUALS(cb, 0);
 		TS_ASSERT_EQUALS(cg, 0);
 		TS_ASSERT_EQUALS(ca, 255);
 		SDL_FreeSurface(screenshot);
 
-		SDL_Surface* image = IMG_Load("test.png");
-		IOGfxSurface* surf = g->upload(image);
-		for (int i = 0; i < 5; i++)
-			g->flip(surf);
-		SDL_Delay(1000);
+
+		SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
+		SDL_Surface* surf;
+		IOGfxSurface* tex;
+
+		surf = IMG_Load("test.png");
+		tex = g->upload(surf);
+		g->flip(tex);
+		delete tex;
+
+		surf = IMG_ReadXPMFromArray(freedink_xpm);
+		tex = g->upload(surf);
+		g->flip(tex);
+		delete tex;
+
+		surf = IMG_Load("test2.bmp");
+		tex = g->upload(surf);
+		g->flip(tex);
+		delete tex;
+
+		SDL_Delay(2000);
 
 		g->close();
 	}
