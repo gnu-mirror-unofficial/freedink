@@ -40,7 +40,7 @@ IOGfxDisplayGL2::IOGfxDisplayGL2(int w, int h, bool truecolor, Uint32 flags)
 	vboSpriteVertices = -1, vboSpriteTexcoords = -1;
 	program = -1;
 	attribute_v_coord = -1, attribute_v_texcoord = -1;
-	uniform_mvp = -1, uniform_texture = -1;
+	uniform_mvp = -1, uniform_texture = -1, uniform_colorkey = -1;
 }
 
 IOGfxDisplayGL2::~IOGfxDisplayGL2() {
@@ -229,10 +229,14 @@ bool IOGfxDisplayGL2::createProgram() {
 	const char* fragmentShaderSource =
 		"varying vec2 f_texcoord;                         \n"
 		"uniform sampler2D texture;                       \n"
+		"uniform vec3 colorkey;                           \n"
 		"                                                 \n"
 		"void main(void) {                                \n"
 		"  vec4 f = texture2D(texture, f_texcoord);       \n"
-		"  if (f.r == 1.0 && f.g == 1.0 && f.b == 1.0)    \n"
+		"  // don't need float comparison abs(a-b)<.001?  \n"
+		"  if (f.r == colorkey.r                          \n"
+		"   && f.g == colorkey.g                          \n"
+		"   && f.b == colorkey.b)                         \n"
 		"    f.a = 0.0;                                   \n"
 		"  gl_FragColor = f;                              \n"
 		"}                                                \n";
@@ -273,8 +277,9 @@ bool IOGfxDisplayGL2::getLocations() {
 	if ((attribute_v_coord    = getAttribLocation(program, "v_coord"))    == -1) return false;
 	if ((attribute_v_texcoord = getAttribLocation(program, "v_texcoord")) == -1) return false;
 
-	if ((uniform_mvp     = getUniformLocation(program, "mvp"))      == -1) return false;
-	if ((uniform_texture = getUniformLocation(program, "texture"))  == -1) return false;
+	if ((uniform_mvp      = getUniformLocation(program, "mvp"))       == -1) return false;
+	if ((uniform_texture  = getUniformLocation(program, "texture"))   == -1) return false;
+	if ((uniform_colorkey = getUniformLocation(program, "colorkey"))  == -1) return false;
 
 	return true;
 }
@@ -329,12 +334,15 @@ void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer) {
 	log_debug("%f %f %f %f", mvp[2][0], mvp[2][1], mvp[2][2], mvp[2][3]);
 	log_debug("%f %f %f %f", mvp[3][0], mvp[3][1], mvp[3][2], mvp[3][3]);
 
+	gl->Uniform3f(uniform_colorkey, -1,-1,-1);
+
 	log_debug("vboSpriteVertices=%d", vboSpriteVertices);
 	log_debug("vboSpriteTexcoords=%d", vboSpriteTexcoords);
 	log_debug("program=%d", program);
 	log_debug("texture=%d", texture);
 	log_debug("uniform_mvp=%d", uniform_mvp);
 	log_debug("uniform_texture=%d", uniform_texture);
+	log_debug("uniform_colorkey=%d", uniform_colorkey);
 	log_debug("attribute_v_coord=%d", attribute_v_coord);
 	log_debug("attribute_v_texcoord=%d", attribute_v_texcoord);
 	log_debug("-");
@@ -388,9 +396,22 @@ IOGfxSurface* IOGfxDisplayGL2::upload(SDL_Surface* surf) {
 	log_info("surf->w=%d", surf->w);
 	log_info("surf->h=%d", surf->h);
 	log_info("surf->format->bits=%d", surf->format->BitsPerPixel);
+
+	// Save transparency color
+	SDL_Color colorkey = {0,0,0, 0};
+	Uint32 key;
+	if (SDL_GetColorKey(surf, &key) == -1) {
+		colorkey.a = SDL_ALPHA_OPAQUE; // no colorkey
+	} else {
+		SDL_GetRGBA(key, surf->format, &colorkey.r, &colorkey.g, &colorkey.b, &colorkey.a);
+		colorkey.a = SDL_ALPHA_TRANSPARENT;
+	}
+
 	if (truecolor) {
 		// Dink images get alpha disabled, so use 24-bit for simplicity
 		if (surf->format->BitsPerPixel != 24) {
+			// don't black out transparent pixels, keep original color
+			SDL_SetColorKey(surf, SDL_FALSE, 0);
 			SDL_PixelFormat fmt;
 			fmt.BitsPerPixel = 24;
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
@@ -421,8 +442,10 @@ IOGfxSurface* IOGfxDisplayGL2::upload(SDL_Surface* surf) {
 				GL_UNSIGNED_BYTE, // type
 				surf->pixels);
 	}
+
 	int w = surf->w;
 	int h = surf->h;
+
 	SDL_FreeSurface(surf);
-	return new IOGfxSurfaceGL2(this, texture, w, h);
+	return new IOGfxSurfaceGL2(this, texture, w, h, colorkey);
 }

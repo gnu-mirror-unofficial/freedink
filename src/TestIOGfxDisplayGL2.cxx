@@ -76,13 +76,16 @@ public:
 		g->flip(tex2);
 
 		surf = IMG_Load("test2.bmp");
+		SDL_SetColorKey(surf, SDL_TRUE, 0);
 		IOGfxSurface* tex3 = g->upload(surf);
 		//g->flip(tex3);
 		SDL_Rect dstrect = {200, 200, -1, -1};
 		tex1->blit(tex3, NULL, &dstrect);
 		dstrect.x = 210; dstrect.y = 210;
 		tex1->blit(tex3, NULL, &dstrect);
-		dstrect.x = -30; dstrect.y = -30;
+		dstrect.x = -1; dstrect.y = -1;
+		tex1->blit(tex3, NULL, &dstrect);
+		dstrect.x = 330; dstrect.y = 350;
 		tex1->blit(tex3, NULL, &dstrect);
 		g->flip(tex1);
 

@@ -13,8 +13,9 @@ public:
 	IOGfxDisplayGL2* display;
 	GLuint texture;
 	int w, h;
+	SDL_Color colorkey;
 
-	IOGfxSurfaceGL2(IOGfxDisplayGL2* display, GLuint texture, int w, int h);
+	IOGfxSurfaceGL2(IOGfxDisplayGL2* display, GLuint texture, int w, int h, SDL_Color colorkey);
 	virtual ~IOGfxSurfaceGL2();
 	virtual void fill_screen(int num, SDL_Color* palette);
 	virtual void fillRect(const SDL_Rect *rect, Uint8 r, Uint8 g, Uint8 b);

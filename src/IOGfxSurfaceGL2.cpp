@@ -8,8 +8,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-IOGfxSurfaceGL2::IOGfxSurfaceGL2(IOGfxDisplayGL2* display, GLuint texture, int w, int h)
-	: display(display), texture(texture), w(w), h(h) {
+IOGfxSurfaceGL2::IOGfxSurfaceGL2(IOGfxDisplayGL2* display, GLuint texture, int w, int h, SDL_Color colorkey)
+	: display(display), texture(texture), w(w), h(h), colorkey(colorkey) {
 }
 
 IOGfxSurfaceGL2::~IOGfxSurfaceGL2() {
@@ -84,6 +84,11 @@ int IOGfxSurfaceGL2::blit(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* 
 	glm::mat4 mvp = projection * m_transform; // * view * model * anim;
 	gl->UniformMatrix4fv(display->uniform_mvp, 1, GL_FALSE, glm::value_ptr(mvp));
 
+	if (src_surf->colorkey.a == SDL_ALPHA_TRANSPARENT)
+		gl->Uniform3f(display->uniform_colorkey,
+				src_surf->colorkey.r/255.0, src_surf->colorkey.g/255.0, src_surf->colorkey.b/255.0);
+	else
+		gl->Uniform3f(display->uniform_colorkey, -1,-1,-1);
 
 	// draw
 	gl->EnableVertexAttribArray(display->attribute_v_coord);

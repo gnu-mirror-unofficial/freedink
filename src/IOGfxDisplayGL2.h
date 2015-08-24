@@ -39,7 +39,7 @@ public:
 	GLuint vboSpriteVertices, vboSpriteTexcoords;
 	GLuint program;
 	GLint attribute_v_coord, attribute_v_texcoord;
-	GLint uniform_mvp, uniform_texture;
+	GLint uniform_mvp, uniform_texture, uniform_colorkey;
 
 	IOGfxDisplayGL2(int w, int h, bool truecolor, Uint32 flags);
 	~IOGfxDisplayGL2();
