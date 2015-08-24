@@ -28,6 +28,7 @@
 
 #include "IOGfxDisplayGL2.h"
 #include "IOGfxGLFuncs.h"
+#include "SDL_image.h"
 
 class TestIOGraphics : public CxxTest::TestSuite {
 public:
@@ -39,8 +40,13 @@ public:
 	}
 
 	void test_graphics() {
-		IOGfxDisplay* g = new IOGfxDisplayGL2(800, 600, true, SDL_WINDOW_HIDDEN);
-		TS_ASSERT_EQUALS(g->open(), true);
+		//IOGfxDisplay* g = new IOGfxDisplayGL2(800, 600, true, SDL_WINDOW_HIDDEN);
+		IOGfxDisplay* g = new IOGfxDisplayGL2(800, 600, true, 0);
+		bool opened = g->open();
+		TS_ASSERT_EQUALS(opened, true);
+		if (!opened)
+			return;
+		g->onSizeChange(800, 600);
 
 		g->clear();
 		SDL_GL_SwapWindow(g->window);
@@ -54,8 +60,14 @@ public:
 		TS_ASSERT_EQUALS(cb, 255);
 		TS_ASSERT_EQUALS(cg, 0);
 		TS_ASSERT_EQUALS(ca, 255);
-		
 		SDL_FreeSurface(screenshot);
+
+		SDL_Surface* image = IMG_Load("test.png");
+		IOGfxSurface* surf = g->upload(image);
+		for (int i = 0; i < 5; i++)
+			g->flip(surf);
+		SDL_Delay(1000);
+
 		g->close();
 	}
 };

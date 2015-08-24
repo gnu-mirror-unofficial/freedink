@@ -26,14 +26,20 @@
 #include "SDL.h"
 
 #include "IOGfxDisplay.h"
+#include "IOGfxGLFuncs.h"
 
-class IOGraphicsGLFuncs;
+class IOGfxGLFuncs;
 
 class IOGfxDisplayGL2 : public IOGfxDisplay {
 public:
 	SDL_GLContext glcontext;
-	IOGraphicsGLFuncs* gl;
+	IOGfxGLFuncs* gl;
 	SDL_Texture* screen;
+
+	GLuint vboSpriteVertices, vboSpriteTexcoords;
+	GLuint program;
+	GLint attribute_v_coord, attribute_v_texcoord;
+	GLint uniform_mvp, uniform_texture;
 
 	IOGfxDisplayGL2(int w, int h, bool truecolor, Uint32 flags);
 	~IOGfxDisplayGL2();
@@ -48,6 +54,15 @@ public:
 
 	bool createOpenGLContext();
 	void logOpenGLInfo();
+
+	bool createSpriteVertices();
+	bool createSpriteTexcoords();
+	GLuint createShader(const char* source, GLenum type);
+	void infoLog(GLuint object);
+	bool createProgram();
+	GLint getAttribLocation(GLuint program, const char* name);
+	GLint getUniformLocation(GLuint program, const char* name);
+	bool getLocations();
 
 	SDL_Surface* screenshot();
 	void screenshot(const char* out_filename);

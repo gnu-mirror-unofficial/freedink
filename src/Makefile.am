@@ -33,13 +33,14 @@ COMMON_OBJS = app.cpp app.h bgm.cpp bgm.h BgTilesetsManager.cpp		\
 	hardness_tiles.cpp hardness_tiles.h ImageLoader.cpp		\
 	ImageLoader.h IOGfxDisplay.cpp IOGfxDisplay.h			\
 	IOGfxDisplaySW.cpp IOGfxDisplaySW.h IOGfxSurface.cpp		\
-	IOGfxSurface.h IOGfxSurfaceSW.cpp IOGfxSurfaceSW.h		\
-	IOGfxPrimitivesSW.cpp live_screen.cpp live_screen.h		\
-	live_sprite.cpp live_sprite.h live_sprites_manager.cpp		\
-	live_sprites_manager.h rect.cpp rect.h resources.cpp		\
-	resources.h input.cpp input.h freedink_xpm.cpp freedink_xpm.h	\
-	paths.cpp paths.h log.cpp log.h gfx_sprites.cpp gfx_sprites.h	\
-	vgasys_fon.cpp vgasys_fon.h SDL_android_main.c sfx.cpp sfx.h
+	IOGfxSurface.h IOGfxSurfaceGL2.cpp IOGfxSurfaceGL2.h		\
+	IOGfxSurfaceSW.cpp IOGfxSurfaceSW.h IOGfxPrimitivesSW.cpp	\
+	live_screen.cpp live_screen.h live_sprite.cpp live_sprite.h	\
+	live_sprites_manager.cpp live_sprites_manager.h rect.cpp	\
+	rect.h resources.cpp resources.h input.cpp input.h		\
+	freedink_xpm.cpp freedink_xpm.h paths.cpp paths.h log.cpp	\
+	log.h gfx_sprites.cpp gfx_sprites.h vgasys_fon.cpp		\
+	vgasys_fon.h SDL_android_main.c sfx.cpp sfx.h
 if ANDROID
   # Build .so JNI libs rather than executables
   # Define here rather than configure.ac, otherwise config.h gets confused
@@ -217,9 +218,9 @@ TestIOGfxDisplaySW_SOURCES = TestIOGfxDisplaySW.cpp		\
 	IOGfxSurface.cpp gfx_palette.cpp paths.cpp io_util.cpp	\
 	str_util.cpp log.cpp freedink_xpm.cpp
 TestIOGfxDisplayGL2_SOURCES = TestIOGfxDisplayGL2.cpp			\
-	IOGfxDisplayGL2.cpp IOGfxDisplay.cpp IOGfxSurfaceSW.cpp		\
+	IOGfxDisplayGL2.cpp IOGfxDisplay.cpp IOGfxSurfaceGL2.cpp	\
 	IOGfxSurface.cpp IOGfxGLFuncs.cpp IOGfxGLFuncs.h log.cpp	\
-	freedink_xpm.cpp
+	freedink_xpm.cpp SDL_android_main.c
 # Tests to run
 TESTS = $(check_PROGRAMS)
 

@@ -31,12 +31,27 @@
 #  endif
 #endif
 
+//#include <GLES2/gl2.h>
+//#if 0
+#include <stddef.h> /* ptrdiff_t */
 typedef void GLvoid;
+typedef char GLchar;
+typedef unsigned int GLuint;
 typedef int GLint;
 typedef int GLsizei;
+typedef float GLfloat;
 typedef float GLclampf;
 typedef unsigned int GLenum;
 typedef unsigned int GLbitfield;
+typedef ptrdiff_t GLsizeiptr;
+
+typedef unsigned char GLboolean;
+#define GL_FALSE 0
+#define GL_TRUE 1
+
+#define GL_BLEND 0x0BE2
+#define GL_SRC_ALPHA 0x0302
+#define GL_ONE_MINUS_SRC_ALPHA 0x0303
 
 #define GL_COLOR_BUFFER_BIT 0x00004000
 
@@ -45,14 +60,94 @@ typedef unsigned int GLbitfield;
 #define GL_LUMINANCE 0x1909
 
 #define GL_UNSIGNED_BYTE 0x1401
+#define GL_FLOAT 0x1406
+#define GL_TEXTURE_2D 0x0DE1
+#define GL_TEXTURE_MIN_FILTER 0x2801
+#define GL_TEXTURE_MAG_FILTER 0x2800
+#define GL_NEAREST 0x2600
+#define GL_TEXTURE_WRAP_S 0x2802
+#define GL_TEXTURE_WRAP_T 0x2803
+#define GL_CLAMP_TO_EDGE 0x812F
+#define GL_CLAMP 0x2900
 
-class IOGraphicsGLFuncs {
+#define GL_ARRAY_BUFFER 0x8892
+#define GL_TRIANGLE_STRIP 0x0005
+#define GL_STATIC_DRAW 0x88E4
+
+#define GL_VERTEX_SHADER 0x8B31
+#define GL_FRAGMENT_SHADER 0x8B30
+#define GL_COMPILE_STATUS 0x8B81
+#define GL_LINK_STATUS 0x8B82
+#define GL_INFO_LOG_LENGTH 0x8B84
+
+#define GL_TEXTURE0 0x84C0
+#define GL_TEXTURE1 0x84C1
+
+#define GL_NO_ERROR 0
+#define GL_INVALID_ENUM 0x0500
+#define GL_INVALID_VALUE 0x0501
+#define GL_INVALID_OPERATION 0x0502
+#define GL_INVALID_FRAMEBUFFER_OPERATION 0x0506
+#define GL_OUT_OF_MEMORY 0x0505
+//#endif
+
+class IOGfxGLFuncs {
 public:
-	IOGraphicsGLFuncs();
+	IOGfxGLFuncs();
+
+	GLenum (APIENTRY *GetError)(void);
+	void (APIENTRY *Enable)(GLenum cap);
+	void (APIENTRY *BlendFunc)(GLenum sfactor, GLenum dfactor);
 
 	void (APIENTRY *Clear)(GLbitfield);
 	void (APIENTRY *ClearColor)(GLclampf, GLclampf, GLclampf, GLclampf);
+	void (APIENTRY *Viewport)(GLint x, GLint y, GLsizei width, GLsizei height);
+
 	void (APIENTRY *ReadPixels)(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *pixels);
+
+	void (APIENTRY *GenTextures)(GLsizei n, GLuint *textures);
+	void (APIENTRY *BindTexture)(GLenum target, GLuint texture);
+	void (APIENTRY *DeleteTextures)(GLsizei n, const GLuint *textures);
+	void (APIENTRY *TexParameteri)(GLenum target, GLenum pname, GLint param);
+	void (APIENTRY *TexImage2D)(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid *pixels);
+
+	void (APIENTRY *GenBuffers)(GLsizei n, GLuint* buffers);
+	void (APIENTRY *BindBuffer)(GLenum target, GLuint buffer);
+	void (APIENTRY *BufferData)(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage);
+	void (APIENTRY *DeleteBuffers)(GLsizei n, const GLuint* buffers);
+
+	GLboolean (APIENTRY *IsShader)(GLuint shader);
+	GLuint (APIENTRY *CreateShader)(GLenum type);
+	void (APIENTRY *ShaderSource)(GLuint shader, GLsizei count, const GLchar** strings, const GLint* lengths);
+	void (APIENTRY *CompileShader)(GLuint shader);
+	void (APIENTRY *GetShaderiv)(GLuint shader, GLenum pname, GLint* param);
+	void (APIENTRY *GetShaderInfoLog)(GLuint shader, GLsizei bufSize, GLsizei* length, GLchar* infoLog);
+	void (APIENTRY *AttachShader)(GLuint program, GLuint shader);
+	void (APIENTRY *DeleteShader)(GLuint shader);
+
+	GLboolean (APIENTRY *IsProgram)(GLuint program);
+	GLuint (APIENTRY *CreateProgram)(void);
+	void (APIENTRY *GetProgramiv)(GLuint program, GLenum pname, GLint* param);
+	void (APIENTRY *LinkProgram)(GLuint program);
+	void (APIENTRY *GetProgramInfoLog)(GLuint program, GLsizei bufSize, GLsizei* length, GLchar* infoLog);
+	void (APIENTRY *DeleteProgram)(GLuint program);
+
+	GLint (APIENTRY *GetAttribLocation)(GLuint program, const GLchar* name);
+	GLint (APIENTRY *GetUniformLocation)(GLuint program, const GLchar* name);
+
+	void (APIENTRY *UseProgram)(GLuint program);
+	void (APIENTRY *ActiveTexture)(GLenum texture);
+	void (APIENTRY *Uniform1i)(GLint location, GLint v0);
+	void (APIENTRY *UniformMatrix4fv)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+
+	void (APIENTRY *EnableVertexAttribArray)(GLuint);
+	void (APIENTRY *VertexAttribPointer)(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid* pointer);
+	void (APIENTRY *DisableVertexAttribArray)(GLuint);
+
+	void (APIENTRY *DrawArrays)(GLenum mode, GLint first, GLsizei count);
+
+
+	void logGetError();
 };
 
 #endif

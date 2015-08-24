@@ -5,8 +5,8 @@
 
 #include "log.h"
 
-IOGfxSurfaceSW::IOGfxSurfaceSW(SDL_Surface* s) {
-	this->surf = s;
+IOGfxSurfaceSW::IOGfxSurfaceSW(SDL_Surface* surf) {
+	this->surf = surf;
 }
 
 IOGfxSurfaceSW::~IOGfxSurfaceSW() {
@@ -47,7 +47,7 @@ void IOGfxSurfaceSW::drawBox(rect box, int color) {
 
 int IOGfxSurfaceSW::blit(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* dstrect) {
 	if (src == NULL)
-		return SDL_SetError("SDL_UpperBlit: passed a NULL surface");
+		return SDL_SetError("IOGfxSurfaceSW::blit: passed a NULL surface");
 	SDL_Surface* src_sdl = dynamic_cast<IOGfxSurfaceSW*>(src)->surf;
 	return SDL_BlitSurface(src_sdl, srcrect, surf, dstrect);
 }
@@ -108,7 +108,7 @@ int gfx_blit_stretch(SDL_Surface *src_surf, const SDL_Rect *src_rect_opt,
 
 int IOGfxSurfaceSW::blitStretch(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* dstrect) {
 	if (src == NULL)
-		return SDL_SetError("SDL_UpperBlit: passed a NULL surface");
+		return SDL_SetError("IOGfxSurfaceSW::blitStretch: passed a NULL surface");
 	SDL_Surface* src_sdl = dynamic_cast<IOGfxSurfaceSW*>(src)->surf;
 	return gfx_blit_stretch(src_sdl, srcrect, surf, dstrect);
 }
@@ -146,7 +146,7 @@ int gfx_blit_nocolorkey(SDL_Surface *src, const SDL_Rect *src_rect,
 
 int IOGfxSurfaceSW::blitNoColorKey(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* dstrect) {
 	if (src == NULL)
-		return SDL_SetError("SDL_UpperBlit: passed a NULL surface");
+		return SDL_SetError("IOGfxSurfaceSW::blitNoColorKey: passed a NULL surface");
 	SDL_Surface* src_sdl = dynamic_cast<IOGfxSurfaceSW*>(src)->surf;
 	return gfx_blit_nocolorkey(src_sdl, srcrect, surf, dstrect);
 }
