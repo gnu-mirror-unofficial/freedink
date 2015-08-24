@@ -76,6 +76,11 @@ IOGfxGLFuncs::IOGfxGLFuncs() {
 	VertexAttribPointer = (void (APIENTRY*)(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid* pointer))SDL_GL_GetProcAddress("glVertexAttribPointer");
 	DisableVertexAttribArray = (void (APIENTRY*)(GLuint))SDL_GL_GetProcAddress("glDisableVertexAttribArray");
 
+	GenFramebuffers = (void (APIENTRY*)(GLsizei n, GLuint* framebuffers))SDL_GL_GetProcAddress("glGenFramebuffers");
+	BindFramebuffer = (void (APIENTRY*)(GLenum target, GLuint framebuffer))SDL_GL_GetProcAddress("glBindFramebuffer");
+	FramebufferTexture2D = (void (APIENTRY*)(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level))SDL_GL_GetProcAddress("glFramebufferTexture2D");
+	CheckFramebufferStatus = (GLenum (APIENTRY*)(GLenum target))SDL_GL_GetProcAddress("glCheckFramebufferStatus");
+
 	DrawArrays = (void (APIENTRY*)(GLenum mode, GLint first, GLsizei count))SDL_GL_GetProcAddress("glDrawArrays");
 }
 

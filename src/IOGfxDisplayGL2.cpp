@@ -318,7 +318,7 @@ void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer) {
 	glm::mat4 projection = glm::ortho(0.0f, 1.0f*w, 1.0f*h, 0.0f);
 	glm::mat4 m_transform;
 	m_transform = glm::translate(glm::mat4(1), glm::vec3(0.375, 0.375, 0.))
-		* glm::translate(glm::mat4(1.0f), glm::vec3(150, 150, 0.0))
+		* glm::translate(glm::mat4(1.0f), glm::vec3(0,0, 0.0))
 		* glm::scale(glm::mat4(1.0f), glm::vec3(surf->w, surf->h, 0.0));
 	glm::mat4 mvp = projection * m_transform; // * view * model * anim;
 	gl->UniformMatrix4fv(uniform_mvp, 1, GL_FALSE, glm::value_ptr(mvp));

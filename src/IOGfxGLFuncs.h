@@ -49,6 +49,13 @@ typedef unsigned char GLboolean;
 #define GL_FALSE 0
 #define GL_TRUE 1
 
+#define GL_NO_ERROR 0
+#define GL_INVALID_ENUM 0x0500
+#define GL_INVALID_VALUE 0x0501
+#define GL_INVALID_OPERATION 0x0502
+#define GL_INVALID_FRAMEBUFFER_OPERATION 0x0506
+#define GL_OUT_OF_MEMORY 0x0505
+
 #define GL_BLEND 0x0BE2
 #define GL_SRC_ALPHA 0x0302
 #define GL_ONE_MINUS_SRC_ALPHA 0x0303
@@ -83,12 +90,15 @@ typedef unsigned char GLboolean;
 #define GL_TEXTURE0 0x84C0
 #define GL_TEXTURE1 0x84C1
 
-#define GL_NO_ERROR 0
-#define GL_INVALID_ENUM 0x0500
-#define GL_INVALID_VALUE 0x0501
-#define GL_INVALID_OPERATION 0x0502
-#define GL_INVALID_FRAMEBUFFER_OPERATION 0x0506
-#define GL_OUT_OF_MEMORY 0x0505
+#define GL_FRAMEBUFFER 0x8D40
+#define GL_RENDERBUFFER 0x8D41
+#define GL_COLOR_ATTACHMENT0 0x8CE0
+#define GL_FRAMEBUFFER_COMPLETE 0x8CD5
+#define GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT 0x8CD6
+#define GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS 0x8CD9
+#define GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT 0x8CD7
+#define GL_FRAMEBUFFER_UNSUPPORTED 0x8CDD
+
 //#endif
 
 class IOGfxGLFuncs {
@@ -144,8 +154,12 @@ public:
 	void (APIENTRY *VertexAttribPointer)(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid* pointer);
 	void (APIENTRY *DisableVertexAttribArray)(GLuint);
 
-	void (APIENTRY *DrawArrays)(GLenum mode, GLint first, GLsizei count);
+	void (APIENTRY *GenFramebuffers)(GLsizei n, GLuint* framebuffers);
+	void (APIENTRY *BindFramebuffer)(GLenum target, GLuint framebuffer);
+	void (APIENTRY *FramebufferTexture2D)(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+	GLenum (APIENTRY *CheckFramebufferStatus)(GLenum target);
 
+	void (APIENTRY *DrawArrays)(GLenum mode, GLint first, GLsizei count);
 
 	void logGetError();
 };

@@ -168,7 +168,7 @@ int gfx_init(bool windowed, char* splash_path) {
       }
     
     /* Copy splash screen (again) to the screen during loading time */
-    if (SDL_BlitSurface(GFX_background, NULL, GFX_backbuffer, NULL) < 0)
+    if (IOGFX_backbuffer->blit(IOGFX_background, NULL, NULL) < 0)
       log_error("Error blitting splash to back buffer");
 
     g_display->clear();

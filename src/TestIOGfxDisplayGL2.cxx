@@ -66,25 +66,31 @@ public:
 
 		SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
 		SDL_Surface* surf;
-		IOGfxSurface* tex;
 
 		surf = IMG_Load("test.png");
-		tex = g->upload(surf);
-		g->flip(tex);
-		delete tex;
+		IOGfxSurface* tex1 = g->upload(surf);
+		g->flip(tex1);
 
 		surf = IMG_ReadXPMFromArray(freedink_xpm);
-		tex = g->upload(surf);
-		g->flip(tex);
-		delete tex;
+		IOGfxSurface* tex2 = g->upload(surf);
+		g->flip(tex2);
 
 		surf = IMG_Load("test2.bmp");
-		tex = g->upload(surf);
-		g->flip(tex);
-		delete tex;
+		IOGfxSurface* tex3 = g->upload(surf);
+		//g->flip(tex3);
+		SDL_Rect dstrect = {200, 200, -1, -1};
+		tex1->blit(tex3, NULL, &dstrect);
+		dstrect.x = 210; dstrect.y = 210;
+		tex1->blit(tex3, NULL, &dstrect);
+		dstrect.x = -30; dstrect.y = -30;
+		tex1->blit(tex3, NULL, &dstrect);
+		g->flip(tex1);
 
 		SDL_Delay(2000);
 
+		delete tex1;
+		delete tex2;
+		delete tex3;
 		g->close();
 	}
 };
