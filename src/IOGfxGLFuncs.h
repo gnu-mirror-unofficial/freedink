@@ -158,6 +158,7 @@ public:
 	void (APIENTRY *BindFramebuffer)(GLenum target, GLuint framebuffer);
 	void (APIENTRY *FramebufferTexture2D)(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
 	GLenum (APIENTRY *CheckFramebufferStatus)(GLenum target);
+	void (APIENTRY *DeleteFramebuffers)(GLsizei n, const GLuint* framebuffers);
 
 	void (APIENTRY *DrawArrays)(GLenum mode, GLint first, GLsizei count);
 

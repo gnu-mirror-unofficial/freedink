@@ -95,7 +95,10 @@ int gfx_init(bool windowed, char* splash_path) {
 	g_display = new IOGfxDisplaySW(GFX_RES_W, GFX_RES_H, truecolor,
 			windowed ? SDL_WINDOW_RESIZABLE : SDL_WINDOW_FULLSCREEN_DESKTOP);
 	/* Note: SDL_WINDOW_FULLSCREEN[!_DESKTOP] may not respect aspect ratio */
-	g_display->open();
+	if (!g_display->open()) {
+		log_error("Could not open display");
+		return -1;
+	}
 
 	/* Create destination surface */
 	SDL_Surface* GFX_backbuffer = NULL;
@@ -142,6 +145,11 @@ int gfx_init(bool windowed, char* splash_path) {
 	IOGFX_background = g_display->upload(GFX_background);
 	IOGFX_tmp1 = g_display->upload(GFX_tmp1);
 	IOGFX_tmp2 = g_display->upload(GFX_tmp2);
+	if (IOGFX_backbuffer == NULL || IOGFX_background == NULL
+			|| IOGFX_tmp1 == NULL || IOGFX_tmp2 == NULL) {
+		log_error("Cannot create global buffers");
+		return -1;
+	}
 
 
   /* Display splash picture, as early as possible */
@@ -162,10 +170,10 @@ int gfx_init(bool windowed, char* splash_path) {
 	/* Copy splash to the background buffer so that D-Mod can
 	   start an effect from it (e.g. Pilgrim Quest's burning
 	   splash screen effect) */
-	if (IOGFX_background->blit(splash, NULL, NULL) < 0)
+    if (IOGFX_background->blit(splash, NULL, NULL) < 0)
 	  log_error("Error blitting splash to temp buffer");
-	delete splash;
-      }
+      delete splash;
+    }
     
     /* Copy splash screen (again) to the screen during loading time */
     if (IOGFX_backbuffer->blit(IOGFX_background, NULL, NULL) < 0)

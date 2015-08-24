@@ -115,6 +115,7 @@ int IOGfxSurfaceGL2::blit(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* 
 	gl->DisableVertexAttribArray(display->attribute_v_coord);
 	gl->DisableVertexAttribArray(display->attribute_v_texcoord);
 
+	gl->DeleteFramebuffers(1, &fbo);
 	gl->BindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	return 0;

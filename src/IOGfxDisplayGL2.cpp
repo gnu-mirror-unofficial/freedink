@@ -61,12 +61,14 @@ bool IOGfxDisplayGL2::open() {
 }
 
 void IOGfxDisplayGL2::close() {
-	gl->DeleteProgram(program);
-	gl->DeleteBuffers(1, &vboSpriteVertices);
-	gl->DeleteBuffers(1, &vboSpriteTexcoords);
+	if (gl != NULL) {
+		gl->DeleteProgram(program);
+		gl->DeleteBuffers(1, &vboSpriteVertices);
+		gl->DeleteBuffers(1, &vboSpriteTexcoords);
+		delete gl;
+		gl = NULL;
+	}
 
-	if (gl) delete gl;
-	gl = NULL;
 	if (glcontext) SDL_GL_DeleteContext(glcontext);
 	glcontext = NULL;
 

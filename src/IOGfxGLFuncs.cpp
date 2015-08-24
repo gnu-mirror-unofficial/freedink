@@ -80,6 +80,7 @@ IOGfxGLFuncs::IOGfxGLFuncs() {
 	BindFramebuffer = (void (APIENTRY*)(GLenum target, GLuint framebuffer))SDL_GL_GetProcAddress("glBindFramebuffer");
 	FramebufferTexture2D = (void (APIENTRY*)(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level))SDL_GL_GetProcAddress("glFramebufferTexture2D");
 	CheckFramebufferStatus = (GLenum (APIENTRY*)(GLenum target))SDL_GL_GetProcAddress("glCheckFramebufferStatus");
+	DeleteFramebuffers = (void (APIENTRY*)(GLsizei n, const GLuint* framebuffers))SDL_GL_GetProcAddress("glDeleteFramebuffers");
 
 	DrawArrays = (void (APIENTRY*)(GLenum mode, GLint first, GLsizei count))SDL_GL_GetProcAddress("glDrawArrays");
 }
