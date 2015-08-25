@@ -87,6 +87,11 @@ public:
 		tex1->blit(tex3, NULL, &dstrect);
 		dstrect.x = 330; dstrect.y = 350;
 		tex1->blit(tex3, NULL, &dstrect);
+		dstrect.x = 330; dstrect.y = 50;
+		tex1->blitNoColorKey(tex3, NULL, &dstrect);
+		dstrect.x = 330; dstrect.y = 50;
+		dstrect.w = 50; dstrect.h = 300;
+		tex1->blitStretch(tex3, NULL, &dstrect);
 		g->flip(tex1);
 
 		SDL_Delay(2000);

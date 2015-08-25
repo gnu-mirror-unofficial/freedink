@@ -92,7 +92,7 @@ IOGfxDisplay* g_display = NULL;
  * Graphics subsystem initalization
  */
 int gfx_init(bool windowed, char* splash_path) {
-	g_display = new IOGfxDisplaySW(GFX_RES_W, GFX_RES_H, truecolor,
+	g_display = new IOGfxDisplayGL2(GFX_RES_W, GFX_RES_H, truecolor,
 			windowed ? SDL_WINDOW_RESIZABLE : SDL_WINDOW_FULLSCREEN_DESKTOP);
 	/* Note: SDL_WINDOW_FULLSCREEN[!_DESKTOP] may not respect aspect ratio */
 	if (!g_display->open()) {

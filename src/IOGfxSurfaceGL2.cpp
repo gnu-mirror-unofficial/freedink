@@ -32,9 +32,11 @@ void IOGfxSurfaceGL2::hlineRGB(Sint16 x1, Sint16 x2, Sint16 y, Uint8 r, Uint8 g,
 void IOGfxSurfaceGL2::drawBox(rect box, int color) {
 }
 
-int IOGfxSurfaceGL2::blit(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* dstrect) {
+int IOGfxSurfaceGL2::internalBlit(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* dstrect, bool useColorKey) {
 	if (src == NULL)
-		return SDL_SetError("IOGfxSurfaceGL2::blit: passed a NULL surface");
+		return SDL_SetError("IOGfxSurfaceGL2::blitStretch: passed a NULL surface");
+	if (dstrect == NULL)
+		return SDL_SetError("IOGfxSurfaceGL2::blitStretch: passed a NULL dstrect");
 	IOGfxSurfaceGL2* src_surf = dynamic_cast<IOGfxSurfaceGL2*>(src);
 	GLuint src_tex = src_surf->texture;
 
@@ -71,20 +73,14 @@ int IOGfxSurfaceGL2::blit(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* 
 	gl->Uniform1i(display->uniform_texture, /*GL_TEXTURE*/0);
 	gl->BindTexture(GL_TEXTURE_2D, src_tex);
 
-	SDL_Rect dstrect_if_not_null;
-	if (dstrect == NULL) {
-		dstrect = &dstrect_if_not_null;
-		dstrect->x = 0;
-		dstrect->y = 0;
-	}
 	glm::mat4 projection = glm::ortho(0.0f, 1.0f*display->w, 0.0f, 1.0f*display->h);
 	glm::mat4 m_transform;
 	m_transform = glm::translate(glm::mat4(1.0f), glm::vec3(dstrect->x,dstrect->y, 0.0))
-		* glm::scale(glm::mat4(1.0f), glm::vec3(src_surf->w, src_surf->h, 0.0));
+		* glm::scale(glm::mat4(1.0f), glm::vec3(dstrect->w, dstrect->h, 0.0));
 	glm::mat4 mvp = projection * m_transform; // * view * model * anim;
 	gl->UniformMatrix4fv(display->uniform_mvp, 1, GL_FALSE, glm::value_ptr(mvp));
 
-	if (src_surf->colorkey.a == SDL_ALPHA_TRANSPARENT)
+	if (useColorKey && src_surf->colorkey.a == SDL_ALPHA_TRANSPARENT)
 		gl->Uniform3f(display->uniform_colorkey,
 				src_surf->colorkey.r/255.0, src_surf->colorkey.g/255.0, src_surf->colorkey.b/255.0);
 	else
@@ -126,19 +122,45 @@ int IOGfxSurfaceGL2::blit(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* 
 	return 0;
 }
 
-int IOGfxSurfaceGL2::blitStretch(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* dstrect) {
+int IOGfxSurfaceGL2::blit(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* dstrect) {
 	if (src == NULL)
-		return SDL_SetError("IOGfxSurfaceGL2::blitStretch: passed a NULL surface");
-	//GLuint src_tex = dynamic_cast<IOGfxSurfaceGL2*>(src)->texture;
-	return -1;
+		return SDL_SetError("IOGfxSurfaceGL2::blit: passed a NULL surface");
+	IOGfxSurfaceGL2* src_surf = dynamic_cast<IOGfxSurfaceGL2*>(src);
+
+	SDL_Rect dstrect_if_not_null;
+	if (dstrect == NULL) {
+		dstrect = &dstrect_if_not_null;
+		dstrect->x = 0;
+		dstrect->y = 0;
+	}
+	// Force no-stretch blit
+	dstrect->w = src_surf->w;
+	dstrect->h = src_surf->h;
+
+	return internalBlit(src, srcrect, dstrect, true);
 }
 
 
+int IOGfxSurfaceGL2::blitStretch(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* dstrect) {
+	return internalBlit(src, srcrect, dstrect, true);
+}
+
 int IOGfxSurfaceGL2::blitNoColorKey(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* dstrect) {
 	if (src == NULL)
-		return SDL_SetError("IOGfxSurfaceGL2::blitNoColorKeyt: passed a NULL surface");
-	//GLuint src_tex = dynamic_cast<IOGfxSurfaceGL2*>(src)->texture;
-	return -1;
+		return SDL_SetError("IOGfxSurfaceGL2::blitStretch: passed a NULL surface");
+	IOGfxSurfaceGL2* src_surf = dynamic_cast<IOGfxSurfaceGL2*>(src);
+
+	SDL_Rect dstrect_if_not_null;
+	if (dstrect == NULL) {
+		dstrect = &dstrect_if_not_null;
+		dstrect->x = 0;
+		dstrect->y = 0;
+	}
+	// Force no-stretch blit
+	dstrect->w = src_surf->w;
+	dstrect->h = src_surf->h;
+
+	return internalBlit(src, srcrect, dstrect, false);
 }
 
 unsigned int IOGfxSurfaceGL2::getMemUsage() {

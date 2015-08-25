@@ -26,7 +26,7 @@
 #endif
 
 #include "status.h"
-#define SEQ_LEVEL_NUMS 442
+#define SEQ_EXPLEVEL_NUMS 442
 
 #include "SDL.h"
 #include <string.h> /* strlen */
@@ -47,38 +47,32 @@ static int fstrength, fdefense, fmagic,
 	fgold,
 	fexp, fraise;
 
-static int draw_num(int mseq, char* nums, int mx, int my)
-{
-  int length = 0;
-  int rnum = 0;
+static void draw_num(int mseq, char* nums, int mx, int my) {
+	int length = 0;
+	int rnum = 0;
 
-  for (unsigned int i = 0; i < strlen(nums); i++)
-    {
-      if (nums[i] == '0') rnum = 10;
-      else if (nums[i] == '1') rnum = 1;
-      else if (nums[i] == '2') rnum = 2;
-      else if (nums[i] == '3') rnum = 3;
-      else if (nums[i] == '4') rnum = 4;
-      else if (nums[i] == '5') rnum = 5;
-      else if (nums[i] == '6') rnum = 6;
-      else if (nums[i] == '7') rnum = 7;
-      else if (nums[i] == '8') rnum = 8;
-      else if (nums[i] == '9') rnum = 9;
-      else if (nums[i] == '/') rnum = 11;
-      if ((rnum != 11) && (!(mseq == SEQ_LEVEL_NUMS)))
-	{
-	    SDL_Rect dst = {mx+length, my};
-	    IOGFX_background->blitNoColorKey(GFX_k[seq[mseq].frame[rnum]].k, NULL, &dst);
-	}
-      else
-	{
-	    SDL_Rect dst = {mx+length, my};
-	    IOGFX_background->blit(GFX_k[seq[mseq].frame[rnum]].k, NULL, &dst);
-	}
+	for (unsigned int i = 0; i < strlen(nums); i++) {
+		if (nums[i] == '0') rnum = 10;
+		else if (nums[i] == '1') rnum = 1;
+		else if (nums[i] == '2') rnum = 2;
+		else if (nums[i] == '3') rnum = 3;
+		else if (nums[i] == '4') rnum = 4;
+		else if (nums[i] == '5') rnum = 5;
+		else if (nums[i] == '6') rnum = 6;
+		else if (nums[i] == '7') rnum = 7;
+		else if (nums[i] == '8') rnum = 8;
+		else if (nums[i] == '9') rnum = 9;
+		else if (nums[i] == '/') rnum = 11;
+		if (rnum == 11 || mseq == SEQ_EXPLEVEL_NUMS) {
+			SDL_Rect dst = {mx+length, my};
+			IOGFX_background->blit(GFX_k[seq[mseq].frame[rnum]].k, NULL, &dst);
+		} else {
+			SDL_Rect dst = {mx+length, my};
+			IOGFX_background->blitNoColorKey(GFX_k[seq[mseq].frame[rnum]].k, NULL, &dst);
+		}
 
-	  length += k[seq[mseq].frame[rnum]].box.right;
-    }
-  return(length);
+		length += k[seq[mseq].frame[rnum]].box.right;
+	}
 }
 
 
@@ -124,9 +118,9 @@ void draw_level()
   snprintf(final, sizeof(final), "%d", *plevel);
   
   if (strlen(final) == 1)
-    draw_num(SEQ_LEVEL_NUMS, final, 528, 456);
+    draw_num(SEQ_EXPLEVEL_NUMS, final, 528, 456);
   else
-    draw_num(SEQ_LEVEL_NUMS, final, 523, 456);
+    draw_num(SEQ_EXPLEVEL_NUMS, final, 523, 456);
 
 }
 
