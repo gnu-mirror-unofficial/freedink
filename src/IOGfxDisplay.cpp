@@ -65,6 +65,7 @@ bool IOGfxDisplay::createWindow() {
 
 	SDL_GetWindowSize(window, &w, &h);
 	// There's a delay between theoretical and actual full-screen resize, impacting e.g. in OpenGL targets
+	// Also (not worked-around here): starting in full-screen mode make the window keep the full size even when toggleFullScreen
 	// TODO: fix me in SDL2 [master 2015-08]
 	if (flags & SDL_WINDOW_FULLSCREEN)
 		SDL_Delay(100);

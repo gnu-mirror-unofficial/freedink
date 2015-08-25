@@ -363,23 +363,23 @@ void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer) {
 		* glm::scale(glm::mat4(1.0f), glm::vec3(dstrect.w, dstrect.h, 0.0));
 	glm::mat4 mvp = projection * m_transform; // * view * model * anim;
 	gl->UniformMatrix4fv(uniform_mvp, 1, GL_FALSE, glm::value_ptr(mvp));
-	log_debug("%f %f %f %f", mvp[0][0], mvp[0][1], mvp[0][2], mvp[0][3]);
-	log_debug("%f %f %f %f", mvp[1][0], mvp[1][1], mvp[1][2], mvp[1][3]);
-	log_debug("%f %f %f %f", mvp[2][0], mvp[2][1], mvp[2][2], mvp[2][3]);
-	log_debug("%f %f %f %f", mvp[3][0], mvp[3][1], mvp[3][2], mvp[3][3]);
+	log_trace("%f %f %f %f", mvp[0][0], mvp[0][1], mvp[0][2], mvp[0][3]);
+	log_trace("%f %f %f %f", mvp[1][0], mvp[1][1], mvp[1][2], mvp[1][3]);
+	log_trace("%f %f %f %f", mvp[2][0], mvp[2][1], mvp[2][2], mvp[2][3]);
+	log_trace("%f %f %f %f", mvp[3][0], mvp[3][1], mvp[3][2], mvp[3][3]);
 
 	gl->Uniform3f(uniform_colorkey, -1,-1,-1);
 
-	log_debug("vboSpriteVertices=%d", vboSpriteVertices);
-	log_debug("vboSpriteTexcoords=%d", vboSpriteTexcoords);
-	log_debug("program=%d", program);
-	log_debug("texture=%d", texture);
-	log_debug("uniform_mvp=%d", uniform_mvp);
-	log_debug("uniform_texture=%d", uniform_texture);
-	log_debug("uniform_colorkey=%d", uniform_colorkey);
-	log_debug("attribute_v_coord=%d", attribute_v_coord);
-	log_debug("attribute_v_texcoord=%d", attribute_v_texcoord);
-	log_debug("-");
+	log_trace("vboSpriteVertices=%d", vboSpriteVertices);
+	log_trace("vboSpriteTexcoords=%d", vboSpriteTexcoords);
+	log_trace("program=%d", program);
+	log_trace("texture=%d", texture);
+	log_trace("uniform_mvp=%d", uniform_mvp);
+	log_trace("uniform_texture=%d", uniform_texture);
+	log_trace("uniform_colorkey=%d", uniform_colorkey);
+	log_trace("attribute_v_coord=%d", attribute_v_coord);
+	log_trace("attribute_v_texcoord=%d", attribute_v_texcoord);
+	log_trace("-");
 
 	//gl->Clear(GL_COLOR_BUFFER_BIT);
 
@@ -429,9 +429,9 @@ IOGfxSurface* IOGfxDisplayGL2::upload(SDL_Surface* surf) {
 	gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	log_info("surf->w=%d", surf->w);
-	log_info("surf->h=%d", surf->h);
-	log_info("surf->format->bits=%d", surf->format->BitsPerPixel);
+	log_trace("surf->w=%d", surf->w);
+	log_trace("surf->h=%d", surf->h);
+	log_trace("surf->format->bits=%d", surf->format->BitsPerPixel);
 
 	// Save transparency color
 	SDL_Color colorkey = {0,0,0, 0};
