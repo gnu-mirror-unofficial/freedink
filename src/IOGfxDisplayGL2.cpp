@@ -58,6 +58,8 @@ bool IOGfxDisplayGL2::open() {
 	if (!createProgram()) return false;
 	if (!getLocations()) return false;
 
+	androidWorkAround();
+
 	return true;
 }
 
@@ -293,6 +295,15 @@ bool IOGfxDisplayGL2::getLocations() {
 	if ((uniform_colorkey = getUniformLocation(program, "colorkey"))  == -1) return false;
 
 	return true;
+}
+
+void IOGfxDisplayGL2::androidWorkAround() {
+#ifdef __ANDROID__
+	// Android/GalaxyS/CM11 is buggy (no/delayed texture blits) on startup, a full standard blit seems to help
+	gl->UseProgram(program);
+	gl->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	SDL_GL_SwapWindow(window);
+#endif
 }
 
 void IOGfxDisplayGL2::clear() {

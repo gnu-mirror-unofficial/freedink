@@ -64,6 +64,7 @@ public:
 	GLint getAttribLocation(GLuint program, const char* name);
 	GLint getUniformLocation(GLuint program, const char* name);
 	bool getLocations();
+	void androidWorkAround();
 
 	SDL_Surface* screenshot();
 	void screenshot(const char* out_filename);

@@ -152,14 +152,6 @@ int gfx_init(bool windowed, char* splash_path) {
 		return -1;
 	}
 
-	// My android is buggy (no/delayed texture blits) on startup, a full standart blit seems to help
-	// IOGfxDisplayGL2* display = dynamic_cast<IOGfxDisplayGL2*>(g_display);
-	// IOGfxGLFuncs* gl = display->gl;
-	// gl->UseProgram(display->program);
-	// gl->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	// SDL_GL_SwapWindow(display->window);
-	g_display->flip(IOGFX_backbuffer);
-
   /* Display splash picture, as early as possible */
   {
 	IOGfxSurface* splash = NULL;
