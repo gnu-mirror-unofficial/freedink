@@ -79,19 +79,29 @@ public:
 		SDL_SetColorKey(surf, SDL_TRUE, 0);
 		IOGfxSurface* tex3 = g->upload(surf);
 		//g->flip(tex3);
+
 		SDL_Rect dstrect = {200, 200, -1, -1};
 		tex1->blit(tex3, NULL, &dstrect);
+
 		dstrect.x = 210; dstrect.y = 210;
 		tex1->blit(tex3, NULL, &dstrect);
+
 		dstrect.x = -1; dstrect.y = -1;
 		tex1->blit(tex3, NULL, &dstrect);
+
 		dstrect.x = 330; dstrect.y = 350;
 		tex1->blit(tex3, NULL, &dstrect);
+
 		dstrect.x = 330; dstrect.y = 50;
 		tex1->blitNoColorKey(tex3, NULL, &dstrect);
+
 		dstrect.x = 330; dstrect.y = 50;
 		dstrect.w = 50; dstrect.h = 300;
 		tex1->blitStretch(tex3, NULL, &dstrect);
+
+		SDL_Rect srcrect = {55,6, 11,14};
+		dstrect.x = 50; dstrect.y = 280;
+		tex1->blit(tex3, &srcrect, &dstrect);
 		g->flip(tex1);
 
 		SDL_Delay(2000);

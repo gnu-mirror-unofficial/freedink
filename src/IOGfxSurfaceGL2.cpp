@@ -99,8 +99,25 @@ int IOGfxSurfaceGL2::internalBlit(IOGfxSurface* src, const SDL_Rect* srcrect, SD
 		0                  // offset of first element
 	);
 
+	GLuint vboCroppedSpriteTexcoords;
 	gl->EnableVertexAttribArray(display->attribute_v_texcoord);
-	gl->BindBuffer(GL_ARRAY_BUFFER, display->vboSpriteTexcoords);
+	if (srcrect == NULL) {
+		gl->BindBuffer(GL_ARRAY_BUFFER, display->vboSpriteTexcoords);
+	} else {
+		float x1 = 1.0 * srcrect->x / src_surf->w;
+		float y1 = 1.0 * srcrect->y / src_surf->h;
+		float x2 = 1.0 * (srcrect->x+srcrect->w) / src_surf->w;
+		float y2 = 1.0 * (srcrect->y+srcrect->h) / src_surf->h;
+		GLfloat croppedSpriteTexcoords[] = {
+			x1, y1,
+			x2, y1,
+			x1, y2,
+			x2, y2,
+		};
+		gl->GenBuffers(1, &vboCroppedSpriteTexcoords);
+		gl->BindBuffer(GL_ARRAY_BUFFER, vboCroppedSpriteTexcoords);
+		gl->BufferData(GL_ARRAY_BUFFER, sizeof(croppedSpriteTexcoords), croppedSpriteTexcoords, GL_STATIC_DRAW);
+	}
 	gl->VertexAttribPointer(
 		display->attribute_v_texcoord, // attribute
 		2,                  // number of elements per vertex, here (x,y)
@@ -113,6 +130,8 @@ int IOGfxSurfaceGL2::internalBlit(IOGfxSurface* src, const SDL_Rect* srcrect, SD
 	/* Push each element in buffer_vertices to the vertex shader */
 	gl->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
+	if (srcrect != NULL)
+		gl->DeleteBuffers(1, &vboCroppedSpriteTexcoords);
 	gl->DisableVertexAttribArray(display->attribute_v_coord);
 	gl->DisableVertexAttribArray(display->attribute_v_texcoord);
 
@@ -134,8 +153,13 @@ int IOGfxSurfaceGL2::blit(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* 
 		dstrect->y = 0;
 	}
 	// Force no-stretch blit
-	dstrect->w = src_surf->w;
-	dstrect->h = src_surf->h;
+	if (srcrect == NULL) {
+		dstrect->w = src_surf->w;
+		dstrect->h = src_surf->h;
+	} else {
+		dstrect->w = srcrect->w;
+		dstrect->h = srcrect->h;
+	}
 
 	return internalBlit(src, srcrect, dstrect, true);
 }
@@ -157,8 +181,13 @@ int IOGfxSurfaceGL2::blitNoColorKey(IOGfxSurface* src, const SDL_Rect* srcrect, 
 		dstrect->y = 0;
 	}
 	// Force no-stretch blit
-	dstrect->w = src_surf->w;
-	dstrect->h = src_surf->h;
+	if (srcrect == NULL) {
+		dstrect->w = src_surf->w;
+		dstrect->h = src_surf->h;
+	} else {
+		dstrect->w = srcrect->w;
+		dstrect->h = srcrect->h;
+	}
 
 	return internalBlit(src, srcrect, dstrect, false);
 }

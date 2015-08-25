@@ -86,6 +86,10 @@ bool IOGfxDisplayGL2::createOpenGLContext() {
 		return false;
 	}
 
+	// Let FramerateManager handle frame delay
+	// TODO: drop the extra SwapWindow/RenderPresent during speed mode
+	SDL_GL_SetSwapInterval(0);
+
 	gl = new IOGfxGLFuncs();
 
 	gl->Enable(GL_BLEND);
@@ -322,6 +326,8 @@ void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer) {
 	gl->Uniform1i(uniform_texture, /*GL_TEXTURE*/0);
 	gl->BindTexture(GL_TEXTURE_2D, texture);
 
+	// Y-inversed projection for top-left origin and top-bottom textures
+	// Beware that rotation is reversed too
 	glm::mat4 projection = glm::ortho(0.0f, 1.0f*w, 1.0f*h, 0.0f);
 	glm::mat4 m_transform;
 	m_transform = glm::translate(glm::mat4(1), glm::vec3(0.375, 0.375, 0.))
