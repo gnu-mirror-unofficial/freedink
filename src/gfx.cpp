@@ -156,9 +156,9 @@ int gfx_init(bool windowed, char* splash_path) {
   /* Display splash picture, as early as possible */
   {
 	IOGfxSurface* splash = NULL;
-    FILE* in = paths_dmodfile_fopen(splash_path, "r");
+    FILE* in = paths_dmodfile_fopen(splash_path, "rb");
     if (in == NULL) {
-      in = paths_fallbackfile_fopen(splash_path, "r");
+      in = paths_fallbackfile_fopen(splash_path, "rb");
     }
     if (in != NULL) {
       SDL_RWops* rw = SDL_RWFromFP(in, /*autoclose=*/SDL_TRUE);
