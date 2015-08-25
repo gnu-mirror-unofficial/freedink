@@ -25,14 +25,15 @@
 #endif
 
 #include "IOGfxDisplayGL2.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <string.h>
 
 #include "log.h"
 #include "IOGfxGLFuncs.h"
 #include "IOGfxSurfaceGL2.h"
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 IOGfxDisplayGL2::IOGfxDisplayGL2(int w, int h, bool truecolor, Uint32 flags)
 	: IOGfxDisplay(w, h, truecolor, flags | SDL_WINDOW_OPENGL),
@@ -132,11 +133,8 @@ bool IOGfxDisplayGL2::createSpriteVertices() {
 	};
 
 	gl->GenBuffers(1, &vboSpriteVertices);
-	gl->logGetError();
 	gl->BindBuffer(GL_ARRAY_BUFFER, vboSpriteVertices);
-	gl->logGetError();
 	gl->BufferData(GL_ARRAY_BUFFER, sizeof(spriteVertices), spriteVertices, GL_STATIC_DRAW);
-	gl->logGetError();
 	return true;
 }
 
@@ -148,11 +146,8 @@ bool IOGfxDisplayGL2::createSpriteTexcoords() {
 		1.0, 1.0,
 	};
 	gl->GenBuffers(1, &vboSpriteTexcoords);
-	gl->logGetError();
 	gl->BindBuffer(GL_ARRAY_BUFFER, vboSpriteTexcoords);
-	gl->logGetError();
 	gl->BufferData(GL_ARRAY_BUFFER, sizeof(spriteTexcoords), spriteTexcoords, GL_STATIC_DRAW);
-	gl->logGetError();
 	return true;
 }
 
@@ -313,7 +308,7 @@ void IOGfxDisplayGL2::clear() {
 
 SDL_Surface* IOGfxDisplayGL2::screenshot() {
 	// assume 4-bytes alignment
-	SDL_Surface* surface = SDL_CreateRGBSurface(0,
+	SDL_Surface* image = SDL_CreateRGBSurface(0,
 		w, h, 32,
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 		0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff
@@ -321,34 +316,25 @@ SDL_Surface* IOGfxDisplayGL2::screenshot() {
 		0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000
 #endif
 	);
-	SDL_LockSurface(surface);
-	gl->ReadPixels(0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
-	SDL_UnlockSurface(surface);
-	return surface;
-}
+	unsigned char* pixels = (unsigned char*)image->pixels;
+	gl->ReadPixels(0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
-void IOGfxDisplayGL2::screenshot(const char* output_file) {
-	SDL_Surface* surface = screenshot();
-	SDL_SaveBMP(surface, output_file);
-	SDL_FreeSurface(surface);
-}
+	// Flip vertically
+    unsigned int length = w*4;
+    unsigned char* src = pixels + (h-1)*length;
+    unsigned char* tmp = new unsigned char[length];
+    unsigned char* dst = pixels;
+    unsigned int rows = h / 2;
+    while (rows--) {
+        memcpy(tmp, dst, length);
+        memcpy(dst, src, length);
+        memcpy(src, tmp, length);
+        dst += length;
+        src -= length;
+    }
+    delete[] tmp;
 
-void IOGfxDisplayGL2::center_game_display(IOGfxSurfaceGL2* surf, SDL_Rect* rect) {
-	double game_ratio = 1.0 * surf->w / surf->h;
-	double disp_ratio = 1.0 * w / h;
-	if (game_ratio < disp_ratio) {
-		// left/right bars
-		rect->w = surf->w * h / surf->h;
-		rect->h = h;
-		rect->x = (w - rect->w) / 2;
-		rect->y = 0;
-	} else {
-		// top/bottom bars
-		rect->w = w;
-		rect->h = surf->h * w / surf->w;
-		rect->x = 0;
-		rect->y = (h - rect->h) / 2;
-	}
+	return image;
 }
 
 void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer) {
@@ -363,7 +349,7 @@ void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer) {
 	gl->BindTexture(GL_TEXTURE_2D, texture);
 
 	SDL_Rect dstrect;
-	center_game_display(surf, &dstrect);
+	centerScaledSurface(surf, &dstrect);
 
 	// Y-inversed projection for top-left origin and top-bottom textures
 	// Beware that rotation is reversed too

@@ -112,3 +112,35 @@ void IOGfxDisplay::toggleScreenKeyboard() {
 			SDL_StopTextInput();
 	}
 }
+
+
+void IOGfxDisplay::centerScaledSurface(IOGfxSurface* surf, SDL_Rect* dst) {
+	double game_ratio = 1.0 * surf->w / surf->h;
+	double disp_ratio = 1.0 * w / h;
+	if (game_ratio < disp_ratio) {
+		// left/right bars
+		dst->w = surf->w * h / surf->h;
+		dst->h = h;
+		dst->x = (w - dst->w) / 2;
+		dst->y = 0;
+	} else {
+		// top/bottom bars
+		dst->w = w;
+		dst->h = surf->h * w / surf->w;
+		dst->x = 0;
+		dst->y = (h - dst->h) / 2;
+	}
+}
+
+void IOGfxDisplay::surfToDisplayCoord(IOGfxSurface* backbuffer, int &x, int &y) {
+	SDL_Rect r;
+	centerScaledSurface(backbuffer, &r);
+	x = ceil(r.x + (1.0 * x / backbuffer->w) * r.w);
+	y = ceil(r.y + (1.0 * y / backbuffer->h) * r.h);
+}
+
+void IOGfxDisplay::screenshot(const char* output_file) {
+	SDL_Surface* image = screenshot();
+	SDL_SaveBMP(image, output_file);
+	SDL_FreeSurface(image);
+}

@@ -6,6 +6,8 @@
 
 class IOGfxSurface {
 public:
+	int w, h;
+	IOGfxSurface(int w, int h);
 	virtual ~IOGfxSurface();
 	virtual void fill_screen(int num, SDL_Color* palette) = 0;
 	virtual void fillRect(const SDL_Rect *rect, Uint8 r, Uint8 g, Uint8 b) = 0;

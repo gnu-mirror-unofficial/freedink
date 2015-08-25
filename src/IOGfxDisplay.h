@@ -29,6 +29,12 @@ public:
 	virtual void onSizeChange(int w, int h) = 0;
 	virtual IOGfxSurface* upload(SDL_Surface* s) = 0;
 
+	virtual void surfToDisplayCoord(IOGfxSurface* backbuffer, int &x, int &y);
+	virtual void centerScaledSurface(IOGfxSurface* surf, SDL_Rect* dst);
+
+	virtual SDL_Surface* screenshot() = 0;
+	void screenshot(const char* output_file);
+
 	bool createWindow();
 	void logWindowInfo();
 	void toggleFullScreen();

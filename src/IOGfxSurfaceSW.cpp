@@ -5,7 +5,8 @@
 
 #include "log.h"
 
-IOGfxSurfaceSW::IOGfxSurfaceSW(SDL_Surface* surf) {
+IOGfxSurfaceSW::IOGfxSurfaceSW(SDL_Surface* surf)
+: IOGfxSurface(surf->w, surf->h) {
 	this->surf = surf;
 }
 

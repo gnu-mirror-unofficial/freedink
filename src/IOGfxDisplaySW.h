@@ -23,13 +23,13 @@ public:
 	virtual void onSizeChange(int w, int h);
 	virtual IOGfxSurface* upload(SDL_Surface* s);
 
+	virtual SDL_Surface* screenshot();
+
 	bool createRenderer();
 	void logRenderersInfo();
 
 	bool createRenderTexture(int w, int h);
 	void logRenderTextureInfo();
-
-	void center_game_display(SDL_Surface* surf, SDL_Rect* rect);
 };
 
 #endif

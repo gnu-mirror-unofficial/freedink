@@ -11,7 +11,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 IOGfxSurfaceGL2::IOGfxSurfaceGL2(IOGfxDisplayGL2* display, GLuint texture, int w, int h, SDL_Color colorkey)
-	: display(display), texture(texture), w(w), h(h), colorkey(colorkey) {
+	: IOGfxSurface(w, h), display(display), texture(texture), colorkey(colorkey) {
 }
 
 IOGfxSurfaceGL2::~IOGfxSurfaceGL2() {
@@ -200,5 +200,6 @@ int IOGfxSurfaceGL2::blitNoColorKey(IOGfxSurface* src, const SDL_Rect* srcrect, 
 }
 
 unsigned int IOGfxSurfaceGL2::getMemUsage() {
+	// TODO
 	return 0;
 }

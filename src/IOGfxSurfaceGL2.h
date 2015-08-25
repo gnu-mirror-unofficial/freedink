@@ -12,7 +12,6 @@ class IOGfxSurfaceGL2: public IOGfxSurface {
 public:
 	IOGfxDisplayGL2* display;
 	GLuint texture;
-	int w, h;
 	SDL_Color colorkey;
 
 	IOGfxSurfaceGL2(IOGfxDisplayGL2* display, GLuint texture, int w, int h, SDL_Color colorkey);

@@ -138,25 +138,6 @@ void IOGfxDisplaySW::logRenderTextureInfo() {
 	log_info("Render texture: height: %d", h);
 }
 
-void IOGfxDisplaySW::center_game_display(SDL_Surface* surf, SDL_Rect* rect) {
-	double game_ratio = 1.0 * surf->w / surf->h;
-	double disp_ratio = 1.0 * w / h;
-	if (game_ratio < disp_ratio) {
-		// left/right bars
-		rect->w = surf->w * h / surf->h;
-		rect->h = h;
-		rect->x = (w - rect->w) / 2;
-		rect->y = 0;
-	} else {
-		// top/bottom bars
-		rect->w = w;
-		rect->h = surf->h * w / surf->w;
-		rect->x = 0;
-		rect->y = (h - rect->h) / 2;
-	}
-}
-
-
 void gfx_fade_apply(SDL_Surface* screen, int brightness) {
 	/* Check SDL_blit.h in the SDL source code for guidance */
 	SDL_LockSurface(screen);
@@ -217,7 +198,7 @@ void IOGfxDisplaySW::flip(IOGfxSurface* backbuffer) {
 
 	SDL_UpdateTexture(render_texture, NULL, source->pixels, source->pitch);
 	SDL_Rect dst;
-	center_game_display(source, &dst);
+	centerScaledSurface(backbuffer, &dst);
 	SDL_RenderCopy(renderer, render_texture, NULL, &dst);
 	SDL_RenderPresent(renderer);
 }
@@ -236,4 +217,21 @@ IOGfxSurface* IOGfxDisplaySW::upload(SDL_Surface* image) {
 	SDL_UnlockSurface(image);
 
 	return new IOGfxSurfaceSW(image);
+}
+
+SDL_Surface* IOGfxDisplaySW::screenshot() {
+	SDL_Surface* surface = SDL_CreateRGBSurface(0,
+		w, h, 32,
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+		0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff
+#else
+		0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000
+#endif
+	);
+	SDL_RenderReadPixels(renderer,
+		NULL,
+		SDL_PIXELFORMAT_RGBA8888,
+		surface->pixels,
+		surface->pitch);
+	return surface;
 }

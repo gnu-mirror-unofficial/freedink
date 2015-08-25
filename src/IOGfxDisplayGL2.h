@@ -53,6 +53,8 @@ public:
 	virtual void onSizeChange(int w, int h);
 	virtual IOGfxSurface* upload(SDL_Surface* image);
 
+	virtual SDL_Surface* screenshot();
+
 	bool createOpenGLContext();
 	void logOpenGLInfo();
 
@@ -66,9 +68,6 @@ public:
 	bool getLocations();
 	void androidWorkAround();
 
-	SDL_Surface* screenshot();
-	void screenshot(const char* out_filename);
-	void center_game_display(IOGfxSurfaceGL2* surf, SDL_Rect* rect);
 };
 
 #endif
