@@ -5,9 +5,9 @@
 
 #include "SDL.h"
 
-#include "IOGfxDisplayGL2.h"
 #include "IOGfxGLFuncs.h"
 
+class IOGfxDisplayGL2;
 class IOGfxSurfaceGL2: public IOGfxSurface {
 public:
 	IOGfxDisplayGL2* display;

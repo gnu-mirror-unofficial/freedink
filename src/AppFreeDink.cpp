@@ -91,7 +91,7 @@ static void freedink_input_global_shortcuts(SDL_Event* ev) {
 
 void freedink_input_window(SDL_Event* ev) {
 	if (ev->type == SDL_WINDOWEVENT) {
-		if (ev->window.event == SDL_WINDOWEVENT_RESIZED) {
+		if (ev->window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
 			int w = ev->window.data1;
 			int h = ev->window.data2;
 			g_display->onSizeChange(w, h);

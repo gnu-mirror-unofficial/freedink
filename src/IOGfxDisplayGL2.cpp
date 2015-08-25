@@ -57,6 +57,7 @@ bool IOGfxDisplayGL2::open() {
 	if (!createSpriteTexcoords()) return false;
 	if (!createProgram()) return false;
 	if (!getLocations()) return false;
+
 	return true;
 }
 
@@ -85,6 +86,11 @@ bool IOGfxDisplayGL2::createOpenGLContext() {
 		log_error("Could not create OpenGL context: %s", SDL_GetError());
 		return false;
 	}
+	if (SDL_GL_MakeCurrent(window, glcontext) < 0) {
+		SDL_GL_DeleteContext(glcontext);
+		log_error("Could not make OpenGL context current: %s", SDL_GetError());
+		return false;
+	}
 
 	// Let FramerateManager handle frame delay
 	// TODO: drop the extra SwapWindow/RenderPresent during speed mode
@@ -95,6 +101,7 @@ bool IOGfxDisplayGL2::createOpenGLContext() {
 	gl->Enable(GL_BLEND);
 	//gl->Enable(GL_DEPTH_TEST);
 	gl->BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	return true;
 }
 
@@ -315,6 +322,24 @@ void IOGfxDisplayGL2::screenshot(const char* output_file) {
 	SDL_FreeSurface(surface);
 }
 
+void IOGfxDisplayGL2::center_game_display(IOGfxSurfaceGL2* surf, SDL_Rect* rect) {
+	double game_ratio = 1.0 * surf->w / surf->h;
+	double disp_ratio = 1.0 * w / h;
+	if (game_ratio < disp_ratio) {
+		// left/right bars
+		rect->w = surf->w * h / surf->h;
+		rect->h = h;
+		rect->x = (w - rect->w) / 2;
+		rect->y = 0;
+	} else {
+		// top/bottom bars
+		rect->w = w;
+		rect->h = surf->h * w / surf->w;
+		rect->x = 0;
+		rect->y = (h - rect->h) / 2;
+	}
+}
+
 void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer) {
 	if (backbuffer == NULL)
 		SDL_SetError("IOGfxDisplayGL2::flip: passed a NULL surface");
@@ -326,13 +351,16 @@ void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer) {
 	gl->Uniform1i(uniform_texture, /*GL_TEXTURE*/0);
 	gl->BindTexture(GL_TEXTURE_2D, texture);
 
+	SDL_Rect dstrect;
+	center_game_display(surf, &dstrect);
+
 	// Y-inversed projection for top-left origin and top-bottom textures
 	// Beware that rotation is reversed too
 	glm::mat4 projection = glm::ortho(0.0f, 1.0f*w, 1.0f*h, 0.0f);
 	glm::mat4 m_transform;
 	m_transform = glm::translate(glm::mat4(1), glm::vec3(0.375, 0.375, 0.))
-		* glm::translate(glm::mat4(1.0f), glm::vec3(0,0, 0.0))
-		* glm::scale(glm::mat4(1.0f), glm::vec3(surf->w, surf->h, 0.0));
+		* glm::translate(glm::mat4(1.0f), glm::vec3(dstrect.x,dstrect.y, 0.0))
+		* glm::scale(glm::mat4(1.0f), glm::vec3(dstrect.w, dstrect.h, 0.0));
 	glm::mat4 mvp = projection * m_transform; // * view * model * anim;
 	gl->UniformMatrix4fv(uniform_mvp, 1, GL_FALSE, glm::value_ptr(mvp));
 	log_debug("%f %f %f %f", mvp[0][0], mvp[0][1], mvp[0][2], mvp[0][3]);
@@ -388,6 +416,8 @@ void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer) {
 }
 
 void IOGfxDisplayGL2::onSizeChange(int w, int h) {
+	this->w = w;
+	this->h = h;
 	gl->Viewport(0, 0, w, h);
 }
 

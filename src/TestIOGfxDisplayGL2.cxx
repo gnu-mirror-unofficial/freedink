@@ -42,12 +42,12 @@ public:
 
 	void test_graphics() {
 		//IOGfxDisplay* g = new IOGfxDisplayGL2(800, 600, true, SDL_WINDOW_HIDDEN);
-		IOGfxDisplay* g = new IOGfxDisplayGL2(800, 600, true, 0);
+		IOGfxDisplay* g = new IOGfxDisplayGL2(800, 480, true, 0);
 		bool opened = g->open();
 		TS_ASSERT_EQUALS(opened, true);
 		if (!opened)
 			return;
-		g->onSizeChange(800, 600);
+		g->onSizeChange(800, 480);
 
 		g->clear();
 		SDL_GL_SwapWindow(g->window);

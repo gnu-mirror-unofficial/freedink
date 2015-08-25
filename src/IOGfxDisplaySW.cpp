@@ -18,12 +18,15 @@ IOGfxDisplaySW::~IOGfxDisplaySW() {
 }
 
 bool IOGfxDisplaySW::open() {
+	int req_w = w;
+	int req_h = h;
+
 	if (!IOGfxDisplay::open()) return false;
 
 	if (!createRenderer()) return false;
 	logRenderersInfo();
 
-	if (!createRenderTexture()) return false;
+	if (!createRenderTexture(req_w, req_h)) return false;
 	logRenderTextureInfo();
 
 	return true;
@@ -95,7 +98,7 @@ void IOGfxDisplaySW::logRenderersInfo() {
 /**
  * Screen-like destination texture
  */
-bool IOGfxDisplaySW::createRenderTexture() {
+bool IOGfxDisplaySW::createRenderTexture(int w, int h) {
 	render_texture = SDL_CreateTexture(renderer,
 		SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, w, h);
 	if (render_texture == NULL) {
@@ -135,23 +138,21 @@ void IOGfxDisplaySW::logRenderTextureInfo() {
 	log_info("Render texture: height: %d", h);
 }
 
-void IOGfxDisplaySW::center_game_display(SDL_Renderer *rend, SDL_Rect* rect) {
-	int rend_w, rend_h;
-	SDL_RenderGetLogicalSize(rend, &rend_w, &rend_h);
-	double game_ratio = 1.0 * w / h;
-	double rend_ratio = 1.0 * rend_w / rend_h;
-	if (game_ratio < rend_ratio) {
+void IOGfxDisplaySW::center_game_display(SDL_Surface* surf, SDL_Rect* rect) {
+	double game_ratio = 1.0 * surf->w / surf->h;
+	double disp_ratio = 1.0 * w / h;
+	if (game_ratio < disp_ratio) {
 		// left/right bars
-		rect->w = w * rend_h / h;
-		rect->h = rend_h;
-		rect->x = (rend_w - rect->w) / 2;
+		rect->w = surf->w * h / surf->h;
+		rect->h = h;
+		rect->x = (w - rect->w) / 2;
 		rect->y = 0;
 	} else {
 		// top/bottom bars
-		rect->w = rend_w;
-		rect->h = h * rend_w / w;
+		rect->w = w;
+		rect->h = surf->h * w / surf->w;
 		rect->x = 0;
-		rect->y = (rend_h - rect->h) / 2;
+		rect->y = (h - rect->h) / 2;
 	}
 }
 
@@ -216,12 +217,14 @@ void IOGfxDisplaySW::flip(IOGfxSurface* backbuffer) {
 
 	SDL_UpdateTexture(render_texture, NULL, source->pixels, source->pitch);
 	SDL_Rect dst;
-	center_game_display(renderer, &dst);
+	center_game_display(source, &dst);
 	SDL_RenderCopy(renderer, render_texture, NULL, &dst);
 	SDL_RenderPresent(renderer);
 }
 
 void IOGfxDisplaySW::onSizeChange(int w, int h) {
+	this->w = w;
+	this->h = h;
 	SDL_RenderSetLogicalSize(renderer, w, h);
 }
 

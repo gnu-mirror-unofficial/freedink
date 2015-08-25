@@ -1,7 +1,9 @@
 #include "IOGfxSurfaceGL2.h"
 
 #include "SDL.h"
+
 #include "log.h"
+#include "IOGfxDisplayGL2.h"
 #include "IOGfxGLFuncs.h"
 
 #include <glm/glm.hpp>

@@ -27,6 +27,7 @@
 
 #include "IOGfxDisplay.h"
 #include "IOGfxGLFuncs.h"
+#include "IOGfxSurfaceGL2.h"
 
 class IOGfxGLFuncs;
 
@@ -66,6 +67,7 @@ public:
 
 	SDL_Surface* screenshot();
 	void screenshot(const char* out_filename);
+	void center_game_display(IOGfxSurfaceGL2* surf, SDL_Rect* rect);
 };
 
 #endif

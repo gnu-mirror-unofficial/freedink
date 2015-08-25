@@ -26,10 +26,10 @@ public:
 	bool createRenderer();
 	void logRenderersInfo();
 
-	bool createRenderTexture();
+	bool createRenderTexture(int w, int h);
 	void logRenderTextureInfo();
 
-	void center_game_display(SDL_Renderer *rend, SDL_Rect* rect);
+	void center_game_display(SDL_Surface* surf, SDL_Rect* rect);
 };
 
 #endif

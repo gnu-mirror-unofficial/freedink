@@ -63,6 +63,12 @@ bool IOGfxDisplay::createWindow() {
 		return false;
 	}
 
+	SDL_GetWindowSize(window, &w, &h);
+	// There's a delay between theoretical and actual full-screen resize, impacting e.g. in OpenGL targets
+	// TODO: fix me in SDL2 [master 2015-08]
+	if (flags & SDL_WINDOW_FULLSCREEN)
+		SDL_Delay(100);
+
 	/* Window configuration */
 	{
 		SDL_Surface *icon = NULL;
@@ -73,6 +79,7 @@ bool IOGfxDisplay::createWindow() {
 			SDL_FreeSurface(icon);
 		}
 	}
+
 	return true;
 }
 

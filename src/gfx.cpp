@@ -94,7 +94,7 @@ IOGfxDisplay* g_display = NULL;
 int gfx_init(bool windowed, char* splash_path) {
 	g_display = new IOGfxDisplaySW(GFX_RES_W, GFX_RES_H, truecolor,
 			windowed ? SDL_WINDOW_RESIZABLE : SDL_WINDOW_FULLSCREEN_DESKTOP);
-	/* Note: SDL_WINDOW_FULLSCREEN[!_DESKTOP] may not respect aspect ratio */
+	/* Note: SDL_WINDOW_FULLSCREEN may not respect aspect ratio, _DESKTOP does */
 	if (!g_display->open()) {
 		log_error("Could not open display");
 		return -1;
@@ -108,7 +108,7 @@ int gfx_init(bool windowed, char* splash_path) {
 				&Rmask, &Gmask, &Bmask, &Amask);
 		ImageLoader::blitFormat = SDL_CreateRGBSurface(0, 1, 1, bpp,
 				Rmask, Gmask, Bmask, Amask);
-		GFX_backbuffer = SDL_CreateRGBSurface(0, 640, 480, bpp,
+		GFX_backbuffer = SDL_CreateRGBSurface(0, GFX_RES_W, GFX_RES_H, bpp,
 				Rmask, Gmask, Bmask, Amask);
 
 		log_info("Main buffer: %s %d-bit R=0x%08x G=0x%08x B=0x%08x A=0x%08x",
@@ -142,6 +142,7 @@ int gfx_init(bool windowed, char* splash_path) {
 	SDL_Surface* GFX_tmp2 = SDL_ConvertSurface(GFX_backbuffer, GFX_backbuffer->format, 0);
 
 	IOGFX_backbuffer = g_display->upload(GFX_backbuffer);
+	// TODO: make backbuffer resize quality linear instead of nearest
 	IOGFX_background = g_display->upload(GFX_background);
 	IOGFX_tmp1 = g_display->upload(GFX_tmp1);
 	IOGFX_tmp2 = g_display->upload(GFX_tmp2);
@@ -162,10 +163,11 @@ int gfx_init(bool windowed, char* splash_path) {
     if (in != NULL) {
       SDL_RWops* rw = SDL_RWFromFP(in, /*autoclose=*/SDL_TRUE);
       SDL_Surface* image = IMG_Load_RW(rw, 1);
-      splash = g_display->upload(image);
+      if (image != NULL)
+        splash = g_display->upload(image);
     }
     if (splash == NULL) {
-	  log_error("Cannot load base graphics %s", splash_path);
+	  log_error("Cannot load splash image %s", splash_path);
     } else {
 	/* Copy splash to the background buffer so that D-Mod can
 	   start an effect from it (e.g. Pilgrim Quest's burning
