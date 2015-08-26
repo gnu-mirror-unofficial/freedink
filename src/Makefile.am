@@ -128,8 +128,8 @@ if HAVE_TESTS
 check_PROGRAMS = test_str_util test_io_util TestEditorMap		\
 	test_editor_screen test_dinkini test_dinkc test_dinkc_console	\
 	test_dinkc_bindings test_live_sprites_manager test_brain_text	\
-	test_text TestIOGfxDisplayGL2 TestIOGfxDisplaySW		\
-	TestIOTouchDragAnywhere test_integration
+	test_text TestIOGfxDisplay TestIOTouchDragAnywhere		\
+	test_integration
 .cxx.cpp:
 	$(CXXTESTGEN) --error-printer \
 		--include test_android_workaround.h \
@@ -214,14 +214,11 @@ test_integration_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 	game_state.cpp game_state.h i18n.cpp i18n.h inventory.cpp	\
 	inventory.h meminfo.cpp meminfo.h savegame.cpp savegame.h	\
 	status.cpp status.h text.cpp text.h test_integration.cpp
-TestIOGfxDisplaySW_SOURCES = TestIOGfxDisplaySW.cpp		\
-	IOGfxDisplaySW.cpp IOGfxDisplay.cpp IOGfxSurfaceSW.cpp	\
-	IOGfxSurface.cpp gfx_palette.cpp paths.cpp io_util.cpp	\
-	str_util.cpp log.cpp freedink_xpm.cpp
-TestIOGfxDisplayGL2_SOURCES = TestIOGfxDisplayGL2.cpp			\
-	IOGfxDisplayGL2.cpp IOGfxDisplay.cpp IOGfxSurfaceGL2.cpp	\
-	IOGfxSurface.cpp IOGfxGLFuncs.cpp log.cpp freedink_xpm.cpp	\
-	SDL_android_main.c
+TestIOGfxDisplay_SOURCES = TestIOGfxDisplay.cpp IOGfxDisplayGL2.cpp	\
+	IOGfxDisplaySW.cpp IOGfxDisplay.cpp IOGfxSurfaceGL2.cpp		\
+	IOGfxSurfaceSW.cpp IOGfxSurface.cpp IOGfxGLFuncs.cpp		\
+	gfx_palette.cpp paths.cpp io_util.cpp str_util.cpp log.cpp	\
+	freedink_xpm.cpp SDL_android_main.c
 # Tests to run
 TESTS = $(check_PROGRAMS)
 
@@ -234,8 +231,7 @@ if ANDROID
 LOG_DRIVER = $(SHELL) $(top_srcdir)/android/remote-test-driver
 # Needs graphics, will be marked as SKIP
 # Can be tested manually by replacing libmain.so with it
-TestIOGfxDisplayGL2_LDFLAGS = -shared
-TestIOGfxDisplaySW_LDFLAGS = -shared
+TestIOGfxDisplay_LDFLAGS = -shared
 else
 # need to redefine it explicitely because we modified it for ANDROID :/
 LOG_DRIVER = $(SHELL) $(top_srcdir)/autotools/test-driver

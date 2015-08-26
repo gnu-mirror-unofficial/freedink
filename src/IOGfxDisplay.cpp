@@ -132,11 +132,14 @@ void IOGfxDisplay::centerScaledSurface(IOGfxSurface* surf, SDL_Rect* dst) {
 	}
 }
 
-void IOGfxDisplay::surfToDisplayCoord(IOGfxSurface* backbuffer, int &x, int &y) {
+void IOGfxDisplay::surfToDisplayCoords(IOGfxSurface* backbuffer, int &x, int &y) {
 	SDL_Rect r;
 	centerScaledSurface(backbuffer, &r);
-	x = ceil(r.x + (1.0 * x / backbuffer->w) * r.w);
-	y = ceil(r.y + (1.0 * y / backbuffer->h) * r.h);
+	// center of scaled pixels:
+	double fx = x+0.5;
+	double fy = y+0.5;
+	x = r.x + (fx / backbuffer->w) * r.w;
+	y = r.y + (fy / backbuffer->h) * r.h;
 }
 
 void IOGfxDisplay::screenshot(const char* output_file) {

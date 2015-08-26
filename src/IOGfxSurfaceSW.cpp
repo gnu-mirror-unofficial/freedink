@@ -5,36 +5,36 @@
 
 #include "log.h"
 
-IOGfxSurfaceSW::IOGfxSurfaceSW(SDL_Surface* surf)
-: IOGfxSurface(surf->w, surf->h) {
-	this->surf = surf;
+IOGfxSurfaceSW::IOGfxSurfaceSW(SDL_Surface* image)
+: IOGfxSurface(image->w, image->h) {
+	this->image = image;
 }
 
 IOGfxSurfaceSW::~IOGfxSurfaceSW() {
-	SDL_FreeSurface(surf);
+	SDL_FreeSurface(image);
 }
 
 /* Function specifically made for Dink'C fill_screen() */
 void IOGfxSurfaceSW::fill_screen(int num, SDL_Color* palette) {
 	/* Warning: palette indexes 0 and 255 are hard-coded
 	   to black and white (cf. gfx_palette.c). */
-	if (surf->format->format == SDL_PIXELFORMAT_INDEX8)
-		SDL_FillRect(surf, NULL, num);
+	if (image->format->format == SDL_PIXELFORMAT_INDEX8)
+		SDL_FillRect(image, NULL, num);
 	else
-		SDL_FillRect(surf, NULL, SDL_MapRGB(surf->format, palette[num].r, palette[num].g, palette[num].b));
+		SDL_FillRect(image, NULL, SDL_MapRGB(image->format, palette[num].r, palette[num].g, palette[num].b));
 }
 
 void IOGfxSurfaceSW::fillRect(const SDL_Rect *rect, Uint8 r, Uint8 g, Uint8 b) {
-	SDL_FillRect(surf, rect, SDL_MapRGB(surf->format, r, g, b));
+	SDL_FillRect(image, rect, SDL_MapRGB(image->format, r, g, b));
 }
 
 void IOGfxSurfaceSW::vlineRGB(Sint16 x, Sint16 y1, Sint16 y2, Uint8 r, Uint8 g, Uint8 b) {
 	SDL_Rect dst = { x, y1, 1, y2-y1 };
-	SDL_FillRect(surf, &dst, SDL_MapRGB(surf->format, r, g, b));
+	SDL_FillRect(image, &dst, SDL_MapRGB(image->format, r, g, b));
 }
 void IOGfxSurfaceSW::hlineRGB(Sint16 x1, Sint16 x2, Sint16 y, Uint8 r, Uint8 g, Uint8 b) {
 	SDL_Rect dst = { x1, y, x2-x1, 1 };
-	SDL_FillRect(surf, &dst, SDL_MapRGB(surf->format, r, g, b));
+	SDL_FillRect(image, &dst, SDL_MapRGB(image->format, r, g, b));
 }
 
 
@@ -43,14 +43,14 @@ void IOGfxSurfaceSW::drawBox(rect box, int color) {
 	dst.x = box.left; dst.y = box.top;
 	dst.w = box.right - box.left;
 	dst.h = box.bottom - box.top;
-	SDL_FillRect(surf, &dst, color);
+	SDL_FillRect(image, &dst, color);
 }
 
 int IOGfxSurfaceSW::blit(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* dstrect) {
 	if (src == NULL)
 		return SDL_SetError("IOGfxSurfaceSW::blit: passed a NULL surface");
-	SDL_Surface* src_sdl = dynamic_cast<IOGfxSurfaceSW*>(src)->surf;
-	return SDL_BlitSurface(src_sdl, srcrect, surf, dstrect);
+	SDL_Surface* src_sdl = dynamic_cast<IOGfxSurfaceSW*>(src)->image;
+	return SDL_BlitSurface(src_sdl, srcrect, image, dstrect);
 }
 
 /**
@@ -110,8 +110,8 @@ int gfx_blit_stretch(SDL_Surface *src_surf, const SDL_Rect *src_rect_opt,
 int IOGfxSurfaceSW::blitStretch(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* dstrect) {
 	if (src == NULL)
 		return SDL_SetError("IOGfxSurfaceSW::blitStretch: passed a NULL surface");
-	SDL_Surface* src_sdl = dynamic_cast<IOGfxSurfaceSW*>(src)->surf;
-	return gfx_blit_stretch(src_sdl, srcrect, surf, dstrect);
+	SDL_Surface* src_sdl = dynamic_cast<IOGfxSurfaceSW*>(src)->image;
+	return gfx_blit_stretch(src_sdl, srcrect, image, dstrect);
 }
 
 /**
@@ -148,11 +148,11 @@ int gfx_blit_nocolorkey(SDL_Surface *src, const SDL_Rect *src_rect,
 int IOGfxSurfaceSW::blitNoColorKey(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* dstrect) {
 	if (src == NULL)
 		return SDL_SetError("IOGfxSurfaceSW::blitNoColorKey: passed a NULL surface");
-	SDL_Surface* src_sdl = dynamic_cast<IOGfxSurfaceSW*>(src)->surf;
-	return gfx_blit_nocolorkey(src_sdl, srcrect, surf, dstrect);
+	SDL_Surface* src_sdl = dynamic_cast<IOGfxSurfaceSW*>(src)->image;
+	return gfx_blit_nocolorkey(src_sdl, srcrect, image, dstrect);
 }
 
 unsigned int IOGfxSurfaceSW::getMemUsage() {
 	// TODO: take RLE and metadata into account
-	return surf->h * surf->pitch;
+	return image->h * image->pitch;
 }

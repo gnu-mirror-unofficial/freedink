@@ -6,8 +6,8 @@
 
 class IOGfxSurfaceSW: public IOGfxSurface {
 public:
-	SDL_Surface* surf;
-	IOGfxSurfaceSW(SDL_Surface* s);
+	SDL_Surface* image;
+	IOGfxSurfaceSW(SDL_Surface* image);
 	virtual ~IOGfxSurfaceSW();
 	virtual void fill_screen(int num, SDL_Color* palette);
 	virtual void fillRect(const SDL_Rect *rect, Uint8 r, Uint8 g, Uint8 b);

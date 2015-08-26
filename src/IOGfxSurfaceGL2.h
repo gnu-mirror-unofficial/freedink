@@ -1,5 +1,5 @@
-#ifndef IOGFXSURFACESW_H
-#define IOGFXSURFACESW_H
+#ifndef IOGFXSURFACEGL2_H
+#define IOGFXSURFACEGL2_H
 
 #include "IOGfxSurface.h"
 

@@ -173,7 +173,7 @@ void IOGfxDisplaySW::flip(IOGfxSurface* backbuffer) {
 	   palette and fade_down/fade_up. */
 
 	/* Convert to destination buffer format */
-	SDL_Surface* source = dynamic_cast<IOGfxSurfaceSW*>(backbuffer)->surf;
+	SDL_Surface* source = dynamic_cast<IOGfxSurfaceSW*>(backbuffer)->image;
 
 	if (brightness < 256)
 		gfx_fade_apply(source, brightness);
@@ -220,18 +220,19 @@ IOGfxSurface* IOGfxDisplaySW::upload(SDL_Surface* image) {
 }
 
 SDL_Surface* IOGfxDisplaySW::screenshot() {
+	Uint32 Rmask=0, Gmask=0, Bmask=0, Amask=0; int bpp=0;
+	SDL_PixelFormatEnumToMasks(SDL_PIXELFORMAT_RGBA8888, &bpp,
+		&Rmask, &Gmask, &Bmask, &Amask);
 	SDL_Surface* surface = SDL_CreateRGBSurface(0,
-		w, h, 32,
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-		0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff
-#else
-		0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000
-#endif
-	);
-	SDL_RenderReadPixels(renderer,
-		NULL,
-		SDL_PIXELFORMAT_RGBA8888,
-		surface->pixels,
-		surface->pitch);
+		w, h, 32, Rmask, Gmask, Bmask, Amask);
+
+	if (SDL_RenderReadPixels(renderer,
+	    NULL, SDL_PIXELFORMAT_RGBA8888,
+	    surface->pixels, surface->pitch) < 0) {
+		log_error("IOGfxDisplaySW::screenshot: %s", SDL_GetError());
+		SDL_FreeSurface(surface);
+		return NULL;
+	}
+
 	return surface;
 }

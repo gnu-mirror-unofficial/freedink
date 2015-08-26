@@ -27,7 +27,6 @@
 
 #include "IOGfxDisplay.h"
 #include "IOGfxGLFuncs.h"
-#include "IOGfxSurfaceGL2.h"
 
 class IOGfxGLFuncs;
 
