@@ -30,6 +30,13 @@ bool IOGfxDisplay::open() {
 
 	log_info("Truecolor mode: %s", truecolor ? "on" : "off");
 
+	Uint32 Rmask=0, Gmask=0, Bmask=0, Amask=0; int bpp=0;
+	SDL_PixelFormatEnumToMasks(getFormat(), &bpp,
+		&Rmask, &Gmask, &Bmask, &Amask);
+	log_info("SW buffer format: %s %d-bit R=0x%08x G=0x%08x B=0x%08x A=0x%08x",
+			SDL_GetPixelFormatName(getFormat()),
+			bpp, Rmask, Gmask, Bmask, Amask);
+
 	if (!createWindow()) return false;
 	logWindowInfo();
 

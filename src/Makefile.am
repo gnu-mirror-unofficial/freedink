@@ -217,8 +217,8 @@ test_integration_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\
 TestIOGfxDisplay_SOURCES = TestIOGfxDisplay.cpp IOGfxDisplayGL2.cpp	\
 	IOGfxDisplaySW.cpp IOGfxDisplay.cpp IOGfxSurfaceGL2.cpp		\
 	IOGfxSurfaceSW.cpp IOGfxSurface.cpp IOGfxGLFuncs.cpp		\
-	gfx_palette.cpp paths.cpp io_util.cpp str_util.cpp log.cpp	\
-	freedink_xpm.cpp SDL_android_main.c
+	ImageLoader.cpp gfx_palette.cpp paths.cpp io_util.cpp		\
+	str_util.cpp log.cpp freedink_xpm.cpp SDL_android_main.c
 # Tests to run
 TESTS = $(check_PROGRAMS)
 

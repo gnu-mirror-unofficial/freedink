@@ -53,7 +53,7 @@ extern Uint32 truecolor_fade_lasttick;
 extern FPSmanager framerate_manager;
 
 
-extern int gfx_init(bool windowed, char* splash_path);
+extern int gfx_init(bool dinkgl, bool windowed, char* splash_path);
 extern void gfx_quit(void);
 extern void gfx_log_meminfo(void);
 

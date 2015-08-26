@@ -482,3 +482,30 @@ IOGfxSurface* IOGfxDisplayGL2::upload(SDL_Surface* surf) {
 	SDL_FreeSurface(surf);
 	return new IOGfxSurfaceGL2(this, texture, w, h, colorkey);
 }
+
+IOGfxSurface* IOGfxDisplayGL2::alloc(int surfW, int surfH) {
+	GLuint texture = -1;
+	gl->GenTextures(1, &texture);
+	gl->BindTexture(GL_TEXTURE_2D, texture);
+	gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	SDL_Color colorkey = {0,0,0, SDL_ALPHA_OPAQUE};
+
+	// Blank texture
+	unsigned char* pixels = new unsigned char[(surfW+(4-surfW%4))*4 * surfH];
+	gl->TexImage2D(GL_TEXTURE_2D, // target
+			0,       // level, 0 = base, no minimap,
+			GL_RGB,  // internalformat
+			surfW, // width
+			surfH, // height
+			0,       // border, always 0 in OpenGL ES
+			GL_RGB,  // format
+			GL_UNSIGNED_BYTE, // type
+			pixels);
+	delete[] pixels;
+
+	return new IOGfxSurfaceGL2(this, texture, surfW, surfH, colorkey);
+}

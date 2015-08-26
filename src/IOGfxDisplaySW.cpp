@@ -5,6 +5,7 @@
 #include "IOGfxDisplaySW.h"
 #include "IOGfxSurfaceSW.h"
 #include "gfx_palette.h"
+#include "ImageLoader.h" /* GFX_ref_pal */ // TODO: break dep
 
 #include "log.h"
 
@@ -178,7 +179,7 @@ void IOGfxDisplaySW::flip(IOGfxSurface* backbuffer) {
 	if (brightness < 256)
 		gfx_fade_apply(source, brightness);
 
-	if (source->format->format == SDL_PIXELFORMAT_INDEX8) {
+	if (!truecolor) {
 		/* Convert 8-bit buffer for truecolor texture upload */
 
 		/* Use "physical" screen palette - use SDL_SetPaletteColors to invalidate SDL cache */
@@ -209,16 +210,6 @@ void IOGfxDisplaySW::onSizeChange(int w, int h) {
 	SDL_RenderSetLogicalSize(renderer, w, h);
 }
 
-IOGfxSurface* IOGfxDisplaySW::upload(SDL_Surface* image) {
-	/* Set RLE encoding to save memory space and improve perfs if colorkey */
-	SDL_SetSurfaceRLE(image, SDL_TRUE);
-	/* Force RLE-encode */
-	SDL_LockSurface(image);
-	SDL_UnlockSurface(image);
-
-	return new IOGfxSurfaceSW(image);
-}
-
 SDL_Surface* IOGfxDisplaySW::screenshot() {
 	Uint32 Rmask=0, Gmask=0, Bmask=0, Amask=0; int bpp=0;
 	SDL_PixelFormatEnumToMasks(SDL_PIXELFORMAT_RGBA8888, &bpp,
@@ -235,4 +226,31 @@ SDL_Surface* IOGfxDisplaySW::screenshot() {
 	}
 
 	return surface;
+}
+
+IOGfxSurface* IOGfxDisplaySW::upload(SDL_Surface* image) {
+	/* Set RLE encoding to save memory space and improve perfs if colorkey */
+	SDL_SetSurfaceRLE(image, SDL_TRUE);
+	/* Force RLE-encode */
+	SDL_LockSurface(image);
+	SDL_UnlockSurface(image);
+
+	return new IOGfxSurfaceSW(image);
+}
+
+IOGfxSurface* IOGfxDisplaySW::alloc(int surfW, int surfH) {
+	Uint32 Rmask=0, Gmask=0, Bmask=0, Amask=0; int bpp=0;
+	SDL_PixelFormatEnumToMasks(getFormat(), &bpp, &Rmask, &Gmask, &Bmask, &Amask);
+	SDL_Surface* image = SDL_CreateRGBSurface(0, surfW, surfH, bpp, Rmask, Gmask, Bmask, Amask);
+
+	/* When a new image is loaded in DX, it's color-converted using the
+	   main palette (possibly altering the colors to match the palette);
+	   currently we emulate that by wrapping SDL_LoadBMP, converting
+	   image to the internal palette at load time - and we never change
+	   the buffer's palette again, so we're sure there isn't any
+	   conversion even if we change the screen palette: */
+	if (!truecolor)
+		SDL_SetPaletteColors(image->format->palette, GFX_ref_pal, 0, 256);
+
+	return new IOGfxSurfaceSW(image);
 }

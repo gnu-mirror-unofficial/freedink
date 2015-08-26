@@ -22,6 +22,7 @@ public:
 	virtual void flip(IOGfxSurface* backbuffer);
 	virtual void onSizeChange(int w, int h);
 	virtual IOGfxSurface* upload(SDL_Surface* s);
+	virtual IOGfxSurface* alloc(int surfW, int surfH);
 
 	virtual SDL_Surface* screenshot();
 

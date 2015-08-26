@@ -73,12 +73,7 @@ public:
 		SDL_Surface* surf;
 		IOGfxSurface *backbuffer, *splash;
 
-		Uint32 Rmask=0, Gmask=0, Bmask=0, Amask=0; int bpp=0;
-		SDL_PixelFormatEnumToMasks(display->getFormat(), &bpp,
-			&Rmask, &Gmask, &Bmask, &Amask);
-		surf = SDL_CreateRGBSurface(0, 5, 5, bpp,
-			Rmask, Gmask, Bmask, Amask);
-		backbuffer = display->upload(surf);
+		backbuffer = display->alloc(5, 5);
 		//g->flip(backbuffer); // not a single flip
 
 		surf = SDL_CreateRGBSurface(0, 4, 4, 8,
@@ -124,13 +119,13 @@ public:
 		TS_ASSERT_EQUALS(cg, 255);
 		TS_ASSERT_EQUALS(cb, 0);
 		TS_ASSERT_EQUALS(ca, 255);
-		SDL_SaveBMP(screenshot, "1testSplash.bmp");
+		//SDL_SaveBMP(screenshot, "1testSplash.bmp");
 		SDL_FreeSurface(screenshot);
 
 		delete splash;
 		delete backbuffer;
 	}
-	void testSplashScreenGL2Truecolor() {
+	void test01SplashScreenGL2Truecolor() {
 		openDisplay(true, true, SDL_WINDOW_HIDDEN);
 		ctestSplashScreen();
 		closeDisplay();
@@ -164,6 +159,24 @@ public:
 		// wait for us to see
 		SDL_Delay(2000);
 
+		closeDisplay();
+	}
+
+
+	void ctest_alloc() {
+		IOGfxSurface* surf = display->alloc(300, 300);
+		TS_ASSERT(surf != NULL);
+		TS_ASSERT_EQUALS(surf->w, 300);
+		TS_ASSERT_EQUALS(surf->h, 300);
+	}
+	void test_allowGL2() {
+		openDisplay(true, true, SDL_WINDOW_HIDDEN);
+		ctest_alloc();
+		closeDisplay();
+	}
+	void test_allowSW() {
+		openDisplay(false, true, SDL_WINDOW_HIDDEN);
+		ctest_alloc();
 		closeDisplay();
 	}
 

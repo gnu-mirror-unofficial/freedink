@@ -34,6 +34,7 @@ public:
 	int g_b_no_write_ini; // -noini passed to command line?
 	int opt_version;
 	bool dinkini_playmidi;
+	bool dinkgl;
 	bool windowed;
 
 	App();

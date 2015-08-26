@@ -28,6 +28,7 @@ public:
 	virtual void flip(IOGfxSurface* backbuffer) = 0;
 	virtual void onSizeChange(int w, int h) = 0;
 	virtual IOGfxSurface* upload(SDL_Surface* s) = 0;
+	virtual IOGfxSurface* alloc(int surfW, int surfH) = 0;
 
 	virtual void surfToDisplayCoords(IOGfxSurface* backbuffer, int &x, int &y);
 	virtual void centerScaledSurface(IOGfxSurface* surf, SDL_Rect* dst);

@@ -167,6 +167,9 @@ void App::print_help(int argc, char *argv[])
   printf(_("  -w, --window          Use windowed mode instead of screen mode\n"));
   printf(_("  -7, --v1.07           Enable v1.07 compatibility mode\n"));
   printf("\n");
+  // Tentative option names:
+  //printf(_("  --dinkgl              Full OpenGL acceleration\n"));
+  //printf(_("  --soft                Semi-accelerated rendering with software surfaces\n"));
 
   /* printf ("Type 'info freedink' for more information\n"); */
 
@@ -189,7 +192,7 @@ App::App() :
   g_b_no_write_ini(0),
   opt_version(108),
   dinkini_playmidi(false),
-  windowed(false) {
+  dinkgl(false), windowed(false) {
   /* chdir to resource paths under woe&android */
   app_chdir();
 
@@ -250,10 +253,11 @@ bool App::check_arg(int argc, char *argv[]) {
 			{"v1.07",     no_argument,       NULL, '7'},
 			{"truecolor", no_argument,       NULL, 't'},
 			{"nomovie"  , no_argument,       NULL, ','},
+			{"dinkgl"   , no_argument,       NULL, 'o'}, // non-final
 			{0, 0, 0, 0}
 		};
 	
-	char short_options[] = "dr:g:hijsvw7t";
+	char short_options[] = "dr:g:hijsvw7to";
 	
 	/* Loop through each argument */
 	while ((c = getopt_long_only (argc, argv, short_options, long_options, NULL)) != EOF)
@@ -279,7 +283,7 @@ bool App::check_arg(int argc, char *argv[]) {
 		case 'i':
 			g_b_no_write_ini = 1;
 			break;
-      case 's':
+		case 's':
 		  sound_on = 0;
 		  break;
 		case 'v':
@@ -293,6 +297,9 @@ bool App::check_arg(int argc, char *argv[]) {
 			break;
 		case 't':
 			truecolor = 1;
+			break;
+		case 'o':
+			dinkgl = 1;
 			break;
 		case ',':
 			printf(_("Note: -nomovie is accepted for compatiblity, but has no effect.\n"));
@@ -361,7 +368,7 @@ int App::main(int argc, char *argv[]) {
   //atexit(app_quit);
 
   /* GFX */
-  if (gfx_init(windowed, splash_path) < 0) {
+  if (gfx_init(dinkgl, windowed, splash_path) < 0) {
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, PACKAGE_STRING,
 							 log_getLastLog(), NULL);
 	return EXIT_FAILURE;
