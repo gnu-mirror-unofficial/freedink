@@ -32,13 +32,15 @@
 #include "SDL_image.h"
 #include "freedink_xpm.h"
 #include "log.h"
+#include "ImageLoader.h" /* GFX_ref_pal */ // TODO: break dep
+#include "gfx_palette.h"
 
 /**
  * Test graphics output
  * Shortcomings:
  * - Buggy driver init
  * - SDL_Renderer drops all ops when window is hidden; use a visible window
- * - Android display is 16-bit, so use fuzzy color matching
+ * - Android display is 16-bit, so use fuzzy color comparisons
  * - Stretched display (fullscreen and Android) use linear interpolation, so use fuzzy pixel positions
  * - No OpenGL ES 2.0 API to retrieve texture contents, only retrieve main buffer
  */
@@ -49,6 +51,21 @@ public:
 	void setUp() {
 		TS_ASSERT_EQUALS(SDL_InitSubSystem(SDL_INIT_VIDEO), 0);
 		// SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
+
+		// init palette; hopefully can be removed if we get rid of blitFormat
+		for (int i = 0; i < 256; i++) {
+			GFX_ref_pal[i].r = i;
+			GFX_ref_pal[i].g = i;
+			GFX_ref_pal[i].b = i;
+			GFX_ref_pal[i].a = 255;
+		}
+		// Use a color that fail tests if RGBA->ABGR-reversed
+		// Fully saturated green to avoid fuzzy color comparisons
+		GFX_ref_pal[1].r = 255;
+		GFX_ref_pal[1].g = 255;
+		GFX_ref_pal[1].b = 0;
+		GFX_ref_pal[1].a = 255;
+		gfx_palette_set_phys(GFX_ref_pal);
 	}
 	void tearDown() {
 		SDL_QuitSubSystem(SDL_INIT_VIDEO);
@@ -70,31 +87,24 @@ public:
 	void ctestSplashScreen() {
 		// A first inter-texture blit before anything else
 		// Tests IOGfxDisplayGL2->androidWorkAround()
-		SDL_Surface* surf;
+		SDL_Surface* image;
 		IOGfxSurface *backbuffer, *splash;
 
 		backbuffer = display->alloc(5, 5);
 		//g->flip(backbuffer); // not a single flip
 
-		surf = SDL_CreateRGBSurface(0, 4, 4, 8,
+		image = SDL_CreateRGBSurface(0, 4, 4, 8,
 			0, 0, 0, 0);
-		Uint8* pixels = (Uint8*)surf->pixels;
-		surf->format->palette->colors[0].r = 255;
-		surf->format->palette->colors[0].g = 255;
-		surf->format->palette->colors[0].b = 255;
-		surf->format->palette->colors[0].a = 255;
-		surf->format->palette->colors[1].r = 255;
-		surf->format->palette->colors[1].g = 255;
-		surf->format->palette->colors[1].b = 0;
-		surf->format->palette->colors[1].a = 255;
+		Uint8* pixels = (Uint8*)image->pixels;
+		SDL_SetPaletteColors(image->format->palette, GFX_ref_pal, 0, 256);
 		pixels[0] = 1;
 		pixels[1] = 1;
 		pixels[2] = 1;
 		pixels[3] = 1;
-		pixels[surf->pitch+0] = 1;
-		pixels[surf->pitch+1] = 1;
-		pixels[surf->pitch+2] = 1;
-		splash = display->upload(surf);
+		pixels[image->pitch+0] = 1;
+		pixels[image->pitch+1] = 1;
+		pixels[image->pitch+2] = 1;
+		splash = display->upload(image);
 		//g->flip(splash); // not a single flip
 
 		SDL_Rect dstrect = {0, 0, -1, -1};
@@ -119,7 +129,7 @@ public:
 		TS_ASSERT_EQUALS(cg, 255);
 		TS_ASSERT_EQUALS(cb, 0);
 		TS_ASSERT_EQUALS(ca, 255);
-		//SDL_SaveBMP(screenshot, "1testSplash.bmp");
+		SDL_SaveBMP(screenshot, "1testSplash.bmp");
 		SDL_FreeSurface(screenshot);
 
 		delete splash;
@@ -141,10 +151,9 @@ public:
 		closeDisplay();
 	}
 	void testSplashScreenSW() {
-		// TODO: init palette
-		//openDisplay(false, false, 0);
-		//ctestSplashScreen();
-		//closeDisplay();
+		openDisplay(false, false, 0);
+		ctestSplashScreen();
+		closeDisplay();
 	}
 	void debug2SplashScreenSWTruecolor() {
 		openDisplay(false, true, 0);
@@ -169,12 +178,12 @@ public:
 		TS_ASSERT_EQUALS(surf->w, 300);
 		TS_ASSERT_EQUALS(surf->h, 300);
 	}
-	void test_allowGL2() {
+	void test_allocGL2() {
 		openDisplay(true, true, SDL_WINDOW_HIDDEN);
 		ctest_alloc();
 		closeDisplay();
 	}
-	void test_allowSW() {
+	void test_allocSW() {
 		openDisplay(false, true, SDL_WINDOW_HIDDEN);
 		ctest_alloc();
 		closeDisplay();
@@ -199,13 +208,8 @@ public:
 		img = SDL_CreateRGBSurface(0, 5, 5, 8,
 			0, 0, 0, 0);
 		Uint8* pixels = (Uint8*)img->pixels;
-		img->format->palette->colors[0].r = 255;
-		img->format->palette->colors[0].g = 255;
-		img->format->palette->colors[0].b = 255;
-		img->format->palette->colors[1].r = 255;
-		img->format->palette->colors[1].g = 255;
-		img->format->palette->colors[1].b = 0;
-		pixels[0] = 0;
+		SDL_SetPaletteColors(img->format->palette, GFX_ref_pal, 0, 256);
+		pixels[0] = 255;
 		pixels[1] = 1;
 		surf = display->upload(img);
 		backbuffer->blit(surf, NULL, NULL);
