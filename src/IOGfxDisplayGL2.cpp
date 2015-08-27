@@ -412,6 +412,61 @@ void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer) {
 	SDL_GL_SwapWindow(window);
 }
 
+/* Raw blit so we can extract texture buffer */
+void IOGfxDisplayGL2::flipRaw(IOGfxSurface* backbuffer) {
+	if (backbuffer == NULL)
+		SDL_SetError("IOGfxDisplayGL2::blit: passed a NULL surface");
+	IOGfxSurfaceGL2* surf = dynamic_cast<IOGfxSurfaceGL2*>(backbuffer);
+	GLuint texture = surf->texture;
+	gl->UseProgram(program);
+
+	gl->ActiveTexture(GL_TEXTURE0);
+	gl->Uniform1i(uniform_texture, /*GL_TEXTURE*/0);
+	gl->BindTexture(GL_TEXTURE_2D, texture);
+
+	// Y-inversed projection for top-left origin and top-bottom textures
+	// Beware that rotation is reversed too
+	glm::mat4 projection = glm::ortho(0.0f, 1.0f*w, 1.0f*h, 0.0f);
+	glm::mat4 m_transform;
+	m_transform = glm::translate(glm::mat4(1), glm::vec3(0.375, 0.375, 0.))
+		* glm::scale(glm::mat4(1.0f), glm::vec3(backbuffer->w, backbuffer->h, 0.0));
+	glm::mat4 mvp = projection * m_transform; // * view * model * anim;
+	gl->UniformMatrix4fv(uniform_mvp, 1, GL_FALSE, glm::value_ptr(mvp));
+
+	gl->Uniform3f(uniform_colorkey, -1,-1,-1);
+
+	gl->EnableVertexAttribArray(attribute_v_coord);
+	// Describe our vertices array to OpenGL (it can't guess its format automatically)
+	gl->BindBuffer(GL_ARRAY_BUFFER, vboSpriteVertices);
+	gl->VertexAttribPointer(
+		attribute_v_coord, // attribute
+		4,                 // number of elements per vertex, here (x,y,z,t)
+		GL_FLOAT,          // the type of each element
+		GL_FALSE,          // take our values as-is
+		0,                 // no extra data between each position
+		0                  // offset of first element
+	);
+
+	gl->EnableVertexAttribArray(attribute_v_texcoord);
+	gl->BindBuffer(GL_ARRAY_BUFFER, vboSpriteTexcoords);
+	gl->VertexAttribPointer(
+		attribute_v_texcoord, // attribute
+		2,                  // number of elements per vertex, here (x,y)
+		GL_FLOAT,           // the type of each element
+		GL_FALSE,           // take our values as-is
+		0,                  // no extra data between each position
+		0                   // offset of first element
+	);
+
+	/* Push each element in buffer_vertices to the vertex shader */
+	gl->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	gl->DisableVertexAttribArray(attribute_v_coord);
+	gl->DisableVertexAttribArray(attribute_v_texcoord);
+
+	SDL_GL_SwapWindow(window);
+}
+
 void IOGfxDisplayGL2::onSizeChange(int w, int h) {
 	this->w = w;
 	this->h = h;

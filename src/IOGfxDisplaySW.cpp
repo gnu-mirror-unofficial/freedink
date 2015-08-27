@@ -179,7 +179,10 @@ void IOGfxDisplaySW::flip(IOGfxSurface* backbuffer) {
 	if (brightness < 256)
 		gfx_fade_apply(source, brightness);
 
-	if (!truecolor) {
+	if (truecolor) {
+		if (source->format->format != getFormat())
+			log_error("Wrong backbuffer format");
+	} else {
 		/* Convert 8-bit buffer for truecolor texture upload */
 
 		/* Use "physical" screen palette - use SDL_SetPaletteColors to invalidate SDL cache */
@@ -201,6 +204,36 @@ void IOGfxDisplaySW::flip(IOGfxSurface* backbuffer) {
 	SDL_Rect dst;
 	centerScaledSurface(backbuffer, &dst);
 	SDL_RenderCopy(renderer, render_texture, NULL, &dst);
+	SDL_RenderPresent(renderer);
+}
+
+void IOGfxDisplaySW::flipRaw(IOGfxSurface* backbuffer) {
+	/* Convert to destination buffer format */
+	SDL_Surface* source = dynamic_cast<IOGfxSurfaceSW*>(backbuffer)->image;
+	if (truecolor) {
+		if (source->format->format != getFormat())
+			log_error("Wrong backbuffer format");
+	} else {
+		/* Convert 8-bit buffer for truecolor texture upload */
+
+		/* Use "physical" screen palette - use SDL_SetPaletteColors to invalidate SDL cache */
+		SDL_Color pal_bak[256];
+		SDL_Color pal_phys[256];
+		memcpy(pal_bak, source->format->palette->colors, sizeof(pal_bak));
+		gfx_palette_get_phys(pal_phys);
+		SDL_SetPaletteColors(source->format->palette, pal_phys, 0, 256);
+
+		if (SDL_BlitSurface(source, NULL, rgba_screen, NULL) < 0) {
+			log_error("ERROR: 8-bit->truecolor conversion failed: %s", SDL_GetError());
+		}
+		SDL_SetPaletteColors(source->format->palette, pal_bak, 0, 256);
+
+		source = rgba_screen;
+	}
+
+	SDL_Rect srcrect = {0,0, backbuffer->w,backbuffer->h};
+	SDL_UpdateTexture(render_texture, &srcrect, source->pixels, source->pitch);
+	SDL_RenderCopy(renderer, render_texture, NULL, NULL);
 	SDL_RenderPresent(renderer);
 }
 

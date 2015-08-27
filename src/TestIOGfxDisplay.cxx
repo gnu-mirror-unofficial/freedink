@@ -74,9 +74,9 @@ public:
 	void openDisplay(bool gl, bool truecolor, Uint32 flags) {
 		log_info("* Requesting %s %s", gl?"GL2":"SW", truecolor?"truecolor":"");
 		if (gl)
-			display = new IOGfxDisplayGL2(5, 5, truecolor, flags);
+			display = new IOGfxDisplayGL2(50, 50, truecolor, flags);
 		else
-			display = new IOGfxDisplaySW(5, 5, truecolor, flags);
+			display = new IOGfxDisplaySW(50, 50, truecolor, flags);
 		bool opened = display->open();
 		TS_ASSERT_EQUALS(opened, true);
 	}
@@ -84,17 +84,16 @@ public:
 		display->close();
 	}
 
-	void ctestSplashScreen() {
+	void ctestSplash() {
 		// A first inter-texture blit before anything else
 		// Tests IOGfxDisplayGL2->androidWorkAround()
 		SDL_Surface* image;
 		IOGfxSurface *backbuffer, *splash;
 
-		backbuffer = display->alloc(5, 5);
+		backbuffer = display->alloc(50, 50);
 		//g->flip(backbuffer); // not a single flip
 
-		image = SDL_CreateRGBSurface(0, 4, 4, 8,
-			0, 0, 0, 0);
+		image = SDL_CreateRGBSurface(0, 40, 40, 8, 0, 0, 0, 0);
 		Uint8* pixels = (Uint8*)image->pixels;
 		SDL_SetPaletteColors(image->format->palette, GFX_ref_pal, 0, 256);
 		pixels[0] = 1;
@@ -121,53 +120,47 @@ public:
 		if (screenshot == NULL)
 			return;
 		Uint8 cr, cg, cb, ca;
-		// Middle pixel of centered area is red
-		SDL_GetRGBA(((Uint32*)screenshot->pixels)[display->w/4],
+		int x = 2, y = 1;
+		display->surfToDisplayCoords(backbuffer, x, y);
+		SDL_GetRGBA(((Uint32*)screenshot->pixels)[x+y*screenshot->w],
 					screenshot->format,
 					&cr, &cg, &cb, &ca);
 		TS_ASSERT_EQUALS(cr, 255);
 		TS_ASSERT_EQUALS(cg, 255);
 		TS_ASSERT_EQUALS(cb, 0);
 		TS_ASSERT_EQUALS(ca, 255);
-		SDL_SaveBMP(screenshot, "1testSplash.bmp");
+		//SDL_SaveBMP(screenshot, "1testSplash.bmp");
 		SDL_FreeSurface(screenshot);
 
 		delete splash;
 		delete backbuffer;
 	}
-	void test01SplashScreenGL2Truecolor() {
+	void test01SplashGL2Truecolor() {
 		openDisplay(true, true, SDL_WINDOW_HIDDEN);
-		ctestSplashScreen();
+		ctestSplash();
 		closeDisplay();
 	}
-	void testSplashScreenSWTruecolor() {
+	void testSplashSWTruecolor() {
 		openDisplay(false, true, 0); // can't render offscreen >(
-		ctestSplashScreen();
+		ctestSplash();
 		closeDisplay();
 	}
-	void testSplashScreenGL2() {
+	void testSplashGL2() {
 		openDisplay(false, false, SDL_WINDOW_HIDDEN);
-		//ctestSplashScreen();
+		//ctestSplash(); // TODO
 		closeDisplay();
 	}
-	void testSplashScreenSW() {
+	void testSplashSW() {
 		openDisplay(false, false, 0);
-		ctestSplashScreen();
+		ctestSplash();
 		closeDisplay();
 	}
-	void debug2SplashScreenSWTruecolor() {
+	void debug2SplashSWTruecolor() {
 		openDisplay(false, true, 0);
-
-		// widen for us to see
-		SDL_SetWindowSize(display->window, 50, 50);
-		display->onSizeChange(50, 50);
-		SDL_PumpEvents(); // important!
-
-		ctestSplashScreen();
+		ctestSplash();
 
 		// wait for us to see
 		SDL_Delay(2000);
-
 		closeDisplay();
 	}
 
@@ -195,38 +188,25 @@ public:
 		SDL_Surface* img;
 		IOGfxSurface *backbuffer, *surf;
 
-		Uint32 Rmask=0, Gmask=0, Bmask=0, Amask=0; int bpp=0;
-		SDL_PixelFormatEnumToMasks(display->getFormat(), &bpp,
-			&Rmask, &Gmask, &Bmask, &Amask);
-		img = SDL_CreateRGBSurface(0, 5, 5, bpp,
-			Rmask, Gmask, Bmask, Amask);
-		backbuffer = display->upload(img);
+		backbuffer = display->alloc(50, 50);
 
-		display->clear();
-		display->flip(backbuffer);
-
-		img = SDL_CreateRGBSurface(0, 5, 5, 8,
-			0, 0, 0, 0);
+		img = SDL_CreateRGBSurface(0, 40, 40, 8, 0, 0, 0, 0);
 		Uint8* pixels = (Uint8*)img->pixels;
 		SDL_SetPaletteColors(img->format->palette, GFX_ref_pal, 0, 256);
 		pixels[0] = 255;
 		pixels[1] = 1;
 		surf = display->upload(img);
 		backbuffer->blit(surf, NULL, NULL);
+		display->flipRaw(backbuffer);
 
-		display->flip(backbuffer);
-
-		// Check that first pixel is red - and that pic is not vertically flipped
+		// Check that pic is not vertically flipped
 		SDL_Surface* screenshot = display->screenshot();
 		TS_ASSERT(screenshot != NULL);
 		if (screenshot == NULL)
 			return;
 		Uint8 cr, cg, cb, ca;
-		int x, y;
 
-		x = 0, y = 0;
-		display->surfToDisplayCoords(backbuffer, x, y);
-		SDL_GetRGBA(((Uint32*)screenshot->pixels)[x],
+		SDL_GetRGBA(((Uint32*)screenshot->pixels)[0],
 					screenshot->format,
 					&cr, &cg, &cb, &ca);
 		TS_ASSERT_EQUALS(cr, 255);
@@ -234,9 +214,7 @@ public:
 		TS_ASSERT_EQUALS(cg, 255);
 		TS_ASSERT_EQUALS(ca, 255);
 
-		x = 1, y = 0;
-		display->surfToDisplayCoords(backbuffer, x, y);
-		SDL_GetRGBA(((Uint32*)screenshot->pixels)[x],
+		SDL_GetRGBA(((Uint32*)screenshot->pixels)[1],
 					screenshot->format,
 					&cr, &cg, &cb, &ca);
 		TS_ASSERT_EQUALS(cr, 255);
@@ -244,7 +222,7 @@ public:
 		TS_ASSERT_EQUALS(cb, 0);
 		TS_ASSERT_EQUALS(ca, 255);
 
-		SDL_SaveBMP(screenshot, "screenshot.bmp");
+		//SDL_SaveBMP(screenshot, "screenshot.bmp");
 		SDL_FreeSurface(screenshot);
 	}
 	void test_screenshotGL2() {
@@ -268,8 +246,6 @@ public:
 
 		img = SDL_CreateRGBSurface(0, 50, 50, 8, 0, 0, 0, 0);
 		surf = display->upload(img);
-
-		display->onSizeChange(50, 50);
 
 		x = 0; y = 0;
 		display->surfToDisplayCoords(surf, x, y);
@@ -295,55 +271,107 @@ public:
 	}
 
 
+	void ctest_blitCheck(int x, int y, Uint8 r, Uint8 g, Uint8 b) {
+		Uint8 cr, cg, cb, ca;
+		SDL_Surface* screenshot = display->screenshot();
+		SDL_GetRGBA(((Uint32*)screenshot->pixels)[x + y*screenshot->w],
+				screenshot->format,
+				&cr, &cg, &cb, &ca);
+		TS_ASSERT_EQUALS(cr, r);
+		TS_ASSERT_EQUALS(cg, g);
+		TS_ASSERT_EQUALS(cb, b);
+		//SDL_SaveBMP(screenshot, "screenshot.bmp");
+	}
+	void ctest_blit() {
+		SDL_Surface* img;
+		IOGfxSurface *backbuffer, *surf;
 
-	void test_blit() {
-		openDisplay(true, true, SDL_WINDOW_HIDDEN);
+		backbuffer = display->alloc(50, 50);
 
-		SDL_Surface* surf;
-		IOGfxSurface *tex1, *tex3;
+		img = SDL_CreateRGBSurface(0, 5, 5, 8, 0, 0, 0, 0);
+		Uint8* pixels = (Uint8*)img->pixels;
+		SDL_SetPaletteColors(img->format->palette, GFX_ref_pal, 0, 256);
+		SDL_SetColorKey(img, SDL_TRUE, 0);
+		pixels[0] = 255;
+		pixels[1] = 1;
+		pixels[img->pitch] = 255;
+		pixels[img->pitch+1] = 1;
+		surf = display->upload(img);
 
-		surf = IMG_Load("test.png");
-		tex1 = display->upload(surf);
-		display->flip(tex1);
+		SDL_Rect dstrect = {0, 0, -1, -1};
 
-		surf = IMG_ReadXPMFromArray(freedink_xpm);
-		IOGfxSurface* tex2 = display->upload(surf);
-		display->flip(tex2);
+		dstrect.x = 0; dstrect.y = 0;
+		backbuffer->blit(surf, NULL, &dstrect);
+		display->flipRaw(backbuffer);
+		ctest_blitCheck(0,0, 255,255,255);
+		ctest_blitCheck(1,0, 255,255,0);
 
-		surf = IMG_Load("test2.bmp");
-		SDL_SetColorKey(surf, SDL_TRUE, 0);
-		tex3 = display->upload(surf);
-
-
-
-		SDL_Rect dstrect = {200, 200, -1, -1};
-		tex1->blit(tex3, NULL, &dstrect);
-
-		dstrect.x = 210; dstrect.y = 210;
-		tex1->blit(tex3, NULL, &dstrect);
+		dstrect.x = 20; dstrect.y = 20;
+		backbuffer->blit(surf, NULL, &dstrect);
+		display->flipRaw(backbuffer);
+		ctest_blitCheck(20,20, 255,255,255);
+		ctest_blitCheck(21,20, 255,255,0);
 
 		dstrect.x = -1; dstrect.y = -1;
-		tex1->blit(tex3, NULL, &dstrect);
+		backbuffer->blit(surf, NULL, &dstrect);
+		display->flipRaw(backbuffer);
+		ctest_blitCheck(0,0, 255,255,0);
 
-		dstrect.x = 330; dstrect.y = 350;
-		tex1->blit(tex3, NULL, &dstrect);
+		dstrect.x = 49; dstrect.y = 49;
+		backbuffer->blit(surf, NULL, &dstrect);
+		display->flipRaw(backbuffer);
+		ctest_blitCheck(49,49, 255,255,255);
 
-		dstrect.x = 330; dstrect.y = 50;
-		tex1->blitNoColorKey(tex3, NULL, &dstrect);
 
-		dstrect.x = 330; dstrect.y = 50;
-		dstrect.w = 50; dstrect.h = 300;
-		tex1->blitStretch(tex3, NULL, &dstrect);
+		dstrect.x = 0; dstrect.y = 0;
+		backbuffer->blit(surf, NULL, &dstrect);
+		display->flipRaw(backbuffer);
+		ctest_blitCheck(0,0, 255,255,255);
+		dstrect.x = -2; dstrect.y = -2;
+		backbuffer->blit(surf, NULL, &dstrect);
+		display->flipRaw(backbuffer);
+		ctest_blitCheck(0,0, 255,255,255);
+		dstrect.x = -2; dstrect.y = -2;
+		backbuffer->blitNoColorKey(surf, NULL, &dstrect);
+		display->flipRaw(backbuffer);
+		ctest_blitCheck(0,0, 0,0,0);
 
-		SDL_Rect srcrect = {55,6, 11,14};
-		dstrect.x = 50; dstrect.y = 280;
-		tex1->blit(tex3, &srcrect, &dstrect);
-		display->flip(tex1);
+		dstrect.x = 0; dstrect.y = 0;
+		dstrect.w = 10; dstrect.h = 20;
+		backbuffer->blitStretch(surf, NULL, &dstrect);
+		display->flipRaw(backbuffer);
+		ctest_blitCheck(0,7, 255,255,255);
+		ctest_blitCheck(3,7, 255,255,0);
 
-		delete tex1;
-		delete tex2;
-		delete tex3;
+		SDL_Rect srcrect = {1,1, 1,1};
+		dstrect.x = 0; dstrect.y = 0;
+		backbuffer->blit(surf, &srcrect, &dstrect);
+		display->flipRaw(backbuffer);
+		ctest_blitCheck(0,0, 255,255,0);
+
+		delete backbuffer;
+		delete surf;
 
 		display->close();
+	}
+	void test_blitGL2Truecolor() {
+		openDisplay(true, true, SDL_WINDOW_HIDDEN);
+		ctest_blit();
+		closeDisplay();
+	}
+	void test_blitSWTruecolor() {
+		openDisplay(false, true, 0);
+		ctest_blit();
+		closeDisplay();
+	}
+	void test_blitGL2() {
+		openDisplay(true, false, SDL_WINDOW_HIDDEN);
+		//ctest_blit(); // TODO
+		closeDisplay();
+	}
+	void test_blitSW() {
+		openDisplay(false, false, 0);
+		ctest_blit();
+		closeDisplay();
 	}
 };
