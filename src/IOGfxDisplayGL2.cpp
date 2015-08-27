@@ -39,9 +39,11 @@ IOGfxDisplayGL2::IOGfxDisplayGL2(int w, int h, bool truecolor, Uint32 flags)
 	: IOGfxDisplay(w, h, truecolor, flags | SDL_WINDOW_OPENGL),
 	  glcontext(NULL), gl(NULL), screen(NULL) {
 	vboSpriteVertices = -1, vboSpriteTexcoords = -1;
-	program = -1;
+	program = -1; program_fillRect = -1;
 	attribute_v_coord = -1, attribute_v_texcoord = -1;
-	uniform_mvp = -1, uniform_texture = -1, uniform_colorkey = -1;
+	uniform_mvp = -1; uniform_texture = -1; uniform_colorkey = -1;
+	attribute_fillRect_v_coord = -1;
+	uniform_fillRect_mvp = -1; uniform_fillRect_color = -1;
 }
 
 IOGfxDisplayGL2::~IOGfxDisplayGL2() {
@@ -56,8 +58,7 @@ bool IOGfxDisplayGL2::open() {
 
 	if (!createSpriteVertices()) return false;
 	if (!createSpriteTexcoords()) return false;
-	if (!createProgram()) return false;
-	if (!getLocations()) return false;
+	if (!createPrograms()) return false;
 
 	androidWorkAround();
 
@@ -216,7 +217,7 @@ void IOGfxDisplayGL2::infoLog(GLuint object) {
 	free(log);
 }
 
-bool IOGfxDisplayGL2::createProgram() {
+bool IOGfxDisplayGL2::createPrograms() {
 	const char* vertexShaderSource =
 		//"mat4 m = mat4(\n"
 		//"   0.75,  0.0,  0.0,  0.0,\n"
@@ -249,11 +250,52 @@ bool IOGfxDisplayGL2::createProgram() {
 		"  gl_FragColor = f;                              \n"
 		"}                                                \n";
 
+	program = createProgram(vertexShaderSource, fragmentShaderSource);
+
+	if ((attribute_v_coord    = getAttribLocation(program, "v_coord"))    == -1) return false;
+	if ((attribute_v_texcoord = getAttribLocation(program, "v_texcoord")) == -1) return false;
+
+	if ((uniform_mvp      = getUniformLocation(program, "mvp"))       == -1) return false;
+	if ((uniform_texture  = getUniformLocation(program, "texture"))   == -1) return false;
+	if ((uniform_colorkey = getUniformLocation(program, "colorkey"))  == -1) return false;
+
+
+	const char* vshader_fillRect =
+		"attribute vec4 v_coord;          \n"
+		"uniform mat4 mvp;                \n"
+		"                                 \n"
+		"void main(void) {                \n"
+		"  gl_Position = mvp * v_coord;   \n"
+		"}                                \n";
+
+	const char* fshader_fillrect =
+		"uniform vec4 color;                              \n"
+		"                                                 \n"
+		"void main(void) {                                \n"
+		"  gl_FragColor = color;                          \n"
+		"}                                                \n";
+
+	program_fillRect = createProgram(vshader_fillRect, fshader_fillrect);
+
+	if ((attribute_fillRect_v_coord = getAttribLocation(program_fillRect,  "v_coord"))   == -1) return false;
+	if ((uniform_fillRect_mvp       = getUniformLocation(program_fillRect, "mvp"))       == -1) return false;
+	if ((uniform_fillRect_color     = getUniformLocation(program_fillRect, "color"))     == -1) return false;
+
+	if (program == 0 || program_fillRect == 0)
+		return false;
+	return true;
+}
+
+GLuint IOGfxDisplayGL2::createProgram(const char* vertexShaderSource, const char* fragmentShaderSource) {
 	GLuint vs, fs;
 	if ((vs = createShader(vertexShaderSource,   GL_VERTEX_SHADER))   == 0) return false;
 	if ((fs = createShader(fragmentShaderSource, GL_FRAGMENT_SHADER)) == 0) return false;
 
-	program = gl->CreateProgram();
+	GLuint program = gl->CreateProgram();
+	if (program == 0) {
+		log_error("Could not allocate program");
+		return 0;
+	}
 	gl->AttachShader(program, vs);
 	gl->AttachShader(program, fs);
 
@@ -262,10 +304,10 @@ bool IOGfxDisplayGL2::createProgram() {
 	gl->GetProgramiv(program, GL_LINK_STATUS, &link_ok);
 	if (!link_ok) {
 		infoLog(program);
-		return false;
+		return 0;
 	}
 
-	return true;
+	return program;
 }
 
 GLint IOGfxDisplayGL2::getAttribLocation(GLuint program, const char* name) {
@@ -281,16 +323,6 @@ GLint IOGfxDisplayGL2::getUniformLocation(GLuint program, const char* name) {
 	return uniform;
 }
 
-bool IOGfxDisplayGL2::getLocations() {
-	if ((attribute_v_coord    = getAttribLocation(program, "v_coord"))    == -1) return false;
-	if ((attribute_v_texcoord = getAttribLocation(program, "v_texcoord")) == -1) return false;
-
-	if ((uniform_mvp      = getUniformLocation(program, "mvp"))       == -1) return false;
-	if ((uniform_texture  = getUniformLocation(program, "texture"))   == -1) return false;
-	if ((uniform_colorkey = getUniformLocation(program, "colorkey"))  == -1) return false;
-
-	return true;
-}
 
 void IOGfxDisplayGL2::androidWorkAround() {
 #ifdef __ANDROID__

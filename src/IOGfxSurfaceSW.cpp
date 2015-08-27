@@ -24,8 +24,8 @@ void IOGfxSurfaceSW::fill_screen(int num, SDL_Color* palette) {
 		SDL_FillRect(image, NULL, SDL_MapRGB(image->format, palette[num].r, palette[num].g, palette[num].b));
 }
 
-void IOGfxSurfaceSW::fillRect(const SDL_Rect *rect, Uint8 r, Uint8 g, Uint8 b) {
-	SDL_FillRect(image, rect, SDL_MapRGB(image->format, r, g, b));
+int IOGfxSurfaceSW::fillRect(const SDL_Rect *rect, Uint8 r, Uint8 g, Uint8 b) {
+	return SDL_FillRect(image, rect, SDL_MapRGB(image->format, r, g, b));
 }
 
 void IOGfxSurfaceSW::vlineRGB(Sint16 x, Sint16 y1, Sint16 y2, Uint8 r, Uint8 g, Uint8 b) {

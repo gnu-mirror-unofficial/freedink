@@ -59,12 +59,16 @@ public:
 			GFX_ref_pal[i].b = i;
 			GFX_ref_pal[i].a = 255;
 		}
-		// Use a color that fail tests if RGBA->ABGR-reversed
+		// Use a color that fail tests if RGBA->ABGR-reversed (non-symmetric)
 		// Fully saturated green to avoid fuzzy color comparisons
 		GFX_ref_pal[1].r = 255;
 		GFX_ref_pal[1].g = 255;
 		GFX_ref_pal[1].b = 0;
 		GFX_ref_pal[1].a = 255;
+		GFX_ref_pal[2].r = 0;
+		GFX_ref_pal[2].g = 0;
+		GFX_ref_pal[2].b = 255;
+		GFX_ref_pal[2].a = 255;
 		gfx_palette_set_phys(GFX_ref_pal);
 	}
 	void tearDown() {
@@ -280,7 +284,7 @@ public:
 		TS_ASSERT_EQUALS(cr, r);
 		TS_ASSERT_EQUALS(cg, g);
 		TS_ASSERT_EQUALS(cb, b);
-		//SDL_SaveBMP(screenshot, "screenshot.bmp");
+		SDL_SaveBMP(screenshot, "screenshot.bmp");
 	}
 	void ctest_blit() {
 		SDL_Surface* img;
@@ -372,6 +376,92 @@ public:
 	void test_blitSW() {
 		openDisplay(false, false, 0);
 		ctest_blit();
+		closeDisplay();
+	}
+
+
+
+	void ctest_fillRect() {
+		IOGfxSurface *backbuffer;
+
+		backbuffer = display->alloc(50, 50);
+
+		SDL_Rect dstrect = {-1, -1, -1, -1};
+
+		backbuffer->fillRect(NULL, 255, 255, 0);
+		display->flipRaw(backbuffer);
+		ctest_blitCheck(0,0, 255,255,0);
+
+		dstrect.x = 5;  dstrect.y = 5;
+		dstrect.w = 20; dstrect.h = 10;
+		backbuffer->fillRect(&dstrect, 0, 0, 255);
+		display->flipRaw(backbuffer);
+		ctest_blitCheck(4,4, 255,255,0);
+		ctest_blitCheck(5,5, 0,0,255);
+		ctest_blitCheck(24,14, 0,0,255);
+		ctest_blitCheck(25,14, 255,255,0);
+		ctest_blitCheck(24,15, 255,255,0);
+
+		display->close();
+	}
+	void test_fillRectGL2Truecolor() {
+		openDisplay(true, true, SDL_WINDOW_HIDDEN);
+		ctest_fillRect();
+		closeDisplay();
+	}
+	void test_fillRectSWTruecolor() {
+		openDisplay(false, true, 0);
+		ctest_fillRect();
+		closeDisplay();
+	}
+	void test_fillRectGL2() {
+		openDisplay(true, false, SDL_WINDOW_HIDDEN);
+		//ctest_fillRect(); // TODO
+		closeDisplay();
+	}
+	void test_fillRectSW() {
+		openDisplay(false, false, 0);
+		ctest_fillRect();
+		closeDisplay();
+	}
+
+	void ctest_fill_screen() {
+		IOGfxSurface *backbuffer;
+
+		backbuffer = display->alloc(50, 50);
+
+		backbuffer->fill_screen(0, GFX_ref_pal);
+		display->flipRaw(backbuffer);
+		ctest_blitCheck(0,0, 0,0,0);
+
+		backbuffer->fill_screen(1, GFX_ref_pal);
+		display->flipRaw(backbuffer);
+		ctest_blitCheck(0,0, 255,255,0);
+
+		backbuffer->fill_screen(2, GFX_ref_pal);
+		display->flipRaw(backbuffer);
+		ctest_blitCheck(0,0, 0,0,255);
+
+		display->close();
+	}
+	void test_fill_screenGL2Truecolor() {
+		openDisplay(true, true, SDL_WINDOW_HIDDEN);
+		ctest_fill_screen();
+		closeDisplay();
+	}
+	void test_fill_screenSWTruecolor() {
+		openDisplay(false, true, 0);
+		ctest_fill_screen();
+		closeDisplay();
+	}
+	void test_fill_screenGL2() {
+		openDisplay(true, false, SDL_WINDOW_HIDDEN);
+		//ctest_fill_screen(); // TODO
+		closeDisplay();
+	}
+	void test_fill_screenSW() {
+		openDisplay(false, false, 0);
+		ctest_fill_screen();
 		closeDisplay();
 	}
 };

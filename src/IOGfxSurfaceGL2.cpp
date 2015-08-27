@@ -20,11 +20,79 @@ IOGfxSurfaceGL2::~IOGfxSurfaceGL2() {
 
 /* Function specifically made for Dink'C fill_screen() */
 void IOGfxSurfaceGL2::fill_screen(int num, SDL_Color* palette) {
-	// TODO
+	if (!display->truecolor)
+		fillRect(NULL, num, num, num);
+	else
+		fillRect(NULL, palette[num].r, palette[num].g, palette[num].b);
 }
 
-void IOGfxSurfaceGL2::fillRect(const SDL_Rect *rect, Uint8 r, Uint8 g, Uint8 b) {
-	// TODO
+int IOGfxSurfaceGL2::fillRect(const SDL_Rect *dstrect, Uint8 r, Uint8 g, Uint8 b) {
+	SDL_Rect dstrect_if_not_null;
+		if (dstrect == NULL) {
+			dstrect_if_not_null.x = 0;
+			dstrect_if_not_null.y = 0;
+			dstrect_if_not_null.w = w;
+			dstrect_if_not_null.h = h;
+			dstrect = &dstrect_if_not_null;
+		}
+
+	IOGfxGLFuncs* gl = display->gl;
+	GLuint fbo;
+	// bind this as framebuffer
+	gl->GenFramebuffers(1, &fbo);
+	gl->BindFramebuffer(GL_FRAMEBUFFER, fbo);
+	gl->FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->texture, 0);
+	GLenum status;
+	if ((status = gl->CheckFramebufferStatus(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE) {
+		log_error("glCheckFramebufferStatus: error 0x%x", status);
+		switch (status) {
+		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+			log_error("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
+			log_error("GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+			log_error("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
+			break;
+		case GL_FRAMEBUFFER_UNSUPPORTED:
+			log_error("GL_FRAMEBUFFER_UNSUPPORTED");
+			break;
+		}
+		return -1;
+	}
+
+	display->gl->UseProgram(display->program_fillRect);
+
+	glm::mat4 projection = glm::ortho(0.0f, 1.0f*display->w, 0.0f, 1.0f*display->h);
+	glm::mat4 m_transform;
+	m_transform = glm::translate(glm::mat4(1.0f), glm::vec3(dstrect->x,dstrect->y, 0.0))
+		* glm::scale(glm::mat4(1.0f), glm::vec3(dstrect->w, dstrect->h, 0.0));
+	glm::mat4 mvp = projection * m_transform; // * view * model * anim;
+	gl->UniformMatrix4fv(display->uniform_fillRect_mvp, 1, GL_FALSE, glm::value_ptr(mvp));
+	gl->Uniform4f(display->uniform_fillRect_color, r,g,b,1.0);
+
+	gl->EnableVertexAttribArray(display->attribute_fillRect_v_coord);
+	// Describe our vertices array to OpenGL (it can't guess its format automatically)
+	gl->BindBuffer(GL_ARRAY_BUFFER, display->vboSpriteVertices);
+	gl->VertexAttribPointer(
+		display->attribute_fillRect_v_coord, // attribute
+		4,                 // number of elements per vertex, here (x,y,z,t)
+		GL_FLOAT,          // the type of each element
+		GL_FALSE,          // take our values as-is
+		0,                 // no extra data between each position
+		0                  // offset of first element
+	);
+
+	/* Push each element in buffer_vertices to the vertex shader */
+	gl->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	gl->DisableVertexAttribArray(display->attribute_fillRect_v_coord);
+
+	gl->DeleteFramebuffers(1, &fbo);
+	gl->BindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	return 0;
 }
 
 void IOGfxSurfaceGL2::vlineRGB(Sint16 x, Sint16 y1, Sint16 y2, Uint8 r, Uint8 g, Uint8 b) {

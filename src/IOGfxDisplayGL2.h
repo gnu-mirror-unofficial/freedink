@@ -37,9 +37,12 @@ public:
 	SDL_Texture* screen;
 
 	GLuint vboSpriteVertices, vboSpriteTexcoords;
-	GLuint program;
+	GLuint program, program_fillRect;
 	GLint attribute_v_coord, attribute_v_texcoord;
 	GLint uniform_mvp, uniform_texture, uniform_colorkey;
+	GLint attribute_fillRect_v_coord;
+	GLint uniform_fillRect_mvp, uniform_fillRect_color;
+
 
 	IOGfxDisplayGL2(int w, int h, bool truecolor, Uint32 flags);
 	~IOGfxDisplayGL2();
@@ -63,10 +66,10 @@ public:
 	bool createSpriteTexcoords();
 	GLuint createShader(const char* source, GLenum type);
 	void infoLog(GLuint object);
-	bool createProgram();
+	bool createPrograms();
+	GLuint createProgram(const char* vertexShaderSource, const char* fragmentShaderSource);
 	GLint getAttribLocation(GLuint program, const char* name);
 	GLint getUniformLocation(GLuint program, const char* name);
-	bool getLocations();
 	void androidWorkAround();
 
 };
