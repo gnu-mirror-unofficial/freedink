@@ -970,7 +970,7 @@ void draw15(int num)
 
   Say("Please wait, loading sprite data into SmartCache system...", 147,160);
 
-  g_display->flip(IOGFX_backbuffer);
+  g_display->flipStretch(IOGFX_backbuffer);
 
   /* Draw sprites */
   for (x1 = 0; x1 <= 11; x1++)
@@ -4564,7 +4564,7 @@ void AppFreeDinkedit::logic(void)
 /*     } else */
 /*     { */
       g_display->clear();
-      g_display->flip(IOGFX_backbuffer);
+      g_display->flipStretch(IOGFX_backbuffer);
       /*
       //windowed mode, no flipping
       p.x = 0; p.y = 0;

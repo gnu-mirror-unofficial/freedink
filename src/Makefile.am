@@ -1,4 +1,4 @@
-AM_CXXFLAGS = -Wno-write-strings -Wall
+AM_CXXFLAGS = -std=c++11 -Wno-write-strings -Wall
 # Cf. (autoconf.info)Installation Directory Variables:
 # Don't use DATADIR, it conflicts with something in MinGW
 AM_CPPFLAGS = -DBUILD_DATA_DIR=\"$(datadir)\"

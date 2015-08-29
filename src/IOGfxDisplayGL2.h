@@ -49,15 +49,16 @@ public:
 
 	virtual bool open();
 	virtual void close();
+	virtual void logDisplayInfo();
 
 	virtual void clear();
-	virtual void flip(IOGfxSurface* backbuffer);
+	virtual void flipStretch(IOGfxSurface* backbuffer);
 	virtual void onSizeChange(int w, int h);
 	virtual IOGfxSurface* upload(SDL_Surface* image);
 	virtual IOGfxSurface* alloc(int surfW, int surfH);
 	virtual void flipRaw(IOGfxSurface* backbuffer);
 
-	virtual SDL_Surface* screenshot();
+	virtual SDL_Surface* screenshot(SDL_Rect* rect);
 
 	bool createOpenGLContext();
 	void logOpenGLInfo();

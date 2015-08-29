@@ -97,6 +97,7 @@ int gfx_init(bool dinkgl, bool windowed, char* splash_path) {
 	else
 		g_display = new IOGfxDisplaySW(GFX_RES_W, GFX_RES_H, truecolor,
 										windowed ? SDL_WINDOW_RESIZABLE : SDL_WINDOW_FULLSCREEN_DESKTOP);
+	g_display->logDisplayInfo();
 		
 	/* Note: SDL_WINDOW_FULLSCREEN may not respect aspect ratio, _DESKTOP does */
 	if (!g_display->open()) {
@@ -166,7 +167,7 @@ int gfx_init(bool dinkgl, bool windowed, char* splash_path) {
       log_error("Error blitting splash to back buffer");
 
     g_display->clear();
-    g_display->flip(IOGFX_backbuffer);
+    g_display->flipStretch(IOGFX_backbuffer);
   }
 
 

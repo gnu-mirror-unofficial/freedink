@@ -11,7 +11,7 @@
 
 IOGfxDisplaySW::IOGfxDisplaySW(int w, int h, bool truecolor, Uint32 flags)
 	: IOGfxDisplay(w, h, truecolor, flags), renderer(NULL),
-	  render_texture(NULL), rgba_screen(NULL) {
+	  render_texture(NULL), rgb_screen(NULL) {
 }
 
 IOGfxDisplaySW::~IOGfxDisplaySW() {
@@ -23,12 +23,8 @@ bool IOGfxDisplaySW::open() {
 	int req_h = h;
 
 	if (!IOGfxDisplay::open()) return false;
-
 	if (!createRenderer()) return false;
-	logRenderersInfo();
-
 	if (!createRenderTexture(req_w, req_h)) return false;
-	logRenderTextureInfo();
 
 	return true;
 }
@@ -36,6 +32,8 @@ bool IOGfxDisplaySW::open() {
 void IOGfxDisplaySW::close() {
 	if (render_texture) SDL_DestroyTexture(render_texture);
 	render_texture = NULL;
+	if (rgb_screen) SDL_FreeSurface(rgb_screen);
+	rgb_screen = NULL;
 
 	if (renderer) SDL_DestroyRenderer(renderer);
 	renderer = NULL;
@@ -43,12 +41,7 @@ void IOGfxDisplaySW::close() {
 	IOGfxDisplay::close();
 }
 
-void IOGfxDisplaySW::clear() {
-    SDL_RenderClear(renderer);
-}
-
 bool IOGfxDisplaySW::createRenderer() {
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
 	/* TODO SDL2: make it configurable for speed: nearest/linear/DX-specific-best */
 	//SDL_SetHint(SDL_HINT_RENDER_DRIVER, "software");
 	/* TODO SDL2: make render driver configurable to ease software-mode testing */
@@ -60,6 +53,37 @@ bool IOGfxDisplaySW::createRenderer() {
 	}
 	// Specify aspect ratio
 	SDL_RenderSetLogicalSize(renderer, w, h);
+	return true;
+}
+
+/**
+ * Screen-like destination texture
+ */
+bool IOGfxDisplaySW::createRenderTexture(int w, int h) {
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
+	render_texture = SDL_CreateTexture(renderer,
+		SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, w, h);
+	if (render_texture == NULL) {
+		log_error("Unable to create render texture: %s", SDL_GetError());
+		return false;
+	}
+
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
+	render_texture_debug = SDL_CreateTexture(renderer,
+		SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, w, h);
+	if (render_texture_debug == NULL) {
+		log_error("Unable to create debug render texture: %s", SDL_GetError());
+		return false;
+	}
+
+	Uint32 render_texture_format;
+	Uint32 Rmask, Gmask, Bmask, Amask; int bpp;
+	SDL_QueryTexture(render_texture, &render_texture_format, NULL, NULL, NULL);
+	SDL_PixelFormatEnumToMasks(render_texture_format, &bpp,
+			&Rmask, &Gmask, &Bmask, &Amask);
+	if (!truecolor)
+		rgb_screen = SDL_CreateRGBSurface(0, w, h, bpp, Rmask, Gmask, Bmask, Amask);
+
 	return true;
 }
 
@@ -96,28 +120,6 @@ void IOGfxDisplaySW::logRenderersInfo() {
 	logRendererInfo(&info);
 }
 
-/**
- * Screen-like destination texture
- */
-bool IOGfxDisplaySW::createRenderTexture(int w, int h) {
-	render_texture = SDL_CreateTexture(renderer,
-		SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, w, h);
-	if (render_texture == NULL) {
-		log_error("Unable to create render texture: %s", SDL_GetError());
-		return false;
-	}
-
-	Uint32 render_texture_format;
-	Uint32 Rmask, Gmask, Bmask, Amask; int bpp;
-	SDL_QueryTexture(render_texture, &render_texture_format, NULL, NULL, NULL);
-	SDL_PixelFormatEnumToMasks(render_texture_format, &bpp,
-			&Rmask, &Gmask, &Bmask, &Amask);
-	if (!truecolor)
-		rgba_screen = SDL_CreateRGBSurface(0, w, h, bpp, Rmask, Gmask, Bmask, Amask);
-
-	return true;
-}
-
 void IOGfxDisplaySW::logRenderTextureInfo() {
 	Uint32 format;
 	int access, w, h;
@@ -137,6 +139,23 @@ void IOGfxDisplaySW::logRenderTextureInfo() {
 	log_info("Render texture: access: %s", str_access);
 	log_info("Render texture: width : %d", w);
 	log_info("Render texture: height: %d", h);
+	Uint32 Rmask, Gmask, Bmask, Amask; int bpp;
+	SDL_PixelFormatEnumToMasks(format, &bpp,
+			&Rmask, &Gmask, &Bmask, &Amask);
+	log_info("Render texture: bpp   : %d", bpp);
+	log_info("Render texture: masks : %08x %08x %08x %08x", Rmask, Gmask, Bmask, Amask);
+}
+
+void IOGfxDisplaySW::logDisplayInfo() {
+	IOGfxDisplay::logDisplayInfo();
+	logRenderersInfo();
+	logRenderTextureInfo();
+}
+
+
+
+void IOGfxDisplaySW::clear() {
+    SDL_RenderClear(renderer);
 }
 
 void gfx_fade_apply(SDL_Surface* screen, int brightness) {
@@ -168,7 +187,7 @@ void gfx_fade_apply(SDL_Surface* screen, int brightness) {
 	SDL_UnlockSurface(screen);
 }
 
-void IOGfxDisplaySW::flip(IOGfxSurface* backbuffer) {
+void IOGfxDisplaySW::flipStretch(IOGfxSurface* backbuffer) {
 	/* For now we do all operations on the CPU side and perform a big
 	   texture update at each frame; this is necessary to support
 	   palette and fade_down/fade_up. */
@@ -192,12 +211,12 @@ void IOGfxDisplaySW::flip(IOGfxSurface* backbuffer) {
 		gfx_palette_get_phys(pal_phys);
 		SDL_SetPaletteColors(source->format->palette, pal_phys, 0, 256);
 
-		if (SDL_BlitSurface(source, NULL, rgba_screen, NULL) < 0) {
+		if (SDL_BlitSurface(source, NULL, rgb_screen, NULL) < 0) {
 			log_error("ERROR: 8-bit->truecolor conversion failed: %s", SDL_GetError());
 		}
 		SDL_SetPaletteColors(source->format->palette, pal_bak, 0, 256);
 
-		source = rgba_screen;
+		source = rgb_screen;
 	}
 
 	SDL_UpdateTexture(render_texture, NULL, source->pixels, source->pitch);
@@ -223,17 +242,17 @@ void IOGfxDisplaySW::flipRaw(IOGfxSurface* backbuffer) {
 		gfx_palette_get_phys(pal_phys);
 		SDL_SetPaletteColors(source->format->palette, pal_phys, 0, 256);
 
-		if (SDL_BlitSurface(source, NULL, rgba_screen, NULL) < 0) {
+		if (SDL_BlitSurface(source, NULL, rgb_screen, NULL) < 0) {
 			log_error("ERROR: 8-bit->truecolor conversion failed: %s", SDL_GetError());
 		}
 		SDL_SetPaletteColors(source->format->palette, pal_bak, 0, 256);
 
-		source = rgba_screen;
+		source = rgb_screen;
 	}
 
 	SDL_Rect srcrect = {0,0, backbuffer->w,backbuffer->h};
-	SDL_UpdateTexture(render_texture, &srcrect, source->pixels, source->pitch);
-	SDL_RenderCopy(renderer, render_texture, NULL, NULL);
+	SDL_UpdateTexture(render_texture_debug, &srcrect, source->pixels, source->pitch);
+	SDL_RenderCopy(renderer, render_texture_debug, &srcrect, &srcrect);
 	SDL_RenderPresent(renderer);
 }
 
@@ -243,15 +262,15 @@ void IOGfxDisplaySW::onSizeChange(int w, int h) {
 	SDL_RenderSetLogicalSize(renderer, w, h);
 }
 
-SDL_Surface* IOGfxDisplaySW::screenshot() {
+SDL_Surface* IOGfxDisplaySW::screenshot(SDL_Rect* rect) {
 	Uint32 Rmask=0, Gmask=0, Bmask=0, Amask=0; int bpp=0;
 	SDL_PixelFormatEnumToMasks(SDL_PIXELFORMAT_RGBA8888, &bpp,
 		&Rmask, &Gmask, &Bmask, &Amask);
 	SDL_Surface* surface = SDL_CreateRGBSurface(0,
-		w, h, 32, Rmask, Gmask, Bmask, Amask);
+		rect->w, rect->h, 32, Rmask, Gmask, Bmask, Amask);
 
 	if (SDL_RenderReadPixels(renderer,
-	    NULL, SDL_PIXELFORMAT_RGBA8888,
+	    rect, SDL_PIXELFORMAT_RGBA8888,
 	    surface->pixels, surface->pitch) < 0) {
 		log_error("IOGfxDisplaySW::screenshot: %s", SDL_GetError());
 		SDL_FreeSurface(surface);

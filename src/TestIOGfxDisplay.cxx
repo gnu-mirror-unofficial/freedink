@@ -1,5 +1,5 @@
 /**
- * Test OpenGL screen
+ * Test graphics display
 
  * Copyright (C) 2015  Sylvain Beucler
 
@@ -41,16 +41,26 @@
  * - Buggy driver init
  * - SDL_Renderer drops all ops when window is hidden; use a visible window
  * - Android display is 16-bit, so use fuzzy color comparisons
- * - Stretched display (fullscreen and Android) use linear interpolation, so use fuzzy pixel positions
+ * - Stretched display (fullscreen and Android) use linear interpolation, so
+ *   check fuzzy pixel positions after flipStretch()
  * - No OpenGL ES 2.0 API to retrieve texture contents, only retrieve main buffer
  */
 class TestIOGfxDisplay : public CxxTest::TestSuite {
 public:
 	IOGfxDisplay* display;
+	SDL_Color white;
+	SDL_Color black;
+	SDL_Color green;
+	SDL_Color blue;
 
 	void setUp() {
 		TS_ASSERT_EQUALS(SDL_InitSubSystem(SDL_INIT_VIDEO), 0);
 		// SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
+
+		white = {255, 255, 255, 255};
+		black = {  0,   0,   0, 255};
+		green = {255, 255,   0, 255};
+		blue  = {  0,   0, 255, 255};
 
 		// init palette; hopefully can be removed if we get rid of blitFormat
 		for (int i = 0; i < 256; i++) {
@@ -75,8 +85,12 @@ public:
 		SDL_QuitSubSystem(SDL_INIT_VIDEO);
 	}
 
+
+
 	void openDisplay(bool gl, bool truecolor, Uint32 flags) {
-		log_info("* Requesting %s %s", gl?"GL2":"SW", truecolor?"truecolor":"");
+		//log_info("* Requesting %s %s", gl?"GL2":"SW", truecolor?"truecolor":"");
+		//flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+		//flags &= ~SDL_WINDOW_HIDDEN;
 		if (gl)
 			display = new IOGfxDisplayGL2(50, 50, truecolor, flags);
 		else
@@ -86,7 +100,16 @@ public:
 	}
 	void closeDisplay() {
 		display->close();
+		delete display;
 	}
+
+	void getColorAt(SDL_Surface* img, int x, int y, SDL_Color* c) {
+		SDL_GetRGBA(((Uint32*)img->pixels)[x + y*img->w],
+						img->format,
+						&c->r, &c->g, &c->b, &c->a);
+	}
+
+
 
 	void ctestSplash() {
 		// A first inter-texture blit before anything else
@@ -100,13 +123,16 @@ public:
 		image = SDL_CreateRGBSurface(0, 40, 40, 8, 0, 0, 0, 0);
 		Uint8* pixels = (Uint8*)image->pixels;
 		SDL_SetPaletteColors(image->format->palette, GFX_ref_pal, 0, 256);
+		// Make a bit square to cope with stretching and color interpolation
 		pixels[0] = 1;
 		pixels[1] = 1;
 		pixels[2] = 1;
-		pixels[3] = 1;
 		pixels[image->pitch+0] = 1;
 		pixels[image->pitch+1] = 1;
 		pixels[image->pitch+2] = 1;
+		pixels[image->pitch*2+0] = 1;
+		pixels[image->pitch*2+1] = 1;
+		pixels[image->pitch*2+0] = 1;
 		splash = display->upload(image);
 		//g->flip(splash); // not a single flip
 
@@ -115,16 +141,14 @@ public:
 		backbuffer->blit(splash, NULL, &dstrect);
 
 		// Check the result:
-		display->flip(backbuffer);
-		log_info("size: %d %d", display->w, display->h);
-		log_info("sizebb: %d %d", backbuffer->w, backbuffer->h);
+		display->flipStretch(backbuffer);
 
 		SDL_Surface* screenshot = display->screenshot();
 		TS_ASSERT(screenshot != NULL);
 		if (screenshot == NULL)
 			return;
 		Uint8 cr, cg, cb, ca;
-		int x = 2, y = 1;
+		int x = 1, y = 1;
 		display->surfToDisplayCoords(backbuffer, x, y);
 		SDL_GetRGBA(((Uint32*)screenshot->pixels)[x+y*screenshot->w],
 					screenshot->format,
@@ -174,6 +198,7 @@ public:
 		TS_ASSERT(surf != NULL);
 		TS_ASSERT_EQUALS(surf->w, 300);
 		TS_ASSERT_EQUALS(surf->h, 300);
+		delete surf;
 	}
 	void test_allocGL2() {
 		openDisplay(true, true, SDL_WINDOW_HIDDEN);
@@ -191,8 +216,10 @@ public:
 	void ctest_screenshot() {
 		SDL_Surface* img;
 		IOGfxSurface *backbuffer, *surf;
+		SDL_Rect bbbox;
 
 		backbuffer = display->alloc(50, 50);
+		bbbox = { 0,0, 50,50 };
 
 		img = SDL_CreateRGBSurface(0, 40, 40, 8, 0, 0, 0, 0);
 		Uint8* pixels = (Uint8*)img->pixels;
@@ -204,7 +231,7 @@ public:
 		display->flipRaw(backbuffer);
 
 		// Check that pic is not vertically flipped
-		SDL_Surface* screenshot = display->screenshot();
+		SDL_Surface* screenshot = display->screenshot(&bbbox);
 		TS_ASSERT(screenshot != NULL);
 		if (screenshot == NULL)
 			return;
@@ -226,15 +253,18 @@ public:
 		TS_ASSERT_EQUALS(cb, 0);
 		TS_ASSERT_EQUALS(ca, 255);
 
-		//SDL_SaveBMP(screenshot, "screenshot.bmp");
+		SDL_SaveBMP(screenshot, "screenshot.bmp");
 		SDL_FreeSurface(screenshot);
+
+		delete surf;
+		delete backbuffer;
 	}
-	void test_screenshotGL2() {
+	void test_screenshotGL2Truecolor() {
 		openDisplay(true, true, SDL_WINDOW_HIDDEN);
 		ctest_screenshot();
 		closeDisplay();
 	}
-	void test_screenshotSW() {
+	void test_screenshotSWTruecolor() {
 		openDisplay(false, true, 0);
 		ctest_screenshot();
 		closeDisplay();
@@ -250,6 +280,9 @@ public:
 
 		img = SDL_CreateRGBSurface(0, 50, 50, 8, 0, 0, 0, 0);
 		surf = display->upload(img);
+
+		// Force display to 50x50 even if the system gave us something else
+		display->onSizeChange(50, 50);
 
 		x = 0; y = 0;
 		display->surfToDisplayCoords(surf, x, y);
@@ -272,25 +305,20 @@ public:
 		display->surfToDisplayCoords(surf, x, y);
 		TS_ASSERT_EQUALS(x, 270);
 		TS_ASSERT_EQUALS(y, 120);
+
+		delete surf;
+		closeDisplay();
 	}
 
 
-	void ctest_blitCheck(int x, int y, Uint8 r, Uint8 g, Uint8 b) {
-		Uint8 cr, cg, cb, ca;
-		SDL_Surface* screenshot = display->screenshot();
-		SDL_GetRGBA(((Uint32*)screenshot->pixels)[x + y*screenshot->w],
-				screenshot->format,
-				&cr, &cg, &cb, &ca);
-		TS_ASSERT_EQUALS(cr, r);
-		TS_ASSERT_EQUALS(cg, g);
-		TS_ASSERT_EQUALS(cb, b);
-		SDL_SaveBMP(screenshot, "screenshot.bmp");
-	}
 	void ctest_blit() {
-		SDL_Surface* img;
+		SDL_Surface *img, *screenshot;
 		IOGfxSurface *backbuffer, *surf;
+		SDL_Color cs;
+		SDL_Rect bbbox;
 
 		backbuffer = display->alloc(50, 50);
+		bbbox = { 0,0, 50,50 };
 
 		img = SDL_CreateRGBSurface(0, 5, 5, 8, 0, 0, 0, 0);
 		Uint8* pixels = (Uint8*)img->pixels;
@@ -307,56 +335,84 @@ public:
 		dstrect.x = 0; dstrect.y = 0;
 		backbuffer->blit(surf, NULL, &dstrect);
 		display->flipRaw(backbuffer);
-		ctest_blitCheck(0,0, 255,255,255);
-		ctest_blitCheck(1,0, 255,255,0);
+		screenshot = display->screenshot(&bbbox);
+		getColorAt(screenshot, 0, 0, &cs);
+		TS_ASSERT_SAME_DATA(&white, &cs, sizeof(SDL_Color));
+		getColorAt(screenshot, 1, 0, &cs);
+		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		SDL_FreeSurface(screenshot);
 
 		dstrect.x = 20; dstrect.y = 20;
 		backbuffer->blit(surf, NULL, &dstrect);
 		display->flipRaw(backbuffer);
-		ctest_blitCheck(20,20, 255,255,255);
-		ctest_blitCheck(21,20, 255,255,0);
+		screenshot = display->screenshot(&bbbox);
+		getColorAt(screenshot, 20, 20, &cs);
+		TS_ASSERT_SAME_DATA(&white, &cs, sizeof(SDL_Color));
+		getColorAt(screenshot, 21, 20, &cs);
+		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		SDL_FreeSurface(screenshot);
 
 		dstrect.x = -1; dstrect.y = -1;
 		backbuffer->blit(surf, NULL, &dstrect);
 		display->flipRaw(backbuffer);
-		ctest_blitCheck(0,0, 255,255,0);
+		screenshot = display->screenshot(&bbbox);
+		getColorAt(screenshot, 0, 0, &cs);
+		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		SDL_FreeSurface(screenshot);
 
 		dstrect.x = 49; dstrect.y = 49;
 		backbuffer->blit(surf, NULL, &dstrect);
 		display->flipRaw(backbuffer);
-		ctest_blitCheck(49,49, 255,255,255);
+		screenshot = display->screenshot(&bbbox);
+		getColorAt(screenshot, 49, 49, &cs);
+		TS_ASSERT_SAME_DATA(&white, &cs, sizeof(SDL_Color));
+		SDL_FreeSurface(screenshot);
 
 
 		dstrect.x = 0; dstrect.y = 0;
 		backbuffer->blit(surf, NULL, &dstrect);
 		display->flipRaw(backbuffer);
-		ctest_blitCheck(0,0, 255,255,255);
+		screenshot = display->screenshot(&bbbox);
+		getColorAt(screenshot, 0, 0, &cs);
+		TS_ASSERT_SAME_DATA(&white, &cs, sizeof(SDL_Color));
+		SDL_FreeSurface(screenshot);
 		dstrect.x = -2; dstrect.y = -2;
 		backbuffer->blit(surf, NULL, &dstrect);
 		display->flipRaw(backbuffer);
-		ctest_blitCheck(0,0, 255,255,255);
+		screenshot = display->screenshot(&bbbox);
+		getColorAt(screenshot, 0, 0, &cs);
+		TS_ASSERT_SAME_DATA(&white, &cs, sizeof(SDL_Color));
+		SDL_FreeSurface(screenshot);
 		dstrect.x = -2; dstrect.y = -2;
 		backbuffer->blitNoColorKey(surf, NULL, &dstrect);
 		display->flipRaw(backbuffer);
-		ctest_blitCheck(0,0, 0,0,0);
+		screenshot = display->screenshot(&bbbox);
+		getColorAt(screenshot, 0, 0, &cs);
+		TS_ASSERT_SAME_DATA(&black, &cs, sizeof(SDL_Color));
+		SDL_FreeSurface(screenshot);
 
 		dstrect.x = 0; dstrect.y = 0;
 		dstrect.w = 10; dstrect.h = 20;
 		backbuffer->blitStretch(surf, NULL, &dstrect);
 		display->flipRaw(backbuffer);
-		ctest_blitCheck(0,7, 255,255,255);
-		ctest_blitCheck(3,7, 255,255,0);
+		screenshot = display->screenshot(&bbbox);
+		getColorAt(screenshot, 0, 7, &cs);
+		TS_ASSERT_SAME_DATA(&white, &cs, sizeof(SDL_Color));
+		getColorAt(screenshot, 3, 7, &cs);
+		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		SDL_FreeSurface(screenshot);
 
 		SDL_Rect srcrect = {1,1, 1,1};
 		dstrect.x = 0; dstrect.y = 0;
 		backbuffer->blit(surf, &srcrect, &dstrect);
 		display->flipRaw(backbuffer);
-		ctest_blitCheck(0,0, 255,255,0);
+		screenshot = display->screenshot(&bbbox);
+		getColorAt(screenshot, 0, 0, &cs);
+		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		SDL_FreeSurface(screenshot);
 
-		delete backbuffer;
 		delete surf;
-
-		display->close();
+		delete backbuffer;
 	}
 	void test_blitGL2Truecolor() {
 		openDisplay(true, true, SDL_WINDOW_HIDDEN);
@@ -383,26 +439,40 @@ public:
 
 	void ctest_fillRect() {
 		IOGfxSurface *backbuffer;
+		SDL_Surface *screenshot;
+		SDL_Color cs;
+		SDL_Rect bbbox;
 
 		backbuffer = display->alloc(50, 50);
+		bbbox = { 0,0, 50,50 };
 
 		SDL_Rect dstrect = {-1, -1, -1, -1};
 
 		backbuffer->fillRect(NULL, 255, 255, 0);
 		display->flipRaw(backbuffer);
-		ctest_blitCheck(0,0, 255,255,0);
+		screenshot = display->screenshot(&bbbox);
+		getColorAt(screenshot, 0, 0, &cs);
+		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		SDL_FreeSurface(screenshot);
 
 		dstrect.x = 5;  dstrect.y = 5;
 		dstrect.w = 20; dstrect.h = 10;
 		backbuffer->fillRect(&dstrect, 0, 0, 255);
 		display->flipRaw(backbuffer);
-		ctest_blitCheck(4,4, 255,255,0);
-		ctest_blitCheck(5,5, 0,0,255);
-		ctest_blitCheck(24,14, 0,0,255);
-		ctest_blitCheck(25,14, 255,255,0);
-		ctest_blitCheck(24,15, 255,255,0);
+		screenshot = display->screenshot(&bbbox);
+		getColorAt(screenshot, 4, 4, &cs);
+		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		getColorAt(screenshot, 5, 5, &cs);
+		TS_ASSERT_SAME_DATA(&blue, &cs, sizeof(SDL_Color));
+		getColorAt(screenshot, 24, 14, &cs);
+		TS_ASSERT_SAME_DATA(&blue, &cs, sizeof(SDL_Color));
+		getColorAt(screenshot, 25, 14, &cs);
+		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		getColorAt(screenshot, 24, 15, &cs);
+		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		SDL_FreeSurface(screenshot);
 
-		display->close();
+		delete backbuffer;
 	}
 	void test_fillRectGL2Truecolor() {
 		openDisplay(true, true, SDL_WINDOW_HIDDEN);
@@ -427,22 +497,44 @@ public:
 
 	void ctest_fill_screen() {
 		IOGfxSurface *backbuffer;
+		SDL_Surface *screenshot;
+		SDL_Color cs;
+		SDL_Rect bbbox;
 
 		backbuffer = display->alloc(50, 50);
+		bbbox = { 0,0, 50,50 };
 
 		backbuffer->fill_screen(0, GFX_ref_pal);
 		display->flipRaw(backbuffer);
-		ctest_blitCheck(0,0, 0,0,0);
+		screenshot = display->screenshot(&bbbox);
+		getColorAt(screenshot, 0, 0, &cs);
+		TS_ASSERT_SAME_DATA(&black, &cs, sizeof(SDL_Color));
+		SDL_FreeSurface(screenshot);
 
 		backbuffer->fill_screen(1, GFX_ref_pal);
 		display->flipRaw(backbuffer);
-		ctest_blitCheck(0,0, 255,255,0);
+		screenshot = display->screenshot(&bbbox);
+		getColorAt(screenshot, 0, 0, &cs);
+		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		SDL_FreeSurface(screenshot);
 
 		backbuffer->fill_screen(2, GFX_ref_pal);
 		display->flipRaw(backbuffer);
-		ctest_blitCheck(0,0, 0,0,255);
+		screenshot = display->screenshot(&bbbox);
+		getColorAt(screenshot, 0, 0, &cs);
+		TS_ASSERT_SAME_DATA(&blue, &cs, sizeof(SDL_Color));
+		SDL_FreeSurface(screenshot);
 
-		display->close();
+		// Using a /8 value to support RGB565 (Android) screens
+		SDL_Color gray16 = {16,16,16,255};
+		backbuffer->fill_screen(16, GFX_ref_pal);
+		display->flipRaw(backbuffer);
+		screenshot = display->screenshot(&bbbox);
+		getColorAt(screenshot, 0, 0, &cs);
+		TS_ASSERT_SAME_DATA(&gray16, &cs, sizeof(SDL_Color));
+		SDL_FreeSurface(screenshot);
+
+		delete backbuffer;
 	}
 	void test_fill_screenGL2Truecolor() {
 		openDisplay(true, true, SDL_WINDOW_HIDDEN);

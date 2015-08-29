@@ -111,7 +111,7 @@ void log_touch(SDL_Event* ev) {
 		return;
 	}
 	SDL_TouchFingerEvent* tev = (SDL_TouchFingerEvent*)ev;
-	log_debug("%s @%d id%"SDL_PRIs64",%"SDL_PRIs64
+	log_debug("%s @%d id%" SDL_PRIs64 ",%" SDL_PRIs64
 			 " (%f,%f) %f,%f p%f",
 			  desc, tev->timestamp, tev->touchId, tev->fingerId,
 			  tev->x, tev->y, tev->dx, tev->dy, tev->pressure);
@@ -222,7 +222,7 @@ void AppFreeDink::logic() {
 		g_display->clear();
 		debug_renderer_render();
 		dinkc_console_renderer_render();
-		g_display->flip(IOGFX_backbuffer); // game area
+		g_display->flipStretch(IOGFX_backbuffer); // game area
 		freedink_controls_renderer_render(); // TODO: always display me on flip_it
 	}
 }

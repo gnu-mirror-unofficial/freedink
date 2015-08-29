@@ -70,7 +70,7 @@ int IOGfxSurfaceGL2::fillRect(const SDL_Rect *dstrect, Uint8 r, Uint8 g, Uint8 b
 		* glm::scale(glm::mat4(1.0f), glm::vec3(dstrect->w, dstrect->h, 0.0));
 	glm::mat4 mvp = projection * m_transform; // * view * model * anim;
 	gl->UniformMatrix4fv(display->uniform_fillRect_mvp, 1, GL_FALSE, glm::value_ptr(mvp));
-	gl->Uniform4f(display->uniform_fillRect_color, r,g,b,1.0);
+	gl->Uniform4f(display->uniform_fillRect_color, r/255.0,g/255.0,b/255.0,1.0);
 
 	gl->EnableVertexAttribArray(display->attribute_fillRect_v_coord);
 	// Describe our vertices array to OpenGL (it can't guess its format automatically)

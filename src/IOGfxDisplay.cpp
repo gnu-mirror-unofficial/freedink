@@ -28,17 +28,8 @@ bool IOGfxDisplay::open() {
 		initializedVideo = true;
 	}
 
-	log_info("Truecolor mode: %s", truecolor ? "on" : "off");
-
-	Uint32 Rmask=0, Gmask=0, Bmask=0, Amask=0; int bpp=0;
-	SDL_PixelFormatEnumToMasks(getFormat(), &bpp,
-		&Rmask, &Gmask, &Bmask, &Amask);
-	log_info("SW buffer format: %s %d-bit R=0x%08x G=0x%08x B=0x%08x A=0x%08x",
-			SDL_GetPixelFormatName(getFormat()),
-			bpp, Rmask, Gmask, Bmask, Amask);
 
 	if (!createWindow()) return false;
-	logWindowInfo();
 
 	return true;
 }
@@ -51,13 +42,6 @@ void IOGfxDisplay::close() {
 		SDL_QuitSubSystem(SDL_INIT_VIDEO);
 		initializedVideo = false;
 	}
-}
-
-Uint32 IOGfxDisplay::getFormat() {
-    if (!truecolor)
-    	return SDL_PIXELFORMAT_INDEX8;
-    else
-    	return SDL_PIXELFORMAT_RGB888;
 }
 
 bool IOGfxDisplay::createWindow() {
@@ -91,6 +75,21 @@ bool IOGfxDisplay::createWindow() {
 	return true;
 }
 
+
+
+void IOGfxDisplay::logDisplayInfo() {
+	log_info("Truecolor mode: %s", truecolor ? "on" : "off");
+
+	Uint32 Rmask=0, Gmask=0, Bmask=0, Amask=0; int bpp=0;
+	SDL_PixelFormatEnumToMasks(getFormat(), &bpp,
+		&Rmask, &Gmask, &Bmask, &Amask);
+	log_info("SW buffer format: %s %d-bit R=0x%08x G=0x%08x B=0x%08x A=0x%08x",
+			SDL_GetPixelFormatName(getFormat()),
+			bpp, Rmask, Gmask, Bmask, Amask);
+
+	logWindowInfo();
+}
+
 void IOGfxDisplay::logWindowInfo() {
 	log_info("Video driver: %s", SDL_GetCurrentVideoDriver());
 	log_info("Video fall-back surface (unused): %s",
@@ -102,6 +101,15 @@ void IOGfxDisplay::logWindowInfo() {
 		log_info("Video fall-back surface (unused): %s",
 				SDL_GetPixelFormatName(window_surface->format->format));
 	}
+}
+
+
+
+Uint32 IOGfxDisplay::getFormat() {
+    if (!truecolor)
+    	return SDL_PIXELFORMAT_INDEX8;
+    else
+    	return SDL_PIXELFORMAT_RGB888;
 }
 
 void IOGfxDisplay::toggleFullScreen() {
@@ -147,6 +155,11 @@ void IOGfxDisplay::surfToDisplayCoords(IOGfxSurface* backbuffer, int &x, int &y)
 	double fy = y+0.5;
 	x = r.x + (fx / backbuffer->w) * r.w;
 	y = r.y + (fy / backbuffer->h) * r.h;
+}
+
+SDL_Surface* IOGfxDisplay::screenshot() {
+	SDL_Rect rect = { 0,0,w,h };
+	return screenshot(&rect);
 }
 
 void IOGfxDisplay::screenshot(const char* output_file) {

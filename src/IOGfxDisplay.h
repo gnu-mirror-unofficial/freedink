@@ -21,11 +21,13 @@ public:
 
 	virtual bool open();
 	virtual void close();
+	virtual void logDisplayInfo();
+
 	virtual Uint32 getFormat();
 
 	virtual void clear() = 0;
 	/* Refresh the physical screen, applying brightness and palette */
-	virtual void flip(IOGfxSurface* backbuffer) = 0;
+	virtual void flipStretch(IOGfxSurface* backbuffer) = 0;
 	virtual void flipRaw(IOGfxSurface* backbuffer) = 0;
 	virtual void onSizeChange(int w, int h) = 0;
 	virtual IOGfxSurface* upload(SDL_Surface* s) = 0;
@@ -34,7 +36,8 @@ public:
 	virtual void surfToDisplayCoords(IOGfxSurface* backbuffer, int &x, int &y);
 	virtual void centerScaledSurface(IOGfxSurface* surf, SDL_Rect* dst);
 
-	virtual SDL_Surface* screenshot() = 0;
+	virtual SDL_Surface* screenshot(SDL_Rect* rect) = 0;
+	virtual SDL_Surface* screenshot();
 	void screenshot(const char* output_file);
 
 	bool createWindow();

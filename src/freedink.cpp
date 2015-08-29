@@ -815,7 +815,7 @@ void process_warp_man(void)
 	  || (truecolor && g_display->brightness <= 180))
 	{
 	  IOGFX_backbuffer->fillRect(NULL, 0,0,0);
-	  g_display->flip(IOGFX_backbuffer);
+	  g_display->flipStretch(IOGFX_backbuffer);
 	  
 	  process_count = 0;
 	  int block = process_warp;

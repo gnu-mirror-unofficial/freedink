@@ -54,8 +54,6 @@ bool IOGfxDisplayGL2::open() {
 	if (!IOGfxDisplay::open()) return false;
 
 	if (!createOpenGLContext()) return false;
-	logOpenGLInfo();
-
 	if (!createSpriteVertices()) return false;
 	if (!createSpriteTexcoords()) return false;
 	if (!createPrograms()) return false;
@@ -68,6 +66,7 @@ bool IOGfxDisplayGL2::open() {
 void IOGfxDisplayGL2::close() {
 	if (gl != NULL) {
 		gl->DeleteProgram(program);
+		gl->DeleteProgram(program_fillRect);
 		gl->DeleteBuffers(1, &vboSpriteVertices);
 		gl->DeleteBuffers(1, &vboSpriteTexcoords);
 		delete gl;
@@ -109,6 +108,8 @@ bool IOGfxDisplayGL2::createOpenGLContext() {
 	return true;
 }
 
+
+
 void IOGfxDisplayGL2::logOpenGLInfo() {
 	int major, minor, profile;
 	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &major);
@@ -124,6 +125,13 @@ void IOGfxDisplayGL2::logOpenGLInfo() {
 
 	log_info("OpenGL %d.%d %s", major, minor, profile_str);
 }
+
+void IOGfxDisplayGL2::logDisplayInfo() {
+	IOGfxDisplay::logDisplayInfo();
+	logOpenGLInfo();
+}
+
+
 
 bool IOGfxDisplayGL2::createSpriteVertices() {
 	GLfloat spriteVertices[] = {
@@ -338,10 +346,10 @@ void IOGfxDisplayGL2::clear() {
 	gl->Clear(GL_COLOR_BUFFER_BIT);
 }
 
-SDL_Surface* IOGfxDisplayGL2::screenshot() {
+SDL_Surface* IOGfxDisplayGL2::screenshot(SDL_Rect* rect) {
 	// assume 4-bytes alignment
 	SDL_Surface* image = SDL_CreateRGBSurface(0,
-		w, h, 32,
+		rect->w, rect->h, 32,
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 		0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff
 #else
@@ -349,14 +357,15 @@ SDL_Surface* IOGfxDisplayGL2::screenshot() {
 #endif
 	);
 	unsigned char* pixels = (unsigned char*)image->pixels;
-	gl->ReadPixels(0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+	gl->ReadPixels(rect->x, h-rect->h-rect->y, rect->w, rect->h,
+		GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
 	// Flip vertically
-    unsigned int length = w*4;
-    unsigned char* src = pixels + (h-1)*length;
+    unsigned int length = rect->w*4;
+    unsigned char* src = pixels + (rect->h-1)*length;
     unsigned char* tmp = new unsigned char[length];
     unsigned char* dst = pixels;
-    unsigned int rows = h / 2;
+    unsigned int rows = rect->h / 2;
     while (rows--) {
         memcpy(tmp, dst, length);
         memcpy(dst, src, length);
@@ -369,7 +378,7 @@ SDL_Surface* IOGfxDisplayGL2::screenshot() {
 	return image;
 }
 
-void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer) {
+void IOGfxDisplayGL2::flipStretch(IOGfxSurface* backbuffer) {
 	if (backbuffer == NULL)
 		SDL_SetError("IOGfxDisplayGL2::flip: passed a NULL surface");
 	IOGfxSurfaceGL2* surf = dynamic_cast<IOGfxSurfaceGL2*>(backbuffer);
@@ -387,8 +396,7 @@ void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer) {
 	// Beware that rotation is reversed too
 	glm::mat4 projection = glm::ortho(0.0f, 1.0f*w, 1.0f*h, 0.0f);
 	glm::mat4 m_transform;
-	m_transform = glm::translate(glm::mat4(1), glm::vec3(0.375, 0.375, 0.))
-		* glm::translate(glm::mat4(1.0f), glm::vec3(dstrect.x,dstrect.y, 0.0))
+	m_transform = glm::translate(glm::mat4(1.0f), glm::vec3(dstrect.x,dstrect.y, 0.0))
 		* glm::scale(glm::mat4(1.0f), glm::vec3(dstrect.w, dstrect.h, 0.0));
 	glm::mat4 mvp = projection * m_transform; // * view * model * anim;
 	gl->UniformMatrix4fv(uniform_mvp, 1, GL_FALSE, glm::value_ptr(mvp));
@@ -460,8 +468,7 @@ void IOGfxDisplayGL2::flipRaw(IOGfxSurface* backbuffer) {
 	// Beware that rotation is reversed too
 	glm::mat4 projection = glm::ortho(0.0f, 1.0f*w, 1.0f*h, 0.0f);
 	glm::mat4 m_transform;
-	m_transform = glm::translate(glm::mat4(1), glm::vec3(0.375, 0.375, 0.))
-		* glm::scale(glm::mat4(1.0f), glm::vec3(backbuffer->w, backbuffer->h, 0.0));
+	m_transform = glm::scale(glm::mat4(1.0f), glm::vec3(backbuffer->w, backbuffer->h, 0.0));
 	glm::mat4 mvp = projection * m_transform; // * view * model * anim;
 	gl->UniformMatrix4fv(uniform_mvp, 1, GL_FALSE, glm::value_ptr(mvp));
 
