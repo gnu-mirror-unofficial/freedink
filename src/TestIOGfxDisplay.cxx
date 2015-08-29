@@ -48,20 +48,38 @@
 class TestIOGfxDisplay : public CxxTest::TestSuite {
 public:
 	IOGfxDisplay* display;
+	struct {
+		bool gl;
+		bool truecolor;
+	} lastDisplay;
+
 	SDL_Color white;
 	SDL_Color black;
 	SDL_Color green;
 	SDL_Color blue;
 
-	void setUp() {
+
+
+	TestIOGfxDisplay() {
 		TS_ASSERT_EQUALS(SDL_InitSubSystem(SDL_INIT_VIDEO), 0);
 		// SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
+
+		display = NULL;
+		lastDisplay.gl = false;
+		lastDisplay.truecolor = false;
 
 		white = {255, 255, 255, 255};
 		black = {  0,   0,   0, 255};
 		green = {255, 255,   0, 255};
 		blue  = {  0,   0, 255, 255};
+	}
+	~TestIOGfxDisplay() {
+		SDL_QuitSubSystem(SDL_INIT_VIDEO);
+	}
 
+
+
+	void setUp() {
 		// init palette; hopefully can be removed if we get rid of blitFormat
 		for (int i = 0; i < 256; i++) {
 			GFX_ref_pal[i].r = i;
@@ -82,7 +100,6 @@ public:
 		gfx_palette_set_phys(GFX_ref_pal);
 	}
 	void tearDown() {
-		SDL_QuitSubSystem(SDL_INIT_VIDEO);
 	}
 
 
@@ -91,16 +108,29 @@ public:
 		//log_info("* Requesting %s %s", gl?"GL2":"SW", truecolor?"truecolor":"");
 		//flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 		//flags &= ~SDL_WINDOW_HIDDEN;
+
+		// cache
+		if (display && lastDisplay.gl == gl && lastDisplay.truecolor == truecolor) {
+			display->clear();
+			return;
+		}
+		if (display) {
+			display->close();
+			delete display;
+			display = NULL;
+		}
+
 		if (gl)
 			display = new IOGfxDisplayGL2(50, 50, truecolor, flags);
 		else
 			display = new IOGfxDisplaySW(50, 50, truecolor, flags);
 		bool opened = display->open();
 		TS_ASSERT_EQUALS(opened, true);
+
+		lastDisplay.gl = gl;
+		lastDisplay.truecolor = truecolor;
 	}
 	void closeDisplay() {
-		display->close();
-		delete display;
 	}
 
 	void getColorAt(SDL_Surface* img, int x, int y, SDL_Color* c) {
@@ -163,34 +193,7 @@ public:
 		delete splash;
 		delete backbuffer;
 	}
-	void test01SplashGL2Truecolor() {
-		openDisplay(true, true, SDL_WINDOW_HIDDEN);
-		ctestSplash();
-		closeDisplay();
-	}
-	void testSplashSWTruecolor() {
-		openDisplay(false, true, 0); // can't render offscreen >(
-		ctestSplash();
-		closeDisplay();
-	}
-	void testSplashGL2() {
-		openDisplay(false, false, SDL_WINDOW_HIDDEN);
-		//ctestSplash(); // TODO
-		closeDisplay();
-	}
-	void testSplashSW() {
-		openDisplay(false, false, 0);
-		ctestSplash();
-		closeDisplay();
-	}
-	void debug2SplashSWTruecolor() {
-		openDisplay(false, true, 0);
-		ctestSplash();
 
-		// wait for us to see
-		SDL_Delay(2000);
-		closeDisplay();
-	}
 
 
 	void ctest_alloc() {
@@ -199,16 +202,6 @@ public:
 		TS_ASSERT_EQUALS(surf->w, 300);
 		TS_ASSERT_EQUALS(surf->h, 300);
 		delete surf;
-	}
-	void test_allocGL2() {
-		openDisplay(true, true, SDL_WINDOW_HIDDEN);
-		ctest_alloc();
-		closeDisplay();
-	}
-	void test_allocSW() {
-		openDisplay(false, true, SDL_WINDOW_HIDDEN);
-		ctest_alloc();
-		closeDisplay();
 	}
 
 
@@ -253,27 +246,15 @@ public:
 		TS_ASSERT_EQUALS(cb, 0);
 		TS_ASSERT_EQUALS(ca, 255);
 
-		SDL_SaveBMP(screenshot, "screenshot.bmp");
 		SDL_FreeSurface(screenshot);
 
 		delete surf;
 		delete backbuffer;
 	}
-	void test_screenshotGL2Truecolor() {
-		openDisplay(true, true, SDL_WINDOW_HIDDEN);
-		ctest_screenshot();
-		closeDisplay();
-	}
-	void test_screenshotSWTruecolor() {
-		openDisplay(false, true, 0);
-		ctest_screenshot();
-		closeDisplay();
-	}
 
 
 
-	void test_surfToDisplayCoords() {
-		openDisplay(true, true, SDL_WINDOW_HIDDEN);
+	void ctest_surfToDisplayCoords() {
 		SDL_Surface* img;
 		IOGfxSurface *surf;
 		int x, y;
@@ -306,8 +287,9 @@ public:
 		TS_ASSERT_EQUALS(x, 270);
 		TS_ASSERT_EQUALS(y, 120);
 
+		display->onSizeChange(50, 50);
+
 		delete surf;
-		closeDisplay();
 	}
 
 
@@ -414,26 +396,6 @@ public:
 		delete surf;
 		delete backbuffer;
 	}
-	void test_blitGL2Truecolor() {
-		openDisplay(true, true, SDL_WINDOW_HIDDEN);
-		ctest_blit();
-		closeDisplay();
-	}
-	void test_blitSWTruecolor() {
-		openDisplay(false, true, 0);
-		ctest_blit();
-		closeDisplay();
-	}
-	void test_blitGL2() {
-		openDisplay(true, false, SDL_WINDOW_HIDDEN);
-		//ctest_blit(); // TODO
-		closeDisplay();
-	}
-	void test_blitSW() {
-		openDisplay(false, false, 0);
-		ctest_blit();
-		closeDisplay();
-	}
 
 
 
@@ -473,26 +435,6 @@ public:
 		SDL_FreeSurface(screenshot);
 
 		delete backbuffer;
-	}
-	void test_fillRectGL2Truecolor() {
-		openDisplay(true, true, SDL_WINDOW_HIDDEN);
-		ctest_fillRect();
-		closeDisplay();
-	}
-	void test_fillRectSWTruecolor() {
-		openDisplay(false, true, 0);
-		ctest_fillRect();
-		closeDisplay();
-	}
-	void test_fillRectGL2() {
-		openDisplay(true, false, SDL_WINDOW_HIDDEN);
-		//ctest_fillRect(); // TODO
-		closeDisplay();
-	}
-	void test_fillRectSW() {
-		openDisplay(false, false, 0);
-		ctest_fillRect();
-		closeDisplay();
 	}
 
 	void ctest_fill_screen() {
@@ -536,9 +478,89 @@ public:
 
 		delete backbuffer;
 	}
+
+
+
+	void test01SplashGL2Truecolor() {
+		openDisplay(true, true, SDL_WINDOW_HIDDEN);
+		ctestSplash();
+		closeDisplay();
+	}
+	void test_screenshotGL2Truecolor() {
+		openDisplay(true, true, SDL_WINDOW_HIDDEN);
+		ctest_screenshot();
+		closeDisplay();
+	}
+	void test_allocGL2Truecolor() {
+		openDisplay(true, true, SDL_WINDOW_HIDDEN);
+		ctest_alloc();
+		closeDisplay();
+	}
+	void test_surfToDisplayCoordsGL2Truecolor() {
+		openDisplay(true, true, SDL_WINDOW_HIDDEN);
+		ctest_surfToDisplayCoords();
+		closeDisplay();
+	}
+	void test_blitGL2Truecolor() {
+		openDisplay(true, true, SDL_WINDOW_HIDDEN);
+		ctest_blit();
+		closeDisplay();
+	}
 	void test_fill_screenGL2Truecolor() {
 		openDisplay(true, true, SDL_WINDOW_HIDDEN);
 		ctest_fill_screen();
+		closeDisplay();
+	}
+	void test_fillRectGL2Truecolor() {
+		openDisplay(true, true, SDL_WINDOW_HIDDEN);
+		ctest_fillRect();
+		closeDisplay();
+	}
+
+//	void testSplashGL2() {
+//		openDisplay(true, false, SDL_WINDOW_HIDDEN);
+//		ctestSplash(); // TODO
+//		closeDisplay();
+//	}
+//	void test_blitGL2() {
+//		openDisplay(true, false, SDL_WINDOW_HIDDEN);
+//		ctest_blit(); // TODO
+//		closeDisplay();
+//	}
+//	void test_fillRectGL2() {
+//		openDisplay(true, false, SDL_WINDOW_HIDDEN);
+//		ctest_fillRect(); // TODO
+//		closeDisplay();
+//	}
+//	void test_fill_screenGL2() {
+//		openDisplay(true, false, SDL_WINDOW_HIDDEN);
+//		ctest_fill_screen(); // TODO
+//		closeDisplay();
+//	}
+
+	void testSplashSWTruecolor() {
+		openDisplay(false, true, 0); // can't render offscreen >(
+		ctestSplash();
+		closeDisplay();
+	}
+	void test_screenshotSWTruecolor() {
+		openDisplay(false, true, 0);
+		ctest_screenshot();
+		closeDisplay();
+	}
+	void test_allocSWTruecolor() {
+		openDisplay(false, true, SDL_WINDOW_HIDDEN);
+		ctest_alloc();
+		closeDisplay();
+	}
+	void test_blitSWTruecolor() {
+		openDisplay(false, true, 0);
+		ctest_blit();
+		closeDisplay();
+	}
+	void test_fillRectSWTruecolor() {
+		openDisplay(false, true, 0);
+		ctest_fillRect();
 		closeDisplay();
 	}
 	void test_fill_screenSWTruecolor() {
@@ -546,9 +568,20 @@ public:
 		ctest_fill_screen();
 		closeDisplay();
 	}
-	void test_fill_screenGL2() {
-		openDisplay(true, false, SDL_WINDOW_HIDDEN);
-		//ctest_fill_screen(); // TODO
+
+	void testSplashSW() {
+		openDisplay(false, false, 0);
+		ctestSplash();
+		closeDisplay();
+	}
+	void test_blitSW() {
+		openDisplay(false, false, 0);
+		ctest_blit();
+		closeDisplay();
+	}
+	void test_fillRectSW() {
+		openDisplay(false, false, 0);
+		ctest_fillRect();
 		closeDisplay();
 	}
 	void test_fill_screenSW() {
