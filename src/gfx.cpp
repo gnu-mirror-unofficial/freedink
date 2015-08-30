@@ -97,14 +97,13 @@ int gfx_init(bool dinkgl, bool windowed, char* splash_path) {
 	else
 		g_display = new IOGfxDisplaySW(GFX_RES_W, GFX_RES_H, truecolor,
 										windowed ? SDL_WINDOW_RESIZABLE : SDL_WINDOW_FULLSCREEN_DESKTOP);
-	g_display->logDisplayInfo();
-		
 	/* Note: SDL_WINDOW_FULLSCREEN may not respect aspect ratio, _DESKTOP does */
 	if (!g_display->open()) {
 		// TODO: try dinkgl->soft fallback, when dinkgl is default
 		log_error("Could not open display");
 		return -1;
 	}
+	g_display->logDisplayInfo();
 
 	/* Default palette */
 	gfx_palette_reset();
