@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <algorithm>
 #include "SDL.h"
 #include "SDL_ttf.h"
 #include "gfx.h"
@@ -45,6 +46,7 @@
 #include "vgasys_fon.h"
 #include "log.h"
 
+using namespace std;
 
 /* Default size was 18 in the original game, but it refers to a
    different part of the font glyph (see doc/fonts.txt for
@@ -333,7 +335,7 @@ static void
 print_text (TTF_Font * font, char *str, int x, int y, int w, SDL_Color /*&*/color,
 	    /*bool*/int hcenter)
 {
-  int new_x, text_w, text_h;
+  int new_x;
   SDL_Surface *tmp;
   SDL_Rect dst;
 
@@ -360,18 +362,17 @@ print_text (TTF_Font * font, char *str, int x, int y, int w, SDL_Color /*&*/colo
       return;
     }
 
-  TTF_SizeUTF8 (font, str, &text_w, &text_h);
   new_x = x;
   if (hcenter)
     {
       new_x += w / 2;
-      new_x -= text_w / 2;
+      new_x -= tmp->w / 2;
     }
   dst.x = new_x; dst.y = y;
   
   SDL_Rect src;
   src.x = src.y = 0;
-  src.w = w; // truncate text if outside the box
+  src.w = min(w, tmp->w); // truncate text if outside the box
   src.h = tmp->h;
   IOGfxSurface* tmp2 = g_display->upload(tmp);
   IOGFX_backbuffer->blit(tmp2, &src, &dst);
