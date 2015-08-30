@@ -333,51 +333,48 @@ void FONTS_SetTextColorIndex(int no) {
 
 static void
 print_text (TTF_Font * font, char *str, int x, int y, int w, SDL_Color /*&*/color,
-	    /*bool*/int hcenter)
-{
-  int new_x;
-  SDL_Surface *tmp;
-  SDL_Rect dst;
+	    /*bool*/int hcenter) {
+	int new_x;
+	SDL_Surface *tmp;
+	SDL_Rect dst;
 
-  if (strlen (str) == 0)
-    return;
-  
-  if (!truecolor)
-    {
-      // Text color isn't affected by palette changes - get final
-      // color directly from the physical palette
-      SDL_PixelFormat* fmt = gfx_palette_get_phys_format();
-      Uint32 phys_index = SDL_MapRGB(fmt, color.r, color.g, color.b);
-      SDL_GetRGB(phys_index, ImageLoader::blitFormat->format, &(color.r), &(color.g), &(color.b));
-	  SDL_FreeFormat(fmt);
-    }
+	if (strlen (str) == 0)
+		return;
 
-  /* Transparent, low quality - closest to the original engine. */
-  /* Also we do need a monochrome rendering for palette support above */
-  tmp = TTF_RenderUTF8_Solid(font, str, color);
+	if (!truecolor) {
+		// Text color is using the physical palette (no palette-switching effect)
+		SDL_PixelFormat* fmt = gfx_palette_get_phys_format();
+		Uint32 phys_index = SDL_MapRGB(fmt, color.r, color.g, color.b);
+		SDL_GetRGB(phys_index, ImageLoader::blitFormat->format, &(color.r), &(color.g), &(color.b));
+		SDL_FreeFormat(fmt);
+	}
 
-  if (tmp == NULL)
-    {
-      log_error("Error rendering text: %s; font is %p", TTF_GetError(), font);
-      return;
-    }
+	/* Transparent, low quality - closest to the original engine. */
+	/* Also we do need a monochrome rendering for palette support above */
+	tmp = TTF_RenderUTF8_Solid(font, str, color);
+	if (tmp == NULL) {
+		log_error("Error rendering text: %s; font is %p", TTF_GetError(), font);
+		return;
+	}
 
-  new_x = x;
-  if (hcenter)
-    {
-      new_x += w / 2;
-      new_x -= tmp->w / 2;
-    }
-  dst.x = new_x; dst.y = y;
-  
-  SDL_Rect src;
-  src.x = src.y = 0;
-  src.w = min(w, tmp->w); // truncate text if outside the box
-  src.h = tmp->h;
-  IOGfxSurface* tmp2 = g_display->upload(tmp);
-  IOGFX_backbuffer->blit(tmp2, &src, &dst);
+	if (!truecolor)
+		tmp = ImageLoader::convertToPaletteFormat(tmp);
 
-  delete tmp2;
+	new_x = x;
+	if (hcenter) {
+		new_x += w / 2;
+		new_x -= tmp->w / 2;
+	}
+	dst.x = new_x; dst.y = y;
+
+	SDL_Rect src;
+	src.x = src.y = 0;
+	src.w = min(w, tmp->w); // truncate text if outside the box
+	src.h = tmp->h;
+	IOGfxSurface* tmp2 = g_display->upload(tmp);
+	IOGFX_backbuffer->blit(tmp2, &src, &dst);
+
+	delete tmp2;
 }
 
 /**
@@ -593,6 +590,8 @@ print_text_wrap_debug(const char *text, int x, int y)
 
       SDL_Rect dst = {x, y + res_height, -1, -1};
       SDL_Surface* rendered_text = TTF_RenderUTF8_Shaded(system_font, pline, text_color, bgcolor);
+      if (!truecolor)
+    	  rendered_text = ImageLoader::convertToPaletteFormat(rendered_text);
       IOGfxSurface* rendered_text2 = g_display->upload(rendered_text);
       IOGFX_backbuffer->blit(rendered_text2, NULL, &dst);
       delete rendered_text2;

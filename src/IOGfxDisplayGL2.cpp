@@ -278,7 +278,6 @@ bool IOGfxDisplayGL2::createPrograms() {
 
 
 	/* Palette emulation */
-	// TODO: doesn't work on Android/GLES2 as GL_LUMINANCE can't be used as framebuffer
 	const char* vshader_indexed =
 		"attribute vec4 v_coord;          \n"
 		"attribute vec2 v_texcoord;       \n"
@@ -648,7 +647,10 @@ IOGfxSurface* IOGfxDisplayGL2::upload(SDL_Surface* surf) {
 	if (SDL_GetColorKey(surf, &key) == -1) {
 		colorkey.a = SDL_ALPHA_OPAQUE; // no colorkey
 	} else {
-		SDL_GetRGBA(key, surf->format, &colorkey.r, &colorkey.g, &colorkey.b, &colorkey.a);
+		if (truecolor)
+			SDL_GetRGBA(key, surf->format, &colorkey.r, &colorkey.g, &colorkey.b, &colorkey.a);
+		else
+			colorkey.r = colorkey.g = colorkey.b = key;
 		colorkey.a = SDL_ALPHA_TRANSPARENT;
 	}
 
