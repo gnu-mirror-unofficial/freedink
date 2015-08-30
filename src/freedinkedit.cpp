@@ -4716,16 +4716,18 @@ void AppFreeDinkedit::init()
 }
 
 /* Global game shortcuts - just full-screen toggle actually */
-void freedinkedit_input_global_shortcuts(SDL_Event* ev) {
+bool freedinkedit_input_global_shortcuts(SDL_Event* ev) {
   if (ev->type != SDL_KEYDOWN)
-    return;
+    return false;
   if (ev->key.repeat)
-    return;
+    return false;
 
   if (ev->key.keysym.scancode == SDL_SCANCODE_RETURN)
     {
       g_display->toggleFullScreen();
+      return true;
     }
+  return false;
 }
 
 void freedinkedit_input_window(SDL_Event* ev) {
@@ -4739,26 +4741,29 @@ void freedinkedit_input_window(SDL_Event* ev) {
 }
 
 void AppFreeDinkedit::input(SDL_Event* ev) {
-  freedinkedit_input_window(ev);
-  if (ev->type == SDL_KEYUP
-      && input_getscancodestate(ev->key.keysym.scancode) == SDL_PRESSED) {
-    // always tell the game when the player releases a key
-    input_update(ev);
-  } else if ((ev->type == SDL_KEYDOWN || ev->type == SDL_KEYUP)
-      && (ev->key.keysym.mod & KMOD_ALT)) {
-    freedinkedit_input_global_shortcuts(ev);
-  } else {
-    // forward all events to the editor
-    input_update(ev);
-  }
+	freedinkedit_input_window(ev);
+	if (ev->type == SDL_KEYUP
+			&& input_getscancodestate(ev->key.keysym.scancode) == SDL_PRESSED) {
+		// always tell the game when the player releases a key
+		input_update(ev);
+	} else {
+		int processed = false;
+		if ((ev->type == SDL_KEYDOWN || ev->type == SDL_KEYUP)
+				&& (ev->key.keysym.mod & KMOD_ALT)) {
+			processed = freedinkedit_input_global_shortcuts(ev);
+		}
+		if (!processed)
+			// forward all events to the editor
+			input_update(ev);
+	}
 
-  if (ev->type == SDL_TEXTINPUT
-      && strlen(in_temp) < in_max
-      && isprint(ev->text.text[0]))
-    sprintf(in_temp + strlen(in_temp), "%c", ev->text.text[0]);
+	if (ev->type == SDL_TEXTINPUT
+			&& strlen(in_temp) < in_max
+			&& isprint(ev->text.text[0]))
+		sprintf(in_temp + strlen(in_temp), "%c", ev->text.text[0]);
 
-  if (g_editorMode == EDITOR_MODE_SCREEN_SPRITES)
-    freedinkedit_update_cursor_position(ev);
+	if (g_editorMode == EDITOR_MODE_SCREEN_SPRITES)
+		freedinkedit_update_cursor_position(ev);
 }
 
 
