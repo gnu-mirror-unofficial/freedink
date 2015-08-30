@@ -453,7 +453,7 @@ void IOGfxDisplayGL2::flipStretch(IOGfxSurface* backbuffer) {
 }
 
 /* Raw blit so we can extract texture buffer */
-void IOGfxDisplayGL2::flipRaw(IOGfxSurface* backbuffer) {
+void IOGfxDisplayGL2::flipDebug(IOGfxSurface* backbuffer) {
 	if (backbuffer == NULL)
 		SDL_SetError("IOGfxDisplayGL2::blit: passed a NULL surface");
 	IOGfxSurfaceGL2* surf = dynamic_cast<IOGfxSurfaceGL2*>(backbuffer);

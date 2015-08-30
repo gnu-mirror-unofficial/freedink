@@ -11,7 +11,7 @@
 
 IOGfxDisplaySW::IOGfxDisplaySW(int w, int h, bool truecolor, Uint32 flags)
 	: IOGfxDisplay(w, h, truecolor, flags), renderer(NULL),
-	  render_texture(NULL), rgb_screen(NULL) {
+	  render_texture(NULL), render_texture_debug(NULL), rgb_screen(NULL) {
 }
 
 IOGfxDisplaySW::~IOGfxDisplaySW() {
@@ -226,7 +226,7 @@ void IOGfxDisplaySW::flipStretch(IOGfxSurface* backbuffer) {
 	SDL_RenderPresent(renderer);
 }
 
-void IOGfxDisplaySW::flipRaw(IOGfxSurface* backbuffer) {
+void IOGfxDisplaySW::flipDebug(IOGfxSurface* backbuffer) {
 	/* Convert to destination buffer format */
 	SDL_Surface* source = dynamic_cast<IOGfxSurfaceSW*>(backbuffer)->image;
 	if (truecolor) {

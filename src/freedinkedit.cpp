@@ -4728,7 +4728,18 @@ void freedinkedit_input_global_shortcuts(SDL_Event* ev) {
     }
 }
 
+void freedinkedit_input_window(SDL_Event* ev) {
+	if (ev->type == SDL_WINDOWEVENT) {
+		if (ev->window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+			int w = ev->window.data1;
+			int h = ev->window.data2;
+			g_display->onSizeChange(w, h);
+		}
+	}
+}
+
 void AppFreeDinkedit::input(SDL_Event* ev) {
+  freedinkedit_input_window(ev);
   if (ev->type == SDL_KEYUP
       && input_getscancodestate(ev->key.keysym.scancode) == SDL_PRESSED) {
     // always tell the game when the player releases a key

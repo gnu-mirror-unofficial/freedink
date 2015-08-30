@@ -28,7 +28,7 @@ public:
 	virtual void clear() = 0;
 	/* Refresh the physical screen, applying brightness and palette */
 	virtual void flipStretch(IOGfxSurface* backbuffer) = 0;
-	virtual void flipRaw(IOGfxSurface* backbuffer) = 0;
+	virtual void flipDebug(IOGfxSurface* backbuffer) = 0;
 	virtual void onSizeChange(int w, int h) = 0;
 	virtual IOGfxSurface* upload(SDL_Surface* s) = 0;
 	virtual IOGfxSurface* alloc(int surfW, int surfH) = 0;

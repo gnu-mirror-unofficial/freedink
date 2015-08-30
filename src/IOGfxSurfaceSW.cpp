@@ -28,23 +28,6 @@ int IOGfxSurfaceSW::fillRect(const SDL_Rect *rect, Uint8 r, Uint8 g, Uint8 b) {
 	return SDL_FillRect(image, rect, SDL_MapRGB(image->format, r, g, b));
 }
 
-void IOGfxSurfaceSW::vlineRGB(Sint16 x, Sint16 y1, Sint16 y2, Uint8 r, Uint8 g, Uint8 b) {
-	SDL_Rect dst = { x, y1, 1, y2-y1 };
-	SDL_FillRect(image, &dst, SDL_MapRGB(image->format, r, g, b));
-}
-void IOGfxSurfaceSW::hlineRGB(Sint16 x1, Sint16 x2, Sint16 y, Uint8 r, Uint8 g, Uint8 b) {
-	SDL_Rect dst = { x1, y, x2-x1, 1 };
-	SDL_FillRect(image, &dst, SDL_MapRGB(image->format, r, g, b));
-}
-
-
-void IOGfxSurfaceSW::drawBox(rect box, int color) {
-	SDL_Rect dst;
-	dst.x = box.left; dst.y = box.top;
-	dst.w = box.right - box.left;
-	dst.h = box.bottom - box.top;
-	SDL_FillRect(image, &dst, color);
-}
 
 int IOGfxSurfaceSW::blit(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* dstrect) {
 	if (src == NULL)

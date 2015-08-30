@@ -122,8 +122,10 @@ void missile_brain(int h, /*bool*/int repeat)
 	    if (spr[h].range != 0)
 	      rect_inflate(&box, spr[h].range,spr[h].range);
 	    
-	    if (debug_mode)
-	    	IOGFX_backbuffer->drawBox(box, 33);
+	    if (debug_mode) {
+	    	SDL_Rect r = {box.left, box.top, box.right-box.left, box.bottom-box.top};
+	    	IOGFX_backbuffer->fillRect(&r, 222, 173, 255);
+	    }
 	    
 	    if (inside_box(spr[h].x, spr[h].y, box))
 	      {
