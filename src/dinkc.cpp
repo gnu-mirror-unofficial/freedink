@@ -2711,8 +2711,8 @@ process_line(int script, char *s, /*bool*/int doelse)
 	    }
 	  else
 	    {
-	      log_error("[DinkC] Procedure void %s( void ); not found in script %s. (word 2 was %s) ",
-			proc, ev[1], rinfo[myscript]->name);
+	      log_error("[DinkC] Procedure void %s( void ); not found in script %s. (word 2 was %s)",
+			proc, rinfo[script]->name, ev[1]);
 	      kill_script(myscript);
 	    }
 	  free(proc);
