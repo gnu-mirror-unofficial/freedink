@@ -146,8 +146,7 @@ int gfx_init(bool dinkgl, bool windowed, char* splash_path) {
       in = paths_fallbackfile_fopen(splash_path, "rb");
     }
     if (in != NULL) {
-      SDL_RWops* rw = SDL_RWFromFP(in, /*autoclose=*/SDL_TRUE);
-      SDL_Surface* image = IMG_Load_RW(rw, 1);
+      SDL_Surface* image = ImageLoader::loadToBlitFormat(in);
       if (image != NULL)
         splash = g_display->upload(image);
     }
