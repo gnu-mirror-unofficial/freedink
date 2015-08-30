@@ -290,7 +290,7 @@ IOGfxSurface* IOGfxDisplaySW::upload(SDL_Surface* image) {
 	return new IOGfxSurfaceSW(image);
 }
 
-IOGfxSurface* IOGfxDisplaySW::alloc(int surfW, int surfH) {
+IOGfxSurface* IOGfxDisplaySW::allocBuffer(int surfW, int surfH) {
 	Uint32 Rmask=0, Gmask=0, Bmask=0, Amask=0; int bpp=0;
 	SDL_PixelFormatEnumToMasks(getFormat(), &bpp, &Rmask, &Gmask, &Bmask, &Amask);
 	SDL_Surface* image = SDL_CreateRGBSurface(0, surfW, surfH, bpp, Rmask, Gmask, Bmask, Amask);

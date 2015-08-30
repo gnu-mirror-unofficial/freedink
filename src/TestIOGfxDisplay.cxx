@@ -148,7 +148,7 @@ public:
 		SDL_Surface* image;
 		IOGfxSurface *backbuffer, *splash;
 
-		backbuffer = display->alloc(50, 50);
+		backbuffer = display->allocBuffer(50, 50);
 		//g->flip(backbuffer); // not a single flip
 
 		image = SDL_CreateRGBSurface(0, 40, 40, 8, 0, 0, 0, 0);
@@ -198,7 +198,7 @@ public:
 
 
 	void ctest_alloc() {
-		IOGfxSurface* surf = display->alloc(300, 300);
+		IOGfxSurface* surf = display->allocBuffer(300, 300);
 		TS_ASSERT(surf != NULL);
 		TS_ASSERT_EQUALS(surf->w, 300);
 		TS_ASSERT_EQUALS(surf->h, 300);
@@ -212,7 +212,7 @@ public:
 		IOGfxSurface *backbuffer, *surf;
 		SDL_Rect bbbox;
 
-		backbuffer = display->alloc(50, 50);
+		backbuffer = display->allocBuffer(50, 50);
 		bbbox = { 0,0, 50,50 };
 
 		img = SDL_CreateRGBSurface(0, 40, 40, 8, 0, 0, 0, 0);
@@ -300,7 +300,7 @@ public:
 		SDL_Color cs;
 		SDL_Rect bbbox;
 
-		backbuffer = display->alloc(50, 50);
+		backbuffer = display->allocBuffer(50, 50);
 		bbbox = { 0,0, 50,50 };
 
 		img = SDL_CreateRGBSurface(0, 5, 5, 8, 0, 0, 0, 0);
@@ -406,7 +406,7 @@ public:
 		SDL_Color cs;
 		SDL_Rect bbbox;
 
-		backbuffer = display->alloc(50, 50);
+		backbuffer = display->allocBuffer(50, 50);
 		bbbox = { 0,0, 50,50 };
 
 		SDL_Rect dstrect = {-1, -1, -1, -1};
@@ -462,7 +462,7 @@ public:
 		SDL_Color cs;
 		SDL_Rect bbbox;
 
-		backbuffer = display->alloc(50, 50);
+		backbuffer = display->allocBuffer(50, 50);
 		bbbox = { 0,0, 50,50 };
 
 		backbuffer->fill_screen(0, GFX_ref_pal);

@@ -128,10 +128,10 @@ int gfx_init(bool dinkgl, bool windowed, char* splash_path) {
 	}
 
 	// TODO: make backbuffer resize quality linear instead of nearest
-	IOGFX_backbuffer = g_display->alloc(GFX_RES_W, GFX_RES_H);
-	IOGFX_background = g_display->alloc(GFX_RES_W, GFX_RES_H);
-	IOGFX_tmp1       = g_display->alloc(GFX_RES_W, GFX_RES_H);
-	IOGFX_tmp2       = g_display->alloc(GFX_RES_W, GFX_RES_H);
+	IOGFX_backbuffer = g_display->allocBuffer(GFX_RES_W, GFX_RES_H);
+	IOGFX_background = g_display->allocBuffer(GFX_RES_W, GFX_RES_H);
+	IOGFX_tmp1       = g_display->allocBuffer(GFX_RES_W, GFX_RES_H);
+	IOGFX_tmp2       = g_display->allocBuffer(GFX_RES_W, GFX_RES_H);
 	if (IOGFX_backbuffer == NULL || IOGFX_background == NULL
 			|| IOGFX_tmp1 == NULL || IOGFX_tmp2 == NULL) {
 		log_error("Cannot create global buffers");
