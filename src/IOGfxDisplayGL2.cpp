@@ -143,33 +143,38 @@ bool IOGfxDisplayGL2::createSpriteTexcoords() {
 }
 
 GLuint IOGfxDisplayGL2::createShader(const char* source, GLenum type) {
+	GLuint res = gl->CreateShader(type);
+
+	// GLSL version
+	const char* version;
 	int profile;
 	SDL_GL_GetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, &profile);
+	if (profile == SDL_GL_CONTEXT_PROFILE_ES)
+		version = "#version 100\n";  // OpenGL ES 2.0
+	else
+		version = "#version 120\n";  // OpenGL 2.1
 
-	GLuint res = gl->CreateShader(type);
+	// GLES2 precision specifiers
+	const char* precision;
+	precision =
+		"#ifdef GL_ES                        \n"
+		"#  ifdef GL_FRAGMENT_PRECISION_HIGH \n"
+		"     precision highp float;         \n"
+		"#  else                             \n"
+		"     precision mediump float;       \n"
+		"#  endif                            \n"
+		"#else                               \n"
+		// Ignore unsupported precision specifiers
+		"#  define lowp                      \n"
+		"#  define mediump                   \n"
+		"#  define highp                     \n"
+		"#endif                              \n";
+
 	const GLchar* sources[] = {
-		(profile == SDL_GL_CONTEXT_PROFILE_ES)
-		? "#version 100\n"  // OpenGL ES 2.0
-		: "#version 120\n"  // OpenGL 2.1
-		,
-		// GLES2 precision specifiers
-		(profile == SDL_GL_CONTEXT_PROFILE_ES)
-		// Define default float precision for fragment shaders:
-		? ((type == GL_FRAGMENT_SHADER)
-			? "#ifdef GL_FRAGMENT_PRECISION_HIGH\n"
-			  "precision highp float;           \n"
-			  "#else                            \n"
-			  "precision mediump float;         \n"
-			  "#endif                           \n"
-			: "")
-			// Note: OpenGL ES automatically defines this:
-			// #define GL_ES
-		: // Ignore GLES 2 precision specifiers:
-			"#define lowp   \n"
-			"#define mediump\n"
-			"#define highp  \n"
-		,
-		source };
+		version,
+		precision,
+		source
+	};
 	gl->ShaderSource(res, 3, sources, NULL);
 
 	gl->CompileShader(res);
