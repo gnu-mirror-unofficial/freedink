@@ -1,14 +1,14 @@
 #include "IOGfxSurfaceGL2.h"
 
 #include "SDL.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "log.h"
 #include "IOGfxDisplayGL2.h"
 #include "IOGfxGLFuncs.h"
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "ImageLoader.h" /* GFX_ref_pal */ // TODO: break dep
 
 IOGfxSurfaceGL2::IOGfxSurfaceGL2(IOGfxDisplayGL2* display, GLuint texture, int w, int h, SDL_Color colorkey)
 	: IOGfxSurface(w, h), display(display), texture(texture), colorkey(colorkey) {
@@ -20,21 +20,27 @@ IOGfxSurfaceGL2::~IOGfxSurfaceGL2() {
 
 /* Function specifically made for Dink'C fill_screen() */
 void IOGfxSurfaceGL2::fill_screen(int num, SDL_Color* palette) {
-	if (!display->truecolor)
-		fillRect(NULL, num, num, num);
-	else
-		fillRect(NULL, palette[num].r, palette[num].g, palette[num].b);
+	fillRect(NULL, palette[num].r, palette[num].g, palette[num].b);
+	// TODO: check indexed mode + palette change
 }
 
 int IOGfxSurfaceGL2::fillRect(const SDL_Rect *dstrect, Uint8 r, Uint8 g, Uint8 b) {
 	SDL_Rect dstrect_if_not_null;
-		if (dstrect == NULL) {
-			dstrect_if_not_null.x = 0;
-			dstrect_if_not_null.y = 0;
-			dstrect_if_not_null.w = w;
-			dstrect_if_not_null.h = h;
-			dstrect = &dstrect_if_not_null;
-		}
+	if (dstrect == NULL) {
+		dstrect_if_not_null.x = 0;
+		dstrect_if_not_null.y = 0;
+		dstrect_if_not_null.w = w;
+		dstrect_if_not_null.h = h;
+		dstrect = &dstrect_if_not_null;
+	}
+
+	if (!display->truecolor) {
+		SDL_PixelFormat fmt;
+		fmt.palette = SDL_AllocPalette(256);
+		memcpy(fmt.palette->colors, GFX_ref_pal, sizeof(GFX_ref_pal));
+		Uint8 i = SDL_MapRGB(&fmt, r,g,b);
+		r = g = b = i;
+	}
 
 	IOGfxGLFuncs* gl = display->gl;
 	GLuint fbo;

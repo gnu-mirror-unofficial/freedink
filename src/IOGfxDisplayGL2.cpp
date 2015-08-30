@@ -25,6 +25,7 @@
 #endif
 
 #include "IOGfxDisplayGL2.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -33,17 +34,22 @@
 #include "log.h"
 #include "IOGfxGLFuncs.h"
 #include "IOGfxSurfaceGL2.h"
+#include "gfx_palette.h"
+#include "ImageLoader.h"
 
 
 IOGfxDisplayGL2::IOGfxDisplayGL2(int w, int h, bool truecolor, Uint32 flags)
 	: IOGfxDisplay(w, h, truecolor, flags | SDL_WINDOW_OPENGL),
 	  glcontext(NULL), gl(NULL), screen(NULL) {
+	palette = -1;
 	vboSpriteVertices = -1, vboSpriteTexcoords = -1;
-	program = -1; program_fillRect = -1;
+	program = -1; program_fillRect = -1; program_indexed = -1;
 	attribute_v_coord = -1, attribute_v_texcoord = -1;
 	uniform_mvp = -1; uniform_texture = -1; uniform_colorkey = -1;
 	attribute_fillRect_v_coord = -1;
 	uniform_fillRect_mvp = -1; uniform_fillRect_color = -1;
+	attribute_indexed_v_coord = -1; attribute_indexed_v_texcoord = -1;
+	uniform_indexed_mvp = -1; uniform_indexed_texture = -1; uniform_indexed_palette = -1;
 }
 
 IOGfxDisplayGL2::~IOGfxDisplayGL2() {
@@ -57,6 +63,7 @@ bool IOGfxDisplayGL2::open() {
 	if (!createSpriteVertices()) return false;
 	if (!createSpriteTexcoords()) return false;
 	if (!createPrograms()) return false;
+	if (!createPalette()) return false;
 
 	androidWorkAround();
 
@@ -107,31 +114,6 @@ bool IOGfxDisplayGL2::createOpenGLContext() {
 
 	return true;
 }
-
-
-
-void IOGfxDisplayGL2::logOpenGLInfo() {
-	int major, minor, profile;
-	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &major);
-	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &minor);
-	SDL_GL_GetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, &profile);
-	const char* profile_str = "";
-	if (profile & SDL_GL_CONTEXT_PROFILE_CORE)
-		profile_str = "CORE";
-	if (profile & SDL_GL_CONTEXT_PROFILE_COMPATIBILITY)
-		profile_str = "COMPATIBILITY";
-	if (profile & SDL_GL_CONTEXT_PROFILE_ES)
-		profile_str = "ES";
-
-	log_info("OpenGL %d.%d %s", major, minor, profile_str);
-}
-
-void IOGfxDisplayGL2::logDisplayInfo() {
-	IOGfxDisplay::logDisplayInfo();
-	logOpenGLInfo();
-}
-
-
 
 bool IOGfxDisplayGL2::createSpriteVertices() {
 	GLfloat spriteVertices[] = {
@@ -289,7 +271,41 @@ bool IOGfxDisplayGL2::createPrograms() {
 	if ((uniform_fillRect_mvp       = getUniformLocation(program_fillRect, "mvp"))       == -1) return false;
 	if ((uniform_fillRect_color     = getUniformLocation(program_fillRect, "color"))     == -1) return false;
 
-	if (program == 0 || program_fillRect == 0)
+
+	/* Palette emulation */
+	// TODO: doesn't work on Android/GLES2 as GL_LUMINANCE can't be used as framebuffer
+	const char* vshader_indexed =
+		"attribute vec4 v_coord;          \n"
+		"attribute vec2 v_texcoord;       \n"
+		"varying vec2 f_texcoord;         \n"
+		"uniform mat4 mvp;                \n"
+		"                                 \n"
+		"void main(void) {                \n"
+		"  gl_Position = mvp * v_coord;   \n"
+		"  f_texcoord = v_texcoord;       \n"
+		"}                                \n";
+
+	const char* fshader_indexed =
+		"varying vec2 f_texcoord;                                   \n"
+		"uniform sampler2D texture;                                 \n"
+		"uniform sampler2D palette;                                 \n"
+		"                                                           \n"
+		"void main(void) {                                          \n"
+		"  vec4 index = texture2D(texture, f_texcoord);             \n"
+		"  gl_FragColor = texture2D(palette, vec2(index.r, 0.5));   \n"
+		"}                                                          \n";
+
+	program_indexed = createProgram(vshader_indexed, fshader_indexed);
+
+	if ((attribute_indexed_v_coord    = getAttribLocation(program_indexed, "v_coord"))    == -1) return false;
+	if ((attribute_indexed_v_texcoord = getAttribLocation(program_indexed, "v_texcoord")) == -1) return false;
+
+	if ((uniform_indexed_mvp      = getUniformLocation(program_indexed, "mvp"))       == -1) return false;
+	if ((uniform_indexed_texture  = getUniformLocation(program_indexed, "texture"))   == -1) return false;
+	if ((uniform_indexed_palette  = getUniformLocation(program_indexed, "palette"))   == -1) return false;
+
+
+	if (program == 0 || program_fillRect == 0 || program_indexed == 0)
 		return false;
 	return true;
 }
@@ -330,6 +346,56 @@ GLint IOGfxDisplayGL2::getUniformLocation(GLuint program, const char* name) {
 		log_error("Could not locate uniform %s", name);
 	return uniform;
 }
+
+bool IOGfxDisplayGL2::createPalette() {
+	gl->GenTextures(1, &palette);
+	gl->BindTexture(GL_TEXTURE_2D, palette);
+	gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	updatePalette();
+	return true;  // I hereby thank OpenGL error reporting..
+}
+
+void IOGfxDisplayGL2::updatePalette() {
+	SDL_Color pal_phys[256];
+	gfx_palette_get_phys(pal_phys);
+	gl->BindTexture(GL_TEXTURE_2D, palette);
+	gl->TexImage2D(GL_TEXTURE_2D, // target
+		0,       // level, 0 = base, no minimap,
+		GL_RGBA, // internalformat
+		256,     // width
+		1,       // height
+		0,       // border, always 0 in OpenGL ES
+		GL_RGBA, // format
+		GL_UNSIGNED_BYTE, // type
+		pal_phys);
+}
+
+
+void IOGfxDisplayGL2::logOpenGLInfo() {
+	int major, minor, profile;
+	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &major);
+	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &minor);
+	SDL_GL_GetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, &profile);
+	const char* profile_str = "";
+	if (profile & SDL_GL_CONTEXT_PROFILE_CORE)
+		profile_str = "CORE";
+	if (profile & SDL_GL_CONTEXT_PROFILE_COMPATIBILITY)
+		profile_str = "COMPATIBILITY";
+	if (profile & SDL_GL_CONTEXT_PROFILE_ES)
+		profile_str = "ES";
+
+	log_info("OpenGL %d.%d %s", major, minor, profile_str);
+}
+
+void IOGfxDisplayGL2::logDisplayInfo() {
+	IOGfxDisplay::logDisplayInfo();
+	logOpenGLInfo();
+}
+
 
 
 void IOGfxDisplayGL2::androidWorkAround() {
@@ -383,11 +449,25 @@ void IOGfxDisplayGL2::flipStretch(IOGfxSurface* backbuffer) {
 		SDL_SetError("IOGfxDisplayGL2::flip: passed a NULL surface");
 	IOGfxSurfaceGL2* surf = dynamic_cast<IOGfxSurfaceGL2*>(backbuffer);
 	GLuint texture = surf->texture;
-	gl->UseProgram(program);
 
-	gl->ActiveTexture(GL_TEXTURE0);
-	gl->Uniform1i(uniform_texture, /*GL_TEXTURE*/0);
-	gl->BindTexture(GL_TEXTURE_2D, texture);
+	if (truecolor) {
+		gl->UseProgram(program);
+
+		gl->ActiveTexture(GL_TEXTURE0);
+		gl->Uniform1i(uniform_texture, /*GL_TEXTURE*/0);
+		gl->BindTexture(GL_TEXTURE_2D, texture);
+	} else {
+		gl->UseProgram(program_indexed);
+
+		gl->ActiveTexture(GL_TEXTURE0);
+		gl->Uniform1i(uniform_indexed_texture, /*GL_TEXTURE*/0);
+		gl->BindTexture(GL_TEXTURE_2D, texture);
+
+		gl->ActiveTexture(GL_TEXTURE1);
+		gl->Uniform1i(uniform_indexed_palette, /*GL_TEXTURE*/1);
+		gl->BindTexture(GL_TEXTURE_2D, palette);
+		updatePalette();
+	}
 
 	SDL_Rect dstrect;
 	centerScaledSurface(surf, &dstrect);
@@ -405,8 +485,8 @@ void IOGfxDisplayGL2::flipStretch(IOGfxSurface* backbuffer) {
 	log_trace("%f %f %f %f", mvp[2][0], mvp[2][1], mvp[2][2], mvp[2][3]);
 	log_trace("%f %f %f %f", mvp[3][0], mvp[3][1], mvp[3][2], mvp[3][3]);
 
-	gl->Uniform3f(uniform_colorkey, -1,-1,-1);
-
+	if (truecolor)
+		gl->Uniform3f(uniform_colorkey, -1,-1,-1);
 	log_trace("vboSpriteVertices=%d", vboSpriteVertices);
 	log_trace("vboSpriteTexcoords=%d", vboSpriteTexcoords);
 	log_trace("program=%d", program);
@@ -418,13 +498,16 @@ void IOGfxDisplayGL2::flipStretch(IOGfxSurface* backbuffer) {
 	log_trace("attribute_v_texcoord=%d", attribute_v_texcoord);
 	log_trace("-");
 
-	//gl->Clear(GL_COLOR_BUFFER_BIT);
-
+	GLuint a_v_coord;
+	if (truecolor)
+		a_v_coord = attribute_v_coord;
+	else
+		a_v_coord = attribute_indexed_v_coord;
 	gl->EnableVertexAttribArray(attribute_v_coord);
 	// Describe our vertices array to OpenGL (it can't guess its format automatically)
 	gl->BindBuffer(GL_ARRAY_BUFFER, vboSpriteVertices);
 	gl->VertexAttribPointer(
-		attribute_v_coord, // attribute
+		a_v_coord, // attribute
 		4,                 // number of elements per vertex, here (x,y,z,t)
 		GL_FLOAT,          // the type of each element
 		GL_FALSE,          // take our values as-is
@@ -432,10 +515,15 @@ void IOGfxDisplayGL2::flipStretch(IOGfxSurface* backbuffer) {
 		0                  // offset of first element
 	);
 
+	GLuint a_v_texcoord;
+	if (truecolor)
+		a_v_texcoord = attribute_v_texcoord;
+	else
+		a_v_texcoord = attribute_indexed_v_texcoord;
 	gl->EnableVertexAttribArray(attribute_v_texcoord);
 	gl->BindBuffer(GL_ARRAY_BUFFER, vboSpriteTexcoords);
 	gl->VertexAttribPointer(
-		attribute_v_texcoord, // attribute
+		a_v_texcoord, // attribute
 		2,                  // number of elements per vertex, here (x,y)
 		GL_FLOAT,           // the type of each element
 		GL_FALSE,           // take our values as-is
@@ -446,8 +534,8 @@ void IOGfxDisplayGL2::flipStretch(IOGfxSurface* backbuffer) {
 	/* Push each element in buffer_vertices to the vertex shader */
 	gl->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-	gl->DisableVertexAttribArray(attribute_v_coord);
-	gl->DisableVertexAttribArray(attribute_v_texcoord);
+	gl->DisableVertexAttribArray(a_v_coord);
+	gl->DisableVertexAttribArray(a_v_texcoord);
 
 	SDL_GL_SwapWindow(window);
 }
@@ -458,11 +546,25 @@ void IOGfxDisplayGL2::flipDebug(IOGfxSurface* backbuffer) {
 		SDL_SetError("IOGfxDisplayGL2::blit: passed a NULL surface");
 	IOGfxSurfaceGL2* surf = dynamic_cast<IOGfxSurfaceGL2*>(backbuffer);
 	GLuint texture = surf->texture;
-	gl->UseProgram(program);
 
-	gl->ActiveTexture(GL_TEXTURE0);
-	gl->Uniform1i(uniform_texture, /*GL_TEXTURE*/0);
-	gl->BindTexture(GL_TEXTURE_2D, texture);
+	if (truecolor) {
+		gl->UseProgram(program);
+
+		gl->ActiveTexture(GL_TEXTURE0);
+		gl->Uniform1i(uniform_texture, /*GL_TEXTURE*/0);
+		gl->BindTexture(GL_TEXTURE_2D, texture);
+	} else {
+		gl->UseProgram(program_indexed);
+
+		gl->ActiveTexture(GL_TEXTURE0);
+		gl->Uniform1i(uniform_indexed_texture, /*GL_TEXTURE*/0);
+		gl->BindTexture(GL_TEXTURE_2D, texture);
+
+		gl->ActiveTexture(GL_TEXTURE1);
+		gl->Uniform1i(uniform_indexed_palette, /*GL_TEXTURE*/1);
+		gl->BindTexture(GL_TEXTURE_2D, palette);
+		updatePalette();
+	}
 
 	// Y-inversed projection for top-left origin and top-bottom textures
 	// Beware that rotation is reversed too
@@ -472,13 +574,19 @@ void IOGfxDisplayGL2::flipDebug(IOGfxSurface* backbuffer) {
 	glm::mat4 mvp = projection * m_transform; // * view * model * anim;
 	gl->UniformMatrix4fv(uniform_mvp, 1, GL_FALSE, glm::value_ptr(mvp));
 
-	gl->Uniform3f(uniform_colorkey, -1,-1,-1);
+	if (truecolor)
+		gl->Uniform3f(uniform_colorkey, -1,-1,-1);
 
-	gl->EnableVertexAttribArray(attribute_v_coord);
+	GLuint a_v_coord;
+	if (truecolor)
+		a_v_coord = attribute_v_coord;
+	else
+		a_v_coord = attribute_indexed_v_coord;
+	gl->EnableVertexAttribArray(a_v_coord);
 	// Describe our vertices array to OpenGL (it can't guess its format automatically)
 	gl->BindBuffer(GL_ARRAY_BUFFER, vboSpriteVertices);
 	gl->VertexAttribPointer(
-		attribute_v_coord, // attribute
+		a_v_coord, // attribute
 		4,                 // number of elements per vertex, here (x,y,z,t)
 		GL_FLOAT,          // the type of each element
 		GL_FALSE,          // take our values as-is
@@ -486,10 +594,15 @@ void IOGfxDisplayGL2::flipDebug(IOGfxSurface* backbuffer) {
 		0                  // offset of first element
 	);
 
-	gl->EnableVertexAttribArray(attribute_v_texcoord);
+	GLuint a_v_texcoord;
+	if (truecolor)
+		a_v_texcoord = attribute_v_texcoord;
+	else
+		a_v_texcoord = attribute_indexed_v_texcoord;
+	gl->EnableVertexAttribArray(a_v_texcoord);
 	gl->BindBuffer(GL_ARRAY_BUFFER, vboSpriteTexcoords);
 	gl->VertexAttribPointer(
-		attribute_v_texcoord, // attribute
+		a_v_texcoord, // attribute
 		2,                  // number of elements per vertex, here (x,y)
 		GL_FLOAT,           // the type of each element
 		GL_FALSE,           // take our values as-is
@@ -500,8 +613,8 @@ void IOGfxDisplayGL2::flipDebug(IOGfxSurface* backbuffer) {
 	/* Push each element in buffer_vertices to the vertex shader */
 	gl->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-	gl->DisableVertexAttribArray(attribute_v_coord);
-	gl->DisableVertexAttribArray(attribute_v_texcoord);
+	gl->DisableVertexAttribArray(a_v_coord);
+	gl->DisableVertexAttribArray(a_v_texcoord);
 
 	SDL_GL_SwapWindow(window);
 }
@@ -568,6 +681,21 @@ IOGfxSurface* IOGfxDisplayGL2::upload(SDL_Surface* surf) {
 				GL_RGB,  // format
 				GL_UNSIGNED_BYTE, // type
 				surf->pixels);
+	} else {
+		if (surf->format->BitsPerPixel != 8) {
+			log_error("IOGfxDisplayGL2::upload: format is not indexed");
+			SDL_FreeSurface(surf);
+			return NULL;
+		}
+		gl->TexImage2D(GL_TEXTURE_2D, // target
+				0,       // level, 0 = base, no minimap,
+				GL_LUMINANCE,  // internalformat
+				surf->w, // width
+				surf->h, // height
+				0,       // border, always 0 in OpenGL ES
+				GL_LUMINANCE,  // format
+				GL_UNSIGNED_BYTE, // type
+				surf->pixels);
 	}
 
 	int w = surf->w;
@@ -589,17 +717,31 @@ IOGfxSurface* IOGfxDisplayGL2::alloc(int surfW, int surfH) {
 	SDL_Color colorkey = {0,0,0, SDL_ALPHA_OPAQUE};
 
 	// Blank texture
-	unsigned char* pixels = new unsigned char[(surfW+(4-surfW%4))*4 * surfH];
-	gl->TexImage2D(GL_TEXTURE_2D, // target
-			0,       // level, 0 = base, no minimap,
-			GL_RGB,  // internalformat
-			surfW, // width
-			surfH, // height
-			0,       // border, always 0 in OpenGL ES
-			GL_RGB,  // format
-			GL_UNSIGNED_BYTE, // type
-			pixels);
-	delete[] pixels;
+	if (truecolor) {
+		unsigned char* pixels = new unsigned char[(surfW+(4-surfW%4))*4 * surfH];
+		gl->TexImage2D(GL_TEXTURE_2D, // target
+				0,       // level, 0 = base, no minimap,
+				GL_RGB,  // internalformat
+				surfW, // width
+				surfH, // height
+				0,       // border, always 0 in OpenGL ES
+				GL_RGB,  // format
+				GL_UNSIGNED_BYTE, // type
+				pixels);
+		delete[] pixels;
+	} else {
+		unsigned char* pixels = new unsigned char[surfW*surfH];
+		gl->TexImage2D(GL_TEXTURE_2D, // target
+				0,            // level, 0 = base, no minimap,
+				GL_LUMINANCE, // internalformat
+				surfW,        // width
+				surfH,        // height
+				0,            // border, always 0 in OpenGL ES
+				GL_LUMINANCE, // format
+				GL_UNSIGNED_BYTE, // type
+				pixels);
+		delete[] pixels;
+	}
 
 	return new IOGfxSurfaceGL2(this, texture, surfW, surfH, colorkey);
 }

@@ -62,7 +62,7 @@ public:
 
 	TestIOGfxDisplay() {
 		TS_ASSERT_EQUALS(SDL_InitSubSystem(SDL_INIT_VIDEO), 0);
-		// SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
+		//SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
 
 		display = NULL;
 		lastDisplay.gl = false;
@@ -131,6 +131,7 @@ public:
 		lastDisplay.truecolor = truecolor;
 	}
 	void closeDisplay() {
+		//SDL_Delay(1000);
 	}
 
 	void getColorAt(SDL_Surface* img, int x, int y, SDL_Color* c) {
@@ -476,6 +477,7 @@ public:
 		screenshot = display->screenshot(&bbbox);
 		getColorAt(screenshot, 0, 0, &cs);
 		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		SDL_SaveBMP(screenshot, "screenshot.bmp");
 		SDL_FreeSurface(screenshot);
 
 		backbuffer->fill_screen(2, GFX_ref_pal);
@@ -535,26 +537,26 @@ public:
 		closeDisplay();
 	}
 
-//	void testSplashGL2() {
-//		openDisplay(true, false, SDL_WINDOW_HIDDEN);
-//		ctestSplash(); // TODO
-//		closeDisplay();
-//	}
-//	void test_blitGL2() {
-//		openDisplay(true, false, SDL_WINDOW_HIDDEN);
-//		ctest_blit(); // TODO
-//		closeDisplay();
-//	}
-//	void test_fillRectGL2() {
-//		openDisplay(true, false, SDL_WINDOW_HIDDEN);
-//		ctest_fillRect(); // TODO
-//		closeDisplay();
-//	}
-//	void test_fill_screenGL2() {
-//		openDisplay(true, false, SDL_WINDOW_HIDDEN);
-//		ctest_fill_screen(); // TODO
-//		closeDisplay();
-//	}
+	void testSplashGL2() {
+		openDisplay(true, false, SDL_WINDOW_HIDDEN);
+		ctestSplash();
+		closeDisplay();
+	}
+	void test_blitGL2() {
+		openDisplay(true, false, SDL_WINDOW_HIDDEN);
+		ctest_blit();
+		closeDisplay();
+	}
+	void test_fillRectGL2() {
+		openDisplay(true, false, SDL_WINDOW_HIDDEN);
+		ctest_fillRect();
+		closeDisplay();
+	}
+	void test_fill_screenGL2() {
+		openDisplay(true, false, SDL_WINDOW_HIDDEN);
+		ctest_fill_screen();
+		closeDisplay();
+	}
 
 	void testSplashSWTruecolor() {
 		openDisplay(false, true, 0); // can't render offscreen >(

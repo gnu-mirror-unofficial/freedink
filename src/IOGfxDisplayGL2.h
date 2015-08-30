@@ -35,14 +35,19 @@ public:
 	SDL_GLContext glcontext;
 	IOGfxGLFuncs* gl;
 	SDL_Texture* screen;
+	GLuint palette;
 
 	GLuint vboSpriteVertices, vboSpriteTexcoords;
-	GLuint program, program_fillRect;
+	GLuint program, program_fillRect, program_indexed;
+
 	GLint attribute_v_coord, attribute_v_texcoord;
 	GLint uniform_mvp, uniform_texture, uniform_colorkey;
+
 	GLint attribute_fillRect_v_coord;
 	GLint uniform_fillRect_mvp, uniform_fillRect_color;
 
+	GLint attribute_indexed_v_coord, attribute_indexed_v_texcoord;
+	GLint uniform_indexed_mvp, uniform_indexed_texture, uniform_indexed_palette;
 
 	IOGfxDisplayGL2(int w, int h, bool truecolor, Uint32 flags);
 	~IOGfxDisplayGL2();
@@ -57,6 +62,7 @@ public:
 	virtual IOGfxSurface* upload(SDL_Surface* image);
 	virtual IOGfxSurface* alloc(int surfW, int surfH);
 	virtual void flipDebug(IOGfxSurface* backbuffer);
+	virtual void updatePalette();
 
 	virtual SDL_Surface* screenshot(SDL_Rect* rect);
 
@@ -71,6 +77,7 @@ public:
 	GLuint createProgram(const char* vertexShaderSource, const char* fragmentShaderSource);
 	GLint getAttribLocation(GLuint program, const char* name);
 	GLint getUniformLocation(GLuint program, const char* name);
+	bool createPalette();
 	void androidWorkAround();
 
 };
