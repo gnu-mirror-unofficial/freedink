@@ -1,3 +1,29 @@
+/**
+ * Texture handler for OpenGL (ES) 2
+
+ * Copyright (C) 2015  Sylvain Beucler
+
+ * This file is part of GNU FreeDink
+
+ * GNU FreeDink is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License
+ * as published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+
+ * GNU FreeDink is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Affero General Public License for more details.
+
+ * You should have received a copy of the GNU Affero General Public
+ * License along with GNU FreeDink.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "IOGfxSurfaceGL2.h"
 
 #include "SDL.h"
@@ -68,21 +94,21 @@ int IOGfxSurfaceGL2::fillRect(const SDL_Rect *dstrect, Uint8 r, Uint8 g, Uint8 b
 		return -1;
 	}
 
-	display->gl->UseProgram(display->program_fillRect);
+	display->gl->UseProgram(display->fillRect->program);
 
 	glm::mat4 projection = glm::ortho(0.0f, 1.0f*display->w, 0.0f, 1.0f*display->h);
 	glm::mat4 m_transform;
 	m_transform = glm::translate(glm::mat4(1.0f), glm::vec3(dstrect->x,dstrect->y, 0.0))
 		* glm::scale(glm::mat4(1.0f), glm::vec3(dstrect->w, dstrect->h, 0.0));
 	glm::mat4 mvp = projection * m_transform; // * view * model * anim;
-	gl->UniformMatrix4fv(display->uniform_fillRect_mvp, 1, GL_FALSE, glm::value_ptr(mvp));
-	gl->Uniform4f(display->uniform_fillRect_color, r/255.0,g/255.0,b/255.0,1.0);
+	gl->UniformMatrix4fv(display->fillRect->uniforms["mvp"], 1, GL_FALSE, glm::value_ptr(mvp));
+	gl->Uniform4f(display->fillRect->uniforms["color"], r/255.0,g/255.0,b/255.0,1.0);
 
-	gl->EnableVertexAttribArray(display->attribute_fillRect_v_coord);
+	gl->EnableVertexAttribArray(display->fillRect->attributes["v_coord"]);
 	// Describe our vertices array to OpenGL (it can't guess its format automatically)
 	gl->BindBuffer(GL_ARRAY_BUFFER, display->vboSpriteVertices);
 	gl->VertexAttribPointer(
-		display->attribute_fillRect_v_coord, // attribute
+		display->fillRect->attributes["v_coord"], // attribute
 		4,                 // number of elements per vertex, here (x,y,z,t)
 		GL_FLOAT,          // the type of each element
 		GL_FALSE,          // take our values as-is
@@ -93,7 +119,7 @@ int IOGfxSurfaceGL2::fillRect(const SDL_Rect *dstrect, Uint8 r, Uint8 g, Uint8 b
 	/* Push each element in buffer_vertices to the vertex shader */
 	gl->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-	gl->DisableVertexAttribArray(display->attribute_fillRect_v_coord);
+	gl->DisableVertexAttribArray(display->fillRect->attributes["v_coord"]);
 
 	gl->DeleteFramebuffers(1, &fbo);
 	gl->BindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -137,10 +163,10 @@ int IOGfxSurfaceGL2::internalBlit(IOGfxSurface* src, const SDL_Rect* srcrect, SD
 	}
 
 	// bind src_tex as texture
-	gl->UseProgram(display->program);
+	gl->UseProgram(display->blit->program);
 
 	gl->ActiveTexture(GL_TEXTURE0);
-	gl->Uniform1i(display->uniform_texture, /*GL_TEXTURE*/0);
+	gl->Uniform1i(display->blit->uniforms["texture"], /*GL_TEXTURE*/0);
 	gl->BindTexture(GL_TEXTURE_2D, src_tex);
 
 	glm::mat4 projection = glm::ortho(0.0f, 1.0f*display->w, 0.0f, 1.0f*display->h);
@@ -148,20 +174,20 @@ int IOGfxSurfaceGL2::internalBlit(IOGfxSurface* src, const SDL_Rect* srcrect, SD
 	m_transform = glm::translate(glm::mat4(1.0f), glm::vec3(dstrect->x,dstrect->y, 0.0))
 		* glm::scale(glm::mat4(1.0f), glm::vec3(dstrect->w, dstrect->h, 0.0));
 	glm::mat4 mvp = projection * m_transform; // * view * model * anim;
-	gl->UniformMatrix4fv(display->uniform_mvp, 1, GL_FALSE, glm::value_ptr(mvp));
+	gl->UniformMatrix4fv(display->blit->uniforms["mvp"], 1, GL_FALSE, glm::value_ptr(mvp));
 
 	if (useColorKey && src_surf->colorkey.a == SDL_ALPHA_TRANSPARENT)
-		gl->Uniform3f(display->uniform_colorkey,
+		gl->Uniform3f(display->blit->uniforms["colorkey"],
 				src_surf->colorkey.r/255.0, src_surf->colorkey.g/255.0, src_surf->colorkey.b/255.0);
 	else
-		gl->Uniform3f(display->uniform_colorkey, -1,-1,-1);
+		gl->Uniform3f(display->blit->uniforms["colorkey"], -1,-1,-1);
 
 	// draw
-	gl->EnableVertexAttribArray(display->attribute_v_coord);
+	gl->EnableVertexAttribArray(display->blit->attributes["v_coord"]);
 	// Describe our vertices array to OpenGL (it can't guess its format automatically)
 	gl->BindBuffer(GL_ARRAY_BUFFER, display->vboSpriteVertices);
 	gl->VertexAttribPointer(
-		display->attribute_v_coord, // attribute
+		display->blit->attributes["v_coord"], // attribute
 		4,                 // number of elements per vertex, here (x,y,z,t)
 		GL_FLOAT,          // the type of each element
 		GL_FALSE,          // take our values as-is
@@ -169,8 +195,7 @@ int IOGfxSurfaceGL2::internalBlit(IOGfxSurface* src, const SDL_Rect* srcrect, SD
 		0                  // offset of first element
 	);
 
-	GLuint vboCroppedSpriteTexcoords;
-	gl->EnableVertexAttribArray(display->attribute_v_texcoord);
+	gl->EnableVertexAttribArray(display->blit->attributes["v_texcoord"]);
 	if (srcrect == NULL) {
 		gl->BindBuffer(GL_ARRAY_BUFFER, display->vboSpriteTexcoords);
 	} else {
@@ -184,12 +209,11 @@ int IOGfxSurfaceGL2::internalBlit(IOGfxSurface* src, const SDL_Rect* srcrect, SD
 			x1, y2,
 			x2, y2,
 		};
-		gl->GenBuffers(1, &vboCroppedSpriteTexcoords);
-		gl->BindBuffer(GL_ARRAY_BUFFER, vboCroppedSpriteTexcoords);
+		gl->BindBuffer(GL_ARRAY_BUFFER, display->vboCroppedSpriteTexcoords);
 		gl->BufferData(GL_ARRAY_BUFFER, sizeof(croppedSpriteTexcoords), croppedSpriteTexcoords, GL_STATIC_DRAW);
 	}
 	gl->VertexAttribPointer(
-		display->attribute_v_texcoord, // attribute
+		display->blit->attributes["v_texcoord"], // attribute
 		2,                  // number of elements per vertex, here (x,y)
 		GL_FLOAT,           // the type of each element
 		GL_FALSE,           // take our values as-is
@@ -200,10 +224,8 @@ int IOGfxSurfaceGL2::internalBlit(IOGfxSurface* src, const SDL_Rect* srcrect, SD
 	/* Push each element in buffer_vertices to the vertex shader */
 	gl->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-	if (srcrect != NULL)
-		gl->DeleteBuffers(1, &vboCroppedSpriteTexcoords);
-	gl->DisableVertexAttribArray(display->attribute_v_coord);
-	gl->DisableVertexAttribArray(display->attribute_v_texcoord);
+	gl->DisableVertexAttribArray(display->blit->attributes["v_coord"]);
+	gl->DisableVertexAttribArray(display->blit->attributes["v_texcoord"]);
 
 	gl->DeleteFramebuffers(1, &fbo);
 	gl->BindFramebuffer(GL_FRAMEBUFFER, 0);

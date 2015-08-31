@@ -42,14 +42,8 @@ IOGfxDisplayGL2::IOGfxDisplayGL2(int w, int h, bool truecolor, Uint32 flags)
 	: IOGfxDisplay(w, h, truecolor, flags | SDL_WINDOW_OPENGL),
 	  glcontext(NULL), gl(NULL), screen(NULL) {
 	palette = -1;
-	vboSpriteVertices = -1, vboSpriteTexcoords = -1;
-	program = -1; program_fillRect = -1; program_indexed = -1;
-	attribute_v_coord = -1, attribute_v_texcoord = -1;
-	uniform_mvp = -1; uniform_texture = -1; uniform_colorkey = -1;
-	attribute_fillRect_v_coord = -1;
-	uniform_fillRect_mvp = -1; uniform_fillRect_color = -1;
-	attribute_indexed_v_coord = -1; attribute_indexed_v_texcoord = -1;
-	uniform_indexed_mvp = -1; uniform_indexed_texture = -1; uniform_indexed_palette = -1;
+	vboSpriteVertices = -1, vboSpriteTexcoords = -1, vboCroppedSpriteTexcoords = -1;
+	blit = NULL; i2rgb = NULL; fillRect = NULL;
 }
 
 IOGfxDisplayGL2::~IOGfxDisplayGL2() {
@@ -62,6 +56,7 @@ bool IOGfxDisplayGL2::open() {
 	if (!createOpenGLContext()) return false;
 	if (!createSpriteVertices()) return false;
 	if (!createSpriteTexcoords()) return false;
+	if (!createCroppedSpriteTexcoords()) return false;
 	if (!createPrograms()) return false;
 	if (!createPalette()) return false;
 
@@ -72,10 +67,15 @@ bool IOGfxDisplayGL2::open() {
 
 void IOGfxDisplayGL2::close() {
 	if (gl != NULL) {
-		gl->DeleteProgram(program);
-		gl->DeleteProgram(program_fillRect);
+		gl->DeleteProgram(blit->program);
+		gl->DeleteProgram(fillRect->program);
+		gl->DeleteProgram(i2rgb->program);
+		delete blit;
+		delete fillRect;
+		delete i2rgb;
 		gl->DeleteBuffers(1, &vboSpriteVertices);
 		gl->DeleteBuffers(1, &vboSpriteTexcoords);
+		gl->DeleteBuffers(1, &vboCroppedSpriteTexcoords);
 		delete gl;
 		gl = NULL;
 	}
@@ -139,6 +139,11 @@ bool IOGfxDisplayGL2::createSpriteTexcoords() {
 	gl->GenBuffers(1, &vboSpriteTexcoords);
 	gl->BindBuffer(GL_ARRAY_BUFFER, vboSpriteTexcoords);
 	gl->BufferData(GL_ARRAY_BUFFER, sizeof(spriteTexcoords), spriteTexcoords, GL_STATIC_DRAW);
+	return true;
+}
+
+bool IOGfxDisplayGL2::createCroppedSpriteTexcoords() {
+	gl->GenBuffers(1, &vboCroppedSpriteTexcoords);
 	return true;
 }
 
@@ -213,13 +218,8 @@ void IOGfxDisplayGL2::infoLog(GLuint object) {
 }
 
 bool IOGfxDisplayGL2::createPrograms() {
-	const char* vertexShaderSource =
-		//"mat4 m = mat4(\n"
-		//"   0.75,  0.0,  0.0,  0.0,\n"
-		//"   0.00, -1.0,  0.0,  0.0,\n"
-		//"   0.00,  0.0,  0.0,  0.0,\n"
-		//"  -1.00,  1.0,  0.0,  1.0 \n"
-		//");\n"
+	blit = new IOGfxGLProg();
+	blit->vshader =
 		"attribute vec4 v_coord;          \n"
 		"attribute vec2 v_texcoord;       \n"
 		"varying vec2 f_texcoord;         \n"
@@ -229,8 +229,7 @@ bool IOGfxDisplayGL2::createPrograms() {
 		"  gl_Position = mvp * v_coord;   \n"
 		"  f_texcoord = v_texcoord;       \n"
 		"}                                \n";
-
-	const char* fragmentShaderSource =
+	blit->fshader =
 		"varying vec2 f_texcoord;                         \n"
 		"uniform sampler2D texture;                       \n"
 		"uniform vec3 colorkey;                           \n"
@@ -244,41 +243,37 @@ bool IOGfxDisplayGL2::createPrograms() {
 		"    f.a = 0.0;                                   \n"
 		"  gl_FragColor = f;                              \n"
 		"}                                                \n";
-
-	program = createProgram(vertexShaderSource, fragmentShaderSource);
-
-	if ((attribute_v_coord    = getAttribLocation(program, "v_coord"))    == -1) return false;
-	if ((attribute_v_texcoord = getAttribLocation(program, "v_texcoord")) == -1) return false;
-
-	if ((uniform_mvp      = getUniformLocation(program, "mvp"))       == -1) return false;
-	if ((uniform_texture  = getUniformLocation(program, "texture"))   == -1) return false;
-	if ((uniform_colorkey = getUniformLocation(program, "colorkey"))  == -1) return false;
+	blit->program = createProgram(blit->vshader, blit->fshader);
+	if ((blit->attributes["v_coord"]    = getAttribLocation(blit->program, "v_coord"))    == -1) return false;
+	if ((blit->attributes["v_texcoord"] = getAttribLocation(blit->program, "v_texcoord")) == -1) return false;
+	if ((blit->uniforms["mvp"]      = getUniformLocation(blit->program, "mvp"))       == -1) return false;
+	if ((blit->uniforms["texture"]  = getUniformLocation(blit->program, "texture"))   == -1) return false;
+	if ((blit->uniforms["colorkey"] = getUniformLocation(blit->program, "colorkey"))  == -1) return false;
 
 
-	const char* vshader_fillRect =
+	fillRect = new IOGfxGLProg();
+	fillRect->vshader =
 		"attribute vec4 v_coord;          \n"
 		"uniform mat4 mvp;                \n"
 		"                                 \n"
 		"void main(void) {                \n"
 		"  gl_Position = mvp * v_coord;   \n"
 		"}                                \n";
-
-	const char* fshader_fillrect =
+	fillRect->fshader =
 		"uniform vec4 color;                              \n"
 		"                                                 \n"
 		"void main(void) {                                \n"
 		"  gl_FragColor = color;                          \n"
 		"}                                                \n";
-
-	program_fillRect = createProgram(vshader_fillRect, fshader_fillrect);
-
-	if ((attribute_fillRect_v_coord = getAttribLocation(program_fillRect,  "v_coord"))   == -1) return false;
-	if ((uniform_fillRect_mvp       = getUniformLocation(program_fillRect, "mvp"))       == -1) return false;
-	if ((uniform_fillRect_color     = getUniformLocation(program_fillRect, "color"))     == -1) return false;
+	fillRect->program = createProgram(fillRect->vshader, fillRect->fshader);
+	if ((fillRect->attributes["v_coord"] = getAttribLocation(fillRect->program,  "v_coord")) == -1) return false;
+	if ((fillRect->uniforms["mvp"]   = getUniformLocation(fillRect->program, "mvp"))       == -1) return false;
+	if ((fillRect->uniforms["color"] = getUniformLocation(fillRect->program, "color"))     == -1) return false;
 
 
 	/* Palette emulation */
-	const char* vshader_indexed =
+	i2rgb = new IOGfxGLProg();
+	i2rgb->vshader =
 		"attribute vec4 v_coord;          \n"
 		"attribute vec2 v_texcoord;       \n"
 		"varying vec2 f_texcoord;         \n"
@@ -288,8 +283,7 @@ bool IOGfxDisplayGL2::createPrograms() {
 		"  gl_Position = mvp * v_coord;   \n"
 		"  f_texcoord = v_texcoord;       \n"
 		"}                                \n";
-
-	const char* fshader_indexed =
+	i2rgb->fshader =
 		"varying vec2 f_texcoord;                                   \n"
 		"uniform sampler2D texture;                                 \n"
 		"uniform sampler2D palette;                                 \n"
@@ -298,18 +292,15 @@ bool IOGfxDisplayGL2::createPrograms() {
 		"  vec4 index = texture2D(texture, f_texcoord);             \n"
 		"  gl_FragColor = texture2D(palette, vec2(index.r, 0.5));   \n"
 		"}                                                          \n";
-
-	program_indexed = createProgram(vshader_indexed, fshader_indexed);
-
-	if ((attribute_indexed_v_coord    = getAttribLocation(program_indexed, "v_coord"))    == -1) return false;
-	if ((attribute_indexed_v_texcoord = getAttribLocation(program_indexed, "v_texcoord")) == -1) return false;
-
-	if ((uniform_indexed_mvp      = getUniformLocation(program_indexed, "mvp"))       == -1) return false;
-	if ((uniform_indexed_texture  = getUniformLocation(program_indexed, "texture"))   == -1) return false;
-	if ((uniform_indexed_palette  = getUniformLocation(program_indexed, "palette"))   == -1) return false;
+	i2rgb->program = createProgram(i2rgb->vshader, i2rgb->fshader);
+	if ((i2rgb->attributes["v_coord"]    = getAttribLocation(i2rgb->program, "v_coord"))    == -1) return false;
+	if ((i2rgb->attributes["v_texcoord"] = getAttribLocation(i2rgb->program, "v_texcoord")) == -1) return false;
+	if ((i2rgb->uniforms["mvp"]     = getUniformLocation(i2rgb->program, "mvp"))       == -1) return false;
+	if ((i2rgb->uniforms["texture"] = getUniformLocation(i2rgb->program, "texture"))   == -1) return false;
+	if ((i2rgb->uniforms["palette"] = getUniformLocation(i2rgb->program, "palette"))   == -1) return false;
 
 
-	if (program == 0 || program_fillRect == 0 || program_indexed == 0)
+	if (blit->program == 0 || fillRect->program == 0 || i2rgb->program == 0)
 		return false;
 	return true;
 }
@@ -405,7 +396,7 @@ void IOGfxDisplayGL2::logDisplayInfo() {
 void IOGfxDisplayGL2::androidWorkAround() {
 #ifdef __ANDROID__
 	// Android/GalaxyS/CM11 is buggy (no/delayed texture blits) on startup, a full standard blit seems to help
-	gl->UseProgram(program);
+	gl->UseProgram(blit->program);
 	gl->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	SDL_GL_SwapWindow(window);
 #endif
@@ -455,20 +446,20 @@ void IOGfxDisplayGL2::flipStretch(IOGfxSurface* backbuffer) {
 	GLuint texture = surf->texture;
 
 	if (truecolor) {
-		gl->UseProgram(program);
+		gl->UseProgram(blit->program);
 
 		gl->ActiveTexture(GL_TEXTURE0);
-		gl->Uniform1i(uniform_texture, /*GL_TEXTURE*/0);
+		gl->Uniform1i(blit->uniforms["texture"], /*GL_TEXTURE*/0);
 		gl->BindTexture(GL_TEXTURE_2D, texture);
 	} else {
-		gl->UseProgram(program_indexed);
+		gl->UseProgram(i2rgb->program);
 
 		gl->ActiveTexture(GL_TEXTURE0);
-		gl->Uniform1i(uniform_indexed_texture, /*GL_TEXTURE*/0);
+		gl->Uniform1i(i2rgb->uniforms["texture"], /*GL_TEXTURE*/0);
 		gl->BindTexture(GL_TEXTURE_2D, texture);
 
 		gl->ActiveTexture(GL_TEXTURE1);
-		gl->Uniform1i(uniform_indexed_palette, /*GL_TEXTURE*/1);
+		gl->Uniform1i(i2rgb->uniforms["palette"], /*GL_TEXTURE*/1);
 		gl->BindTexture(GL_TEXTURE_2D, palette);
 		updatePalette();
 	}
@@ -483,31 +474,20 @@ void IOGfxDisplayGL2::flipStretch(IOGfxSurface* backbuffer) {
 	m_transform = glm::translate(glm::mat4(1.0f), glm::vec3(dstrect.x,dstrect.y, 0.0))
 		* glm::scale(glm::mat4(1.0f), glm::vec3(dstrect.w, dstrect.h, 0.0));
 	glm::mat4 mvp = projection * m_transform; // * view * model * anim;
-	gl->UniformMatrix4fv(uniform_mvp, 1, GL_FALSE, glm::value_ptr(mvp));
-	log_trace("%f %f %f %f", mvp[0][0], mvp[0][1], mvp[0][2], mvp[0][3]);
-	log_trace("%f %f %f %f", mvp[1][0], mvp[1][1], mvp[1][2], mvp[1][3]);
-	log_trace("%f %f %f %f", mvp[2][0], mvp[2][1], mvp[2][2], mvp[2][3]);
-	log_trace("%f %f %f %f", mvp[3][0], mvp[3][1], mvp[3][2], mvp[3][3]);
+	if (truecolor)
+		gl->UniformMatrix4fv(blit->uniforms["mvp"], 1, GL_FALSE, glm::value_ptr(mvp));
+	else
+		gl->UniformMatrix4fv(i2rgb->uniforms["mvp"], 1, GL_FALSE, glm::value_ptr(mvp));
 
 	if (truecolor)
-		gl->Uniform3f(uniform_colorkey, -1,-1,-1);
-	log_trace("vboSpriteVertices=%d", vboSpriteVertices);
-	log_trace("vboSpriteTexcoords=%d", vboSpriteTexcoords);
-	log_trace("program=%d", program);
-	log_trace("texture=%d", texture);
-	log_trace("uniform_mvp=%d", uniform_mvp);
-	log_trace("uniform_texture=%d", uniform_texture);
-	log_trace("uniform_colorkey=%d", uniform_colorkey);
-	log_trace("attribute_v_coord=%d", attribute_v_coord);
-	log_trace("attribute_v_texcoord=%d", attribute_v_texcoord);
-	log_trace("-");
+		gl->Uniform3f(blit->uniforms["colorkey"], -1,-1,-1);
 
 	GLuint a_v_coord;
 	if (truecolor)
-		a_v_coord = attribute_v_coord;
+		a_v_coord = blit->attributes["v_coord"];
 	else
-		a_v_coord = attribute_indexed_v_coord;
-	gl->EnableVertexAttribArray(attribute_v_coord);
+		a_v_coord = i2rgb->attributes["v_coord"];
+	gl->EnableVertexAttribArray(a_v_coord);
 	// Describe our vertices array to OpenGL (it can't guess its format automatically)
 	gl->BindBuffer(GL_ARRAY_BUFFER, vboSpriteVertices);
 	gl->VertexAttribPointer(
@@ -521,10 +501,10 @@ void IOGfxDisplayGL2::flipStretch(IOGfxSurface* backbuffer) {
 
 	GLuint a_v_texcoord;
 	if (truecolor)
-		a_v_texcoord = attribute_v_texcoord;
+		a_v_texcoord = blit->attributes["v_texcoord"];
 	else
-		a_v_texcoord = attribute_indexed_v_texcoord;
-	gl->EnableVertexAttribArray(attribute_v_texcoord);
+		a_v_texcoord = i2rgb->attributes["v_texcoord"];
+	gl->EnableVertexAttribArray(a_v_texcoord);
 	gl->BindBuffer(GL_ARRAY_BUFFER, vboSpriteTexcoords);
 	gl->VertexAttribPointer(
 		a_v_texcoord, // attribute
@@ -552,20 +532,20 @@ void IOGfxDisplayGL2::flipDebug(IOGfxSurface* backbuffer) {
 	GLuint texture = surf->texture;
 
 	if (truecolor) {
-		gl->UseProgram(program);
+		gl->UseProgram(blit->program);
 
 		gl->ActiveTexture(GL_TEXTURE0);
-		gl->Uniform1i(uniform_texture, /*GL_TEXTURE*/0);
+		gl->Uniform1i(blit->uniforms["texture"], /*GL_TEXTURE*/0);
 		gl->BindTexture(GL_TEXTURE_2D, texture);
 	} else {
-		gl->UseProgram(program_indexed);
+		gl->UseProgram(i2rgb->program);
 
 		gl->ActiveTexture(GL_TEXTURE0);
-		gl->Uniform1i(uniform_indexed_texture, /*GL_TEXTURE*/0);
+		gl->Uniform1i(i2rgb->uniforms["texture"], /*GL_TEXTURE*/0);
 		gl->BindTexture(GL_TEXTURE_2D, texture);
 
 		gl->ActiveTexture(GL_TEXTURE1);
-		gl->Uniform1i(uniform_indexed_palette, /*GL_TEXTURE*/1);
+		gl->Uniform1i(i2rgb->uniforms["palette"], /*GL_TEXTURE*/1);
 		gl->BindTexture(GL_TEXTURE_2D, palette);
 		updatePalette();
 	}
@@ -576,16 +556,16 @@ void IOGfxDisplayGL2::flipDebug(IOGfxSurface* backbuffer) {
 	glm::mat4 m_transform;
 	m_transform = glm::scale(glm::mat4(1.0f), glm::vec3(backbuffer->w, backbuffer->h, 0.0));
 	glm::mat4 mvp = projection * m_transform; // * view * model * anim;
-	gl->UniformMatrix4fv(uniform_mvp, 1, GL_FALSE, glm::value_ptr(mvp));
+	gl->UniformMatrix4fv(blit->uniforms["mvp"], 1, GL_FALSE, glm::value_ptr(mvp));
 
 	if (truecolor)
-		gl->Uniform3f(uniform_colorkey, -1,-1,-1);
+		gl->Uniform3f(blit->uniforms["colorkey"], -1,-1,-1);
 
 	GLuint a_v_coord;
 	if (truecolor)
-		a_v_coord = attribute_v_coord;
+		a_v_coord = blit->attributes["v_coord"];
 	else
-		a_v_coord = attribute_indexed_v_coord;
+		a_v_coord = i2rgb->attributes["v_coord"];
 	gl->EnableVertexAttribArray(a_v_coord);
 	// Describe our vertices array to OpenGL (it can't guess its format automatically)
 	gl->BindBuffer(GL_ARRAY_BUFFER, vboSpriteVertices);
@@ -600,9 +580,9 @@ void IOGfxDisplayGL2::flipDebug(IOGfxSurface* backbuffer) {
 
 	GLuint a_v_texcoord;
 	if (truecolor)
-		a_v_texcoord = attribute_v_texcoord;
+		a_v_texcoord = blit->attributes["v_texcoord"];
 	else
-		a_v_texcoord = attribute_indexed_v_texcoord;
+		a_v_texcoord = i2rgb->attributes["v_texcoord"];
 	gl->EnableVertexAttribArray(a_v_texcoord);
 	gl->BindBuffer(GL_ARRAY_BUFFER, vboSpriteTexcoords);
 	gl->VertexAttribPointer(

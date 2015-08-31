@@ -28,7 +28,21 @@
 #include "IOGfxDisplay.h"
 #include "IOGfxGLFuncs.h"
 
+#include <map>
+#include <string>
+
+
 class IOGfxGLFuncs;
+
+class IOGfxGLProg {
+public:
+	const GLchar* vshader;
+	const GLchar* fshader;
+	GLuint program;
+	std::map<std::string, GLint> uniforms;
+	std::map<std::string, GLint> attributes;
+};
+
 
 class IOGfxDisplayGL2 : public IOGfxDisplay {
 public:
@@ -37,17 +51,10 @@ public:
 	SDL_Texture* screen;
 	GLuint palette;
 
-	GLuint vboSpriteVertices, vboSpriteTexcoords;
-	GLuint program, program_fillRect, program_indexed;
+	IOGfxGLProg *blit, *i2rgb, *fillRect;
 
-	GLint attribute_v_coord, attribute_v_texcoord;
-	GLint uniform_mvp, uniform_texture, uniform_colorkey;
+	GLuint vboSpriteVertices, vboSpriteTexcoords, vboCroppedSpriteTexcoords;
 
-	GLint attribute_fillRect_v_coord;
-	GLint uniform_fillRect_mvp, uniform_fillRect_color;
-
-	GLint attribute_indexed_v_coord, attribute_indexed_v_texcoord;
-	GLint uniform_indexed_mvp, uniform_indexed_texture, uniform_indexed_palette;
 
 	IOGfxDisplayGL2(int w, int h, bool truecolor, Uint32 flags);
 	~IOGfxDisplayGL2();
@@ -71,6 +78,7 @@ public:
 
 	bool createSpriteVertices();
 	bool createSpriteTexcoords();
+	bool createCroppedSpriteTexcoords();
 	GLuint createShader(const char* source, GLenum type);
 	void infoLog(GLuint object);
 	bool createPrograms();
