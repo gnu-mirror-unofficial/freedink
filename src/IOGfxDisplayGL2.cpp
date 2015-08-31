@@ -408,6 +408,8 @@ void IOGfxDisplayGL2::clear() {
 }
 
 SDL_Surface* IOGfxDisplayGL2::screenshot(SDL_Rect* rect) {
+	gl->BindFramebuffer(GL_FRAMEBUFFER, 0);
+
 	// assume 4-bytes alignment
 	SDL_Surface* image = SDL_CreateRGBSurface(0,
 		rect->w, rect->h, 32,

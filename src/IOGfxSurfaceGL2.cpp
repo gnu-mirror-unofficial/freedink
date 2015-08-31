@@ -38,11 +38,51 @@
 
 IOGfxSurfaceGL2::IOGfxSurfaceGL2(IOGfxDisplayGL2* display, GLuint texture, int w, int h, SDL_Color colorkey)
 	: IOGfxSurface(w, h), display(display), texture(texture), colorkey(colorkey) {
+	fbo = 0;
 }
 
 IOGfxSurfaceGL2::~IOGfxSurfaceGL2() {
-	display->gl->DeleteTextures(1, &texture);
+	IOGfxGLFuncs* gl = display->gl;
+	gl->DeleteTextures(1, &texture);
+	gl->DeleteFramebuffers(1, &fbo);
 }
+
+/**
+ * Lazy GL framebuffer creation
+ * Only necessary for the few target textures (backbuffer, background...)
+ */
+bool IOGfxSurfaceGL2::bindAsFramebuffer() {
+	IOGfxGLFuncs* gl = display->gl;
+	if (fbo == 0) {
+		// bind this texture as framebuffer
+		gl->GenFramebuffers(1, &fbo);
+		gl->BindFramebuffer(GL_FRAMEBUFFER, fbo);
+		gl->FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->texture, 0);
+		GLenum status;
+		if ((status = gl->CheckFramebufferStatus(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE) {
+			log_error("glCheckFramebufferStatus: error 0x%x", status);
+			switch (status) {
+			case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+				log_error("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
+				break;
+			case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
+				log_error("GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS");
+				break;
+			case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+				log_error("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
+				break;
+			case GL_FRAMEBUFFER_UNSUPPORTED:
+				log_error("GL_FRAMEBUFFER_UNSUPPORTED");
+				break;
+			}
+			return false;
+		}
+	} else {
+		gl->BindFramebuffer(GL_FRAMEBUFFER, fbo);
+	}
+	return true;
+}
+
 
 /* Function specifically made for Dink'C fill_screen() */
 void IOGfxSurfaceGL2::fill_screen(int num, SDL_Color* palette) {
@@ -69,30 +109,6 @@ int IOGfxSurfaceGL2::fillRect(const SDL_Rect *dstrect, Uint8 r, Uint8 g, Uint8 b
 	}
 
 	IOGfxGLFuncs* gl = display->gl;
-	GLuint fbo;
-	// bind this as framebuffer
-	gl->GenFramebuffers(1, &fbo);
-	gl->BindFramebuffer(GL_FRAMEBUFFER, fbo);
-	gl->FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->texture, 0);
-	GLenum status;
-	if ((status = gl->CheckFramebufferStatus(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE) {
-		log_error("glCheckFramebufferStatus: error 0x%x", status);
-		switch (status) {
-		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-			log_error("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
-			break;
-		case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
-			log_error("GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS");
-			break;
-		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-			log_error("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
-			break;
-		case GL_FRAMEBUFFER_UNSUPPORTED:
-			log_error("GL_FRAMEBUFFER_UNSUPPORTED");
-			break;
-		}
-		return -1;
-	}
 
 	display->gl->UseProgram(display->fillRect->program);
 
@@ -117,16 +133,14 @@ int IOGfxSurfaceGL2::fillRect(const SDL_Rect *dstrect, Uint8 r, Uint8 g, Uint8 b
 	);
 
 	/* Push each element in buffer_vertices to the vertex shader */
+	bindAsFramebuffer();
 	gl->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	gl->BindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	gl->DisableVertexAttribArray(display->fillRect->attributes["v_coord"]);
 
-	gl->DeleteFramebuffers(1, &fbo);
-	gl->BindFramebuffer(GL_FRAMEBUFFER, 0);
-
 	return 0;
 }
-
 
 int IOGfxSurfaceGL2::internalBlit(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* dstrect, bool useColorKey) {
 	if (src == NULL)
@@ -137,33 +151,10 @@ int IOGfxSurfaceGL2::internalBlit(IOGfxSurface* src, const SDL_Rect* srcrect, SD
 	GLuint src_tex = src_surf->texture;
 
 	IOGfxGLFuncs* gl = display->gl;
-	GLuint fbo;
-	// bind this as framebuffer
-	gl->GenFramebuffers(1, &fbo);
-	gl->BindFramebuffer(GL_FRAMEBUFFER, fbo);
-	gl->FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->texture, 0);
-	GLenum status;
-	if ((status = gl->CheckFramebufferStatus(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE) {
-		log_error("glCheckFramebufferStatus: error 0x%x", status);
-		switch (status) {
-		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-			log_error("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
-			break;
-		case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
-			log_error("GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS");
-			break;
-		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-			log_error("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
-			break;
-		case GL_FRAMEBUFFER_UNSUPPORTED:
-			log_error("GL_FRAMEBUFFER_UNSUPPORTED");
-			break;
-		}
-		return -1;
-	}
 
-	// bind src_tex as texture
 	gl->UseProgram(display->blit->program);
+
+	bindAsFramebuffer();
 
 	gl->ActiveTexture(GL_TEXTURE0);
 	gl->Uniform1i(display->blit->uniforms["texture"], /*GL_TEXTURE*/0);
@@ -222,16 +213,16 @@ int IOGfxSurfaceGL2::internalBlit(IOGfxSurface* src, const SDL_Rect* srcrect, SD
 	);
 
 	/* Push each element in buffer_vertices to the vertex shader */
+	bindAsFramebuffer();
 	gl->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	gl->BindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	gl->DisableVertexAttribArray(display->blit->attributes["v_coord"]);
 	gl->DisableVertexAttribArray(display->blit->attributes["v_texcoord"]);
 
-	gl->DeleteFramebuffers(1, &fbo);
-	gl->BindFramebuffer(GL_FRAMEBUFFER, 0);
-
 	return 0;
 }
+
 
 int IOGfxSurfaceGL2::blit(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* dstrect) {
 	if (src == NULL)
@@ -255,7 +246,6 @@ int IOGfxSurfaceGL2::blit(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* 
 
 	return internalBlit(src, srcrect, dstrect, true);
 }
-
 
 int IOGfxSurfaceGL2::blitStretch(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* dstrect) {
 	return internalBlit(src, srcrect, dstrect, true);
