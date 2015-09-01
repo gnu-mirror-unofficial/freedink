@@ -14,6 +14,7 @@ public:
 	virtual int blit(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* dstrect);
 	virtual int blitStretch(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* dstrect);
 	virtual int blitNoColorKey(IOGfxSurface *src, const SDL_Rect *srcrect, SDL_Rect *dstrect);
+	virtual SDL_Surface* screenshot();
 	virtual unsigned int getMemUsage();
 };
 

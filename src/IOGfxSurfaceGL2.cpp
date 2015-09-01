@@ -270,6 +270,29 @@ int IOGfxSurfaceGL2::blitNoColorKey(IOGfxSurface* src, const SDL_Rect* srcrect, 
 	return internalBlit(src, srcrect, dstrect, false);
 }
 
+SDL_Surface* IOGfxSurfaceGL2::screenshot() {
+	IOGfxGLFuncs* gl = display->gl;
+
+	bindAsFramebuffer();
+
+	// assume 4-bytes alignment
+	SDL_Surface* image = SDL_CreateRGBSurface(0,
+		w, h, 32,
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+		0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff
+#else
+		0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000
+#endif
+	);
+	unsigned char* pixels = (unsigned char*)image->pixels;
+	gl->ReadPixels(0, 0, w, h,
+		GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+	// Don't flip vertically - textures were uploaded OpenGL-reversed already
+
+	return image;
+}
+
 unsigned int IOGfxSurfaceGL2::getMemUsage() {
 	// TODO
 	return 0;

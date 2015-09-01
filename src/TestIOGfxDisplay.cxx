@@ -97,6 +97,10 @@ public:
 		GFX_ref_pal[2].g = 0;
 		GFX_ref_pal[2].b = 255;
 		GFX_ref_pal[2].a = 255;
+		GFX_ref_pal[3].r = 1;
+		GFX_ref_pal[3].g = 2;
+		GFX_ref_pal[3].b = 3;
+		GFX_ref_pal[3].a = 255;
 		gfx_palette_set_phys(GFX_ref_pal);
 	}
 	void tearDown() {
@@ -220,12 +224,12 @@ public:
 		SDL_SetPaletteColors(img->format->palette, GFX_ref_pal, 0, 256);
 		pixels[0] = 255;
 		pixels[1] = 1;
+		pixels[3] = 3;
 		surf = display->upload(img);
 		backbuffer->blit(surf, NULL, NULL);
-		display->flipDebug(backbuffer);
+		//display->flipDebug(backbuffer);
 
-		// Check that pic is not vertically flipped
-		SDL_Surface* screenshot = display->screenshot(&bbbox);
+		SDL_Surface* screenshot = backbuffer->screenshot();
 		TS_ASSERT(screenshot != NULL);
 		if (screenshot == NULL)
 			return;
@@ -247,7 +251,48 @@ public:
 		TS_ASSERT_EQUALS(cb, 0);
 		TS_ASSERT_EQUALS(ca, 255);
 
+		SDL_GetRGBA(((Uint32*)screenshot->pixels)[3],
+					screenshot->format,
+					&cr, &cg, &cb, &ca);
+		TS_ASSERT_EQUALS(cr, 1);
+		TS_ASSERT_EQUALS(cg, 2);
+		TS_ASSERT_EQUALS(cb, 3);
+		TS_ASSERT_EQUALS(ca, 255);
+
 		SDL_FreeSurface(screenshot);
+
+
+		display->flipDebug(backbuffer);
+		// Check that pic is not vertically flipped
+		screenshot = display->screenshot(&bbbox);
+
+		SDL_GetRGBA(((Uint32*)screenshot->pixels)[0],
+					screenshot->format,
+					&cr, &cg, &cb, &ca);
+		TS_ASSERT_EQUALS(cr, 255);
+		TS_ASSERT_EQUALS(cb, 255);
+		TS_ASSERT_EQUALS(cg, 255);
+		TS_ASSERT_EQUALS(ca, 255);
+
+		SDL_GetRGBA(((Uint32*)screenshot->pixels)[1],
+					screenshot->format,
+					&cr, &cg, &cb, &ca);
+		TS_ASSERT_EQUALS(cr, 255);
+		TS_ASSERT_EQUALS(cg, 255);
+		TS_ASSERT_EQUALS(cb, 0);
+		TS_ASSERT_EQUALS(ca, 255);
+
+		// Check main buffer precision; not exact on Android's RGB565
+		SDL_GetRGBA(((Uint32*)screenshot->pixels)[3],
+					screenshot->format,
+					&cr, &cg, &cb, &ca);
+		TS_ASSERT_RELATION(std::less_equal<int>, cr, 8);
+		TS_ASSERT_RELATION(std::less_equal<int>, cg, 4);
+		TS_ASSERT_RELATION(std::less_equal<int>, cb, 8);
+		TS_ASSERT_EQUALS(ca, 255);
+		TS_ASSERT_RELATION(std::greater<double>, 1e6, 1000.0);
+		SDL_FreeSurface(screenshot);
+
 
 		delete surf;
 		delete backbuffer;
@@ -477,7 +522,6 @@ public:
 		screenshot = display->screenshot(&bbbox);
 		getColorAt(screenshot, 0, 0, &cs);
 		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
-		SDL_SaveBMP(screenshot, "screenshot.bmp");
 		SDL_FreeSurface(screenshot);
 
 		backbuffer->fill_screen(2, GFX_ref_pal);

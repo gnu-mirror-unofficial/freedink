@@ -135,6 +135,10 @@ int IOGfxSurfaceSW::blitNoColorKey(IOGfxSurface* src, const SDL_Rect* srcrect, S
 	return gfx_blit_nocolorkey(src_sdl, srcrect, image, dstrect);
 }
 
+SDL_Surface* IOGfxSurfaceSW::screenshot() {
+	return SDL_ConvertSurface(image, image->format, 0);
+}
+
 unsigned int IOGfxSurfaceSW::getMemUsage() {
 	// TODO: take RLE and metadata into account
 	return image->h * image->pitch;

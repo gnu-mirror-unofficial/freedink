@@ -14,6 +14,7 @@ public:
 	virtual int blit(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* dstrect) = 0;
 	virtual int blitStretch(IOGfxSurface* src, const SDL_Rect* srcrect, SDL_Rect* dstrect) = 0;
 	virtual int blitNoColorKey(IOGfxSurface *src, const SDL_Rect *srcrect, SDL_Rect *dstrect) = 0;
+	virtual SDL_Surface* screenshot() = 0;
 	virtual unsigned int getMemUsage() = 0;
 
 	virtual void vlineRGB(Sint16 x, Sint16 y1, Sint16 y2, Uint8 r, Uint8 g, Uint8 b);
