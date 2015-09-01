@@ -403,6 +403,7 @@ void IOGfxDisplayGL2::androidWorkAround() {
 }
 
 void IOGfxDisplayGL2::clear() {
+	gl->BindFramebuffer(GL_FRAMEBUFFER, 0);
 	gl->ClearColor(0,0,0,1);
 	gl->Clear(GL_COLOR_BUFFER_BIT);
 }
@@ -518,6 +519,7 @@ void IOGfxDisplayGL2::flipStretch(IOGfxSurface* backbuffer) {
 	);
 
 	/* Push each element in buffer_vertices to the vertex shader */
+	gl->BindFramebuffer(GL_FRAMEBUFFER, 0);
 	gl->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	gl->DisableVertexAttribArray(a_v_coord);
@@ -597,6 +599,7 @@ void IOGfxDisplayGL2::flipDebug(IOGfxSurface* backbuffer) {
 	);
 
 	/* Push each element in buffer_vertices to the vertex shader */
+	gl->BindFramebuffer(GL_FRAMEBUFFER, 0);
 	gl->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	gl->DisableVertexAttribArray(a_v_coord);

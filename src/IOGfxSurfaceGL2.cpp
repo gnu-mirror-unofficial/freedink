@@ -135,7 +135,6 @@ int IOGfxSurfaceGL2::fillRect(const SDL_Rect *dstrect, Uint8 r, Uint8 g, Uint8 b
 	/* Push each element in buffer_vertices to the vertex shader */
 	bindAsFramebuffer();
 	gl->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	gl->BindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	gl->DisableVertexAttribArray(display->fillRect->attributes["v_coord"]);
 
@@ -153,8 +152,6 @@ int IOGfxSurfaceGL2::internalBlit(IOGfxSurface* src, const SDL_Rect* srcrect, SD
 	IOGfxGLFuncs* gl = display->gl;
 
 	gl->UseProgram(display->blit->program);
-
-	bindAsFramebuffer();
 
 	gl->ActiveTexture(GL_TEXTURE0);
 	gl->Uniform1i(display->blit->uniforms["texture"], /*GL_TEXTURE*/0);
@@ -215,7 +212,6 @@ int IOGfxSurfaceGL2::internalBlit(IOGfxSurface* src, const SDL_Rect* srcrect, SD
 	/* Push each element in buffer_vertices to the vertex shader */
 	bindAsFramebuffer();
 	gl->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	gl->BindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	gl->DisableVertexAttribArray(display->blit->attributes["v_coord"]);
 	gl->DisableVertexAttribArray(display->blit->attributes["v_texcoord"]);
