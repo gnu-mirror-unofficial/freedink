@@ -147,7 +147,11 @@ bool IOGfxDisplayGL2::createCroppedSpriteTexcoords() {
 	return true;
 }
 
-GLuint IOGfxDisplayGL2::createShader(const char* source, GLenum type) {
+/**
+ * Compile vertex or fragment shader.
+ * 'name' is provided for debugging purposes only
+ */
+GLuint IOGfxDisplayGL2::createShader(const char* name, const char* source, GLenum type) {
 	GLuint res = gl->CreateShader(type);
 
 	// GLSL version
@@ -186,7 +190,7 @@ GLuint IOGfxDisplayGL2::createShader(const char* source, GLenum type) {
 	GLint compile_ok = GL_FALSE;
 	gl->GetShaderiv(res, GL_COMPILE_STATUS, &compile_ok);
 	if (compile_ok == GL_FALSE) {
-		log_error("when compiling %s shader:", (type == GL_VERTEX_SHADER) ? "vertex" : "fragment");
+		log_error("when compiling %s %s shader:", name, (type == GL_VERTEX_SHADER) ? "vertex" : "fragment");
 		infoLog(res);
 		gl->DeleteShader(res);
 		return 0;
@@ -243,7 +247,7 @@ bool IOGfxDisplayGL2::createPrograms() {
 		"    f.a = 0.0;                                   \n"
 		"  gl_FragColor = f;                              \n"
 		"}                                                \n";
-	blit->program = createProgram(blit->vshader, blit->fshader);
+	blit->program = createProgram("blit", blit->vshader, blit->fshader);
 	if ((blit->attributes["v_coord"]    = getAttribLocation(blit->program, "v_coord"))    == -1) return false;
 	if ((blit->attributes["v_texcoord"] = getAttribLocation(blit->program, "v_texcoord")) == -1) return false;
 	if ((blit->uniforms["mvp"]      = getUniformLocation(blit->program, "mvp"))       == -1) return false;
@@ -265,7 +269,7 @@ bool IOGfxDisplayGL2::createPrograms() {
 		"void main(void) {                                \n"
 		"  gl_FragColor = color;                          \n"
 		"}                                                \n";
-	fillRect->program = createProgram(fillRect->vshader, fillRect->fshader);
+	fillRect->program = createProgram("fillRect", fillRect->vshader, fillRect->fshader);
 	if ((fillRect->attributes["v_coord"] = getAttribLocation(fillRect->program,  "v_coord")) == -1) return false;
 	if ((fillRect->uniforms["mvp"]   = getUniformLocation(fillRect->program, "mvp"))       == -1) return false;
 	if ((fillRect->uniforms["color"] = getUniformLocation(fillRect->program, "color"))     == -1) return false;
@@ -292,7 +296,7 @@ bool IOGfxDisplayGL2::createPrograms() {
 		"  vec4 index = texture2D(texture, f_texcoord);             \n"
 		"  gl_FragColor = texture2D(palette, vec2(index.r, 0.5));   \n"
 		"}                                                          \n";
-	i2rgb->program = createProgram(i2rgb->vshader, i2rgb->fshader);
+	i2rgb->program = createProgram("i2rgb", i2rgb->vshader, i2rgb->fshader);
 	if ((i2rgb->attributes["v_coord"]    = getAttribLocation(i2rgb->program, "v_coord"))    == -1) return false;
 	if ((i2rgb->attributes["v_texcoord"] = getAttribLocation(i2rgb->program, "v_texcoord")) == -1) return false;
 	if ((i2rgb->uniforms["mvp"]     = getUniformLocation(i2rgb->program, "mvp"))       == -1) return false;
@@ -305,10 +309,10 @@ bool IOGfxDisplayGL2::createPrograms() {
 	return true;
 }
 
-GLuint IOGfxDisplayGL2::createProgram(const char* vertexShaderSource, const char* fragmentShaderSource) {
+GLuint IOGfxDisplayGL2::createProgram(const char* name, const char* vertexShaderSource, const char* fragmentShaderSource) {
 	GLuint vs, fs;
-	if ((vs = createShader(vertexShaderSource,   GL_VERTEX_SHADER))   == 0) return false;
-	if ((fs = createShader(fragmentShaderSource, GL_FRAGMENT_SHADER)) == 0) return false;
+	if ((vs = createShader(name, vertexShaderSource,   GL_VERTEX_SHADER))   == 0) return false;
+	if ((fs = createShader(name, fragmentShaderSource, GL_FRAGMENT_SHADER)) == 0) return false;
 
 	GLuint program = gl->CreateProgram();
 	if (program == 0) {

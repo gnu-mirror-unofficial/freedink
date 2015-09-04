@@ -79,10 +79,10 @@ public:
 	bool createSpriteVertices();
 	bool createSpriteTexcoords();
 	bool createCroppedSpriteTexcoords();
-	GLuint createShader(const char* source, GLenum type);
+	GLuint createShader(const char* name, const char* source, GLenum type);
 	void infoLog(GLuint object);
 	bool createPrograms();
-	GLuint createProgram(const char* vertexShaderSource, const char* fragmentShaderSource);
+	GLuint createProgram(const char* name, const char* vertexShaderSource, const char* fragmentShaderSource);
 	GLint getAttribLocation(GLuint program, const char* name);
 	GLint getUniformLocation(GLuint program, const char* name);
 	bool createPalette();
