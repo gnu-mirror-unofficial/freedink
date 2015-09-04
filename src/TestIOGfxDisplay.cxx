@@ -131,36 +131,46 @@ public:
 	}
 
 	void getColorAtRGBA(SDL_Surface* img, int x, int y, SDL_Color* c) {
-		SDL_GetRGBA(((Uint32*)img->pixels)[x + y*img->w],
-						img->format,
-						&c->r, &c->g, &c->b, &c->a);
+		Uint32* line = (Uint32*)(&((Uint8*)img->pixels)[y*img->pitch]);
+		SDL_GetRGBA(line[x], img->format, &c->r, &c->g, &c->b, &c->a);
 	}
 
+	void getColorAtI(SDL_Surface* img, int x, int y, SDL_Color* c) {
+		if (img->format->BitsPerPixel == 32) {
+			Uint32* line = (Uint32*)(&((Uint8*)img->pixels)[y*img->pitch]);
+			SDL_GetRGBA(line[x], img->format, &c->r, &c->g, &c->b, &c->a);
+		} else if (img->format->BitsPerPixel == 8) {
+			c->r = c->g = c->b = ((Uint8*)img->pixels)[x + y*img->pitch];
+			c->a = 255;
+		} else {
+			c->r = c->g = c->b = c->a = 0;
+		}
+	}
 
 
 	void ctestSplash() {
 		// A first inter-texture blit before anything else
 		// Tests IOGfxDisplayGL2->androidWorkAround()
-		SDL_Surface* image;
+		SDL_Surface* img;
 		IOGfxSurface *backbuffer, *splash;
 
 		backbuffer = display->allocBuffer(50, 50);
 		//g->flip(backbuffer); // not a single flip
 
-		image = SDL_CreateRGBSurface(0, 40, 40, 8, 0, 0, 0, 0);
-		Uint8* pixels = (Uint8*)image->pixels;
-		SDL_SetPaletteColors(image->format->palette, GFX_ref_pal, 0, 256);
+		img = SDL_CreateRGBSurface(0, 40, 40, 8, 0, 0, 0, 0);
+		Uint8* pixels = (Uint8*)img->pixels;
+		SDL_SetPaletteColors(img->format->palette, GFX_ref_pal, 0, 256);
 		// Make a bit square to cope with stretching and color interpolation
 		pixels[0] = 1;
 		pixels[1] = 1;
 		pixels[2] = 1;
-		pixels[image->pitch+0] = 1;
-		pixels[image->pitch+1] = 1;
-		pixels[image->pitch+2] = 1;
-		pixels[image->pitch*2+0] = 1;
-		pixels[image->pitch*2+1] = 1;
-		pixels[image->pitch*2+0] = 1;
-		splash = display->upload(image);
+		pixels[img->pitch+0] = 1;
+		pixels[img->pitch+1] = 1;
+		pixels[img->pitch+2] = 1;
+		pixels[img->pitch*2+0] = 1;
+		pixels[img->pitch*2+1] = 1;
+		pixels[img->pitch*2+0] = 1;
+		splash = display->upload(img);
 		//g->flip(splash); // not a single flip
 
 		SDL_Rect dstrect = {0, 0, -1, -1};
@@ -203,11 +213,99 @@ public:
 
 
 
-	void ctest_screenshot() {
-		SDL_Surface* img;
+	void ctest_Display_screenshot() {
+		SDL_Surface *img, *screenshot;
 		IOGfxSurface *backbuffer, *surf;
 		SDL_Color cs;
 		SDL_Rect bbbox;
+
+		backbuffer = display->allocBuffer(50, 50);
+		bbbox = { 0,0, 50,50 };
+
+		img = SDL_CreateRGBSurface(0, 39, 39, 8, 0, 0, 0, 0);
+		Uint8* pixels = (Uint8*)img->pixels;
+		SDL_SetPaletteColors(img->format->palette, GFX_ref_pal, 0, 256);
+		pixels[0] = 255;
+		pixels[1] = 1;
+		pixels[img->pitch+0] = 3;
+		surf = display->upload(img);
+		backbuffer->blit(surf, NULL, NULL);
+
+
+		// Check final framebuffer
+		display->flipDebug(backbuffer);
+		// Check that pic is not vertically flipped
+		screenshot = display->screenshot(&bbbox);
+
+		getColorAtRGBA(screenshot, 0, 0, &cs);
+		TS_ASSERT_SAME_DATA(&white, &cs, sizeof(SDL_Color));
+
+		getColorAtRGBA(screenshot, 1, 0, &cs);
+		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+
+		// Check main buffer precision; not exact on Android's RGB565
+		getColorAtRGBA(screenshot, 0, 1, &cs);
+		TS_ASSERT_RELATION(std::less_equal<int>, cs.r, 8);
+		TS_ASSERT_RELATION(std::less_equal<int>, cs.g, 4);
+		TS_ASSERT_RELATION(std::less_equal<int>, cs.b, 8);
+
+		SDL_FreeSurface(screenshot);
+
+
+		delete surf;
+		delete backbuffer;
+	}
+
+
+
+	void ctest_Surface_screenshot_truecolor() {
+		SDL_Surface *img, *screenshot;
+		IOGfxSurface *backbuffer, *surf;
+		SDL_Color cs;
+		SDL_Rect bbbox;
+
+
+		backbuffer = display->allocBuffer(50, 50);
+		bbbox = { 0,0, 50,50 };
+
+		img = SDL_CreateRGBSurface(0, 40, 40, 8, 0, 0, 0, 0);
+		Uint8* pixels = (Uint8*)img->pixels;
+		SDL_SetPaletteColors(img->format->palette, GFX_ref_pal, 0, 256);
+		pixels[0] = 255;
+		pixels[1] = 1;
+		pixels[img->pitch+0] = 3;
+		surf = display->upload(img);
+		backbuffer->blit(surf, NULL, NULL);
+
+
+		// Check texture directly
+		screenshot = backbuffer->screenshot();
+		TS_ASSERT(screenshot != NULL);
+		if (screenshot == NULL)
+			return;
+
+		getColorAtRGBA(screenshot, 0, 0, &cs);
+		TS_ASSERT_SAME_DATA(&white, &cs, sizeof(SDL_Color));
+
+		getColorAtRGBA(screenshot, 1, 0, &cs);
+		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+
+		getColorAtRGBA(screenshot, 0, 1, &cs);
+		TS_ASSERT_SAME_DATA(&dark123, &cs, sizeof(SDL_Color));
+
+		SDL_FreeSurface(screenshot);
+
+
+		delete surf;
+		delete backbuffer;
+	}
+
+	void ctest_Surface_screenshot_indexed() {
+		SDL_Surface *img, *screenshot;
+		IOGfxSurface *backbuffer, *surf;
+		SDL_Color ce, cs;
+		SDL_Rect bbbox;
+
 
 		backbuffer = display->allocBuffer(50, 50);
 		bbbox = { 0,0, 50,50 };
@@ -223,39 +321,23 @@ public:
 
 
 		// Check texture directly
-		SDL_Surface* screenshot = backbuffer->screenshot();
+		screenshot = backbuffer->screenshot();
 		TS_ASSERT(screenshot != NULL);
 		if (screenshot == NULL)
 			return;
+		SDL_SaveBMP(screenshot, "screenshot.bmp");
 
-		getColorAtRGBA(screenshot, 0, 0, &cs);
-		TS_ASSERT_SAME_DATA(&white, &cs, sizeof(SDL_Color));
+		ce = { 255, 255, 255, 255 };
+		getColorAtI(screenshot, 0, 0, &cs);
+		TS_ASSERT_SAME_DATA(&ce, &cs, sizeof(SDL_Color));
 
-		getColorAtRGBA(screenshot, 1, 0, &cs);
-		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		ce = { 1, 1, 1, 255 };
+		getColorAtI(screenshot, 1, 0, &cs);
+		TS_ASSERT_SAME_DATA(&ce, &cs, sizeof(SDL_Color));
 
-		getColorAtRGBA(screenshot, 3, 0, &cs);
-		TS_ASSERT_SAME_DATA(&dark123, &cs, sizeof(SDL_Color));
-
-		SDL_FreeSurface(screenshot);
-
-
-		// flipDebug was a work-around, not sure we'll keep it
-		display->flipDebug(backbuffer);
-		// Check that pic is not vertically flipped
-		screenshot = display->screenshot(&bbbox);
-
-		getColorAtRGBA(screenshot, 0, 0, &cs);
-		TS_ASSERT_SAME_DATA(&white, &cs, sizeof(SDL_Color));
-
-		getColorAtRGBA(screenshot, 1, 0, &cs);
-		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
-
-		// Check main buffer precision; not exact on Android's RGB565
-		getColorAtRGBA(screenshot, 3, 0, &cs);
-		TS_ASSERT_RELATION(std::less_equal<int>, cs.r, 8);
-		TS_ASSERT_RELATION(std::less_equal<int>, cs.g, 4);
-		TS_ASSERT_RELATION(std::less_equal<int>, cs.b, 8);
+		ce = { 3, 3, 3, 255 };
+		getColorAtI(screenshot, 3, 0, &cs);
+		TS_ASSERT_SAME_DATA(&ce, &cs, sizeof(SDL_Color));
 
 		SDL_FreeSurface(screenshot);
 
@@ -263,7 +345,6 @@ public:
 		delete surf;
 		delete backbuffer;
 	}
-
 
 
 	void ctest_surfToDisplayCoords() {
@@ -516,9 +597,14 @@ public:
 		ctestSplash();
 		closeDisplay();
 	}
-	void test_screenshotGL2Truecolor() {
+	void test_Display_screenshotGL2Truecolor() {
 		openDisplay(true, true, SDL_WINDOW_HIDDEN);
-		ctest_screenshot();
+		ctest_Display_screenshot();
+		closeDisplay();
+	}
+	void test_Surface_screenshotGL2Truecolor() {
+		openDisplay(true, true, SDL_WINDOW_HIDDEN);
+		ctest_Surface_screenshot_truecolor();
 		closeDisplay();
 	}
 	void test_allocGL2Truecolor() {
@@ -552,6 +638,16 @@ public:
 		ctestSplash();
 		closeDisplay();
 	}
+	void test_Display_screenshotGL2() {
+		openDisplay(true, false, SDL_WINDOW_HIDDEN);
+		ctest_Display_screenshot();
+		closeDisplay();
+	}
+	void test_Surface_screenshotGL2() {
+		openDisplay(true, false, SDL_WINDOW_HIDDEN);
+		ctest_Surface_screenshot_indexed();
+		closeDisplay();
+	}
 	void test_blitGL2() {
 		openDisplay(true, false, SDL_WINDOW_HIDDEN);
 		ctest_blit();
@@ -573,9 +669,14 @@ public:
 		ctestSplash();
 		closeDisplay();
 	}
-	void test_screenshotSWTruecolor() {
+	void test_Display_screenshotSWTruecolor() {
 		openDisplay(false, true, 0);
-		ctest_screenshot();
+		ctest_Display_screenshot();
+		closeDisplay();
+	}
+	void test_Surface_screenshotSWTruecolor() {
+		openDisplay(false, true, 0);
+		ctest_Surface_screenshot_truecolor();
 		closeDisplay();
 	}
 	void test_allocSWTruecolor() {
@@ -602,6 +703,16 @@ public:
 	void testSplashSW() {
 		openDisplay(false, false, 0);
 		ctestSplash();
+		closeDisplay();
+	}
+	void test_Display_screenshotSW() {
+		openDisplay(false, false, 0);
+		ctest_Display_screenshot();
+		closeDisplay();
+	}
+	void test_Surface_screenshotSW() {
+		openDisplay(false, false, 0);
+		ctest_Surface_screenshot_indexed();
 		closeDisplay();
 	}
 	void test_blitSW() {
