@@ -151,6 +151,7 @@ public:
 	void (APIENTRY *Uniform1i)(GLint location, GLint v0);
 	void (APIENTRY *Uniform3f)(GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
 	void (APIENTRY *Uniform4f)(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
+	void (APIENTRY *UniformMatrix3fv)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
 	void (APIENTRY *UniformMatrix4fv)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
 
 	void (APIENTRY *EnableVertexAttribArray)(GLuint);

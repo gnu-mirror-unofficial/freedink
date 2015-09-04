@@ -72,6 +72,7 @@ IOGfxGLFuncs::IOGfxGLFuncs() {
 	Uniform1i = (void (APIENTRY*)(GLint location, GLint v0))SDL_GL_GetProcAddress("glUniform1i");
 	Uniform3f = (void (APIENTRY*)(GLint location, GLfloat v0, GLfloat v1, GLfloat v2))SDL_GL_GetProcAddress("glUniform3f");
 	Uniform4f = (void (APIENTRY*)(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3))SDL_GL_GetProcAddress("glUniform4f");
+	UniformMatrix3fv = (void (APIENTRY*)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value))SDL_GL_GetProcAddress("glUniformMatrix3fv");
 	UniformMatrix4fv = (void (APIENTRY*)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value))SDL_GL_GetProcAddress("glUniformMatrix4fv");
 
 	EnableVertexAttribArray = (void (APIENTRY*)(GLuint))SDL_GL_GetProcAddress("glEnableVertexAttribArray");
