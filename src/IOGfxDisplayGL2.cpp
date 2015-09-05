@@ -446,19 +446,29 @@ SDL_Surface* IOGfxDisplayGL2::screenshot(SDL_Rect* rect) {
 	return image;
 }
 
+void IOGfxDisplayGL2::setVertexAttrib(IOGfxGLProg* prog, GLuint attribLocation, GLuint vbo, GLint size) {
+	gl->EnableVertexAttribArray(attribLocation);
+	// Describe our vertices array to OpenGL (it can't guess its format automatically)
+	gl->BindBuffer(GL_ARRAY_BUFFER, vbo);
+	gl->VertexAttribPointer(attribLocation, // attribute
+			size,              // number of elements per vertex, e.g. (x,y,z,t)
+			GL_FLOAT,          // the type of each element
+			GL_FALSE,          // take our values as-is
+			0,                 // no extra data between each position
+			0                  // offset of first element
+			);
+}
+
 void IOGfxDisplayGL2::flipStretch(IOGfxSurface* backbuffer) {
 	if (backbuffer == NULL)
 		SDL_SetError("IOGfxDisplayGL2::flip: passed a NULL surface");
 	IOGfxSurfaceGL2* surf = dynamic_cast<IOGfxSurfaceGL2*>(backbuffer);
 	GLuint texture = surf->texture;
 
-	IOGfxGLProg* prog;
-	if (truecolor)
-		prog = blit;
-	else
-		prog = i2rgb;
-
+	IOGfxGLProg* prog = truecolor ? blit : i2rgb;
 	gl->UseProgram(prog->program);
+	setVertexAttrib(prog, prog->attributes["v_coord"], vboSpriteVertices, 4);
+	setVertexAttrib(prog, prog->attributes["v_texcoord"], vboSpriteTexcoords, 2);
 
 	gl->ActiveTexture(GL_TEXTURE0);
 	gl->Uniform1i(prog->uniforms["texture"], /*GL_TEXTURE*/0);
@@ -485,35 +495,12 @@ void IOGfxDisplayGL2::flipStretch(IOGfxSurface* backbuffer) {
 	if (truecolor)
 		gl->Uniform3f(prog->uniforms["colorkey"], -1,-1,-1);
 
-	gl->EnableVertexAttribArray(prog->attributes["v_coord"]);
-	// Describe our vertices array to OpenGL (it can't guess its format automatically)
-	gl->BindBuffer(GL_ARRAY_BUFFER, vboSpriteVertices);
-	gl->VertexAttribPointer(
-		prog->attributes["v_coord"], // attribute
-		4,                 // number of elements per vertex, here (x,y,z,t)
-		GL_FLOAT,          // the type of each element
-		GL_FALSE,          // take our values as-is
-		0,                 // no extra data between each position
-		0                  // offset of first element
-	);
-
-	gl->EnableVertexAttribArray(blit->attributes["v_texcoord"]);
-	gl->BindBuffer(GL_ARRAY_BUFFER, vboSpriteTexcoords);
-	gl->VertexAttribPointer(
-		blit->attributes["v_texcoord"], // attribute
-		2,                  // number of elements per vertex, here (x,y)
-		GL_FLOAT,           // the type of each element
-		GL_FALSE,           // take our values as-is
-		0,                  // no extra data between each position
-		0                   // offset of first element
-	);
-
 	/* Push each element in buffer_vertices to the vertex shader */
 	gl->BindFramebuffer(GL_FRAMEBUFFER, 0);
 	gl->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-	gl->DisableVertexAttribArray(prog->attributes["v_coord"]);
-	gl->DisableVertexAttribArray(blit->attributes["v_texcoord"]);
+//	gl->DisableVertexAttribArray(prog->attributes["v_coord"]);
+//	gl->DisableVertexAttribArray(blit->attributes["v_texcoord"]);
 
 	SDL_GL_SwapWindow(window);
 }
@@ -525,13 +512,10 @@ void IOGfxDisplayGL2::flipDebug(IOGfxSurface* backbuffer) {
 	IOGfxSurfaceGL2* surf = dynamic_cast<IOGfxSurfaceGL2*>(backbuffer);
 	GLuint texture = surf->texture;
 
-	IOGfxGLProg* prog;
-	if (truecolor)
-		prog = blit;
-	else
-		prog = i2rgb;
-
+	IOGfxGLProg* prog = truecolor ? blit : i2rgb;
 	gl->UseProgram(prog->program);
+	setVertexAttrib(prog, prog->attributes["v_coord"], vboSpriteVertices, 4);
+	setVertexAttrib(prog, prog->attributes["v_texcoord"], vboSpriteTexcoords, 2);
 
 	gl->ActiveTexture(GL_TEXTURE0);
 	gl->Uniform1i(prog->uniforms["texture"], /*GL_TEXTURE*/0);
@@ -554,35 +538,12 @@ void IOGfxDisplayGL2::flipDebug(IOGfxSurface* backbuffer) {
 	if (truecolor)
 		gl->Uniform3f(prog->uniforms["colorkey"], -1,-1,-1);
 
-	gl->EnableVertexAttribArray(prog->attributes["v_coord"]);
-	// Describe our vertices array to OpenGL (it can't guess its format automatically)
-	gl->BindBuffer(GL_ARRAY_BUFFER, vboSpriteVertices);
-	gl->VertexAttribPointer(
-		prog->attributes["v_coord"], // attribute
-		4,                 // number of elements per vertex, here (x,y,z,t)
-		GL_FLOAT,          // the type of each element
-		GL_FALSE,          // take our values as-is
-		0,                 // no extra data between each position
-		0                  // offset of first element
-	);
-
-	gl->EnableVertexAttribArray(blit->attributes["v_texcoord"]);
-	gl->BindBuffer(GL_ARRAY_BUFFER, vboSpriteTexcoords);
-	gl->VertexAttribPointer(
-		blit->attributes["v_texcoord"], // attribute
-		2,                  // number of elements per vertex, here (x,y)
-		GL_FLOAT,           // the type of each element
-		GL_FALSE,           // take our values as-is
-		0,                  // no extra data between each position
-		0                   // offset of first element
-	);
-
 	/* Push each element in buffer_vertices to the vertex shader */
 	gl->BindFramebuffer(GL_FRAMEBUFFER, 0);
 	gl->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-	gl->DisableVertexAttribArray(blit->attributes["v_coord"]);
-	gl->DisableVertexAttribArray(blit->attributes["v_texcoord"]);
+//	gl->DisableVertexAttribArray(blit->attributes["v_coord"]);
+//	gl->DisableVertexAttribArray(blit->attributes["v_texcoord"]);
 
 	SDL_GL_SwapWindow(window);
 }

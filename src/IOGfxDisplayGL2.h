@@ -85,9 +85,9 @@ public:
 	GLuint createProgram(const char* name, const char* vertexShaderSource, const char* fragmentShaderSource);
 	GLint getAttribLocation(GLuint program, const char* name);
 	GLint getUniformLocation(GLuint program, const char* name);
+	void setVertexAttrib(IOGfxGLProg* prog, GLuint attribLocation, GLuint vbo, GLint size);
 	bool createPalette();
 	void androidWorkAround();
-
 };
 
 #endif

@@ -111,6 +111,7 @@ int IOGfxSurfaceGL2::fillRect(const SDL_Rect *dstrect, Uint8 r, Uint8 g, Uint8 b
 	IOGfxGLFuncs* gl = display->gl;
 
 	display->gl->UseProgram(display->fillRect->program);
+	display->setVertexAttrib(display->fillRect, display->fillRect->attributes["v_coord"], display->vboSpriteVertices, 4);
 
 	glm::mat4 projection = glm::ortho(0.0f, 1.0f*display->w, 0.0f, 1.0f*display->h);
 	glm::mat4 m_transform;
@@ -120,23 +121,11 @@ int IOGfxSurfaceGL2::fillRect(const SDL_Rect *dstrect, Uint8 r, Uint8 g, Uint8 b
 	gl->UniformMatrix4fv(display->fillRect->uniforms["mvp"], 1, GL_FALSE, glm::value_ptr(mvp));
 	gl->Uniform4f(display->fillRect->uniforms["color"], r/255.0,g/255.0,b/255.0,1.0);
 
-	gl->EnableVertexAttribArray(display->fillRect->attributes["v_coord"]);
-	// Describe our vertices array to OpenGL (it can't guess its format automatically)
-	gl->BindBuffer(GL_ARRAY_BUFFER, display->vboSpriteVertices);
-	gl->VertexAttribPointer(
-		display->fillRect->attributes["v_coord"], // attribute
-		4,                 // number of elements per vertex, here (x,y,z,t)
-		GL_FLOAT,          // the type of each element
-		GL_FALSE,          // take our values as-is
-		0,                 // no extra data between each position
-		0                  // offset of first element
-	);
-
 	/* Push each element in buffer_vertices to the vertex shader */
 	bindAsFramebuffer();
 	gl->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-	gl->DisableVertexAttribArray(display->fillRect->attributes["v_coord"]);
+//	gl->DisableVertexAttribArray(display->fillRect->attributes["v_coord"]);
 
 	return 0;
 }
@@ -151,7 +140,28 @@ int IOGfxSurfaceGL2::internalBlit(IOGfxSurface* src, const SDL_Rect* srcrect, SD
 
 	IOGfxGLFuncs* gl = display->gl;
 
+	GLuint vbo;
+	if (srcrect == NULL || (srcrect->x == 0 && srcrect->y == 0 && srcrect->w == src_surf->w && srcrect->h == src_surf->h)) {
+		vbo = display->vboSpriteTexcoords;
+	} else {
+		float x1 = 1.0 * srcrect->x / src_surf->w;
+		float y1 = 1.0 * srcrect->y / src_surf->h;
+		float x2 = 1.0 * (srcrect->x+srcrect->w) / src_surf->w;
+		float y2 = 1.0 * (srcrect->y+srcrect->h) / src_surf->h;
+		GLfloat croppedSpriteTexcoords[] = {
+			x1, y1,
+			x2, y1,
+			x1, y2,
+			x2, y2,
+		};
+		gl->BindBuffer(GL_ARRAY_BUFFER, display->vboCroppedSpriteTexcoords);
+		gl->BufferData(GL_ARRAY_BUFFER, sizeof(croppedSpriteTexcoords), croppedSpriteTexcoords, GL_STATIC_DRAW);
+		vbo = display->vboCroppedSpriteTexcoords;
+	}
+
 	gl->UseProgram(display->blit->program);
+	display->setVertexAttrib(display->blit, display->blit->attributes["v_coord"], display->vboSpriteVertices, 4);
+	display->setVertexAttrib(display->blit, display->blit->attributes["v_texcoord"], vbo, 2);
 
 	gl->ActiveTexture(GL_TEXTURE0);
 	gl->Uniform1i(display->blit->uniforms["texture"], /*GL_TEXTURE*/0);
@@ -170,51 +180,12 @@ int IOGfxSurfaceGL2::internalBlit(IOGfxSurface* src, const SDL_Rect* srcrect, SD
 	else
 		gl->Uniform3f(display->blit->uniforms["colorkey"], -1,-1,-1);
 
-	// draw
-	gl->EnableVertexAttribArray(display->blit->attributes["v_coord"]);
-	// Describe our vertices array to OpenGL (it can't guess its format automatically)
-	gl->BindBuffer(GL_ARRAY_BUFFER, display->vboSpriteVertices);
-	gl->VertexAttribPointer(
-		display->blit->attributes["v_coord"], // attribute
-		4,                 // number of elements per vertex, here (x,y,z,t)
-		GL_FLOAT,          // the type of each element
-		GL_FALSE,          // take our values as-is
-		0,                 // no extra data between each position
-		0                  // offset of first element
-	);
-
-	gl->EnableVertexAttribArray(display->blit->attributes["v_texcoord"]);
-	if (srcrect == NULL) {
-		gl->BindBuffer(GL_ARRAY_BUFFER, display->vboSpriteTexcoords);
-	} else {
-		float x1 = 1.0 * srcrect->x / src_surf->w;
-		float y1 = 1.0 * srcrect->y / src_surf->h;
-		float x2 = 1.0 * (srcrect->x+srcrect->w) / src_surf->w;
-		float y2 = 1.0 * (srcrect->y+srcrect->h) / src_surf->h;
-		GLfloat croppedSpriteTexcoords[] = {
-			x1, y1,
-			x2, y1,
-			x1, y2,
-			x2, y2,
-		};
-		gl->BindBuffer(GL_ARRAY_BUFFER, display->vboCroppedSpriteTexcoords);
-		gl->BufferData(GL_ARRAY_BUFFER, sizeof(croppedSpriteTexcoords), croppedSpriteTexcoords, GL_STATIC_DRAW);
-	}
-	gl->VertexAttribPointer(
-		display->blit->attributes["v_texcoord"], // attribute
-		2,                  // number of elements per vertex, here (x,y)
-		GL_FLOAT,           // the type of each element
-		GL_FALSE,           // take our values as-is
-		0,                  // no extra data between each position
-		0                   // offset of first element
-	);
-
 	/* Push each element in buffer_vertices to the vertex shader */
 	bindAsFramebuffer();
 	gl->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-	gl->DisableVertexAttribArray(display->blit->attributes["v_coord"]);
-	gl->DisableVertexAttribArray(display->blit->attributes["v_texcoord"]);
+//	gl->DisableVertexAttribArray(display->blit->attributes["v_coord"]);
+//	gl->DisableVertexAttribArray(display->blit->attributes["v_texcoord"]);
 
 	return 0;
 }
