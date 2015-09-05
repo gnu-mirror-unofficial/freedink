@@ -64,11 +64,10 @@ public:
 	virtual void logDisplayInfo();
 
 	virtual void clear();
-	virtual void flipStretch(IOGfxSurface* backbuffer);
 	virtual void onSizeChange(int w, int h);
 	virtual IOGfxSurface* upload(SDL_Surface* image);
 	virtual IOGfxSurface* allocBuffer(int surfW, int surfH);
-	virtual void flipDebug(IOGfxSurface* backbuffer);
+	virtual void flip(IOGfxSurface* backbuffer, SDL_Rect* dstrect);
 	virtual void updatePalette();
 
 	virtual SDL_Surface* screenshot(SDL_Rect* rect);

@@ -187,7 +187,7 @@ void gfx_fade_apply(SDL_Surface* screen, int brightness) {
 	SDL_UnlockSurface(screen);
 }
 
-void IOGfxDisplaySW::flipStretch(IOGfxSurface* backbuffer) {
+void IOGfxDisplaySW::flip(IOGfxSurface* backbuffer, SDL_Rect* dstrect) {
 	/* For now we do all operations on the CPU side and perform a big
 	   texture update at each frame; this is necessary to support
 	   palette and fade_down/fade_up. */
@@ -220,39 +220,7 @@ void IOGfxDisplaySW::flipStretch(IOGfxSurface* backbuffer) {
 	}
 
 	SDL_UpdateTexture(render_texture, NULL, source->pixels, source->pitch);
-	SDL_Rect dst;
-	centerScaledSurface(backbuffer, &dst);
-	SDL_RenderCopy(renderer, render_texture, NULL, &dst);
-	SDL_RenderPresent(renderer);
-}
-
-void IOGfxDisplaySW::flipDebug(IOGfxSurface* backbuffer) {
-	/* Convert to destination buffer format */
-	SDL_Surface* source = dynamic_cast<IOGfxSurfaceSW*>(backbuffer)->image;
-	if (truecolor) {
-		if (source->format->format != getFormat())
-			log_error("Wrong backbuffer format");
-	} else {
-		/* Convert 8-bit buffer for truecolor texture upload */
-
-		/* Use "physical" screen palette - use SDL_SetPaletteColors to invalidate SDL cache */
-		SDL_Color pal_bak[256];
-		SDL_Color pal_phys[256];
-		memcpy(pal_bak, source->format->palette->colors, sizeof(pal_bak));
-		gfx_palette_get_phys(pal_phys);
-		SDL_SetPaletteColors(source->format->palette, pal_phys, 0, 256);
-
-		if (SDL_BlitSurface(source, NULL, rgb_screen, NULL) < 0) {
-			log_error("ERROR: 8-bit->truecolor conversion failed: %s", SDL_GetError());
-		}
-		SDL_SetPaletteColors(source->format->palette, pal_bak, 0, 256);
-
-		source = rgb_screen;
-	}
-
-	SDL_Rect srcrect = {0,0, backbuffer->w,backbuffer->h};
-	SDL_UpdateTexture(render_texture_debug, &srcrect, source->pixels, source->pitch);
-	SDL_RenderCopy(renderer, render_texture_debug, &srcrect, &srcrect);
+	SDL_RenderCopy(renderer, render_texture, NULL, dstrect);
 	SDL_RenderPresent(renderer);
 }
 

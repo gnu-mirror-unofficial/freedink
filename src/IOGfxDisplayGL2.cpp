@@ -459,7 +459,7 @@ void IOGfxDisplayGL2::setVertexAttrib(IOGfxGLProg* prog, GLuint attribLocation, 
 			);
 }
 
-void IOGfxDisplayGL2::flipStretch(IOGfxSurface* backbuffer) {
+void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer, SDL_Rect* dstrect) {
 	if (backbuffer == NULL)
 		SDL_SetError("IOGfxDisplayGL2::flip: passed a NULL surface");
 	IOGfxSurfaceGL2* surf = dynamic_cast<IOGfxSurfaceGL2*>(backbuffer);
@@ -480,15 +480,12 @@ void IOGfxDisplayGL2::flipStretch(IOGfxSurface* backbuffer) {
 		updatePalette();
 	}
 
-	SDL_Rect dstrect;
-	centerScaledSurface(surf, &dstrect);
-
 	// Y-inversed projection for top-left origin and top-bottom textures
 	// Beware that rotation is reversed too
 	glm::mat4 projection = glm::ortho(0.0f, 1.0f*w, 1.0f*h, 0.0f);
 	glm::mat4 m_transform;
-	m_transform = glm::translate(glm::mat4(1.0f), glm::vec3(dstrect.x,dstrect.y, 0.0))
-		* glm::scale(glm::mat4(1.0f), glm::vec3(dstrect.w, dstrect.h, 0.0));
+	m_transform = glm::translate(glm::mat4(1.0f), glm::vec3(dstrect->x,dstrect->y, 0))
+		* glm::scale(glm::mat4(1.0f), glm::vec3(dstrect->w, dstrect->h, 0));
 	glm::mat4 mvp = projection * m_transform; // * view * model * anim;
 	gl->UniformMatrix4fv(prog->uniforms["mvp"], 1, GL_FALSE, glm::value_ptr(mvp));
 
@@ -505,48 +502,6 @@ void IOGfxDisplayGL2::flipStretch(IOGfxSurface* backbuffer) {
 	SDL_GL_SwapWindow(window);
 }
 
-/* Raw blit so we can extract texture buffer */
-void IOGfxDisplayGL2::flipDebug(IOGfxSurface* backbuffer) {
-	if (backbuffer == NULL)
-		SDL_SetError("IOGfxDisplayGL2::blit: passed a NULL surface");
-	IOGfxSurfaceGL2* surf = dynamic_cast<IOGfxSurfaceGL2*>(backbuffer);
-	GLuint texture = surf->texture;
-
-	IOGfxGLProg* prog = truecolor ? blit : i2rgb;
-	gl->UseProgram(prog->program);
-	setVertexAttrib(prog, prog->attributes["v_coord"], vboSpriteVertices, 4);
-	setVertexAttrib(prog, prog->attributes["v_texcoord"], vboSpriteTexcoords, 2);
-
-	gl->ActiveTexture(GL_TEXTURE0);
-	gl->Uniform1i(prog->uniforms["texture"], /*GL_TEXTURE*/0);
-	gl->BindTexture(GL_TEXTURE_2D, texture);
-	if (!truecolor) {
-		gl->ActiveTexture(GL_TEXTURE1);
-		gl->Uniform1i(prog->uniforms["palette"], /*GL_TEXTURE*/1);
-		gl->BindTexture(GL_TEXTURE_2D, palette);
-		updatePalette();
-	}
-
-	// Y-inversed projection for top-left origin and top-bottom textures
-	// Beware that rotation is reversed too
-	glm::mat4 projection = glm::ortho(0.0f, 1.0f*w, 1.0f*h, 0.0f);
-	glm::mat4 m_transform;
-	m_transform = glm::scale(glm::mat4(1.0f), glm::vec3(backbuffer->w, backbuffer->h, 0.0));
-	glm::mat4 mvp = projection * m_transform; // * view * model * anim;
-	gl->UniformMatrix4fv(prog->uniforms["mvp"], 1, GL_FALSE, glm::value_ptr(mvp));
-
-	if (truecolor)
-		gl->Uniform3f(prog->uniforms["colorkey"], -1,-1,-1);
-
-	/* Push each element in buffer_vertices to the vertex shader */
-	gl->BindFramebuffer(GL_FRAMEBUFFER, 0);
-	gl->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-//	gl->DisableVertexAttribArray(blit->attributes["v_coord"]);
-//	gl->DisableVertexAttribArray(blit->attributes["v_texcoord"]);
-
-	SDL_GL_SwapWindow(window);
-}
 
 void IOGfxDisplayGL2::onSizeChange(int w, int h) {
 	this->w = w;

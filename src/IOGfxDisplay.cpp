@@ -129,6 +129,23 @@ void IOGfxDisplay::toggleScreenKeyboard() {
 }
 
 
+void IOGfxDisplay::flipStretch(IOGfxSurface* backbuffer) {
+	if (backbuffer == NULL)
+		SDL_SetError("IOGfxDisplay::flipStretch: passed a NULL surface");
+	SDL_Rect dstrect;
+	centerScaledSurface(backbuffer, &dstrect);
+	flip(backbuffer, &dstrect);
+}
+
+/* Raw blit so we can extract texture buffer */
+void IOGfxDisplay::flipDebug(IOGfxSurface* backbuffer) {
+	if (backbuffer == NULL)
+		SDL_SetError("IOGfxDisplay::flipDebug: passed a NULL surface");
+	SDL_Rect dstrect = {0,0,backbuffer->w,backbuffer->h};
+	flip(backbuffer, &dstrect);
+}
+
+
 void IOGfxDisplay::centerScaledSurface(IOGfxSurface* surf, SDL_Rect* dst) {
 	double game_ratio = 1.0 * surf->w / surf->h;
 	double disp_ratio = 1.0 * w / h;
@@ -156,6 +173,7 @@ void IOGfxDisplay::surfToDisplayCoords(IOGfxSurface* backbuffer, int &x, int &y)
 	x = r.x + (fx / backbuffer->w) * r.w;
 	y = r.y + (fy / backbuffer->h) * r.h;
 }
+
 
 SDL_Surface* IOGfxDisplay::screenshot() {
 	SDL_Rect rect = { 0,0,w,h };
