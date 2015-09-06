@@ -33,12 +33,14 @@ typedef enum enum_font
     FONT_SYSTEM,
 } FONT_TYPE;
 
+// D-Mod-defined font colors
+extern struct SDL_Color font_colors[16];
+
 
 extern int gfx_fonts_init(void);
 extern void gfx_fonts_init_colors(void);
 extern void gfx_fonts_quit(void);
 extern void FONTS_SetTextColor(Uint8 r, Uint8 g, Uint8 b);
-extern void FONTS_SetTextColorIndex(int no);
 extern int print_text_wrap(char *str, rect * box, /*bool*/int hcenter, int calc_only, FONT_TYPE font_type);
 extern void print_text_wrap_debug(const char *str, int x, int y);
 

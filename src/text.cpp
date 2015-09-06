@@ -168,29 +168,24 @@ void text_draw(int h, double brightness) {
 		color = 15;
 	
 	
-	FONTS_SetTextColor(8, 14, 21);
-	print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
-	
-	rect_offset(&rcRect,-2,0);
-	print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
-	
-	rect_offset(&rcRect,1,1);
-	print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
-	
-	rect_offset(&rcRect,0,-2);
-	print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
-	
-	rect_offset(&rcRect,0,1);
-	
+	SDL_Color fg;
 	// support for custom colors
 	if (color >= 1 && color <= 15)
-		FONTS_SetTextColorIndex(color);
+		fg = font_colors[color];
 	else
-		FONTS_SetTextColor(255, 255, 255);
-	
-	if (spr[h].owner == 1200) {
-		print_text_wrap(cr, &rcRect, 0, 0, FONT_DIALOG);
-	} else {
-		print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
-	}
+		fg = {255,255,255};
+
+	SDL_Color bg = {8,14,21};
+	FONTS_SetTextColor(bg.r, bg.g, bg.b);
+	print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
+	rect_offset(&rcRect,-2,0);
+	print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
+	rect_offset(&rcRect,1,1);
+	print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
+	rect_offset(&rcRect,0,-2);
+	print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
+
+	FONTS_SetTextColor(fg.r, fg.g, fg.b);
+	rect_offset(&rcRect,0,1);
+	print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
 }

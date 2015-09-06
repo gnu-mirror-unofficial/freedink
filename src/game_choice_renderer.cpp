@@ -56,26 +56,25 @@ void game_choice_renderer_render() {
 			if (game_choice.newy != -5000)
 				rcRect.bottom = game_choice.newy + 15;
 
-			FONTS_SetTextColor(8, 14, 21);
-			print_text_wrap(game_choice.buffer, &rcRect, 1, 0, FONT_DIALOG);
-
-
 			/* Same of in text_draw, except for #1 and default */
 			// support for custom colors
-			if (game_choice.color >= 1 && game_choice.color <= 15)
-				FONTS_SetTextColorIndex(game_choice.color);
-			else
-				{
-					if (dversion >= 108)
-						FONTS_SetTextColor(255, 255, 255);
-					else
-						FONTS_SetTextColor(255, 255, 2);
-				}
+			SDL_Color fg;
+			if (game_choice.color >= 1 && game_choice.color <= 15) {
+				fg = font_colors[game_choice.color];
+			} else {
+				if (dversion >= 108)
+					fg = {255,255,255};
+				else
+					fg = {255,255,2};
+			}
 
+			SDL_Color bg = {8,14,21};
+			FONTS_SetTextColor(bg.r, bg.g, bg.b);
+			print_text_wrap(game_choice.buffer, &rcRect, 1, 0, FONT_DIALOG);
+
+			FONTS_SetTextColor(fg.r, fg.g, fg.b);
 			rect_offset(&rcRect, 1, 1);
 			print_text_wrap(game_choice.buffer, &rcRect, 1, 0, FONT_DIALOG);
-	  
-			FONTS_SetTextColor(8, 14, 21);
 		}
 
 	// Draw choices
@@ -84,23 +83,27 @@ void game_choice_renderer_render() {
 			//lets figure out where to draw this line
 			rect rcRect;
 			rect_set(&rcRect, sx, game_choice.choices_y, 463, x_depth + 100);
-			FONTS_SetTextColor(8, 14, 21);
+
+			SDL_Color fg;
+			if (i == game_choice.cur)
+				fg = {255,255,255};
+			else
+				fg = {255,255,2};
+
+			SDL_Color bg = {8,14,21};
+			FONTS_SetTextColor(bg.r, bg.g, bg.b);
 			print_text_wrap(game_choice.line[i], &rcRect, 1, 0, FONT_DIALOG);
 			rect_offset(&rcRect, -2, -2);
 			print_text_wrap(game_choice.line[i], &rcRect, 1, 0, FONT_DIALOG);
 
+			FONTS_SetTextColor(fg.r, fg.g, fg.b);
 			rect_offset(&rcRect, 1, 1);
-			if (i == game_choice.cur)
-				{
-					curyl = game_choice.choices_y-4;
-					curyr = game_choice.choices_y-4;
-					FONTS_SetTextColor(255, 255, 255);
-				}
-			else
-				{
-					FONTS_SetTextColor(255, 255, 2);
-				}
 			y_last = print_text_wrap(game_choice.line[i], &rcRect, 1, 0, FONT_DIALOG);
+
+			if (i == game_choice.cur) {
+				curyl = game_choice.choices_y-4;
+				curyr = game_choice.choices_y-4;
+			}
 			game_choice.choices_y += y_last;
 		}
 

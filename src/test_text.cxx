@@ -41,18 +41,14 @@ int last_text = 0;
 int* plast_text = &last_text;
 int dversion = 108;
 
-static int g_colorIndex = 0;
-static Uint8 g_r = 0;
-static Uint8 g_g = 0;
-static Uint8 g_b = 0;
+static SDL_Color g_c;
 void FONTS_SetTextColor(Uint8 r, Uint8 g, Uint8 b) {
-  g_r = r;
-  g_g = g;
-  g_b = b;
+  g_c.r = r;
+  g_c.g = g;
+  g_c.b = b;
 }
-void FONTS_SetTextColorIndex(int color) {
-  g_colorIndex = color;
-}
+SDL_Color font_colors[16];
+
 int print_text_wrap(char*, rect*, int, int, FONT_TYPE) { return 0; }
 int gfx_fonts_init(void) { return 1; }
 void gfx_fonts_init_colors() {}
@@ -70,6 +66,11 @@ public:
 	void setUp() {
 		live_sprites_manager_init();
 		truecolor_fade_brightness = 256;
+		for (int i = 0; i < 16; i++) {
+			font_colors[i].r = i;
+			font_colors[i].g = i;
+			font_colors[i].b = i;
+		}
 	}
 	void tearDown() {
 	}
@@ -106,15 +107,15 @@ public:
 		TS_ASSERT_EQUALS(add_sprite(0, 0, 0, 0, 0), 1);
 		TS_ASSERT_EQUALS(add_text_sprite("Fading", 0, 1, 0, 0), 2);
 		text_draw(2, 256);
-		TS_ASSERT_EQUALS(g_colorIndex, 14);
+		TS_ASSERT_EQUALS(g_c.r, 14);
 		TS_ASSERT_EQUALS(add_text_sprite("`2Fading", 0, 1, 0, 0), 3);
 		text_draw(3, 256);
-		TS_ASSERT_EQUALS(g_colorIndex, 2);
+		TS_ASSERT_EQUALS(g_c.r, 2);
 		
 		text_draw(2, 0);
-		TS_ASSERT_EQUALS(g_colorIndex, 15);
+		TS_ASSERT_EQUALS(g_c.r, 15);
 		text_draw(3, 0);
-		TS_ASSERT_EQUALS(g_colorIndex, 15);
+		TS_ASSERT_EQUALS(g_c.r, 15);
 	}
 
 	void test_damage_experience() {
@@ -124,13 +125,13 @@ public:
 		
 		spr[2].brain_parm = 1;
 		text_draw(2, 256);
-		TS_ASSERT_EQUALS(g_r, 255);
-		TS_ASSERT_EQUALS(g_g, 255);
-		TS_ASSERT_EQUALS(g_b, 255);
+		TS_ASSERT_EQUALS(g_c.r, 255);
+		TS_ASSERT_EQUALS(g_c.g, 255);
+		TS_ASSERT_EQUALS(g_c.b, 255);
 
 		spr[2].brain_parm = 5000;
 		spr[2].damage = 10;
 		text_draw(2, 256);
-		TS_ASSERT_EQUALS(g_colorIndex, 14);
+		TS_ASSERT_EQUALS(g_c.r, 14);
 	}
 };
