@@ -120,7 +120,7 @@ public:
     dinkc_init();
     dinkc_bindings_init();
     
-    spr[1].active = 1;  // player
+    spr[1].active = true;  // player
     spr[1].custom = new std::map<std::string, int>;  // mode = 0
     int sprite = add_sprite(0,0,0,0,0);
     TS_ASSERT_EQUALS(sprite, 2);

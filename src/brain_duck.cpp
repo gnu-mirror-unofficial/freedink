@@ -28,8 +28,8 @@
 	return(/*false*/0);
 }
 
-void kill_sprite_all (int sprite) {
-	spr[sprite].active = /*false*/0;
+void kill_sprite_all(int sprite) {
+	lsm_remove_sprite(sprite);
 	kill_text_owned_by(sprite);
 	kill_scripts_owned_by(sprite);
 }

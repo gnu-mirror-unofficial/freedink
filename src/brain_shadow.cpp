@@ -7,9 +7,9 @@
 
 void shadow_brain(int h)
 {
-	if (spr[spr[h].brain_parm].active == /*false*/0)
+	if (!spr[spr[h].brain_parm].active)
 	{
-		spr[h].active = /*false*/0;
+		lsm_remove_sprite(h);
 		return;
 	}
 	

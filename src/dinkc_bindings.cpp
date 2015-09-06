@@ -78,7 +78,7 @@ int change_sprite(int h, int val, int *change)
       return -1;
     }
 
-  if (spr[h].active == 0)
+  if (!spr[h].active)
     return -1;
 
   if (val != -1)
@@ -96,7 +96,7 @@ int change_sprite_noreturn(int h, int val, int* change)
   //Msg("Searching sprite %s with val %d.  Cur is %d", h, val, *change);
   if (h < 0
       || h >= MAX_SPRITES_AT_ONCE
-      || spr[h].active == 0)
+      || !spr[h].active)
     return -1;
 
   *change = val;
@@ -174,7 +174,10 @@ int change_edit_char(int h, int val, unsigned char* change)
 void dc_sp_active(int script, int* yield, int* preturnint, int sprite, int sparg)
 {
   RETURN_NEG_IF_BAD_SPRITE(sprite);
-  *preturnint = change_sprite(sprite, sparg, &spr[sprite].active);
+  int val = (int)spr[sprite].active;
+  *preturnint = change_sprite(sprite, sparg, &val);
+  if (!val)
+    lsm_remove_sprite(sprite);
 }
 
 void dc_sp_attack_hit_sound(int script, int* yield, int* preturnint, int sprite, int sparg)
@@ -1436,7 +1439,7 @@ void dc_kill_shadow(int script, int* yield, int* preturnint,
     {
       if (spr[jj].brain == 15 && spr[jj].brain_parm == sprite)
 	{
-	  spr[jj].active = 0;
+      lsm_remove_sprite(jj);
 	}
     }
 }
@@ -1475,7 +1478,7 @@ void dc_get_sprite_with_this_brain(int script, int* yield, int* preturnint,
   int i;
   for (i = 1; i <= last_sprite_created; i++)
     {
-      if (spr[i].brain == brain && i != sprite_ignore && spr[i].active == 1)
+      if (spr[i].brain == brain && i != sprite_ignore && spr[i].active)
 	{
 	  log_debug("Ok, sprite with brain %d is %d", brain, i);
 	  *preturnint = i;
@@ -1492,7 +1495,7 @@ void dc_get_rand_sprite_with_this_brain(int script, int* yield, int* preturnint,
   int nb_matches = 0;
   for (i = 1; i <= last_sprite_created; i++)
     {
-      if (spr[i].brain == brain && i != sprite_ignore && spr[i].active == 1)
+      if (spr[i].brain == brain && i != sprite_ignore && spr[i].active)
 	nb_matches++;
     }
   if (nb_matches == 0)
@@ -1507,7 +1510,7 @@ void dc_get_rand_sprite_with_this_brain(int script, int* yield, int* preturnint,
   int cur_match = 0;
   for (ii = 1; ii <= last_sprite_created; ii++)
     {
-      if (spr[ii].brain == brain && ii != sprite_ignore && spr[ii].active == 1)
+      if (spr[ii].brain == brain && ii != sprite_ignore && spr[ii].active)
 	{
 	  cur_match++;
 	  if (cur_match == mypick)
@@ -1632,7 +1635,7 @@ void dc_sp_clip_top(int script, int* yield, int* preturnint, int sprite, int spa
 void dc_sp_custom(int script, int* yield, int* preturnint, char* key, int sprite, int val)
 {
   RETURN_NEG_IF_BAD_SPRITE(sprite);
-  if (spr[sprite].active == 0)
+  if (!spr[sprite].active)
     {
       *preturnint = -1;
     }
@@ -1937,7 +1940,7 @@ void dc_get_next_sprite_with_this_brain(int script, int* yield, int* preturnint,
     for (; i <= last_sprite_created; i++)
       {
 	if ((spr[i].brain == brain) && (i != sprite_ignore))
-	  if (spr[i].active == 1)
+	  if (spr[i].active)
 	    {
 	      log_debug("Ok, sprite with brain %d is %d", brain, i);
 	      *preturnint = i;

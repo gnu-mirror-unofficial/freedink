@@ -27,7 +27,7 @@ void one_time_brain(int h)
 	if (spr[h].seq == 0)
 	{
 	  draw_sprite_game(IOGFX_background, h);
-		spr[h].active = /*false*/0;			
+		lsm_remove_sprite(h);
 		return;
 	}
 	
@@ -54,7 +54,7 @@ void one_time_brain_for_real(int h)
 	if (spr[h].seq == 0)
 	{
 		
-		spr[h].active = /*false*/0;			
+		lsm_remove_sprite(h);
 		return;
 	}
 	if (spr[h].dir > 0)

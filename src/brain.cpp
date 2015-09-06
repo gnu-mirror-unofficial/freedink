@@ -261,7 +261,7 @@ void process_follow(int h)
 		return;
 	}
 	
-	if (spr[spr[h].follow].active == /*false*/0)
+	if (!spr[spr[h].follow].active)
 	{
 		log_debug("Killing follow");
 		spr[h].follow = 0;

@@ -44,7 +44,7 @@ struct sp
   int pseq;
   int pframe;
   
-  /*BOOL*/int active;
+  bool active;
   int attrib;
   unsigned long wait;
   int timing;

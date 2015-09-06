@@ -551,7 +551,7 @@ void update_sound(void)
       if (channelinfo[i].repeat && (channelinfo[i].owner != 0))
 	{
 	  if ((spr[channelinfo[i].owner].sound == 0)
-	      || (spr[channelinfo[i].owner].active == /*false*/0) )
+	      || (!spr[channelinfo[i].owner].active) )
 	    {
 	      Mix_HaltChannel(i);
 	      channelinfo[i].owner = 0;
@@ -568,7 +568,7 @@ void update_sound(void)
 	{
 	  if (channelinfo[i].owner != 0)
 	    {
-	      if (spr[channelinfo[i].owner].active == /*false*/0)
+	      if (!spr[channelinfo[i].owner].active)
 		{
 		  Mix_HaltChannel(i);
 		}

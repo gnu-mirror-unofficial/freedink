@@ -504,7 +504,7 @@ void game_place_sprites()
 		    add_hardness(sprite, 1); else */
 		  add_hardness(sprite, 100 + j);
 		}
-	      spr[sprite].active = 0;
+	      lsm_remove_sprite(sprite);
 	    }
 
 	  if (cur_ed_screen.sprite[j].type == 1)
@@ -622,7 +622,7 @@ void game_place_sprites_background()
 
 	      check_sprite_status_full(sprite);
 	      draw_sprite_game(IOGFX_background, sprite);
-	      spr[sprite].active = 0;
+	      lsm_remove_sprite(sprite);
 	    }
 	}
     }
@@ -667,7 +667,7 @@ void fill_back_sprites()
 		    add_hardness(sprite, 1); else */
 		  add_hardness(sprite,100+j);
 		}
-	      spr[sprite].active = 0;
+	      lsm_remove_sprite(sprite);
 	    }
 	}
     }
@@ -802,7 +802,7 @@ void apply_mode0() {
 	spr[1].base_walk = -1;
 	spr[1].size = 100;
 	spr[1].base_hit = 100;
-	spr[1].active = /*TRUE*/1;
+	spr[1].active = true;
 	spr[1].custom = new std::map<std::string, int>;
 
 	SDL_WarpMouseInWindow(g_display->window, spr[1].x, spr[1].y);

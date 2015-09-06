@@ -42,16 +42,29 @@ bool lsm_isValidSprite(int sprite) {
 	return (sprite > 0 && sprite < MAX_SPRITES_AT_ONCE);
 }
 
+void lsm_remove_sprite(int sprite) {
+	if (!lsm_isValidSprite(sprite))
+		return;
+
+	spr[sprite].active = false;
+	if (spr[sprite].custom != NULL) {
+		delete spr[sprite].custom;
+		spr[sprite].custom = NULL;
+	}
+
+	// if cached text sprite -> free
+}
+
 int add_sprite(int x1, int y, int brain,int pseq, int pframe )
 {
   int x;
     for (x = 1; x < MAX_SPRITES_AT_ONCE; x++)
         {
-                if (spr[x].active == /*FALSE*/0)
+                if (!spr[x].active)
                 {
                         memset(&spr[x], 0, sizeof(spr[x]));
 
-                        spr[x].active = /*TRUE*/1;
+                        spr[x].active = true;
                         spr[x].x = x1;
                         spr[x].y = y;
                         spr[x].my = 0;
@@ -114,12 +127,12 @@ int add_sprite_dumb(int x1, int y, int brain,int pseq, int pframe,int size )
   int x;
     for (x = 1; x < MAX_SPRITES_AT_ONCE; x++)
         {
-                if (spr[x].active == /*FALSE*/0)
+                if (!spr[x].active)
                 {
                         memset(&spr[x], 0, sizeof(spr[x]));
 
                         //Msg("Making sprite %d.",x);
-                        spr[x].active = /*TRUE*/1;
+                        spr[x].active = true;
                         spr[x].x = x1;
                         spr[x].y = y;
                         spr[x].my = 0;
@@ -224,7 +237,7 @@ static bool kill_highest_nonlive_sprite() {
 	}
 	
 	if (highest_sprite > 1) {
-		spr[highest_sprite].active = /*FALSE*/0;
+		lsm_remove_sprite(highest_sprite);
 		if (setlast)
 			last_sprite_created = highest_sprite - 1;
 		return true;
@@ -257,7 +270,7 @@ void kill_text_owned_by(int sprite)
   for (i = 1; i < MAX_SPRITES_AT_ONCE; i++)
     {
       if (spr[i].active && spr[i].brain == 8 && spr[i].owner == sprite)
-	spr[i].active = /*false*/0;
+    	  lsm_remove_sprite(i);
     }
 }
 

@@ -89,7 +89,7 @@ public:
     
     screenlock = 0;
     walk_off_screen = 0;
-    spr[1].active = 1;
+    spr[1].active = true;
     
     *pplayer_map = 33;
     spr[1].x = -1;

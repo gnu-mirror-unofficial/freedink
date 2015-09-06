@@ -74,7 +74,7 @@ void people_brain(int h)
 					spr[h].brain = 0;
 					change_dir_to_diag(&spr[h].dir);
 					add_kill_sprite(h);
-					spr[h].active = /*false*/0;
+					lsm_remove_sprite(h);
 				}
 				return;
 				

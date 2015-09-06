@@ -295,7 +295,7 @@ void updateFrame() {
 		
 		live_sprite_set_kill_start(h, thisTickCount);
 		if (live_sprite_is_expired(h, thisTickCount)) {
-			spr[h].active = /*false*/0;
+			lsm_remove_sprite(h);
 			get_last_sprite();
 			if (spr[h].say_stop_callback > 0)
 				run_script(spr[h].say_stop_callback);

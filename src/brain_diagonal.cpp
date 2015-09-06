@@ -18,7 +18,7 @@ void process_target(int h)
 		return;
 	}
 	
-	if (spr[spr[h].target].active == /*false*/0)
+	if (!spr[spr[h].target].active)
 	{
 		log_debug("Killing target");
 		spr[h].target = 0;
@@ -62,7 +62,7 @@ void pill_brain(int h)
 					if (spr[h].dir == 0) spr[h].dir = 3;
 					change_dir_to_diag(&spr[h].dir);
 					add_kill_sprite(h);
-					spr[h].active = /*false*/0;
+					lsm_remove_sprite(h);
 				}
 				return;
 				

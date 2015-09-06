@@ -11,7 +11,7 @@ void scale_brain(int h)
 	
 	if (spr[h].size == spr[h].brain_parm)
 	{
-		spr[h].active = /*false*/0;
+		lsm_remove_sprite(h);
 		
 		
 		return;

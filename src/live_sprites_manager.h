@@ -33,6 +33,7 @@ extern int last_sprite_created;
 extern void live_sprites_manager_init();
 
 extern bool lsm_isValidSprite(int sprite);
+extern void lsm_remove_sprite(int sprite);
 
 extern int add_sprite(int x1, int y, int brain,int pseq, int pframe );
 extern int add_sprite_dumb(int x1, int y, int brain,int pseq, int pframe,int size);

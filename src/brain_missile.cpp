@@ -75,7 +75,7 @@ void missile_brain(int h, /*bool*/int repeat)
 		      else
 			SoundPlayEffect( spr[h].attack_hit_sound,spr[h].attack_hit_sound_speed, 0 ,0,0);
 		      
-		      spr[h].active = 0;
+		      lsm_remove_sprite(h);
 		    }
 		  
 		  //run missile end	
@@ -98,15 +98,15 @@ void missile_brain(int h, /*bool*/int repeat)
 	  else
 	    SoundPlayEffect(spr[h].attack_hit_sound,spr[h].attack_hit_sound_speed, 0, 0, 0);
 	  
-	  spr[h].active = 0;
+	  lsm_remove_sprite(h);
 	  return;
 	}
     }
   
-  if (spr[h].x > 1000) spr[h].active = /*false*/0;
-  if (spr[h].y > 700) spr[h].active = /*false*/0;
-  if (spr[h].y < -500) spr[h].active = /*false*/0;
-  if (spr[h].x < -500) spr[h].active = /*false*/0;
+  if (spr[h].x > 1000) lsm_remove_sprite(h);
+  if (spr[h].y > 700) lsm_remove_sprite(h);
+  if (spr[h].y < -500) lsm_remove_sprite(h);
+  if (spr[h].x < -500) lsm_remove_sprite(h);
   
   //did we hit anything that can die?
   
@@ -189,6 +189,7 @@ void missile_brain(int h, /*bool*/int repeat)
 void missile_brain_expire(int h)
 {
 	missile_brain(h, /*false*/0);
-	if (spr[h].seq == 0) spr[h].active = 0;
+	if (spr[h].seq == 0)
+		lsm_remove_sprite(h);
 	
 }

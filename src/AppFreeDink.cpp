@@ -42,7 +42,7 @@ void freedink_update_mouse(SDL_Event* ev) {
 
 	/* Players controls mouse */
 	if ((mode == 1 || keep_mouse)
-		&& (spr[1].active == 1 && spr[1].brain == 13))
+		&& (spr[1].active && spr[1].brain == 13))
 		{
 			spr[1].x = ev->motion.x;
 			spr[1].y = ev->motion.y;

@@ -62,7 +62,7 @@ public:
 		
 		// Can move on its own
 		// reproducibly
-		spr[3].active = 1;
+		spr[3].active = true;
 		spr[3].move_active = 1;
 		spr[3].move_dir = 6;
 		spr[3].move_num = 1;
@@ -80,7 +80,7 @@ public:
 		TS_ASSERT_EQUALS(spr[3].x, 1);
 		
 		// Shouldn't crash
-		spr[3].active = 1;
+		spr[3].active = true;
 		spr[3].x = 0;
 		spr[3].owner = 1200;
 		TS_ASSERT_EQUALS(spr[3].active, 1);
@@ -89,7 +89,7 @@ public:
 		TS_ASSERT_EQUALS(spr[3].active, 0);
 
 		// Shouldn't crash
-		spr[3].active = 1;
+		spr[3].active = true;
 		spr[3].x = 0;
 		spr[3].owner = 100000;
 		TS_ASSERT_EQUALS(spr[3].active, 1);

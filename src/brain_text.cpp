@@ -9,7 +9,7 @@ void text_brain(int h)
 {
 	if (!lsm_isValidSprite(h)
 		|| (spr[h].owner != 0 && spr[h].owner != 1000 && !lsm_isValidSprite(spr[h].owner))) {
-		spr[h].active = /*false*/0;
+		lsm_remove_sprite(h);
 		return;
 	}
 
@@ -19,8 +19,8 @@ void text_brain(int h)
 		// Normal text sprite
 
 		// Kill text if owner was killed
-		if (spr[spr[h].owner].active == /*false*/0) {
-			spr[h].active = /*false*/0;
+		if (!spr[spr[h].owner].active) {
+			lsm_remove_sprite(h);
 			return;
 		}
 		//give this text the cords from it's owner sprite

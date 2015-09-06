@@ -359,7 +359,7 @@ void place_sprites()
 		  else add_hardness(sprite, 100 + j);
 		}
 	      
-	      spr[sprite].active = 0;
+	      lsm_remove_sprite(sprite);
 	    }
 	  
 	  if (cur_ed_screen.sprite[j].type == 1)
@@ -2343,7 +2343,7 @@ int gui_logic(int h) {
 
 					// if (ddrval != DD_OK) dderror(ddrval);
 
-					spr[sprite].active = /*false*/0;
+					lsm_remove_sprite(sprite);
 
 				}
 
@@ -2413,10 +2413,10 @@ int gui_logic(int h) {
 
 									cur_ed_screen.sprite[uu].active = /*false*/0; //erase sprite
 									draw_screen_editor();
-									spr[sprite].active = /*false*/0;
+									lsm_remove_sprite(sprite);
 									break;
 								}
-								spr[sprite].active = /*false*/0;
+								lsm_remove_sprite(sprite);
 
 							}
 					}
@@ -2826,9 +2826,9 @@ int gui_logic(int h) {
 			draw_minimap();
 			spr[1].que = 20000;
 			g_editorMode = EDITOR_MODE_MINIMAP;
-			spr[2].active = /*FALSE*/0;
-			spr[3].active = /*FALSE*/0;
-			spr[4].active = /*FALSE*/0;
+			spr[2].active = false;
+			spr[3].active = false;
+			spr[4].active = false;
 		}
 
 		if (g_editorMode == EDITOR_MODE_INIT) return 0;
@@ -4215,7 +4215,7 @@ void AppFreeDinkedit::logic(void)
 
 		  get_box(sprite2, &box_crap, &box_real, skip_screen_clipping());
 
-		  spr[sprite2].active = /*false*/0;
+		  lsm_remove_sprite(sprite2);
 
 		  //box_crap.top = box_crap.sprite[j].y - 25;
 		  box_crap.bottom = box_crap.top + 50;
@@ -4632,7 +4632,7 @@ void AppFreeDinkedit::init()
     int i = 1;
     for (; i <= 4; i++)
       {
-	spr[i].active = 0;
+	spr[i].active = false;
 	spr[i].x = 10;
 	spr[i].y = 10;
 	spr[i].my = (rand() % 3)+1;
@@ -4646,7 +4646,7 @@ void AppFreeDinkedit::init()
       }
   }
 
-  spr[1].active = /*TRUE*/1;
+  spr[1].active = true;
   spr[1].x = 0;
   spr[1].y = 0;
   spr[1].speed = 20;

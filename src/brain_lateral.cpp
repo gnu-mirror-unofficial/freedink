@@ -36,7 +36,7 @@ void dragon_brain(int h)
 				if (spr[h].brain == 10)
 				{
 					add_kill_sprite(h);
-					spr[h].active = /*false*/0;
+					lsm_remove_sprite(h);
 					
 				}
 				
