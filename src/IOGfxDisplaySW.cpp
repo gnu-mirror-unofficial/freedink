@@ -219,8 +219,9 @@ void IOGfxDisplaySW::flip(IOGfxSurface* backbuffer, SDL_Rect* dstrect) {
 		source = rgb_screen;
 	}
 
-	SDL_UpdateTexture(render_texture, NULL, source->pixels, source->pitch);
-	SDL_RenderCopy(renderer, render_texture, NULL, dstrect);
+	// TODO: implement linear interpolation for all stretched renders
+	SDL_UpdateTexture(render_texture_debug, NULL, source->pixels, source->pitch);
+	SDL_RenderCopy(renderer, render_texture_debug, NULL, dstrect);
 	SDL_RenderPresent(renderer);
 }
 
