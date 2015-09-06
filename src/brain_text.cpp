@@ -8,25 +8,25 @@
 void text_brain(int h)
 {
 	if (!lsm_isValidSprite(h)
-		|| (spr[h].owner != 0 && spr[h].owner != 1000 && !lsm_isValidSprite(spr[h].owner))) {
+		|| (spr[h].text_owner != 0 && spr[h].text_owner != 1000 && !lsm_isValidSprite(spr[h].text_owner))) {
 		lsm_remove_sprite(h);
 		return;
 	}
 
 	// Select text type
 	// Note: scripters can make hybrids, e.g. narrator (owner=1000) sprite that moves
-	if ((spr[h].damage == -1) && (spr[h].owner != 1000)) {
+	if ((spr[h].damage == -1) && (spr[h].text_owner != 1000)) {
 		// Normal text sprite
 
 		// Kill text if owner was killed
-		if (!spr[spr[h].owner].active) {
+		if (!spr[spr[h].text_owner].active) {
 			lsm_remove_sprite(h);
 			return;
 		}
 		//give this text the cords from it's owner sprite
 		// strength/defense = text sprite center
-		spr[h].x = spr[spr[h].owner].x - spr[h].strength;
-		spr[h].y = spr[spr[h].owner].y - spr[h].defense;
+		spr[h].x = spr[spr[h].text_owner].x - spr[h].strength;
+		spr[h].y = spr[spr[h].text_owner].y - spr[h].defense;
 		
 		if (spr[h].x < 1) spr[h].x = 1;
 		if (spr[h].y < 1) spr[h].y = 1;

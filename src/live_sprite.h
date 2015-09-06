@@ -29,6 +29,8 @@
 #include <map>
 #include <string>
 
+#include "IOGfxSurface.h"
+
 struct sp
 {
   int x,moveman;
@@ -75,7 +77,9 @@ struct sp
   Uint32 kill_start; /* birth */
   int script_num;
   char text[200];
-  int owner; /* if text sprite, sprite that is saying it */
+  int text_owner; /* if text sprite, sprite that is saying it */
+  IOGfxSurface* text_cache;
+  SDL_Color text_cache_color;
   int script;
   int sound;
   int say_stop_callback; /* callback from a say_stop*() DinkC function */

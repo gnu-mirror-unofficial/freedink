@@ -25,7 +25,13 @@
 
 #include "SDL_ttf.h"
 #include "rect.h"
+#include <vector>
 
+struct TextCommand {
+	SDL_Surface* img;
+	SDL_Rect src;
+	SDL_Rect dst;
+};
 
 typedef enum enum_font
 {
@@ -42,6 +48,8 @@ extern void gfx_fonts_init_colors(void);
 extern void gfx_fonts_quit(void);
 extern void FONTS_SetTextColor(Uint8 r, Uint8 g, Uint8 b);
 extern int print_text_wrap(char *str, rect * box, /*bool*/int hcenter, int calc_only, FONT_TYPE font_type);
+extern void print_text_cmds(std::vector<TextCommand>* cmds);
+extern int print_text_wrap_getcmds(char *str, rect * box, /*bool*/int hcenter, int calc_only, FONT_TYPE font_type, std::vector<TextCommand>* cmds);
 extern void print_text_wrap_debug(const char *str, int x, int y);
 
 

@@ -320,15 +320,9 @@ void FONTS_SetTextColor(Uint8 r, Uint8 g, Uint8 b) {
 }
 
 
-static void
-print_text (TTF_Font * font, char *str, int x, int y, int w, SDL_Color /*&*/color,
-	    /*bool*/int hcenter) {
-	int new_x;
-	SDL_Surface *tmp;
-	SDL_Rect dst;
-
+static SDL_Surface* print_text(TTF_Font * font, char *str, SDL_Color /*&*/color, /*bool*/int hcenter) {
 	if (strlen (str) == 0)
-		return;
+		return NULL;
 
 	if (!truecolor) {
 		// Text color is using the physical palette (no palette-switching effect)
@@ -340,30 +334,16 @@ print_text (TTF_Font * font, char *str, int x, int y, int w, SDL_Color /*&*/colo
 
 	/* Transparent, low quality - closest to the original engine. */
 	/* Also we do need a monochrome rendering for palette support above */
-	tmp = TTF_RenderUTF8_Solid(font, str, color);
+	SDL_Surface* tmp = TTF_RenderUTF8_Solid(font, str, color);
 	if (tmp == NULL) {
 		log_error("Error rendering text: %s; font is %p", TTF_GetError(), font);
-		return;
+		return NULL;
 	}
 
 	if (!truecolor)
 		tmp = ImageLoader::convertToPaletteFormat(tmp);
 
-	new_x = x;
-	if (hcenter) {
-		new_x += w / 2;
-		new_x -= tmp->w / 2;
-	}
-	dst.x = new_x; dst.y = y;
-
-	SDL_Rect src;
-	src.x = src.y = 0;
-	src.w = min(w, tmp->w); // truncate text if outside the box
-	src.h = tmp->h;
-	IOGfxSurface* tmp2 = g_display->upload(tmp);
-	IOGFX_backbuffer->blit(tmp2, &src, &dst);
-
-	delete tmp2;
+	return tmp;
 }
 
 /**
@@ -469,67 +449,95 @@ process_text_for_wrapping (TTF_Font *font, char *str, int max_len)
  * calc_only: don't actually draw text on screen, but still compute
  * the text height
  */
-int
-print_text_wrap (char *str, rect* box,
-		 /*bool*/int hcenter, int calc_only, FONT_TYPE font_type)
-{
-  int x, y, res_height;
-  char *tmp, *pline, *pc;
-  int this_is_last_line = 0;
-  //  SDL_Color color = {0, 0, 0};
-  SDL_Color color = text_color;
-  TTF_Font *font;
-  int lineskip = 0;
+int print_text_wrap_getcmds(char *str, rect* box,
+		/*bool*/int hcenter, int calc_only, FONT_TYPE font_type, std::vector<TextCommand>* cmds) {
+	int x, y, res_height;
+	char *tmp, *pline, *pc;
+	int this_is_last_line = 0;
+	SDL_Color color = text_color;
+	TTF_Font *font;
+	int lineskip = 0;
 
-  if (font_type == FONT_DIALOG)
-    font = dialog_font;
-  else if (font_type == FONT_SYSTEM)
-    font = system_font;
-  else
-    {
-      log_error("Error: unknown font type %d", font_type);
-      exit(1);
-    }
+	if (font_type == FONT_DIALOG)
+		font = dialog_font;
+	else if (font_type == FONT_SYSTEM)
+		font = system_font;
+	else {
+		log_error("Error: unknown font type %d", font_type);
+		exit(1);
+	}
 
-  /* Workaround: with vgasys.fon, lineskip is always 1. We'll use it's
-     height instead. */
-  lineskip = TTF_FontLineSkip(font);
-  if (lineskip == 1)
-    lineskip = TTF_FontHeight(font);
+	/* Workaround: with vgasys.fon, lineskip is always 1. We'll use it's
+	   height instead. */
+	lineskip = TTF_FontLineSkip(font);
+	if (lineskip == 1)
+		lineskip = TTF_FontHeight(font);
 
-  tmp = strdup(str);
-  process_text_for_wrapping(font, tmp, box->right - box->left);
+	tmp = strdup(str);
+	process_text_for_wrapping(font, tmp, box->right - box->left);
 
-  x = box->left;
-  y = box->top;
+	x = box->left;
+	y = box->top;
 
-  res_height = 0;
-  pline = pc = tmp;
-  this_is_last_line = 0;
-  while (!this_is_last_line)
-    {
-      while (*pc != '\n' && *pc != '\0')
-	pc++;
+	res_height = 0;
+	pline = pc = tmp;
+	this_is_last_line = 0;
+	while (!this_is_last_line) {
+		while (*pc != '\n' && *pc != '\0')
+			pc++;
 
-      if (*pc == '\0')
-	this_is_last_line = 1;
-      else
-	/* Terminate the current line to feed it to print_text */
-	*pc= '\0';
+		if (*pc == '\0')
+			this_is_last_line = 1;
+		else
+			/* Terminate the current line to feed it to print_text */
+			*pc= '\0';
 
-      if (!calc_only)
-	print_text(font, pline, x, y + res_height, (box->right - box->left), color, hcenter);
+		if (!calc_only) {
+			SDL_Surface* img = print_text(font, pline, color, hcenter);
+			if (img != NULL) {
+				int w = box->right - box->left;
 
-      res_height += lineskip;
+				SDL_Rect src;
+				src.x = src.y = 0;
+				src.w = min(w, img->w); // truncate text if outside the box
+				src.h = img->h;
 
-      /* advance to next line*/
-      pc++;
-      pline = pc;
-    }
-  free(tmp);
-  return res_height;
+				SDL_Rect dst;
+				dst.x = x;
+				if (hcenter) {
+					dst.x += w / 2;
+					dst.x -= img->w / 2;
+				}
+				dst.y = y + res_height;
+				TextCommand cmd = {img, src, dst};
+				cmds->push_back(cmd);
+			}
+		}
+
+		res_height += lineskip;
+
+		/* advance to next line*/
+		pc++;
+		pline = pc;
+	}
+	free(tmp);
+	return res_height;
 }
 
+void print_text_cmds(std::vector<TextCommand>* cmds) {
+	for (std::vector<TextCommand>::iterator it = cmds->begin(); it != cmds->end(); ++it) {
+		IOGfxSurface* surf = g_display->upload(it->img);
+		IOGFX_backbuffer->blit(surf, &it->src, &it->dst);
+		delete surf;
+	}
+}
+int print_text_wrap(char *str, rect* box,
+		/*bool*/int hcenter, int calc_only, FONT_TYPE font_type) {
+	  std::vector<TextCommand> cmds;
+	  int res = print_text_wrap_getcmds(str, box, hcenter, calc_only, font_type, &cmds);
+	  print_text_cmds(&cmds);
+	  return res;
+}
 
 /**
  * Display text for debug mode (with a white background)
@@ -618,14 +626,17 @@ void Say(char thing[500], int px, int py) {
 	SDL_Color fg = {255,255,0};
 	SDL_Color bg = {8,14,21};
 
+	std::vector<TextCommand> cmds;
 	FONTS_SetTextColor(bg.r, bg.g, bg.b);
-	print_text_wrap(thing, &rcRect, 0, 0, FONT_DIALOG);
+	print_text_wrap_getcmds(thing, &rcRect, 0, 0, FONT_DIALOG, &cmds);
 	rect_offset(&rcRect,-2,-2);
-	print_text_wrap(thing, &rcRect, 0, 0, FONT_DIALOG);
+	print_text_wrap_getcmds(thing, &rcRect, 0, 0, FONT_DIALOG, &cmds);
 
 	FONTS_SetTextColor(fg.r, fg.g, fg.b);
 	rect_offset(&rcRect,1,1);
-	print_text_wrap(thing, &rcRect, 0, 0, FONT_DIALOG);
+	print_text_wrap_getcmds(thing, &rcRect, 0, 0, FONT_DIALOG, &cmds);
+
+	print_text_cmds(&cmds);
 }
 
 

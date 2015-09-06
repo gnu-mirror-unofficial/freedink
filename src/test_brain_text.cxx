@@ -45,14 +45,14 @@ public:
 		spr[3].damage = -1;
 
 		// Follows its owner
-		spr[3].owner = 2;
+		spr[3].text_owner = 2;
 		spr[3].x = 0;
 		TS_ASSERT_EQUALS(spr[2].active, 1);
 		text_brain(3);
 		TS_ASSERT_EQUALS(spr[3].x, 500);
 
 		// Killed with its owner
-		spr[3].owner = 10;
+		spr[3].text_owner = 10;
 		TS_ASSERT_EQUALS(spr[10].active, 0);
 		spr[3].x = 0;
 		TS_ASSERT_EQUALS(spr[3].active, 1);
@@ -70,19 +70,19 @@ public:
 		base_timing = 4;
 		
 		spr[3].x = 0;
-		spr[3].owner = 1000;
+		spr[3].text_owner = 1000;
 		text_brain(3);
 		TS_ASSERT_EQUALS(spr[3].x, 1);
 
 		spr[3].x = 0;
-		spr[3].owner = 1000;
+		spr[3].text_owner = 1000;
 		text_brain(3);
 		TS_ASSERT_EQUALS(spr[3].x, 1);
 		
 		// Shouldn't crash
 		spr[3].active = true;
 		spr[3].x = 0;
-		spr[3].owner = 1200;
+		spr[3].text_owner = 1200;
 		TS_ASSERT_EQUALS(spr[3].active, 1);
 		text_brain(3);
 		TS_ASSERT_EQUALS(spr[3].x, 0);
@@ -91,7 +91,7 @@ public:
 		// Shouldn't crash
 		spr[3].active = true;
 		spr[3].x = 0;
-		spr[3].owner = 100000;
+		spr[3].text_owner = 100000;
 		TS_ASSERT_EQUALS(spr[3].active, 1);
 		text_brain(3);
 		TS_ASSERT_EQUALS(spr[3].x, 0);

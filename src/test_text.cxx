@@ -31,7 +31,7 @@
 #include "gfx.h"
 #include "gfx_fonts.h"
 #include "IOGfxDisplay.h"
-SDL_Surface *GFX_backbuffer;
+IOGfxSurface *IOGFX_backbuffer;
 IOGfxDisplay* g_display = NULL;
 
 extern int add_text_sprite(char* text, int script, int sprite_owner, int mx, int my);
@@ -49,7 +49,9 @@ void FONTS_SetTextColor(Uint8 r, Uint8 g, Uint8 b) {
 }
 SDL_Color font_colors[16];
 
-int print_text_wrap(char*, rect*, int, int, FONT_TYPE) { return 0; }
+int print_text_wrap(char*, rect*, int, int, FONT_TYPE, std::vector<TextCommand>* imgs) { return 0; }
+int print_text_wrap_getcmds(char *str, rect * box, /*bool*/int hcenter, int calc_only, FONT_TYPE font_type, std::vector<TextCommand>* cmds) { return 0; }
+void print_text_cmds(std::vector<TextCommand>* cmds) {}
 int gfx_fonts_init(void) { return 1; }
 void gfx_fonts_init_colors() {}
 void gfx_fonts_quit() {}
@@ -82,7 +84,7 @@ public:
 
 		TS_ASSERT_EQUALS(add_text_sprite("Hi", 123, 2, 0, 0), 3);
 		TS_ASSERT_EQUALS(spr[3].text, "Hi");
-		TS_ASSERT_EQUALS(spr[3].owner, 2);
+		TS_ASSERT_EQUALS(spr[3].text_owner, 2);
 		TS_ASSERT_EQUALS(spr[3].script, 123);
 		TS_ASSERT_EQUALS(spr[3].damage, -1);
 		TS_ASSERT_EQUALS(spr[3].kill_ttl, 2700);

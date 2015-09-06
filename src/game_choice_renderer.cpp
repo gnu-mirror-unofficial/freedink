@@ -68,6 +68,8 @@ void game_choice_renderer_render() {
 					fg = {255,255,2};
 			}
 
+			std::vector<TextCommand> cmds;
+
 			SDL_Color bg = {8,14,21};
 			FONTS_SetTextColor(bg.r, bg.g, bg.b);
 			print_text_wrap(game_choice.buffer, &rcRect, 1, 0, FONT_DIALOG);
@@ -89,6 +91,8 @@ void game_choice_renderer_render() {
 				fg = {255,255,255};
 			else
 				fg = {255,255,2};
+
+			std::vector<TextCommand> cmds;
 
 			SDL_Color bg = {8,14,21};
 			FONTS_SetTextColor(bg.r, bg.g, bg.b);

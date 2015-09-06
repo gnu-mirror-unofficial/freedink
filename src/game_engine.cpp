@@ -812,7 +812,7 @@ void apply_mode0() {
 	spr[version_text].noclip = 1;
 	strcpy(spr[version_text].text, dversion_string);
 	spr[version_text].damage = -1;
-	spr[version_text].owner = 1000;
+	spr[version_text].text_owner = 1000;
 
 	int scr = load_script("START", 1000);
 	if (locate(scr, "MAIN") == /*false*/0) {

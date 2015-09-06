@@ -57,7 +57,7 @@ int add_text_sprite(char* text, int script, int sprite_owner, int mx, int my)
   if (spr[tsprite].kill_ttl < TEXT_MIN)
     spr[tsprite].kill_ttl = TEXT_MIN;
   spr[tsprite].damage = -1;
-  spr[tsprite].owner = sprite_owner;
+  spr[tsprite].text_owner = sprite_owner;
   spr[tsprite].hard = 1;
   spr[tsprite].script = script;
   spr[tsprite].nohit = 1;
@@ -140,7 +140,7 @@ void text_draw(int h, double brightness) {
 		}
 		
 		// Set size
-		if (spr[h].owner == 1000) {
+		if (spr[h].text_owner == 1000) {
 			rect_set(&rcRect, spr[h].x, spr[h].y,
 					 spr[h].x + 620, spr[h].y + 400);
 		} else {
@@ -175,17 +175,21 @@ void text_draw(int h, double brightness) {
 	else
 		fg = {255,255,255};
 
+	std::vector<TextCommand> cmds;
+
 	SDL_Color bg = {8,14,21};
 	FONTS_SetTextColor(bg.r, bg.g, bg.b);
-	print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
+	print_text_wrap_getcmds(cr, &rcRect, 1, 0, FONT_DIALOG, &cmds);
 	rect_offset(&rcRect,-2,0);
-	print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
+	print_text_wrap_getcmds(cr, &rcRect, 1, 0, FONT_DIALOG, &cmds);
 	rect_offset(&rcRect,1,1);
-	print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
+	print_text_wrap_getcmds(cr, &rcRect, 1, 0, FONT_DIALOG, &cmds);
 	rect_offset(&rcRect,0,-2);
-	print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
+	print_text_wrap_getcmds(cr, &rcRect, 1, 0, FONT_DIALOG, &cmds);
 
 	FONTS_SetTextColor(fg.r, fg.g, fg.b);
 	rect_offset(&rcRect,0,1);
-	print_text_wrap(cr, &rcRect, 1, 0, FONT_DIALOG);
+	print_text_wrap_getcmds(cr, &rcRect, 1, 0, FONT_DIALOG, &cmds);
+
+	print_text_cmds(&cmds);
 }

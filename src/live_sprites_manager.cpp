@@ -269,7 +269,7 @@ void kill_text_owned_by(int sprite)
   int i;
   for (i = 1; i < MAX_SPRITES_AT_ONCE; i++)
     {
-      if (spr[i].active && spr[i].brain == 8 && spr[i].owner == sprite)
+      if (spr[i].active && spr[i].brain == 8 && spr[i].text_owner == sprite)
     	  lsm_remove_sprite(i);
     }
 }
@@ -279,7 +279,7 @@ void kill_text_owned_by(int sprite)
 
 int does_sprite_have_text(int sprite) {
 	for (int i = 1; i < MAX_SPRITES_AT_ONCE; i++)
-		if (spr[i].active && spr[i].owner == sprite && spr[i].brain == 8)
+		if (spr[i].active && spr[i].text_owner == sprite && spr[i].brain == 8)
 			return i;
 	return 0;
 }
@@ -293,7 +293,7 @@ int does_sprite_have_text(int sprite) {
 {
   int i = 1;
   for (; i < MAX_SPRITES_AT_ONCE; i++)
-    if (spr[i].active && spr[i].brain == 8 && spr[i].owner == sprite)
+    if (spr[i].active && spr[i].brain == 8 && spr[i].text_owner == sprite)
       return /*true*/1;
   return /*false*/0;
 }
