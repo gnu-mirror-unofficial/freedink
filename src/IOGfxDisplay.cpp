@@ -134,7 +134,7 @@ void IOGfxDisplay::flipStretch(IOGfxSurface* backbuffer) {
 		SDL_SetError("IOGfxDisplay::flipStretch: passed a NULL surface");
 	SDL_Rect dstrect;
 	centerScaledSurface(backbuffer, &dstrect);
-	flip(backbuffer, &dstrect);
+	flip(backbuffer, &dstrect, true);
 }
 
 /* Raw blit so we can extract texture buffer */
@@ -142,7 +142,7 @@ void IOGfxDisplay::flipDebug(IOGfxSurface* backbuffer) {
 	if (backbuffer == NULL)
 		SDL_SetError("IOGfxDisplay::flipDebug: passed a NULL surface");
 	SDL_Rect dstrect = {0,0,backbuffer->w,backbuffer->h};
-	flip(backbuffer, &dstrect);
+	flip(backbuffer, &dstrect, false);
 }
 
 

@@ -43,7 +43,7 @@ IOGfxDisplayGL2::IOGfxDisplayGL2(int w, int h, bool truecolor, Uint32 flags)
 	  glcontext(NULL), gl(NULL), screen(NULL) {
 	palette = -1;
 	vboSpriteVertices = -1, vboSpriteTexcoords = -1, vboCroppedSpriteTexcoords = -1;
-	blit = NULL; i2rgb = NULL; fillRect = NULL;
+	blit = NULL; fliprgb = NULL; flippal = NULL; fillRect = NULL;
 }
 
 IOGfxDisplayGL2::~IOGfxDisplayGL2() {
@@ -69,10 +69,10 @@ void IOGfxDisplayGL2::close() {
 	if (gl != NULL) {
 		gl->DeleteProgram(blit->program);
 		gl->DeleteProgram(fillRect->program);
-		gl->DeleteProgram(i2rgb->program);
+		gl->DeleteProgram(flippal->program);
 		delete blit;
 		delete fillRect;
-		delete i2rgb;
+		delete flippal;
 		gl->DeleteBuffers(1, &vboSpriteVertices);
 		gl->DeleteBuffers(1, &vboSpriteTexcoords);
 		gl->DeleteBuffers(1, &vboCroppedSpriteTexcoords);
@@ -275,9 +275,8 @@ bool IOGfxDisplayGL2::createPrograms() {
 	if ((fillRect->uniforms["color"] = getUniformLocation(fillRect->program, "color"))     == -1) return false;
 
 
-	/* Palette emulation */
-	i2rgb = new IOGfxGLProg();
-	i2rgb->vshader =
+	fliprgb = new IOGfxGLProg();
+	fliprgb->vshader =
 		"attribute vec4 v_coord;          \n"
 		"attribute vec2 v_texcoord;       \n"
 		"varying vec2 f_texcoord;         \n"
@@ -287,7 +286,39 @@ bool IOGfxDisplayGL2::createPrograms() {
 		"  gl_Position = mvp * v_coord;   \n"
 		"  f_texcoord = v_texcoord;       \n"
 		"}                                \n";
-	i2rgb->fshader =
+	fliprgb->fshader =
+		"varying vec2 f_texcoord;                         \n"
+		"uniform sampler2D texture;                       \n"
+		"uniform float brightness;                        \n"
+		"                                                 \n"
+		"void main(void) {                                \n"
+		"  vec4 f = texture2D(texture, f_texcoord);       \n"
+		"  if (f == vec4(1.0,1.0,1.0, 1.0))               \n"
+		"    gl_FragColor = f;                            \n"
+		"  else                                           \n"
+		"    gl_FragColor = vec4(f.rgb * brightness, 1.0);\n"
+		"}                                                \n";
+	fliprgb->program = createProgram("pflip", fliprgb->vshader, fliprgb->fshader);
+	if ((fliprgb->attributes["v_coord"]    = getAttribLocation(fliprgb->program, "v_coord"))    == -1) return false;
+	if ((fliprgb->attributes["v_texcoord"] = getAttribLocation(fliprgb->program, "v_texcoord")) == -1) return false;
+	if ((fliprgb->uniforms["mvp"]        = getUniformLocation(fliprgb->program, "mvp"))        == -1) return false;
+	if ((fliprgb->uniforms["texture"]    = getUniformLocation(fliprgb->program, "texture"))    == -1) return false;
+	if ((fliprgb->uniforms["brightness"] = getUniformLocation(fliprgb->program, "brightness")) == -1) return false;
+
+
+	/* Palette emulation */
+	flippal = new IOGfxGLProg();
+	flippal->vshader =
+		"attribute vec4 v_coord;          \n"
+		"attribute vec2 v_texcoord;       \n"
+		"varying vec2 f_texcoord;         \n"
+		"uniform mat4 mvp;                \n"
+		"                                 \n"
+		"void main(void) {                \n"
+		"  gl_Position = mvp * v_coord;   \n"
+		"  f_texcoord = v_texcoord;       \n"
+		"}                                \n";
+	flippal->fshader =
 		"varying vec2 f_texcoord;                                   \n"
 		"uniform sampler2D texture;                                 \n"
 		"uniform sampler2D palette;                                 \n"
@@ -296,15 +327,15 @@ bool IOGfxDisplayGL2::createPrograms() {
 		"  vec4 index = texture2D(texture, f_texcoord);             \n"
 		"  gl_FragColor = texture2D(palette, vec2(index.r, 0.5));   \n"
 		"}                                                          \n";
-	i2rgb->program = createProgram("i2rgb", i2rgb->vshader, i2rgb->fshader);
-	if ((i2rgb->attributes["v_coord"]    = getAttribLocation(i2rgb->program, "v_coord"))    == -1) return false;
-	if ((i2rgb->attributes["v_texcoord"] = getAttribLocation(i2rgb->program, "v_texcoord")) == -1) return false;
-	if ((i2rgb->uniforms["mvp"]     = getUniformLocation(i2rgb->program, "mvp"))       == -1) return false;
-	if ((i2rgb->uniforms["texture"] = getUniformLocation(i2rgb->program, "texture"))   == -1) return false;
-	if ((i2rgb->uniforms["palette"] = getUniformLocation(i2rgb->program, "palette"))   == -1) return false;
+	flippal->program = createProgram("i2rgb", flippal->vshader, flippal->fshader);
+	if ((flippal->attributes["v_coord"]    = getAttribLocation(flippal->program, "v_coord"))    == -1) return false;
+	if ((flippal->attributes["v_texcoord"] = getAttribLocation(flippal->program, "v_texcoord")) == -1) return false;
+	if ((flippal->uniforms["mvp"]     = getUniformLocation(flippal->program, "mvp"))       == -1) return false;
+	if ((flippal->uniforms["texture"] = getUniformLocation(flippal->program, "texture"))   == -1) return false;
+	if ((flippal->uniforms["palette"] = getUniformLocation(flippal->program, "palette"))   == -1) return false;
 
 
-	if (blit->program == 0 || fillRect->program == 0 || i2rgb->program == 0)
+	if (blit->program == 0 || fliprgb->program == 0 || fillRect->program == 0 || flippal->program == 0)
 		return false;
 	return true;
 }
@@ -459,13 +490,13 @@ void IOGfxDisplayGL2::setVertexAttrib(IOGfxGLProg* prog, GLuint attribLocation, 
 			);
 }
 
-void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer, SDL_Rect* dstrect) {
+void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer, SDL_Rect* dstrect, bool interpolation) {
 	if (backbuffer == NULL)
 		SDL_SetError("IOGfxDisplayGL2::flip: passed a NULL surface");
 	IOGfxSurfaceGL2* surf = dynamic_cast<IOGfxSurfaceGL2*>(backbuffer);
 	GLuint texture = surf->texture;
 
-	IOGfxGLProg* prog = truecolor ? blit : i2rgb;
+	IOGfxGLProg* prog = truecolor ? fliprgb : flippal;
 	gl->UseProgram(prog->program);
 	setVertexAttrib(prog, prog->attributes["v_coord"], vboSpriteVertices, 4);
 	setVertexAttrib(prog, prog->attributes["v_texcoord"], vboSpriteTexcoords, 2);
@@ -473,6 +504,14 @@ void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer, SDL_Rect* dstrect) {
 	gl->ActiveTexture(GL_TEXTURE0);
 	gl->Uniform1i(prog->uniforms["texture"], /*GL_TEXTURE*/0);
 	gl->BindTexture(GL_TEXTURE_2D, texture);
+	if (truecolor && interpolation) {
+		gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	} else {
+		// TODO: implement 2-step flip: 1) i2rgb 2) interpolation
+		gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	}
 	if (!truecolor) {
 		gl->ActiveTexture(GL_TEXTURE1);
 		gl->Uniform1i(prog->uniforms["palette"], /*GL_TEXTURE*/1);
@@ -480,17 +519,16 @@ void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer, SDL_Rect* dstrect) {
 		updatePalette();
 	}
 
+	if (truecolor)
+		gl->Uniform1f(prog->uniforms["brightness"], brightness/256.0);
+
 	// Y-inversed projection for top-left origin and top-bottom textures
 	// Beware that rotation is reversed too
 	glm::mat4 projection = glm::ortho(0.0f, 1.0f*w, 1.0f*h, 0.0f);
-	glm::mat4 m_transform;
-	m_transform = glm::translate(glm::mat4(1.0f), glm::vec3(dstrect->x,dstrect->y, 0))
+	glm::mat4 m_transform = glm::translate(glm::mat4(1.0f), glm::vec3(dstrect->x,dstrect->y, 0))
 		* glm::scale(glm::mat4(1.0f), glm::vec3(dstrect->w, dstrect->h, 0));
 	glm::mat4 mvp = projection * m_transform; // * view * model * anim;
 	gl->UniformMatrix4fv(prog->uniforms["mvp"], 1, GL_FALSE, glm::value_ptr(mvp));
-
-	if (truecolor)
-		gl->Uniform3f(prog->uniforms["colorkey"], -1,-1,-1);
 
 	/* Push each element in buffer_vertices to the vertex shader */
 	gl->BindFramebuffer(GL_FRAMEBUFFER, 0);

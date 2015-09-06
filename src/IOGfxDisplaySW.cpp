@@ -11,7 +11,7 @@
 
 IOGfxDisplaySW::IOGfxDisplaySW(int w, int h, bool truecolor, Uint32 flags)
 	: IOGfxDisplay(w, h, truecolor, flags), renderer(NULL),
-	  render_texture(NULL), render_texture_debug(NULL), rgb_screen(NULL) {
+	  render_texture_linear(NULL), render_texture_nearest(NULL), rgb_screen(NULL) {
 }
 
 IOGfxDisplaySW::~IOGfxDisplaySW() {
@@ -30,8 +30,8 @@ bool IOGfxDisplaySW::open() {
 }
 
 void IOGfxDisplaySW::close() {
-	if (render_texture) SDL_DestroyTexture(render_texture);
-	render_texture = NULL;
+	if (render_texture_linear) SDL_DestroyTexture(render_texture_linear);
+	render_texture_linear = NULL;
 	if (rgb_screen) SDL_FreeSurface(rgb_screen);
 	rgb_screen = NULL;
 
@@ -61,24 +61,24 @@ bool IOGfxDisplaySW::createRenderer() {
  */
 bool IOGfxDisplaySW::createRenderTexture(int w, int h) {
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
-	render_texture = SDL_CreateTexture(renderer,
+	render_texture_linear = SDL_CreateTexture(renderer,
 		SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, w, h);
-	if (render_texture == NULL) {
+	if (render_texture_linear == NULL) {
 		log_error("Unable to create render texture: %s", SDL_GetError());
 		return false;
 	}
 
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
-	render_texture_debug = SDL_CreateTexture(renderer,
+	render_texture_nearest = SDL_CreateTexture(renderer,
 		SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, w, h);
-	if (render_texture_debug == NULL) {
+	if (render_texture_nearest == NULL) {
 		log_error("Unable to create debug render texture: %s", SDL_GetError());
 		return false;
 	}
 
 	Uint32 render_texture_format;
 	Uint32 Rmask, Gmask, Bmask, Amask; int bpp;
-	SDL_QueryTexture(render_texture, &render_texture_format, NULL, NULL, NULL);
+	SDL_QueryTexture(render_texture_linear, &render_texture_format, NULL, NULL, NULL);
 	SDL_PixelFormatEnumToMasks(render_texture_format, &bpp,
 			&Rmask, &Gmask, &Bmask, &Amask);
 	if (!truecolor)
@@ -123,7 +123,7 @@ void IOGfxDisplaySW::logRenderersInfo() {
 void IOGfxDisplaySW::logRenderTextureInfo() {
 	Uint32 format;
 	int access, w, h;
-	SDL_QueryTexture(render_texture, &format, &access, &w, &h);
+	SDL_QueryTexture(render_texture_linear, &format, &access, &w, &h);
 	log_info("Render texture: format: %s", SDL_GetPixelFormatName(format));
 	char* str_access;
 	switch(access) {
@@ -187,7 +187,7 @@ void gfx_fade_apply(SDL_Surface* screen, int brightness) {
 	SDL_UnlockSurface(screen);
 }
 
-void IOGfxDisplaySW::flip(IOGfxSurface* backbuffer, SDL_Rect* dstrect) {
+void IOGfxDisplaySW::flip(IOGfxSurface* backbuffer, SDL_Rect* dstrect, bool interpolation) {
 	/* For now we do all operations on the CPU side and perform a big
 	   texture update at each frame; this is necessary to support
 	   palette and fade_down/fade_up. */
@@ -195,7 +195,7 @@ void IOGfxDisplaySW::flip(IOGfxSurface* backbuffer, SDL_Rect* dstrect) {
 	/* Convert to destination buffer format */
 	SDL_Surface* source = dynamic_cast<IOGfxSurfaceSW*>(backbuffer)->image;
 
-	if (brightness < 256)
+	if (truecolor && brightness < 256)
 		gfx_fade_apply(source, brightness);
 
 	if (truecolor) {
@@ -219,9 +219,13 @@ void IOGfxDisplaySW::flip(IOGfxSurface* backbuffer, SDL_Rect* dstrect) {
 		source = rgb_screen;
 	}
 
-	// TODO: implement linear interpolation for all stretched renders
-	SDL_UpdateTexture(render_texture_debug, NULL, source->pixels, source->pitch);
-	SDL_RenderCopy(renderer, render_texture_debug, NULL, dstrect);
+	if (interpolation) {
+		SDL_UpdateTexture(render_texture_linear, NULL, source->pixels, source->pitch);
+		SDL_RenderCopy(renderer, render_texture_linear, NULL, dstrect);
+	} else {
+		SDL_UpdateTexture(render_texture_nearest, NULL, source->pixels, source->pitch);
+		SDL_RenderCopy(renderer, render_texture_nearest, NULL, dstrect);
+	}
 	SDL_RenderPresent(renderer);
 }
 

@@ -590,6 +590,53 @@ public:
 		delete backbuffer;
 	}
 
+	void ctestBrightness() {
+		SDL_Surface *img, *screenshot;
+		IOGfxSurface *backbuffer, *surf;
+		SDL_Color cs;
+		SDL_Rect bbbox;
+
+		backbuffer = display->allocBuffer(50, 50);
+		bbbox = { 0,0, 50,50 };
+
+		img = SDL_CreateRGBSurface(0, 5, 5, 8, 0, 0, 0, 0);
+		Uint8* pixels = (Uint8*)img->pixels;
+		SDL_SetPaletteColors(img->format->palette, GFX_ref_pal, 0, 256);
+		SDL_SetColorKey(img, SDL_TRUE, 0);
+		pixels[0] = 255;
+		pixels[1] = 1;
+		pixels[img->pitch] = 255;
+		pixels[img->pitch+1] = 1;
+		surf = display->upload(img);
+
+		SDL_Rect dstrect = {0, 0, -1, -1};
+		dstrect.x = 0; dstrect.y = 0;
+
+		display->brightness = 0;
+		backbuffer->blit(surf, NULL, &dstrect);
+		display->flipDebug(backbuffer);
+		screenshot = display->screenshot(&bbbox);
+		getColorAtRGBA(screenshot, 0, 0, &cs);
+		TS_ASSERT_SAME_DATA(&white, &cs, sizeof(SDL_Color));
+		getColorAtRGBA(screenshot, 1, 1, &cs);
+		TS_ASSERT_SAME_DATA(&black, &cs, sizeof(SDL_Color));
+		SDL_FreeSurface(screenshot);
+
+		display->brightness = 100;
+		backbuffer->blit(surf, NULL, &dstrect);
+		display->flipDebug(backbuffer);
+		screenshot = display->screenshot(&bbbox);
+		getColorAtRGBA(screenshot, 0, 0, &cs);
+		TS_ASSERT_SAME_DATA(&white, &cs, sizeof(SDL_Color));
+		getColorAtRGBA(screenshot, 1, 1, &cs);
+		TS_ASSERT_RELATION(std::less_equal<int>, cs.r, 100);
+		TS_ASSERT_RELATION(std::less_equal<int>, cs.g, 100);
+		TS_ASSERT_RELATION(std::greater_equal<int>, cs.r, 98);
+		TS_ASSERT_RELATION(std::greater_equal<int>, cs.g, 97);
+		TS_ASSERT_EQUALS(cs.b, 0);
+		SDL_SaveBMP(screenshot, "screenshot.bmp");
+		SDL_FreeSurface(screenshot);
+	}
 
 
 	void test01SplashGL2Truecolor() {
@@ -632,6 +679,12 @@ public:
 		ctest_fillRect();
 		closeDisplay();
 	}
+	void testBrightnessGL2Truecolor() {
+		openDisplay(true, true, 0);
+		ctestBrightness();
+		closeDisplay();
+	}
+
 
 	void testSplashGL2() {
 		openDisplay(true, false, SDL_WINDOW_HIDDEN);
@@ -663,6 +716,13 @@ public:
 		ctest_fill_screen();
 		closeDisplay();
 	}
+	// Needs specific palette-based test
+//	void testBrightnessGL2Truecolor() {
+//		openDisplay(true, true, 0);
+//		ctestBrightness();
+//		closeDisplay();
+//	}
+
 
 	void testSplashSWTruecolor() {
 		openDisplay(false, true, 0); // can't render offscreen >(
@@ -699,6 +759,12 @@ public:
 		ctest_fill_screen();
 		closeDisplay();
 	}
+	void testBrightnessSWTruecolor() {
+		openDisplay(false, true, 0);
+		ctestBrightness();
+		closeDisplay();
+	}
+
 
 	void testSplashSW() {
 		openDisplay(false, false, 0);
@@ -730,4 +796,10 @@ public:
 		ctest_fill_screen();
 		closeDisplay();
 	}
+	// Needs specific palette-based test
+//	void testBrightnessSW() {
+//		openDisplay(false, false, 0);
+//		ctestBrightness();
+//		closeDisplay();
+//	}
 };

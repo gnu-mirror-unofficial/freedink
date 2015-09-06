@@ -51,7 +51,7 @@ public:
 	SDL_Texture* screen;
 	GLuint palette;
 
-	IOGfxGLProg *blit, *i2rgb, *fillRect;
+	IOGfxGLProg *blit, *fliprgb, *flippal, *fillRect;
 
 	GLuint vboSpriteVertices, vboSpriteTexcoords, vboCroppedSpriteTexcoords;
 
@@ -67,7 +67,7 @@ public:
 	virtual void onSizeChange(int w, int h);
 	virtual IOGfxSurface* upload(SDL_Surface* image);
 	virtual IOGfxSurface* allocBuffer(int surfW, int surfH);
-	virtual void flip(IOGfxSurface* backbuffer, SDL_Rect* dstrect);
+	virtual void flip(IOGfxSurface* backbuffer, SDL_Rect* dstrect, bool interpolation);
 	virtual void updatePalette();
 
 	virtual SDL_Surface* screenshot(SDL_Rect* rect);
