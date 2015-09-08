@@ -178,21 +178,26 @@ void text_draw(int h, double brightness) {
 	std::vector<TextCommand> cmds;
 
 	SDL_Color bg = {8,14,21};
+	rect rel = rcRect;
+	rect_offset(&rel, -rcRect.left, -rcRect.top);
 	FONTS_SetTextColor(bg.r, bg.g, bg.b);
-	print_text_wrap_getcmds(cr, &rcRect, 1, 0, FONT_DIALOG, &cmds);
-	rect_offset(&rcRect,-2,0);
-	print_text_wrap_getcmds(cr, &rcRect, 1, 0, FONT_DIALOG, &cmds);
-	rect_offset(&rcRect,1,1);
-	print_text_wrap_getcmds(cr, &rcRect, 1, 0, FONT_DIALOG, &cmds);
-	rect_offset(&rcRect,0,-2);
-	print_text_wrap_getcmds(cr, &rcRect, 1, 0, FONT_DIALOG, &cmds);
+	print_text_wrap_getcmds(cr, &rel, 1, 0, FONT_DIALOG, &cmds);
+	rect_offset(&rel,-2,0);
+	print_text_wrap_getcmds(cr, &rel, 1, 0, FONT_DIALOG, &cmds);
+	rect_offset(&rel,1,1);
+	print_text_wrap_getcmds(cr, &rel, 1, 0, FONT_DIALOG, &cmds);
+	rect_offset(&rel,0,-2);
+	print_text_wrap_getcmds(cr, &rel, 1, 0, FONT_DIALOG, &cmds);
 
 	FONTS_SetTextColor(fg.r, fg.g, fg.b);
-	rect_offset(&rcRect,0,1);
-	print_text_wrap_getcmds(cr, &rcRect, 1, 0, FONT_DIALOG, &cmds);
+	rect_offset(&rel,0,1);
+	print_text_wrap_getcmds(cr, &rel, 1, 0, FONT_DIALOG, &cmds);
 
 	print_text_flatten_cmds(&cmds);
 	IOGfxSurface* surf = g_display->upload(cmds[0].img);
-	IOGFX_backbuffer->blit(surf, &cmds[0].src, &cmds[0].dst);
+	SDL_Rect dst =  cmds[0].dst;
+	dst.x += rcRect.left;
+	dst.y += rcRect.top;
+	IOGFX_backbuffer->blit(surf, NULL, &dst);
 	delete surf;
 }
