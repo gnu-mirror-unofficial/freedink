@@ -31,7 +31,7 @@
 #include "gfx.h"
 #include "gfx_fonts.h"
 #include "IOGfxDisplay.h"
-IOGfxSurface *IOGFX_backbuffer;
+IOGfxSurface *IOGFX_backbuffer = NULL;
 IOGfxDisplay* g_display = NULL;
 
 extern int add_text_sprite(char* text, int script, int sprite_owner, int mx, int my);
@@ -52,7 +52,8 @@ SDL_Color font_colors[16];
 int print_text_wrap(char*, rect*, int, int, FONT_TYPE, std::vector<TextCommand>* imgs) { return 0; }
 int print_text_wrap_getcmds(char *str, rect * box, /*bool*/int hcenter, int calc_only, FONT_TYPE font_type, std::vector<TextCommand>* cmds) { return 0; }
 void print_text_cmds(std::vector<TextCommand>* cmds) {}
-SDL_Surface* print_text_flatten_cmds(std::vector<TextCommand>* cmds) { return NULL; }
+IOGfxSurface* print_text_flatten_cmds(std::vector<TextCommand>* cmds) { return NULL; }
+void print_text_cache(IOGfxSurface*, SDL_Rect, int, int) {}
 int gfx_fonts_init(void) { return 1; }
 void gfx_fonts_init_colors() {}
 void gfx_fonts_quit() {}

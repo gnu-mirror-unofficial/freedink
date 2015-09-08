@@ -200,18 +200,13 @@ void text_draw(int h, double brightness) {
 		rect_offset(&rel,0,1);
 		print_text_wrap_getcmds(cr, &rel, 1, 0, FONT_DIALOG, &cmds);
 
-		print_text_flatten_cmds(&cmds);
-		IOGfxSurface* surf = g_display->upload(cmds[0].img);
-		SDL_Rect dst = cmds[0].dst;
-		dst.x += rcRect.left;
-		dst.y += rcRect.top;
-		IOGFX_backbuffer->blit(surf, NULL, &dst);
-		spr[h].text_cache = surf;
-		spr[h].text_cache_reldst = cmds[0].dst;
+		if (cmds.size() > 0) {
+			IOGfxSurface* surf = print_text_flatten_cmds(&cmds);
+			spr[h].text_cache = surf;
+			spr[h].text_cache_reldst = cmds[0].dst;
+			print_text_cache(spr[h].text_cache, spr[h].text_cache_reldst, rcRect.left, rcRect.top);
+		}
 	} else {
-		SDL_Rect dst = spr[h].text_cache_reldst;
-		dst.x += rcRect.left;
-		dst.y += rcRect.top;
-		IOGFX_backbuffer->blit(spr[h].text_cache, NULL, &dst);
+		print_text_cache(spr[h].text_cache, spr[h].text_cache_reldst, rcRect.left, rcRect.top);
 	}
 }

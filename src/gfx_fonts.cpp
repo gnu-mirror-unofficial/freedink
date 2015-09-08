@@ -322,7 +322,7 @@ void FONTS_SetTextColor(Uint8 r, Uint8 g, Uint8 b) {
 }
 
 
-static SDL_Surface* print_text(TTF_Font * font, char *str, SDL_Color /*&*/color, /*bool*/int hcenter) {
+static SDL_Surface* print_text(TTF_Font * font, char *str, SDL_Color /*&*/color) {
 	if (strlen (str) == 0)
 		return NULL;
 
@@ -492,7 +492,7 @@ int print_text_wrap_getcmds(char *str, rect* box,
 			*pc= '\0';
 
 		if (!calc_only) {
-			SDL_Surface* img = print_text(font, pline, color, hcenter);
+			SDL_Surface* img = print_text(font, pline, color);
 			if (img != NULL) {
 				int w = box->right - box->left;
 
@@ -533,7 +533,13 @@ void print_text_cmds(std::vector<TextCommand>* cmds) {
 	}
 }
 
-void print_text_flatten_cmds(std::vector<TextCommand>* cmds) {
+void print_text_cache(IOGfxSurface* surf, SDL_Rect dst, int x, int y) {
+	dst.x += x;
+	dst.y += y;
+	IOGFX_backbuffer->blit(surf, NULL, &dst);
+}
+
+IOGfxSurface* print_text_flatten_cmds(std::vector<TextCommand>* cmds) {
 	// Determine bounding box
 	int min_x = INT_MAX, max_x = 0, min_y = INT_MAX, max_y = 0;
 	for (std::vector<TextCommand>::iterator it = cmds->begin(); it != cmds->end(); ++it) {
@@ -579,6 +585,8 @@ void print_text_flatten_cmds(std::vector<TextCommand>* cmds) {
 	cmds->clear();
 	TextCommand cmd = {flat, {0,0,flat->w,flat->h}, {min_x,min_y,0,0}};
 	cmds->push_back(cmd);
+
+	return g_display->upload((*cmds)[0].img);
 }
 
 int print_text_wrap(char *str, rect* box,
