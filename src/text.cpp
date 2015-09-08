@@ -191,5 +191,8 @@ void text_draw(int h, double brightness) {
 	rect_offset(&rcRect,0,1);
 	print_text_wrap_getcmds(cr, &rcRect, 1, 0, FONT_DIALOG, &cmds);
 
-	print_text_cmds(&cmds);
+	print_text_flatten_cmds(&cmds);
+	IOGfxSurface* surf = g_display->upload(cmds[0].img);
+	IOGFX_backbuffer->blit(surf, &cmds[0].src, &cmds[0].dst);
+	delete surf;
 }

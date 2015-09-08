@@ -2,6 +2,7 @@
 
 #include "SDL.h"
 #include "SDL_image.h"
+#include "log.h"
 
 /* Reference palette: this is the canonical Dink palette, loaded from
    TS01.bmp (for freedink) and esplash.bmp (for freedinkedit). The
@@ -39,14 +40,32 @@ SDL_Surface* ImageLoader::loadToBlitFormat(FILE* in) {
  * importing 24bit graphics in 8bit mode).
  */
 SDL_Surface* ImageLoader::convertToPaletteFormat(SDL_Surface* image) {
-	SDL_PixelFormat* fmt = SDL_AllocFormat(SDL_PIXELFORMAT_INDEX8);
-	if (!fmt->palette)  // fmt is cached ref from SDL2
-		fmt->palette = SDL_AllocPalette(256);
-	memcpy(fmt->palette->colors, GFX_ref_pal, sizeof(GFX_ref_pal));
-	SDL_Surface *converted = SDL_ConvertSurface(image, fmt, 0);
-	SDL_FreeFormat(fmt);
+	SDL_Surface *converted = SDL_CreateRGBSurface(0, image->w, image->h, 8, 0,0,0,0);
+	SDL_SetPaletteColors(converted->format->palette, GFX_ref_pal, 0, 256);
+	SDL_BlitSurface(image, NULL, converted, NULL);
+	Uint32 key;
+	if (SDL_GetColorKey(image, &key) == 0)
+		SDL_SetColorKey(converted, SDL_TRUE, key);
 	SDL_FreeSurface(image);
 	/* Disable palette conversion in future blits */
 	SDL_SetPaletteColors(converted->format->palette, blitFormat->format->palette->colors, 0, 256);
 	return converted;
+}
+
+SDL_Surface* ImageLoader::newWithBlitFormat(int w, int h) {
+	SDL_Surface* image;
+	if (blitFormat->format->format == SDL_PIXELFORMAT_INDEX8) {
+		image = SDL_CreateRGBSurface(0, w, h, 8, 0,0,0,0);
+		if (image == NULL) {
+			log_error("ImageLoader::newWithPaletteFormat: %s", SDL_GetError());
+			return NULL;
+		}
+		/* Disable palette conversion in future blits */
+		SDL_SetPaletteColors(image->format->palette, blitFormat->format->palette->colors, 0, 256);
+	} else {
+		Uint32 Rmask=0, Gmask=0, Bmask=0, Amask=0; int bpp=0;
+		SDL_PixelFormatEnumToMasks(blitFormat->format->format, &bpp, &Rmask, &Gmask, &Bmask, &Amask);
+		image = SDL_CreateRGBSurface(0, w, h, bpp, Rmask, Gmask, Bmask, Amask);
+	}
+	return image;
 }

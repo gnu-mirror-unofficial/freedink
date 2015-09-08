@@ -35,6 +35,8 @@
 #include <string.h>
 #include <errno.h>
 #include <algorithm>
+#include <climits>
+#include <sstream>
 #include "SDL.h"
 #include "SDL_ttf.h"
 #include "gfx.h"
@@ -340,9 +342,6 @@ static SDL_Surface* print_text(TTF_Font * font, char *str, SDL_Color /*&*/color,
 		return NULL;
 	}
 
-	if (!truecolor)
-		tmp = ImageLoader::convertToPaletteFormat(tmp);
-
 	return tmp;
 }
 
@@ -526,11 +525,62 @@ int print_text_wrap_getcmds(char *str, rect* box,
 
 void print_text_cmds(std::vector<TextCommand>* cmds) {
 	for (std::vector<TextCommand>::iterator it = cmds->begin(); it != cmds->end(); ++it) {
+		if (!truecolor)
+			it->img = ImageLoader::convertToPaletteFormat(it->img);
 		IOGfxSurface* surf = g_display->upload(it->img);
 		IOGFX_backbuffer->blit(surf, &it->src, &it->dst);
 		delete surf;
 	}
 }
+
+void print_text_flatten_cmds(std::vector<TextCommand>* cmds) {
+	// Determine bounding box
+	int min_x = INT_MAX, max_x = 0, min_y = INT_MAX, max_y = 0;
+	for (std::vector<TextCommand>::iterator it = cmds->begin(); it != cmds->end(); ++it) {
+		min_x = min(min_x, it->dst.x);
+		min_y = min(min_y, it->dst.y);
+		max_x = max(max_x, it->dst.x+it->src.w);
+		max_y = max(max_y, it->dst.y+it->src.h);
+	}
+	SDL_Surface* flat = ImageLoader::newWithBlitFormat(max_x-min_x, max_y-min_y);
+
+	// Find unused color for transparency
+	Uint32 key = 0;
+	bool found;
+	do {
+		found = false;
+		SDL_Color cur;
+		if (flat->format->format == SDL_PIXELFORMAT_INDEX8)
+			cur = flat->format->palette->colors[key];
+		else
+			cur = {(Uint8)key, 0, 0, 255};
+		for (std::vector<TextCommand>::iterator it = cmds->begin(); it != cmds->end(); ++it) {
+			if (memcmp(&it->img->format->palette->colors[1],
+					&cur,
+					sizeof(SDL_Color)) == 0) {
+				key++;
+				found = true;
+				break;
+			}
+		}
+	} while (found);
+	SDL_FillRect(flat, NULL, key);
+	SDL_SetColorKey(flat, SDL_TRUE, key);
+
+	// Blit all texts
+	for (std::vector<TextCommand>::iterator it = cmds->begin(); it != cmds->end(); ++it) {
+		// Normalize coordinates
+		it->dst.x -= min_x;
+		it->dst.y -= min_y;
+		if (SDL_BlitSurface(it->img, &it->src, flat, &it->dst) != 0)
+			log_error("print_text_flatten_cmds: %s", SDL_GetError());
+		SDL_FreeSurface(it->img);
+	}
+	cmds->clear();
+	TextCommand cmd = {flat, {0,0,flat->w,flat->h}, {min_x,min_y,0,0}};
+	cmds->push_back(cmd);
+}
+
 int print_text_wrap(char *str, rect* box,
 		/*bool*/int hcenter, int calc_only, FONT_TYPE font_type) {
 	  std::vector<TextCommand> cmds;

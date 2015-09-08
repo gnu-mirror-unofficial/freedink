@@ -51,6 +51,7 @@ extern int print_text_wrap(char *str, rect * box, /*bool*/int hcenter, int calc_
 extern void print_text_cmds(std::vector<TextCommand>* cmds);
 extern int print_text_wrap_getcmds(char *str, rect * box, /*bool*/int hcenter, int calc_only, FONT_TYPE font_type, std::vector<TextCommand>* cmds);
 extern void print_text_wrap_debug(const char *str, int x, int y);
+extern void print_text_flatten_cmds(std::vector<TextCommand>* cmds);
 
 
 extern void SaySmall(char thing[500], int px, int py, int r, int g, int b);

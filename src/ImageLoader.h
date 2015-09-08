@@ -10,6 +10,7 @@ public:
 	static SDL_Surface* blitFormat;
 	static SDL_Surface* loadToBlitFormat(FILE* in);
 	static SDL_Surface* convertToPaletteFormat(SDL_Surface* image);
+	static SDL_Surface* newWithBlitFormat(int w, int h);
 };
 
 #endif

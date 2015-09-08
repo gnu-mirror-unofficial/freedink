@@ -194,7 +194,6 @@ public:
 		TS_ASSERT_EQUALS(cg, 255);
 		TS_ASSERT_EQUALS(cb, 0);
 		TS_ASSERT_EQUALS(ca, 255);
-		//SDL_SaveBMP(screenshot, "1testSplash.bmp");
 		SDL_FreeSurface(screenshot);
 
 		delete splash;
@@ -325,7 +324,6 @@ public:
 		TS_ASSERT(screenshot != NULL);
 		if (screenshot == NULL)
 			return;
-		SDL_SaveBMP(screenshot, "screenshot.bmp");
 
 		ce = { 255, 255, 255, 255 };
 		getColorAtI(screenshot, 0, 0, &cs);
@@ -634,7 +632,6 @@ public:
 		TS_ASSERT_RELATION(std::greater_equal<int>, cs.r, 98);
 		TS_ASSERT_RELATION(std::greater_equal<int>, cs.g, 97);
 		TS_ASSERT_EQUALS(cs.b, 0);
-		SDL_SaveBMP(screenshot, "screenshot.bmp");
 		SDL_FreeSurface(screenshot);
 	}
 
