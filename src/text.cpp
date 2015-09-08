@@ -177,27 +177,41 @@ void text_draw(int h, double brightness) {
 
 	std::vector<TextCommand> cmds;
 
-	SDL_Color bg = {8,14,21};
-	rect rel = rcRect;
-	rect_offset(&rel, -rcRect.left, -rcRect.top);
-	FONTS_SetTextColor(bg.r, bg.g, bg.b);
-	print_text_wrap_getcmds(cr, &rel, 1, 0, FONT_DIALOG, &cmds);
-	rect_offset(&rel,-2,0);
-	print_text_wrap_getcmds(cr, &rel, 1, 0, FONT_DIALOG, &cmds);
-	rect_offset(&rel,1,1);
-	print_text_wrap_getcmds(cr, &rel, 1, 0, FONT_DIALOG, &cmds);
-	rect_offset(&rel,0,-2);
-	print_text_wrap_getcmds(cr, &rel, 1, 0, FONT_DIALOG, &cmds);
+	// Clear cache if color changed (i.e. during truecolor fade_down())
+	if (spr[h].text_cache != NULL && memcmp(&spr[h].text_cache_color, &fg, sizeof(SDL_Color)) == 0) {
+		delete spr[h].text_cache;
+		spr[h].text_cache = NULL;
+	}
 
-	FONTS_SetTextColor(fg.r, fg.g, fg.b);
-	rect_offset(&rel,0,1);
-	print_text_wrap_getcmds(cr, &rel, 1, 0, FONT_DIALOG, &cmds);
+	if (spr[h].text_cache == NULL) {
+		SDL_Color bg = {8,14,21};
+		rect rel = rcRect;
+		rect_offset(&rel, -rcRect.left, -rcRect.top);
+		FONTS_SetTextColor(bg.r, bg.g, bg.b);
+		print_text_wrap_getcmds(cr, &rel, 1, 0, FONT_DIALOG, &cmds);
+		rect_offset(&rel,-2,0);
+		print_text_wrap_getcmds(cr, &rel, 1, 0, FONT_DIALOG, &cmds);
+		rect_offset(&rel,1,1);
+		print_text_wrap_getcmds(cr, &rel, 1, 0, FONT_DIALOG, &cmds);
+		rect_offset(&rel,0,-2);
+		print_text_wrap_getcmds(cr, &rel, 1, 0, FONT_DIALOG, &cmds);
 
-	print_text_flatten_cmds(&cmds);
-	IOGfxSurface* surf = g_display->upload(cmds[0].img);
-	SDL_Rect dst =  cmds[0].dst;
-	dst.x += rcRect.left;
-	dst.y += rcRect.top;
-	IOGFX_backbuffer->blit(surf, NULL, &dst);
-	delete surf;
+		FONTS_SetTextColor(fg.r, fg.g, fg.b);
+		rect_offset(&rel,0,1);
+		print_text_wrap_getcmds(cr, &rel, 1, 0, FONT_DIALOG, &cmds);
+
+		print_text_flatten_cmds(&cmds);
+		IOGfxSurface* surf = g_display->upload(cmds[0].img);
+		SDL_Rect dst = cmds[0].dst;
+		dst.x += rcRect.left;
+		dst.y += rcRect.top;
+		IOGFX_backbuffer->blit(surf, NULL, &dst);
+		spr[h].text_cache = surf;
+		spr[h].text_cache_reldst = cmds[0].dst;
+	} else {
+		SDL_Rect dst = spr[h].text_cache_reldst;
+		dst.x += rcRect.left;
+		dst.y += rcRect.top;
+		IOGFX_backbuffer->blit(spr[h].text_cache, NULL, &dst);
+	}
 }

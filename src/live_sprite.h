@@ -79,6 +79,7 @@ struct sp
   char text[200];
   int text_owner; /* if text sprite, sprite that is saying it */
   IOGfxSurface* text_cache;
+  SDL_Rect text_cache_reldst;
   SDL_Color text_cache_color;
   int script;
   int sound;

@@ -308,7 +308,7 @@ bool App::check_arg(int argc, char *argv[]) {
 			return false;
 		}
     }
-	
+
 	if (optind < argc) {
 		fprintf(stderr, "Invalid additional argument: ");
 		while (optind < argc)

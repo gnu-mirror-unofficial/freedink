@@ -51,6 +51,10 @@ void lsm_remove_sprite(int sprite) {
 		delete spr[sprite].custom;
 		spr[sprite].custom = NULL;
 	}
+	if (spr[sprite].text_cache != NULL) {
+		delete spr[sprite].text_cache;
+		spr[sprite].text_cache = NULL;
+	}
 
 	// if cached text sprite -> free
 }
