@@ -128,8 +128,8 @@ if HAVE_TESTS
 check_PROGRAMS = test_str_util test_io_util TestEditorMap		\
 	test_editor_screen test_dinkini test_dinkc test_dinkc_console	\
 	test_dinkc_bindings test_live_sprites_manager test_brain_text	\
-	test_text TestIOGfxDisplay TestIOTouchDragAnywhere		\
-	test_integration
+	test_text test_gfx_fonts TestIOGfxDisplay			\
+	TestIOTouchDragAnywhere test_integration
 .cxx.cpp:
 	$(CXXTESTGEN) --error-printer \
 		--include test_android_workaround.h \
@@ -200,6 +200,9 @@ test_text_SOURCES = test_text.cpp text.cpp live_sprites_manager.cpp	\
 	dinkini.cpp live_sprite.cpp rect.cpp gfx_sprites.cpp		\
 	ImageLoader.cpp str_util.cpp io_util.cpp fastfile.cpp		\
 	paths.cpp
+test_gfx_fonts_SOURCES = test_gfx_fonts.cpp test_gfx_fonts_libe.h	\
+	gfx_fonts.cpp rect.cpp ImageLoader.cpp str_util.cpp		\
+	io_util.cpp paths.cpp resources.cpp gfx_palette.cpp
 TestIOTouchDragAnywhere_SOURCES = TestIOTouchDragAnywhere.cpp	\
 	IOTouchDragAnywhere.cpp
 test_integration_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\

@@ -40,6 +40,13 @@ typedef enum enum_font
     FONT_SYSTEM,
 } FONT_TYPE;
 
+/* Default size was 18 in the original game, but it refers to a
+   different part of the font glyph (see doc/fonts.txt for
+   details). 16 matches that size with SDL_ttf (possibly only for
+   LiberationSans). */
+#define FONT_SIZE 16
+
+
 // D-Mod-defined font colors
 extern struct SDL_Color font_colors[16];
 
@@ -47,6 +54,8 @@ extern struct SDL_Color font_colors[16];
 extern int gfx_fonts_init(void);
 extern void gfx_fonts_init_colors(void);
 extern void gfx_fonts_quit(void);
+extern void setup_font(TTF_Font *font);
+
 extern void FONTS_SetTextColor(Uint8 r, Uint8 g, Uint8 b);
 extern int print_text_wrap(char *str, rect * box, /*bool*/int hcenter, int calc_only, FONT_TYPE font_type);
 extern void print_text_cmds(std::vector<TextCommand>* cmds);
