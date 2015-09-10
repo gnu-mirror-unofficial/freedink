@@ -116,15 +116,7 @@ int gfx_init(bool dinkgl, bool windowed, char* splash_path) {
 	gfx_palette_get_phys(GFX_ref_pal);
 
 	/* Initialize reference buffer */
-	{
-		Uint32 Rmask=0, Gmask=0, Bmask=0, Amask=0; int bpp=0;
-		SDL_PixelFormatEnumToMasks(g_display->getFormat(), &bpp, &Rmask, &Gmask, &Bmask, &Amask);
-		ImageLoader::blitFormat = SDL_CreateRGBSurface(0, 1, 1, bpp,
-				Rmask, Gmask, Bmask, Amask);
-		if (!truecolor) {
-			SDL_SetPaletteColors(ImageLoader::blitFormat->format->palette, GFX_ref_pal, 0, 256);
-		}
-	}
+	ImageLoader::initBlitFormat(g_display->getFormat());
 
 	// TODO: make backbuffer resize quality linear instead of nearest
 	IOGFX_backbuffer = g_display->allocBuffer(GFX_RES_W, GFX_RES_H);

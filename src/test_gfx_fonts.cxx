@@ -27,9 +27,10 @@
 #include <cxxtest/TestSuite.h>
 
 #include "gfx_fonts.h"
-#include "IOGfxDisplay.h"
+#include "FakeIOGfxDisplay.h"
+#include "ImageLoader.h"
 IOGfxSurface *IOGFX_backbuffer = NULL;
-IOGfxDisplay* g_display = NULL;
+IOGfxDisplay* g_display = new FakeIOGfxDisplay(0, 0, true, 0);
 #include "test_gfx_fonts_libe.h"
 #include <iostream>
 using namespace std;
@@ -37,6 +38,7 @@ using namespace std;
 char* vgasys_fon;
 int truecolor;
 extern TTF_Font *dialog_font;
+extern SDL_Surface* print_text(TTF_Font * font, char *str, SDL_Color color);
 
 class TestGfxFonts : public CxxTest::TestSuite {
 public:
@@ -49,7 +51,41 @@ public:
 	void tearDown() {
 	}
 	
-	void test_text() {
+	Uint8 getIndexAt(SDL_Surface* img, int x, int y) {
+		return ((Uint8*)img->pixels)[x + y*img->pitch];
+	}
 
+	void test_print_textTruecolor() {
+		truecolor = 1;
+		SDL_Color ce;
+		Uint32 key;
+
+		SDL_Surface* img = print_text(dialog_font, "toto", {255,255,2});
+		TS_ASSERT_EQUALS(img->h, 19);
+		TS_ASSERT_EQUALS(getIndexAt(img, 0,0), 0);
+		TS_ASSERT_EQUALS(getIndexAt(img, 1,4), 1);
+		ce = { 255, 255, 2, 255 };
+		TS_ASSERT_SAME_DATA(&img->format->palette->colors[1], &ce, sizeof(SDL_Color));
+		ce = { 255-255, 255-255, 255-2, 0 };
+		TS_ASSERT_SAME_DATA(&img->format->palette->colors[0], &ce, sizeof(SDL_Color));
+		TS_ASSERT_EQUALS(SDL_GetColorKey(img, &key), 0);
+		TS_ASSERT_EQUALS(key, 0);
+	}
+
+	void test_print_text_wrap_getcmdsTruecolor() {
+		truecolor = 1;
+		ImageLoader::initBlitFormat(SDL_PIXELFORMAT_RGB888);
+		std::vector<TextCommand> cmds;
+		rect r;
+		FONTS_SetTextColor(255, 0, 0);
+		r = {0,0, 150,100};
+		TS_ASSERT_EQUALS(print_text_wrap_getcmds("toto", &r, 1, 0, FONT_DIALOG, &cmds), 19);
+		TS_ASSERT_EQUALS(cmds.size(), 1);
+		FONTS_SetTextColor(0, 0, 0);
+		r = {-2,0, 150,100};
+		TS_ASSERT_EQUALS(print_text_wrap_getcmds("toto", &r, 1, 0, FONT_DIALOG, &cmds), 19);
+		TS_ASSERT_EQUALS(cmds.size(), 2);
+		print_text_flatten_cmds(&cmds);
+		TS_ASSERT_EQUALS(cmds.size(), 1);
 	}
 };

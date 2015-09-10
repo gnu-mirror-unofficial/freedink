@@ -202,7 +202,9 @@ test_text_SOURCES = test_text.cpp text.cpp live_sprites_manager.cpp	\
 	paths.cpp
 test_gfx_fonts_SOURCES = test_gfx_fonts.cpp test_gfx_fonts_libe.h	\
 	gfx_fonts.cpp rect.cpp ImageLoader.cpp str_util.cpp		\
-	io_util.cpp paths.cpp resources.cpp gfx_palette.cpp
+	io_util.cpp paths.cpp resources.cpp gfx_palette.cpp		\
+	FakeIOGfxDisplay.cpp FakeIOGfxDisplay.h IOGfxDisplay.cpp	\
+	freedink_xpm.cpp
 TestIOTouchDragAnywhere_SOURCES = TestIOTouchDragAnywhere.cpp	\
 	IOTouchDragAnywhere.cpp
 test_integration_SOURCES = $(COMMON_OBJS) brain.cpp brain.h		\

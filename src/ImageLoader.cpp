@@ -14,6 +14,16 @@ SDL_Color GFX_ref_pal[256];
 // TODO: make IOGfxDisplaySW->blit *not* do any palette conversion, so we can get rid of this global
 SDL_Surface* ImageLoader::blitFormat = NULL;
 
+void ImageLoader::initBlitFormat(Uint32 format) {
+	Uint32 Rmask=0, Gmask=0, Bmask=0, Amask=0; int bpp=0;
+	SDL_PixelFormatEnumToMasks(format, &bpp, &Rmask, &Gmask, &Bmask, &Amask);
+	ImageLoader::blitFormat = SDL_CreateRGBSurface(0, 1, 1, bpp,
+			Rmask, Gmask, Bmask, Amask);
+	if (format == SDL_PIXELFORMAT_INDEX8) {
+		SDL_SetPaletteColors(ImageLoader::blitFormat->format->palette, GFX_ref_pal, 0, 256);
+	}
+}
+
 /**
  * Load image to the current display format (indexed or truecolor)
  * This isn't centralized in display->upload() because dir.ff are handled differently,

@@ -314,7 +314,7 @@ void FONTS_SetTextColor(Uint8 r, Uint8 g, Uint8 b) {
 }
 
 
-static SDL_Surface* print_text(TTF_Font * font, char *str, SDL_Color /*&*/color) {
+/*static*/ SDL_Surface* print_text(TTF_Font * font, char *str, SDL_Color /*&*/color) {
 	if (strlen (str) == 0)
 		return NULL;
 
