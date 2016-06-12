@@ -63,12 +63,14 @@ sh bootstrap
 apt-get install build-essential
 # Required: SDL
 apt-get install pkg-config \
-  libsdl2-dev libsdl2-dbg \
+  libsdl2-dev \
   libsdl2-image-dev libsdl2-image-dbg \
   libsdl2-mixer-dev libsdl2-mixer-dbg \
   libsdl2-ttf-dev libsdl2-ttf-dbg \
   libsdl2-gfx-dev libsdl2-gfx-dbg \
-  libfontconfig1-dev
+  libfontconfig1-dev \
+  libglm-dev \
+  cxxtest
 # Optional:
 # - upx compresses binary
 # - bzip is for .tar.bz2 release tarballs

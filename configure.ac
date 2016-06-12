@@ -252,3 +252,5 @@ echo "* --enable-static=$enable_static"
 echo "* --enable-tests=$enable_tests"
 echo
 echo "Now you can type 'make' to compile $PACKAGE_STRING"
+
+# TODO : check for GLM
