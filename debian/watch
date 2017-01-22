@@ -1,3 +1,4 @@
 version=3
 
-http://ftp.gnu.org/gnu/freedink/freedink-(\d.*)\.tar\.gz debian uupdate
+opts=pgpsigurlmangle=s/$/.sig/,dversionmangle=s/\+dfsg// \
+ http://ftp.gnu.org/gnu/freedink/freedink-(\d.*)\.tar\.gz debian uupdate

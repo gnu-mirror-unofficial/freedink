@@ -1,6 +1,14 @@
+freedink (108.4+dfsg-1) unstable; urgency=medium
+
+  * Stub out share/freedink/LiberationSans-Regular.ttf (Closes: #851110)
+  * debian/watch: mangle '+dfsg'
+  * Bump Standards-Version to 3.9.8 (no changes)
+
+ -- Sylvain Beucler <beuc@debian.org>  Sun, 22 Jan 2017 21:06:51 +0100
+
 freedink (108.4-1) unstable; urgency=low
 
-    * New Upstream Version
+  * New Upstream Version
   * Bump Standards-Version to 3.9.6 (no changes)
 
  -- Sylvain Beucler <beuc@debian.org>  Wed, 22 Oct 2014 14:04:34 +0200
@@ -39,7 +47,7 @@ freedink (1.08.20120427-1) unstable; urgency=low
   * Update copyright file
   * Bump Standards-Version to 3.9.3
   * Update official webpage
-  
+
  -- Sylvain Beucler <beuc@debian.org>  Fri, 27 Apr 2012 19:00:00 +0200
 
 freedink (1.08.20101114-1) experimental; urgency=low
