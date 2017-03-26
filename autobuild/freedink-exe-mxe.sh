@@ -23,7 +23,7 @@
 # cd /usr/src/mxe/  # master branch
 ## Disable MP3 support: src/sdl_mixer.mk: --enable-music-mp3 -> --disable-music-mp3
 ## Use MinGW-w64 in /usr/src/mxe/settings.mk: MXE_TARGETS := x86_64-w64-mingw32.static i686-w64-mingw32.static
-# make sdl2 sdl2_gfx sdl2_image sdl2_mixer sdl2_ttf libzip gettext nsis
+# make sdl2 sdl2_gfx sdl2_image sdl2_mixer sdl2_ttf glm libzip gettext nsis
 # cp -a cxxtest-4.4/cxxtest/ /usr/src/mxe/usr/i686-w64-mingw32.static/include/
 
 PACKAGE=freedink
