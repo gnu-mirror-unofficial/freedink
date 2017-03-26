@@ -119,6 +119,11 @@ char* get_fontconfig_path(char* fontname)
  */
 int gfx_fonts_init()
 {
+  // FreeType subpixel hinting makes old fonts (Arial) ugly, use old renderer
+  // Cf. https://sourceforge.net/projects/freetype/files/freetype2/2.7/
+  // and include/freetype/ftttdrv.h
+  putenv("FREETYPE_PROPERTIES=truetype:interpreter-version=35");
+
   if (TTF_Init() == -1) {
     log_error(TTF_GetError());
     return -1;
