@@ -43,6 +43,7 @@ extern SDL_Surface* print_text(TTF_Font * font, char *str, SDL_Color color);
 class TestGfxFonts : public CxxTest::TestSuite {
 public:
 	void setUp() {
+		putenv("FREETYPE_PROPERTIES=truetype:interpreter-version=35");
 		TTF_Init();
 		SDL_RWops* rw = SDL_RWFromMem(libe_ttf, libe_ttf_len);
 		dialog_font = TTF_OpenFontRW(rw, 1, FONT_SIZE);
