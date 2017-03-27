@@ -14,18 +14,25 @@ cd /usr/src
 
 git clone git://git.sv.gnu.org/gnulib.git
 hg clone http://hg.libsdl.org/SDL SDL2
-hg clone http://hg.libsdl.org/SDL_mixer SDL2_image
+hg clone http://hg.libsdl.org/SDL_image SDL2_image
 hg clone http://hg.libsdl.org/SDL_mixer SDL2_mixer
-hg clone http://hg.libsdl.org/SDL_mixer SDL2_ttf
+hg clone http://hg.libsdl.org/SDL_ttf SDL2_ttf
 svn checkout https://svn.code.sf.net/p/sdl2gfx/code/trunk SDL2_gfx/
 git clone git://git.sv.gnu.org/freedink.git
+
+# https://libsdl.org/release/SDL2-2.0.5.tar.gz
+# https://libsdl.org/release/SDL2-2.0.5.tar.gz.sig
+# https://www.libsdl.org/projects/SDL_image/release/SDL2_image-2.0.1.tar.gz
+# https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-2.0.1.tar.gz
+# https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-2.0.14.tar.gz
+# http://www.ferzkopp.net/Software/SDL2_gfx/SDL2_gfx-1.0.3.tar.gz
 
 apt-get install wget rsync
 (cd gnulib && git checkout 39cf9dff9bc7883e2a589b049fb11ee7beaadd4f)
 
 pushd SDL2/
 apt-get install libgl1-mesa-dev libpulse-dev libx11-dev \
-  libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxrandr-bdev \
+  libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxrandr-dev \
   libxss-dev libxt-dev libxv-dev libxxf86vm-dev
 ./autogen.sh
 ./configure

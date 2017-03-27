@@ -19,12 +19,12 @@
 # along with this program.  If not, see
 # <http://www.gnu.org/licenses/>.
 
-# apt-get install upx
-# cd /usr/src/mxe/  # master branch
+# apt-get install upx wine-binfmt
+# cd /opt/mxe/  # master branch
 ## Disable MP3 support: src/sdl_mixer.mk: --enable-music-mp3 -> --disable-music-mp3
-## Use MinGW-w64 in /usr/src/mxe/settings.mk: MXE_TARGETS := x86_64-w64-mingw32.static i686-w64-mingw32.static
+## Use MinGW-w64 in /opt/mxe/settings.mk: MXE_TARGETS := x86_64-w64-mingw32.static i686-w64-mingw32.static
 # make sdl2 sdl2_gfx sdl2_image sdl2_mixer sdl2_ttf glm libzip gettext nsis
-# cp -a cxxtest-4.4/cxxtest/ /usr/src/mxe/usr/i686-w64-mingw32.static/include/
+# cp -a cxxtest-4.4/cxxtest/ /opt/mxe/usr/i686-w64-mingw32.static/include/
 
 PACKAGE=freedink
 VERSION=$(make version | tail -1)
@@ -62,7 +62,7 @@ sed -i -e 's/\(^\|[^\r]\)$/\1\r/' zip/freedink-*.txt
 # Compile!
 ##
 # full-static
-PATH=/usr/src/mxe/usr/bin:$PATH
+PATH=/opt/mxe/usr/bin:$PATH
 
 rm -rf cross-woe-32/
 mkdir cross-woe-32/
