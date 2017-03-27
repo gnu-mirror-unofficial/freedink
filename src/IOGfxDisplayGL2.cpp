@@ -155,7 +155,7 @@ GLuint IOGfxDisplayGL2::createShader(const char* name, const char* source, GLenu
 	GLuint res = gl->CreateShader(type);
 
 	// GLSL version
-	const char* version;
+	std::string version;
 	int profile;
 	SDL_GL_GetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, &profile);
 	if (profile == SDL_GL_CONTEXT_PROFILE_ES)
@@ -164,8 +164,7 @@ GLuint IOGfxDisplayGL2::createShader(const char* name, const char* source, GLenu
 		version = "#version 120\n";  // OpenGL 2.1
 
 	// GLES2 precision specifiers
-	const char* precision;
-	precision =
+	std::string precision =
 		"#ifdef GL_ES                        \n"
 		"#  ifdef GL_FRAGMENT_PRECISION_HIGH \n"
 		"     precision highp float;         \n"
@@ -179,12 +178,14 @@ GLuint IOGfxDisplayGL2::createShader(const char* name, const char* source, GLenu
 		"#  define highp                     \n"
 		"#endif                              \n";
 
+	// Concat instead of giving glShaderSource multiple strings.
+	// At least one setup complained that "#version 120" was an incomplete shader
+	// (VirtualBox 5.1 + Windows 7 guest) - so not taking chances.
+	std::string fullsource = version + precision + source;
 	const GLchar* sources[] = {
-		version,
-		precision,
-		source
+		fullsource.c_str()
 	};
-	gl->ShaderSource(res, 3, sources, NULL);
+	gl->ShaderSource(res, 1, sources, NULL);
 
 	gl->CompileShader(res);
 	GLint compile_ok = GL_FALSE;
