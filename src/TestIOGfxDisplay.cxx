@@ -103,7 +103,7 @@ public:
 	void openDisplay(bool gl, bool truecolor, Uint32 flags) {
 		//log_info("* Requesting %s %s", gl?"GL2":"SW", truecolor?"truecolor":"");
 		//flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-		//flags &= ~SDL_WINDOW_HIDDEN;
+		//flags |= SDL_WINDOW_HIDDEN; // off-screen rendering
 
 		// cache
 		if (display && lastDisplay.gl == gl && lastDisplay.truecolor == truecolor) {
@@ -170,7 +170,8 @@ public:
 		pixels[img->pitch*2+0] = 1;
 		pixels[img->pitch*2+1] = 1;
 		pixels[img->pitch*2+0] = 1;
-		splash = display->upload(img);
+		//SDL_SaveBMP(img, "splash-img.bmp");
+		splash = display->upload(img); img = NULL;
 		//g->flip(splash); // not a single flip
 
 		SDL_Rect dstrect = {0, 0, -1, -1};
@@ -181,6 +182,7 @@ public:
 		display->flipStretch(backbuffer);
 
 		SDL_Surface* screenshot = display->screenshot();
+		//SDL_SaveBMP(screenshot, "splash-screenshot.bmp");
 		TS_ASSERT(screenshot != NULL);
 		if (screenshot == NULL)
 			return;
@@ -227,7 +229,7 @@ public:
 		pixels[0] = 255;
 		pixels[1] = 1;
 		pixels[img->pitch+0] = 3;
-		surf = display->upload(img);
+		surf = display->upload(img); img = NULL;
 		backbuffer->blit(surf, NULL, NULL);
 
 
@@ -273,7 +275,7 @@ public:
 		pixels[0] = 255;
 		pixels[1] = 1;
 		pixels[img->pitch+0] = 3;
-		surf = display->upload(img);
+		surf = display->upload(img); img = NULL;
 		backbuffer->blit(surf, NULL, NULL);
 
 
@@ -315,7 +317,7 @@ public:
 		pixels[0] = 255;
 		pixels[1] = 1;
 		pixels[3] = 3;
-		surf = display->upload(img);
+		surf = display->upload(img); img = NULL;
 		backbuffer->blit(surf, NULL, NULL);
 
 
@@ -351,7 +353,7 @@ public:
 		int x, y;
 
 		img = SDL_CreateRGBSurface(0, 50, 50, 8, 0, 0, 0, 0);
-		surf = display->upload(img);
+		surf = display->upload(img); img = NULL;
 
 		// Force display to 50x50 even if the system gave us something else
 		display->onSizeChange(50, 50);
@@ -637,42 +639,42 @@ public:
 
 
 	void test01SplashGL2Truecolor() {
-		openDisplay(true, true, SDL_WINDOW_HIDDEN);
+		openDisplay(true, true, 0); // 0 <= off-screen rendering may have bugs >(
 		ctestSplash();
 		closeDisplay();
 	}
 	void test_Display_screenshotGL2Truecolor() {
-		openDisplay(true, true, SDL_WINDOW_HIDDEN);
+		openDisplay(true, true, 0);
 		ctest_Display_screenshot();
 		closeDisplay();
 	}
 	void test_Surface_screenshotGL2Truecolor() {
-		openDisplay(true, true, SDL_WINDOW_HIDDEN);
+		openDisplay(true, true, 0);
 		ctest_Surface_screenshot_truecolor();
 		closeDisplay();
 	}
 	void test_allocGL2Truecolor() {
-		openDisplay(true, true, SDL_WINDOW_HIDDEN);
+		openDisplay(true, true, 0);
 		ctest_alloc();
 		closeDisplay();
 	}
 	void test_surfToDisplayCoordsGL2Truecolor() {
-		openDisplay(true, true, SDL_WINDOW_HIDDEN);
+		openDisplay(true, true, 0);
 		ctest_surfToDisplayCoords();
 		closeDisplay();
 	}
 	void test_blitGL2Truecolor() {
-		openDisplay(true, true, SDL_WINDOW_HIDDEN);
+		openDisplay(true, true, 0);
 		ctest_blit();
 		closeDisplay();
 	}
 	void test_fill_screenGL2Truecolor() {
-		openDisplay(true, true, SDL_WINDOW_HIDDEN);
+		openDisplay(true, true, 0);
 		ctest_fill_screen();
 		closeDisplay();
 	}
 	void test_fillRectGL2Truecolor() {
-		openDisplay(true, true, SDL_WINDOW_HIDDEN);
+		openDisplay(true, true, 0);
 		ctest_fillRect();
 		closeDisplay();
 	}
@@ -684,32 +686,32 @@ public:
 
 
 	void testSplashGL2() {
-		openDisplay(true, false, SDL_WINDOW_HIDDEN);
+		openDisplay(true, false, 0);
 		ctestSplash();
 		closeDisplay();
 	}
 	void test_Display_screenshotGL2() {
-		openDisplay(true, false, SDL_WINDOW_HIDDEN);
+		openDisplay(true, false, 0);
 		ctest_Display_screenshot();
 		closeDisplay();
 	}
 	void test_Surface_screenshotGL2() {
-		openDisplay(true, false, SDL_WINDOW_HIDDEN);
+		openDisplay(true, false, 0);
 		ctest_Surface_screenshot_indexed();
 		closeDisplay();
 	}
 	void test_blitGL2() {
-		openDisplay(true, false, SDL_WINDOW_HIDDEN);
+		openDisplay(true, false, 0);
 		ctest_blit();
 		closeDisplay();
 	}
 	void test_fillRectGL2() {
-		openDisplay(true, false, SDL_WINDOW_HIDDEN);
+		openDisplay(true, false, 0);
 		ctest_fillRect();
 		closeDisplay();
 	}
 	void test_fill_screenGL2() {
-		openDisplay(true, false, SDL_WINDOW_HIDDEN);
+		openDisplay(true, false, 0);
 		ctest_fill_screen();
 		closeDisplay();
 	}
@@ -722,7 +724,7 @@ public:
 
 
 	void testSplashSWTruecolor() {
-		openDisplay(false, true, 0); // can't render offscreen >(
+		openDisplay(false, true, 0); // 0 <= can't render off-screen >(
 		ctestSplash();
 		closeDisplay();
 	}
