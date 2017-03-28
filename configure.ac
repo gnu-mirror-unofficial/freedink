@@ -34,6 +34,7 @@ AC_CANONICAL_HOST
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_LN_S
+AC_PROG_MKDIR_P
 
 
 # Gnulib - configuration in gnulib/m4/gnulib-cache.m4

@@ -46,8 +46,7 @@ fi
 
 # Gnulib
 # Look for gnulib-tool. Use '|| true' because of 'set -e' above
-GNULIB_TOOL=`PATH=gnulib-git:$PATH:/usr/src/gnulib which gnulib-tool \
-    || true`
+GNULIB_TOOL=`PATH=gnulib-git:$PATH:/usr/src/gnulib which gnulib-tool || true`
 if [ -z "$GNULIB_TOOL" ]; then
     git clone git://git.savannah.gnu.org/gnulib.git gnulib-git
     GNULIB_TOOL=./gnulib-git/gnulib-tool

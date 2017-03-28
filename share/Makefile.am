@@ -7,9 +7,9 @@ EXTRA_DIST = pixmaps/freedink.png applications/freedink.desktop	\
 
 # freedesktop.org menu entry
 install-data-local:
-	$(mkdir_p) "$(DESTDIR)$(datarootdir)/pixmaps"
-	$(mkdir_p) "$(DESTDIR)$(datarootdir)/applications"
-	$(mkdir_p) "$(DESTDIR)$(datarootdir)/appdata"
+	$(MKDIR_P) "$(DESTDIR)$(datarootdir)/pixmaps"
+	$(MKDIR_P) "$(DESTDIR)$(datarootdir)/applications"
+	$(MKDIR_P) "$(DESTDIR)$(datarootdir)/appdata"
 	$(INSTALL_DATA) "$(srcdir)/pixmaps/freedink.png" "$(DESTDIR)$(datarootdir)/pixmaps/"
 	$(INSTALL_DATA) "$(srcdir)/applications/freedink.desktop" "$(DESTDIR)$(datarootdir)/applications/"
 	$(INSTALL_DATA) "$(srcdir)/applications/freedinkedit.desktop" "$(DESTDIR)$(datarootdir)/applications/"
