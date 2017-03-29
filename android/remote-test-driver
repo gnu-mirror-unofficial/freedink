@@ -3,7 +3,7 @@
 
 # Based on automake's 'test-driver' with some ugly tricks to make it run on Android
 # Search for 'adb' below -- Beuc
-scriptversion=2015-08-20.23; # UTC
+scriptversion=2017-03-29.19; # UTC
 
 # Copyright (C) 2011-2014 Free Software Foundation, Inc.
 #
@@ -109,7 +109,8 @@ trap "st=143; $do_exit" 15
 if file $test_name | grep -q 'shared object'; then
   estatus=77
 else
-  adb push $test_name /data/data/org.freedink/lib/ 2>/dev/null
+  out=$(adb push $test_name /data/data/org.freedink/lib/ 2>&1)
+  if [ $? -ne 0 ]; then echo $out; exit 1; fi
   adb shell "cd /data/data/org.freedink/lib && LD_LIBRARY_PATH=. $@" >$log_file 2>&1
   grep -q 'OK!' $log_file
   estatus=$?

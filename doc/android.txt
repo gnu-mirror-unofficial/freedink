@@ -1,3 +1,5 @@
+( Also published at https://wiki.libsdl.org/Android )
+
 == Paths ==
 
 The initial process is '/system/bin/app_process'.
@@ -14,15 +16,17 @@ It can be used to stored additional files.
 Last we can use the external storage.
 
 
-== SDL2 ==
+== Existing documentation ==
 
-Official documentation is in SDL2/docs/README-android.md
-See also my http://wiki.libsdl.org/Android
+A lot of information can be found in [[https://hg.libsdl.org/SDL/file/default/docs/README-android.md|SDL/docs/README-android.md]].
+
+This page is more walkthrough-oriented.
+
 
 == Pre-requisites ==
 
  * Install minimal Java environment. For instance, in Debian/Ubuntu: {{{
-sudo apt-get install openjdk-7-jdk ant
+sudo apt-get install openjdk-8-jdk ant android-sdk-platform-tools-common
 }}}
  * Install NDK (tested with [[http://dl.google.com/android/ndk/android-ndk-r8c-linux-x86.tar.bz2|r8c]])
  * Install the latest SDK, run `android` and install one API (>=12)
@@ -31,7 +35,7 @@ PATH="/usr/src/android-ndk-r8c:$PATH"                   # for 'ndk-build'
 PATH="/usr/src/android-sdk-linux/tools:$PATH"           # for 'android'
 PATH="/usr/src/android-sdk-linux/platform-tools:$PATH"  # for 'adb'
 }}}
- * Edit {{{build-scripts/androidbuild.sh}}}, find the {{{android update project}}} line, and add {{{--target android-XX}}} to it (replace XX with your installed API number above).
+ * Edit {{{build-scripts/androidbuild.sh}}}, find the {{{android update project}}} line (or {{{$ANDROID update project}}} since 2.0.4), and add {{{--target android-XX}}} to it (replace XX with your installed API number above).
 
 == Simple builds ==
 
@@ -61,15 +65,14 @@ Then let's make an Android app out of it. To compile: {{{
  cd /usr/src/SDL2/build/org.libsdl.showimage/
  ln -s /usr/src/SDL2_image jni/
  ln -s /usr/src/SDL2_image/external/libwebp-0.3.0 jni/webp
- # - Edit jni/src/Android.mk
- #   LOCAL_SHARED_LIBRARIES := ... SDL2_image
- # - Edit jni/Application.mk: remove x86 where jpeg-9 doesn't build
+ sed -i -e 's/^LOCAL_SHARED_LIBRARIES.*/& SDL2_image/' jni/src/Android.mk
  ndk-build -j$(nproc)
  ant debug install
 }}}
 
 Notes:
  * application doesn't restart properly
+ * TODO: copy/paste a simple sample here so it can be easily re-tested 
 
 
 == Build an autotools-friendly environment ==
@@ -85,6 +88,7 @@ cd /usr/src/SDL2/
 cd build-scripts/
 hg revert --all  # remove traces of previous builds
 # edit androidbuild.sh and modify android update project --target android-XX
+# (or since 2.0.4: $ANDROID update project --target android-XX)
 ./androidbuild.sh org.libsdl /dev/null
 # doesn't matter if the actual build fails, it's just for setup
 cd ../build/org.libsdl/
@@ -116,13 +120,13 @@ include $(call all-subdir-makefiles)
 ndk-build -j$(nproc)
 }}}
 
-Note: no need to add `System.loadLibrary` calls in `SDLActivity.java`, your application will be linked to them and Android's Linux loads them automatically.
+Note: no need to add `System.loadLibrary` calls in `SDLActivity.java`, your application will be linked to them and Android's ld-linux loads them automatically.
 
 
 === Install SDL in a GCC toolchain ===
 
 Now:
- * Copy the NDK into a traditional GCC toolchain: {{{
+ * Copy the NDK into a traditional GCC toolchain (leave android-14 as-is): {{{
 /usr/src/android-ndk-r8c/build/tools/make-standalone-toolchain.sh \
   --platform=android-14 --install-dir=/usr/src/ndk-standalone-14-arm --arch=arm
 }}}
@@ -142,7 +146,7 @@ VERSION=0.9.12
 cd /usr/src/
 wget http://rabbit.dereferenced.org/~nenolod/distfiles/pkgconf-$VERSION.tar.gz
 tar xf pkgconf-$VERSION.tar.gz
-cd pkgconf-$VERSION
+cd pkgconf-$VERSION/
 mkdir native-android/ && cd native-android/
 ../configure --prefix=$NDK_STANDALONE/sysroot/usr
 make -j$(nproc)
@@ -158,7 +162,7 @@ libdir=${exec_prefix}/lib
 includedir=${prefix}/include
 Name: sdl2
 Description: Simple DirectMedia Layer is a cross-platform multimedia library designed to provide low level access to audio, keyboard, mouse, joystick, 3D hardware via OpenGL, and 2D video framebuffer.
-Version: 2.0.2.scm
+Version: 2.0.5.scm
 Requires:
 Conflicts:
 Libs: -lSDL2
@@ -172,7 +176,7 @@ libdir=${exec_prefix}/lib
 includedir=${prefix}/include
 Name: SDL2_image
 Description: image loading library for Simple DirectMedia Layer
-Version: 2.0.0.scm
+Version: 2.0.1.scm
 Requires: sdl2 >= 2.0.0
 Libs: -L${libdir} -lSDL2_image
 Cflags: -I${includedir}/SDL2
@@ -185,7 +189,7 @@ libdir=${exec_prefix}/lib
 includedir=${prefix}/include
 Name: SDL2_mixer
 Description: mixer library for Simple DirectMedia Layer
-Version: 2.0.0.scm
+Version: 2.0.1.scm
 Requires: sdl2 >= 2.0.0
 Libs: -L${libdir} -lSDL2_mixer
 Cflags: -I${includedir}/SDL2
@@ -198,7 +202,7 @@ libdir=${exec_prefix}/lib
 includedir=${prefix}/include
 Name: SDL2_net
 Description: net library for Simple DirectMedia Layer
-Version: 2.0.0.scm
+Version: 2.0.1.scm
 Requires: sdl2 >= 2.0.0
 Libs: -L${libdir} -lSDL2_net
 Cflags: -I${includedir}/SDL2
@@ -211,7 +215,7 @@ libdir=${exec_prefix}/lib
 includedir=${prefix}/include
 Name: SDL2_ttf
 Description: ttf library for Simple DirectMedia Layer with FreeType 2 support
-Version: 2.0.12.scm
+Version: 2.0.14.scm
 Requires: sdl2 >= 2.0.0
 Libs: -L${libdir} -lSDL2_ttf
 Cflags: -I${includedir}/SDL2
@@ -232,7 +236,7 @@ make install
 Static builds (`--disable-shared`) are recommended for simplicity (no additional `.so` to declare).
 
 Example with SDL2_gfx: {{{
-VERSION=1.0.1
+VERSION=1.0.3
 wget http://www.ferzkopp.net/Software/SDL2_gfx/SDL2_gfx-$VERSION.tar.gz
 tar xf SDL2_gfx-$VERSION.tar.gz
 mv SDL2_gfx-$VERSION/ SDL2_gfx/
@@ -273,6 +277,7 @@ endif
 PATH=$NDK_STANDALONE/bin:$PATH
 mkdir cross-android/ && cd cross-android/
 ../configure --host=arm-linux-androideabi \
+  --prefix=/android-aint-posix \
   --with-your-option --enable-your-other-option ...
 make
 }}}
@@ -317,6 +322,23 @@ cmake \
   ...
 }}}
 
+=== Troubleshootings ===
+
+If {{{ant installd}}} categorically refuses to install with {{{Failure [INSTALL_FAILED_INSUFFICIENT_STORAGE]}}}, even if you have free local storage, that may mean anything. Check logcat first: {{{
+adb logcat
+}}}
+If the error logs are not helpful (likely ;')) try locating all past traces of the application: {{{
+find / -name "org...."
+}}}
+and remove them all.
+
+If the problem persists, you may try installing on the SD card: {{{
+adb install -s bin/app-debug.apk
+}}}
+
+
+----------
+
 
 == FreeDink ==
 
@@ -348,6 +370,24 @@ mkdir cross-android/ && cd cross-android/
 make -j$(nproc) && make install
 
 
+=== glm ===
+
+VERSION=0.9.8.4
+wget -c https://github.com/g-truc/glm/archive/$VERSION.tar.gz -O glm-$VERSION.tar.gz
+tar xf glm-$VERSION.tar.gz
+cd glm-$VERSION/
+cp -a glm $NDK_STANDALONE/sysroot/usr/include/
+
+
+=== cxxtest ===
+
+VERSION=4.4
+wget https://sourceforge.net/projects/cxxtest/files/cxxtest/4.4/cxxtest-$VERSION.tar.gz/download -O cxxtest-$VERSION.tar.gz
+tar xf cxxtest-$VERSION.tar.gz
+cd cxxtest-$VERSION/
+cp -a cxxtest $NDK_STANDALONE/sysroot/usr/include/
+
+
 === FreeDink engine ===
 
 PATH=/usr/src/ndk-standalone-14-arm/bin:$PATH
@@ -358,24 +398,20 @@ cd cross-android/
 make -j$(nproc)
 make install DESTDIR=$(pwd)/destdir  # for locales
 
-# To see dynamic symbols:
-arm-linux-androideabi-objdump -R src/freedink
-# To simulate 'ldd':
-arm-linux-androideabi-objdump -x libs/armeabi/libnative-activity.so | grep NEEDED
-arm-linux-androideabi-readelf -d libs/armeabi/libnative-activity.so | grep NEEDED  # alternatively
-
 # Initial install:
 cp -a /usr/src/SDL2/android-project ../android
 cd ../android/
 ant clean
 rm -rf libs/ bin/ gen/
-mkdir -p libs/armeabi/
-cp -a /usr/src/SDL2/build/org.libsdl/libs/armeabi/* libs/armeabi/
 android update project --name freedink --path . --target android-22
 echo '<?xml version="1.0" encoding="utf-8"?><resources><string name="app_name">FreeDink</string></resources>' > res/values/strings.xml
 mkdir -p src/org/freedink/
 # create src/org/freedink/SDLActivity.java
 # ...
+
+# Install SDL libs
+mkdir -p libs/armeabi/
+cp -a /usr/src/SDL2/build/org.libsdl/libs/armeabi/* libs/armeabi/
 
 # If SDK changed:
 android update project --name freedink --path . --target android-22
@@ -404,6 +440,31 @@ adb shell
   cd /storage/sdcard0/Android/data/org.freedink/files/
   tar xf timidity.tar.gz
 exit
+
+adb shell
+  mkdir /storage/sdcard0/Android/data/org.freedink/files/freedink/
+exit
+adb push share/freedink/LiberationSans-Regular.ttf /storage/sdcard0/Android/data/org.freedink/files/freedink/
+
+
+# To see dynamic symbols:
+arm-linux-androideabi-objdump -R src/freedink
+# To simulate 'ldd':
+arm-linux-androideabi-objdump -x libs/armeabi/libnative-activity.so | grep NEEDED
+arm-linux-androideabi-readelf -d libs/armeabi/libnative-activity.so | grep NEEDED  # alternatively
+
+
+Running the test-suite uses a number of tricks, including upload new files.
+Either run 'adb root', or prepare permissions:
+adb shell
+  chmod 775 /data/data/org.freedink/lib
+  chgrp shell /data/data/org.freedink/lib
+exit
+
+To get stdout output from cxxtest:
+adb shell stop
+adb shell setprop log.redirect-stdio true
+adb shell start  # this may restart your Android session
 
 
 === Guile ===

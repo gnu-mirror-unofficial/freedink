@@ -235,7 +235,7 @@ clean-local:
 if ANDROID
 # Use ugly work-around
 LOG_DRIVER = $(SHELL) $(top_srcdir)/android/remote-test-driver
-# Needs graphics, will be marked as SKIP
+# Needs graphics, will be marked as SKIP (driver detects 'shared')
 # Can be tested manually by replacing libmain.so with it
 TestIOGfxDisplay_LDFLAGS = -shared
 else
