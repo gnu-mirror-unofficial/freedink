@@ -29,6 +29,7 @@
 IOGfxGLFuncs::IOGfxGLFuncs() {
 	GetError = (GLenum (APIENTRY*)(void))SDL_GL_GetProcAddress("glGetError");
 	Enable = (void (APIENTRY*)(GLenum cap))SDL_GL_GetProcAddress("glEnable");
+	GetIntegerv = (void (APIENTRY*)(GLenum pname, GLint* params))SDL_GL_GetProcAddress("glGetIntegerv");
 	BlendFunc = (void (APIENTRY*)(GLenum sfactor, GLenum dfactor))SDL_GL_GetProcAddress("glBlendFunc");
 
 	Clear = (void (APIENTRY *)(GLbitfield))SDL_GL_GetProcAddress("glClear");

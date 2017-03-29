@@ -104,6 +104,7 @@ bool IOGfxDisplayGL2::createOpenGLContext() {
 
 	// Let FramerateManager handle frame delay
 	// TODO: drop the extra SwapWindow/RenderPresent during speed mode
+	// TODO: ideally we should set to 1 to get VSync and avoid tearing, if achievable
 	SDL_GL_SetSwapInterval(0);
 
 	gl = new IOGfxGLFuncs();
@@ -111,6 +112,10 @@ bool IOGfxDisplayGL2::createOpenGLContext() {
 	gl->Enable(GL_BLEND);
 	//gl->Enable(GL_DEPTH_TEST);
 	gl->BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// buffer for glReadPixels, defaults to GL_BACK in double buffered mode
+	// This functions is not present in GLES2
+	//gl->ReadBuffer(GL_FRONT);
 
 	return true;
 }
@@ -418,11 +423,23 @@ void IOGfxDisplayGL2::logOpenGLInfo() {
 		profile_str = "COMPATIBILITY";
 	if (profile & SDL_GL_CONTEXT_PROFILE_ES)
 		profile_str = "ES";
-
 	log_info("OpenGL %d.%d %s", major, minor, profile_str);
+
+	int doublebuffer;
+	SDL_GL_GetAttribute(SDL_GL_DOUBLEBUFFER, &doublebuffer);
+	log_info("Double buffered: %d", doublebuffer);
+	int read_buffer;
+	gl->GetIntegerv(GL_READ_BUFFER, &read_buffer);
+	if (read_buffer == GL_FRONT)
+		log_info("Read buffer: GL_FRONT");
+	else if (read_buffer == GL_BACK)
+		log_info("Read buffer: GL_BACK");
+	else
+		log_info("Read buffer: 0x%04X", read_buffer);
 }
 
 void IOGfxDisplayGL2::logDisplayInfo() {
+	log_info("FreeDink graphics mode: IOGfxDisplayGL2");
 	IOGfxDisplay::logDisplayInfo();
 	logOpenGLInfo();
 }
@@ -457,7 +474,6 @@ SDL_Surface* IOGfxDisplayGL2::screenshot(SDL_Rect* rect) {
 #endif
 	);
 	unsigned char* pixels = (unsigned char*)image->pixels;
-	gl->ReadBuffer(GL_FRONT);
 	gl->ReadPixels(rect->x, h-rect->h-rect->y, rect->w, rect->h,
 		GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 

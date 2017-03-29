@@ -100,7 +100,9 @@ typedef unsigned char GLboolean;
 #define GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT 0x8CD7
 #define GL_FRAMEBUFFER_UNSUPPORTED 0x8CDD
 
+#define GL_READ_BUFFER 0x0C02
 #define GL_FRONT 0x0404
+#define GL_BACK 0x0405
 
 //#endif
 
@@ -110,6 +112,7 @@ public:
 
 	GLenum (APIENTRY *GetError)(void);
 	void (APIENTRY *Enable)(GLenum cap);
+	void (APIENTRY *GetIntegerv)(GLenum pname, GLint* params);
 	void (APIENTRY *BlendFunc)(GLenum sfactor, GLenum dfactor);
 
 	void (APIENTRY *Clear)(GLbitfield);

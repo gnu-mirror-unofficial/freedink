@@ -106,6 +106,11 @@ static void logRendererInfo(SDL_RendererInfo* info) {
 }
 
 void IOGfxDisplaySW::logRenderersInfo() {
+	log_info("Current renderer:\n");
+	SDL_RendererInfo info;
+	SDL_GetRendererInfo(renderer, &info);
+	logRendererInfo(&info);
+
 	log_info("Available renderers:");
 	for (int i = 0; i < SDL_GetNumRenderDrivers(); i++) {
 		SDL_RendererInfo info;
@@ -113,11 +118,6 @@ void IOGfxDisplaySW::logRenderersInfo() {
 		log_info("%d:\n", i);
 		logRendererInfo(&info);
 	}
-
-	log_info("current:\n");
-	SDL_RendererInfo info;
-	SDL_GetRendererInfo(renderer, &info);
-	logRendererInfo(&info);
 }
 
 void IOGfxDisplaySW::logRenderTextureInfo() {
@@ -147,6 +147,7 @@ void IOGfxDisplaySW::logRenderTextureInfo() {
 }
 
 void IOGfxDisplaySW::logDisplayInfo() {
+	log_info("FreeDink graphics mode: IOGfxDisplaySW");
 	IOGfxDisplay::logDisplayInfo();
 	logRenderersInfo();
 	logRenderTextureInfo();
