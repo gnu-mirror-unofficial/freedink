@@ -103,7 +103,8 @@ public:
 	void openDisplay(bool gl, bool truecolor, Uint32 flags) {
 		//log_info("* Requesting %s %s", gl?"GL2":"SW", truecolor?"truecolor":"");
 		//flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-		//flags |= SDL_WINDOW_HIDDEN; // off-screen rendering
+		//if (gl) flags |= SDL_WINDOW_HIDDEN; // off-screen rendering
+		//SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengles2");
 
 		// cache
 		if (display && lastDisplay.gl == gl && lastDisplay.truecolor == truecolor) {
@@ -125,6 +126,8 @@ public:
 
 		lastDisplay.gl = gl;
 		lastDisplay.truecolor = truecolor;
+
+		display->logDisplayInfo();
 	}
 	void closeDisplay() {
 		//SDL_Delay(1000);
@@ -239,10 +242,10 @@ public:
 		screenshot = display->screenshot(&bbbox);
 
 		getColorAtRGBA(screenshot, 0, 0, &cs);
-		TS_ASSERT_SAME_DATA(&white, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &white, sizeof(SDL_Color));
 
 		getColorAtRGBA(screenshot, 1, 0, &cs);
-		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &green, sizeof(SDL_Color));
 
 		// Check main buffer precision; not exact on Android's RGB565
 		getColorAtRGBA(screenshot, 0, 1, &cs);
@@ -286,13 +289,13 @@ public:
 			return;
 
 		getColorAtRGBA(screenshot, 0, 0, &cs);
-		TS_ASSERT_SAME_DATA(&white, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &white, sizeof(SDL_Color));
 
 		getColorAtRGBA(screenshot, 1, 0, &cs);
-		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &green, sizeof(SDL_Color));
 
 		getColorAtRGBA(screenshot, 0, 1, &cs);
-		TS_ASSERT_SAME_DATA(&dark123, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &dark123, sizeof(SDL_Color));
 
 		SDL_FreeSurface(screenshot);
 
@@ -329,15 +332,15 @@ public:
 
 		ce = { 255, 255, 255, 255 };
 		getColorAtI(screenshot, 0, 0, &cs);
-		TS_ASSERT_SAME_DATA(&ce, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &ce, sizeof(SDL_Color));
 
 		ce = { 1, 1, 1, 255 };
 		getColorAtI(screenshot, 1, 0, &cs);
-		TS_ASSERT_SAME_DATA(&ce, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &ce, sizeof(SDL_Color));
 
 		ce = { 3, 3, 3, 255 };
 		getColorAtI(screenshot, 3, 0, &cs);
-		TS_ASSERT_SAME_DATA(&ce, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &ce, sizeof(SDL_Color));
 
 		SDL_FreeSurface(screenshot);
 
@@ -412,9 +415,9 @@ public:
 		display->flipDebug(backbuffer);
 		screenshot = display->screenshot(&bbbox);
 		getColorAtRGBA(screenshot, 0, 0, &cs);
-		TS_ASSERT_SAME_DATA(&white, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &white, sizeof(SDL_Color));
 		getColorAtRGBA(screenshot, 1, 0, &cs);
-		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &green, sizeof(SDL_Color));
 		SDL_FreeSurface(screenshot);
 
 		dstrect.x = 20; dstrect.y = 20;
@@ -422,9 +425,9 @@ public:
 		display->flipDebug(backbuffer);
 		screenshot = display->screenshot(&bbbox);
 		getColorAtRGBA(screenshot, 20, 20, &cs);
-		TS_ASSERT_SAME_DATA(&white, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &white, sizeof(SDL_Color));
 		getColorAtRGBA(screenshot, 21, 20, &cs);
-		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &green, sizeof(SDL_Color));
 		SDL_FreeSurface(screenshot);
 
 		dstrect.x = -1; dstrect.y = -1;
@@ -432,7 +435,7 @@ public:
 		display->flipDebug(backbuffer);
 		screenshot = display->screenshot(&bbbox);
 		getColorAtRGBA(screenshot, 0, 0, &cs);
-		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &green, sizeof(SDL_Color));
 		SDL_FreeSurface(screenshot);
 
 		dstrect.x = 49; dstrect.y = 49;
@@ -440,7 +443,7 @@ public:
 		display->flipDebug(backbuffer);
 		screenshot = display->screenshot(&bbbox);
 		getColorAtRGBA(screenshot, 49, 49, &cs);
-		TS_ASSERT_SAME_DATA(&white, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &white, sizeof(SDL_Color));
 		SDL_FreeSurface(screenshot);
 
 
@@ -449,21 +452,21 @@ public:
 		display->flipDebug(backbuffer);
 		screenshot = display->screenshot(&bbbox);
 		getColorAtRGBA(screenshot, 0, 0, &cs);
-		TS_ASSERT_SAME_DATA(&white, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &white, sizeof(SDL_Color));
 		SDL_FreeSurface(screenshot);
 		dstrect.x = -2; dstrect.y = -2;
 		backbuffer->blit(surf, NULL, &dstrect);
 		display->flipDebug(backbuffer);
 		screenshot = display->screenshot(&bbbox);
 		getColorAtRGBA(screenshot, 0, 0, &cs);
-		TS_ASSERT_SAME_DATA(&white, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &white, sizeof(SDL_Color));
 		SDL_FreeSurface(screenshot);
 		dstrect.x = -2; dstrect.y = -2;
 		backbuffer->blitNoColorKey(surf, NULL, &dstrect);
 		display->flipDebug(backbuffer);
 		screenshot = display->screenshot(&bbbox);
 		getColorAtRGBA(screenshot, 0, 0, &cs);
-		TS_ASSERT_SAME_DATA(&black, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &black, sizeof(SDL_Color));
 		SDL_FreeSurface(screenshot);
 
 		dstrect.x = 0; dstrect.y = 0;
@@ -472,9 +475,9 @@ public:
 		display->flipDebug(backbuffer);
 		screenshot = display->screenshot(&bbbox);
 		getColorAtRGBA(screenshot, 0, 7, &cs);
-		TS_ASSERT_SAME_DATA(&white, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &white, sizeof(SDL_Color));
 		getColorAtRGBA(screenshot, 3, 7, &cs);
-		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &green, sizeof(SDL_Color));
 		SDL_FreeSurface(screenshot);
 
 		SDL_Rect srcrect = {1,1, 1,1};
@@ -483,7 +486,7 @@ public:
 		display->flipDebug(backbuffer);
 		screenshot = display->screenshot(&bbbox);
 		getColorAtRGBA(screenshot, 0, 0, &cs);
-		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &green, sizeof(SDL_Color));
 		SDL_FreeSurface(screenshot);
 
 		delete surf;
@@ -507,7 +510,7 @@ public:
 		display->flipDebug(backbuffer);
 		screenshot = display->screenshot(&bbbox);
 		getColorAtRGBA(screenshot, 0, 0, &cs);
-		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &green, sizeof(SDL_Color));
 		SDL_FreeSurface(screenshot);
 
 		dstrect.x = 5;  dstrect.y = 5;
@@ -516,33 +519,33 @@ public:
 		display->flipDebug(backbuffer);
 		screenshot = display->screenshot(&bbbox);
 		getColorAtRGBA(screenshot, 4, 4, &cs);
-		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &green, sizeof(SDL_Color));
 		getColorAtRGBA(screenshot, 5, 5, &cs);
-		TS_ASSERT_SAME_DATA(&blue, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &blue, sizeof(SDL_Color));
 		getColorAtRGBA(screenshot, 24, 14, &cs);
-		TS_ASSERT_SAME_DATA(&blue, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &blue, sizeof(SDL_Color));
 		getColorAtRGBA(screenshot, 25, 14, &cs);
-		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &green, sizeof(SDL_Color));
 		getColorAtRGBA(screenshot, 24, 15, &cs);
-		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &green, sizeof(SDL_Color));
 		SDL_FreeSurface(screenshot);
 
 		backbuffer->vlineRGB(10, 0,49, 255,255,0);
 		display->flipDebug(backbuffer);
 		screenshot = display->screenshot(&bbbox);
 		getColorAtRGBA(screenshot, 10, 0, &cs);
-		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &green, sizeof(SDL_Color));
 		getColorAtRGBA(screenshot, 10, 49, &cs);
-		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &green, sizeof(SDL_Color));
 		SDL_FreeSurface(screenshot);
 
 		backbuffer->hlineRGB(0,49, 10, 255,255,0);
 		display->flipDebug(backbuffer);
 		screenshot = display->screenshot(&bbbox);
 		getColorAtRGBA(screenshot, 0, 10, &cs);
-		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &green, sizeof(SDL_Color));
 		getColorAtRGBA(screenshot, 49, 10, &cs);
-		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &green, sizeof(SDL_Color));
 		SDL_FreeSurface(screenshot);
 
 		delete backbuffer;
@@ -561,21 +564,21 @@ public:
 		display->flipDebug(backbuffer);
 		screenshot = display->screenshot(&bbbox);
 		getColorAtRGBA(screenshot, 0, 0, &cs);
-		TS_ASSERT_SAME_DATA(&black, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &black, sizeof(SDL_Color));
 		SDL_FreeSurface(screenshot);
 
 		backbuffer->fill_screen(1, GFX_ref_pal);
 		display->flipDebug(backbuffer);
 		screenshot = display->screenshot(&bbbox);
 		getColorAtRGBA(screenshot, 0, 0, &cs);
-		TS_ASSERT_SAME_DATA(&green, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &green, sizeof(SDL_Color));
 		SDL_FreeSurface(screenshot);
 
 		backbuffer->fill_screen(2, GFX_ref_pal);
 		display->flipDebug(backbuffer);
 		screenshot = display->screenshot(&bbbox);
 		getColorAtRGBA(screenshot, 0, 0, &cs);
-		TS_ASSERT_SAME_DATA(&blue, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &blue, sizeof(SDL_Color));
 		SDL_FreeSurface(screenshot);
 
 		// Using a /8 value to support RGB565 (Android) screens
@@ -584,7 +587,7 @@ public:
 		display->flipDebug(backbuffer);
 		screenshot = display->screenshot(&bbbox);
 		getColorAtRGBA(screenshot, 0, 0, &cs);
-		TS_ASSERT_SAME_DATA(&gray16, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &gray16, sizeof(SDL_Color));
 		SDL_FreeSurface(screenshot);
 
 		delete backbuffer;
@@ -617,9 +620,9 @@ public:
 		display->flipDebug(backbuffer);
 		screenshot = display->screenshot(&bbbox);
 		getColorAtRGBA(screenshot, 0, 0, &cs);
-		TS_ASSERT_SAME_DATA(&white, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &white, sizeof(SDL_Color));
 		getColorAtRGBA(screenshot, 1, 1, &cs);
-		TS_ASSERT_SAME_DATA(&black, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &black, sizeof(SDL_Color));
 		SDL_FreeSurface(screenshot);
 
 		display->brightness = 100;
@@ -627,7 +630,7 @@ public:
 		display->flipDebug(backbuffer);
 		screenshot = display->screenshot(&bbbox);
 		getColorAtRGBA(screenshot, 0, 0, &cs);
-		TS_ASSERT_SAME_DATA(&white, &cs, sizeof(SDL_Color));
+		TS_ASSERT_SAME_DATA(&cs, &white, sizeof(SDL_Color));
 		getColorAtRGBA(screenshot, 1, 1, &cs);
 		TS_ASSERT_RELATION(std::less_equal<int>, cs.r, 100);
 		TS_ASSERT_RELATION(std::less_equal<int>, cs.g, 100);
