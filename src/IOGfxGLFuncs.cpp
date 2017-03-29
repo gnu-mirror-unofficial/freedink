@@ -35,6 +35,7 @@ IOGfxGLFuncs::IOGfxGLFuncs() {
 	ClearColor = (void (APIENTRY *)(GLclampf, GLclampf, GLclampf, GLclampf))SDL_GL_GetProcAddress("glClearColor");
 	Viewport = (void (APIENTRY *)(GLint x, GLint y, GLsizei width, GLsizei height))SDL_GL_GetProcAddress("glViewport");
 
+	ReadBuffer = (void (APIENTRY*)(GLenum mode))SDL_GL_GetProcAddress("glReadBuffer");
 	ReadPixels = (void (APIENTRY *)(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *pixels))SDL_GL_GetProcAddress("glReadPixels");
 
 	GenTextures = (void (APIENTRY*)(GLsizei n, GLuint *textures))SDL_GL_GetProcAddress("glGenTextures");

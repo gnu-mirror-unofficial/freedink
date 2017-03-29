@@ -100,6 +100,8 @@ typedef unsigned char GLboolean;
 #define GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT 0x8CD7
 #define GL_FRAMEBUFFER_UNSUPPORTED 0x8CDD
 
+#define GL_FRONT 0x0404
+
 //#endif
 
 class IOGfxGLFuncs {
@@ -114,6 +116,7 @@ public:
 	void (APIENTRY *ClearColor)(GLclampf, GLclampf, GLclampf, GLclampf);
 	void (APIENTRY *Viewport)(GLint x, GLint y, GLsizei width, GLsizei height);
 
+	void (APIENTRY *ReadBuffer)(GLenum mode);
 	void (APIENTRY *ReadPixels)(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *pixels);
 
 	void (APIENTRY *GenTextures)(GLsizei n, GLuint *textures);

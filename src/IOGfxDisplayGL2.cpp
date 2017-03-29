@@ -457,6 +457,7 @@ SDL_Surface* IOGfxDisplayGL2::screenshot(SDL_Rect* rect) {
 #endif
 	);
 	unsigned char* pixels = (unsigned char*)image->pixels;
+	gl->ReadBuffer(GL_FRONT);
 	gl->ReadPixels(rect->x, h-rect->h-rect->y, rect->w, rect->h,
 		GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
