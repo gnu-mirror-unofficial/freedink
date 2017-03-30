@@ -23,7 +23,7 @@ PATH="/usr/src/android-ndk-r8c:$PATH"                   # for 'ndk-build'
 PATH="/usr/src/android-sdk-linux/tools:$PATH"           # for 'android'
 PATH="/usr/src/android-sdk-linux/platform-tools:$PATH"  # for 'adb'
 }}}
- * Edit {{{build-scripts/androidbuild.sh}}}, find the {{{android update project}}} line (or {{{$ANDROID update project}}} since 2.0.4), and add {{{--target android-XX}}} to it (replace XX with your installed API number above).
+ * Edit {{{build-scripts/androidbuild.sh}}}, find the {{{$ANDROID update project}}} line, and add {{{--target android-XX}}} to it (replace XX with your installed API number above).
 
 == Simple builds ==
 
@@ -45,7 +45,82 @@ Notes:
 
 === SDL wrapper + SDL_image NDK module ===
 
-Let's modify `SDL2_image/showimage.c` to show a simple embedded image (e.g. XPM). See [[#Basic_SDL_image_app]].
+Let's modify `SDL2_image/showimage.c` to show a simple embedded image (e.g. XPM).
+
+{{{
+#include "SDL.h"
+#include "SDL_image.h"
+
+/* XPM */
+static char * icon_xpm[] = {
+  "32 23 3 1",
+  " 	c #FFFFFF",
+  ".	c #000000",
+  "+	c #FFFF00",
+  "                                ",
+  "            ........            ",
+  "          ..++++++++..          ",
+  "         .++++++++++++.         ",
+  "        .++++++++++++++.        ",
+  "       .++++++++++++++++.       ",
+  "      .++++++++++++++++++.      ",
+  "      .+++....++++....+++.      ",
+  "     .++++.. .++++.. .++++.     ",
+  "     .++++....++++....++++.     ",
+  "     .++++++++++++++++++++.     ",
+  "     .++++++++++++++++++++.     ",
+  "     .+++++++++..+++++++++.     ",
+  "     .+++++++++..+++++++++.     ",
+  "     .++++++++++++++++++++.     ",
+  "      .++++++++++++++++++.      ",
+  "      .++...++++++++...++.      ",
+  "       .++............++.       ",
+  "        .++..........++.        ",
+  "         .+++......+++.         ",
+  "          ..++++++++..          ",
+  "            ........            ",
+  "                                "};
+
+int main(int argc, char *argv[])
+{
+  SDL_Window *window;
+  SDL_Renderer *renderer;
+  SDL_Texture *texture;
+  int w, h, done;
+  SDL_Event event;
+
+  if (SDL_CreateWindowAndRenderer(0, 0, 0, &window, &renderer) < 0) {
+    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+		 "SDL_CreateWindowAndRenderer() failed: %s\n", SDL_GetError());
+    return(2);
+  }
+
+  SDL_Surface *surface = IMG_ReadXPMFromArray(icon_xpm);
+  texture = SDL_CreateTextureFromSurface(renderer, surface);
+  if (!texture) {
+    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+		 "Couldn't load texture: %s\n", SDL_GetError());
+    return(2);
+  }
+  SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+  SDL_SetWindowSize(window, 800, 480);
+  
+  done = 0;
+  while (!done) {
+    while (SDL_PollEvent(&event)) {
+      if (event.type == SDL_QUIT)
+	done = 1;
+    }
+    SDL_RenderCopy(renderer, texture, NULL, NULL);
+    SDL_RenderPresent(renderer);
+    SDL_Delay(100);
+  }
+  SDL_DestroyTexture(texture);
+
+  SDL_Quit();
+  return(0);
+}
+}}}
 
 Then let's make an Android app out of it. To compile: {{{
 cd /usr/src/SDL2/build-scripts/
@@ -70,25 +145,37 @@ Note: this environment can be used for CMake too.
 
 === Compile a shared binaries bundle for SDL and SDL_* ===
 
+ * Get the latests SDL2_* releases: {{{
+cd /usr/src/
+wget https://libsdl.org/release/SDL2-2.0.5.tar.gz
+wget https://www.libsdl.org/projects/SDL_image/release/SDL2_image-2.0.1.tar.gz
+wget https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-2.0.1.tar.gz
+wget https://www.libsdl.org/projects/SDL_net/release/SDL2_net-2.0.1.tar.gz
+wget https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-2.0.14.tar.gz
+
+tar xf SDL2-2.0.5.tar.gz
+tar xf SDL2_image-2.0.1.tar.gz
+tar xf SDL2_mixer-2.0.1.tar.gz
+tar xf SDL2_net-2.0.1.tar.gz
+tar xf SDL2_ttf-2.0.14.tar.gz
+
+ln -s SDL2-2.0.5 SDL2
+ln -s SDL2_image-2.0.1 SDL2_image
+ln -s SDL2_mixer-2.0.1 SDL2_mixer
+ln -s SDL2_net-2.0.1 SDL2_net
+ln -s SDL2_ttf-2.0.14 SDL2_ttf
+}}}
  * Start with a minimal build: {{{
 cd /usr/src/SDL2/
 cd build-scripts/
-hg revert --all  # remove traces of previous builds
-# edit androidbuild.sh and modify android update project --target android-XX
-# (or since 2.0.4: $ANDROID update project --target android-XX)
+#hg revert --all  # remove traces of previous builds
+# edit androidbuild.sh and modify $ANDROID update project --target android-XX
 ./androidbuild.sh org.libsdl /dev/null
 # doesn't matter if the actual build fails, it's just for setup
 cd ../build/org.libsdl/
 }}}
  * Remove reference to our dummy file: {{{
 rm -rf jni/src/
-}}}
- * Get the latests SDL2_* libs from Mercurial (they fix a few bugs): {{{
-cd /usr/src/
-hg clone http://hg.libsdl.org/SDL_image SDL2_image
-hg clone http://hg.libsdl.org/SDL_mixer SDL2_mixer
-hg clone http://hg.libsdl.org/SDL_net   SDL2_net
-hg clone http://hg.libsdl.org/SDL_ttf   SDL2_ttf
 }}}
  * Reference SDL_image, SDL_mixer, SDL_ttf, and their dependencies, as NDK modules: {{{
 ln -s /usr/src/SDL2_image jni/
@@ -149,7 +236,7 @@ libdir=${exec_prefix}/lib
 includedir=${prefix}/include
 Name: sdl2
 Description: Simple DirectMedia Layer is a cross-platform multimedia library designed to provide low level access to audio, keyboard, mouse, joystick, 3D hardware via OpenGL, and 2D video framebuffer.
-Version: 2.0.5.scm
+Version: 2.0.5
 Requires:
 Conflicts:
 Libs: -lSDL2
@@ -163,7 +250,7 @@ libdir=${exec_prefix}/lib
 includedir=${prefix}/include
 Name: SDL2_image
 Description: image loading library for Simple DirectMedia Layer
-Version: 2.0.1.scm
+Version: 2.0.1
 Requires: sdl2 >= 2.0.0
 Libs: -L${libdir} -lSDL2_image
 Cflags: -I${includedir}/SDL2
@@ -176,7 +263,7 @@ libdir=${exec_prefix}/lib
 includedir=${prefix}/include
 Name: SDL2_mixer
 Description: mixer library for Simple DirectMedia Layer
-Version: 2.0.1.scm
+Version: 2.0.1
 Requires: sdl2 >= 2.0.0
 Libs: -L${libdir} -lSDL2_mixer
 Cflags: -I${includedir}/SDL2
@@ -189,7 +276,7 @@ libdir=${exec_prefix}/lib
 includedir=${prefix}/include
 Name: SDL2_net
 Description: net library for Simple DirectMedia Layer
-Version: 2.0.1.scm
+Version: 2.0.1
 Requires: sdl2 >= 2.0.0
 Libs: -L${libdir} -lSDL2_net
 Cflags: -I${includedir}/SDL2
@@ -202,7 +289,7 @@ libdir=${exec_prefix}/lib
 includedir=${prefix}/include
 Name: SDL2_ttf
 Description: ttf library for Simple DirectMedia Layer with FreeType 2 support
-Version: 2.0.14.scm
+Version: 2.0.14
 Requires: sdl2 >= 2.0.0
 Libs: -L${libdir} -lSDL2_ttf
 Cflags: -I${includedir}/SDL2
@@ -309,7 +396,7 @@ cmake \
   ...
 }}}
 
-=== Troubleshootings ===
+== Troubleshootings ==
 
 If {{{ant installd}}} categorically refuses to install with {{{Failure [INSTALL_FAILED_INSUFFICIENT_STORAGE]}}}, even if you have free local storage, that may mean anything. Check logcat first: {{{
 adb logcat
@@ -323,80 +410,9 @@ If the problem persists, you may try installing on the SD card: {{{
 adb install -s bin/app-debug.apk
 }}}
 
-<<Anchor(Basic_SDL_image_app)>>
-== Basic SDL_image app ==
+-----
 
-{{{
-#include "SDL.h"
-#include "SDL_image.h"
-
-/* XPM */
-static char * icon_xpm[] = {
-  "32 23 3 1",
-  " 	c #FFFFFF",
-  ".	c #000000",
-  "+	c #FFFF00",
-  "                                ",
-  "            ........            ",
-  "          ..++++++++..          ",
-  "         .++++++++++++.         ",
-  "        .++++++++++++++.        ",
-  "       .++++++++++++++++.       ",
-  "      .++++++++++++++++++.      ",
-  "      .+++....++++....+++.      ",
-  "     .++++.. .++++.. .++++.     ",
-  "     .++++....++++....++++.     ",
-  "     .++++++++++++++++++++.     ",
-  "     .++++++++++++++++++++.     ",
-  "     .+++++++++..+++++++++.     ",
-  "     .+++++++++..+++++++++.     ",
-  "     .++++++++++++++++++++.     ",
-  "      .++++++++++++++++++.      ",
-  "      .++...++++++++...++.      ",
-  "       .++............++.       ",
-  "        .++..........++.        ",
-  "         .+++......+++.         ",
-  "          ..++++++++..          ",
-  "            ........            ",
-  "                                "};
-
-int main(int argc, char *argv[])
-{
-  SDL_Window *window;
-  SDL_Renderer *renderer;
-  SDL_Texture *texture;
-  int w, h, done;
-  SDL_Event event;
-
-  if (SDL_CreateWindowAndRenderer(0, 0, 0, &window, &renderer) < 0) {
-    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-		 "SDL_CreateWindowAndRenderer() failed: %s\n", SDL_GetError());
-    return(2);
-  }
-
-  SDL_Surface *surface = IMG_ReadXPMFromArray(icon_xpm);
-  texture = SDL_CreateTextureFromSurface(renderer, surface);
-  if (!texture) {
-    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-		 "Couldn't load texture: %s\n", SDL_GetError());
-    return(2);
-  }
-  SDL_QueryTexture(texture, NULL, NULL, &w, &h);
-  SDL_SetWindowSize(window, 800, 480);
-  
-  done = 0;
-  while (!done) {
-    while (SDL_PollEvent(&event)) {
-      if (event.type == SDL_QUIT)
-	done = 1;
-    }
-    SDL_RenderCopy(renderer, texture, NULL, NULL);
-    SDL_RenderPresent(renderer);
-    SDL_Delay(100);
-  }
-  SDL_DestroyTexture(texture);
-
-  SDL_Quit();
-  return(0);
-}
+If you get in your logcat: {{{
+SDL: Couldn't locate Java callbacks, check that they're named and typed correctly
 }}}
+this probably means your {{{SDLActivity.java}}} is out-of-sync with your libSDL2.so.

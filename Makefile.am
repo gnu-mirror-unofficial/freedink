@@ -14,6 +14,8 @@ EXTRA_DIST += BUILD TRANSLATIONS.txt TROUBLESHOOTING
 EXTRA_DIST += debian freedink.spec
 # Other programs of interest
 EXTRA_DIST += contrib
+# Android
+EXTRA_DIST += android
 
 dist-hook:
 	find $(distdir) -name '*~' | xargs -r rm -f
@@ -22,6 +24,8 @@ dist-hook:
 	find $(distdir) -name '.gitignore' | xargs -r rm -f
 #	At the end of each line (doubled $), add a \r, so we get \r\n
 	cd $(distdir) && sed 's/$$/\r/' README > README.txt
+#	Remove Android generated files
+	cd $(distdir)/android/ && make distclean
 
 version:
 	@echo $(VERSION)
