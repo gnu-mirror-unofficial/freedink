@@ -22,5 +22,6 @@
 ##
 # Packaged build dependencies
 ##
+export DEBIAN_FRONTEND=noninteractive
 apt-get -y install upx
-apt-get -y install zip strip-nondeterminism file
+apt-get -y install zip

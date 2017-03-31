@@ -91,16 +91,24 @@ popd  # cross-w32/
 # Set reproducible date for all generated files:
 #find zip/ -newermt "@${SOURCE_DATE_EPOCH}" -print0 \
 #  | xargs -0r touch --no-dereference --date="@${SOURCE_DATE_EPOCH}"
-# Timestamps are from Git here, so replace them for all files:
+# Timestamps are from Git here (snapshot), so replace them for all files:
 find zip/ -print0 \
   | xargs -0r touch --no-dereference --date="@${SOURCE_DATE_EPOCH}"
 
 rm -f ../$PACKAGE-$VERSION-bin.zip
-(cd zip/ && zip -Xr ../../$PACKAGE-$VERSION-bin.zip .)
+# Reproducible build:
+# TZ=UTC: avoid MS-DOS timestamp variations due to timezone
+#   https://wiki.debian.org/ReproducibleBuilds/TimestampsInZip
+# -X: strip platform-specific info (timestamps, uid/gid, permissions)
+# sort file list https://wiki.debian.org/ReproducibleBuilds/FileOrderInTarballs
+(cd zip/ && find . -print0 \
+  | LC_ALL=C sort -z \
+  | TZ=UTC xargs -0 -n10 \
+    zip -X ../../$PACKAGE-$VERSION-bin.zip)
 popd  # $PACKAGE-$VERSION/
 
-# Reproducible build:
+# Alternatively we might use strip-nondeterminism:
 # Sort file list and insert timezone-independent timestamp
 #strip-nondeterminism -T $SOURCE_DATE_EPOCH $PACKAGE-$VERSION-bin.zip
 # ^ stuck in the '80s until Stretch is stable, no -T
-strip-nondeterminism $PACKAGE-$VERSION-bin.zip
+#strip-nondeterminism $PACKAGE-$VERSION-bin.zip

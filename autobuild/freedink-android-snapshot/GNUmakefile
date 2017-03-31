@@ -13,3 +13,4 @@ all:
 	   freedink-android:snapshot /home/repro/wd/build.sh \
 	     $(VERSION) $$(git log --format="%ct" -n 1)
 	ls -lh wd/freedink-$(VERSION)/android/bin/freedink-debug.apk
+	sha256sum wd/freedink-$(VERSION)/android/bin/freedink-debug.apk

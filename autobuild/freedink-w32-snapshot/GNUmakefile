@@ -13,3 +13,4 @@ all:
 	   freedink-w32:snapshot /home/repro/wd/build.sh \
 	     $(VERSION) $$(git log --format="%ct" -n 1)
 	ls -lh wd/freedink-$(VERSION)-bin.zip
+	sha256sum wd/freedink-$(VERSION)-bin.zip
