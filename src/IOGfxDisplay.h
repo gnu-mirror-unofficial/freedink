@@ -27,7 +27,8 @@ public:
 
 	virtual void clear() = 0;
 	/* Refresh the physical screen, applying brightness and palette */
-	virtual void flip(IOGfxSurface* backbuffer, SDL_Rect* dstrect, bool interpolation) = 0;
+	virtual void flip(IOGfxSurface* backbuffer, SDL_Rect* dstrect,
+					  bool interpolation, bool hwflip) = 0;
 	virtual void onSizeChange(int w, int h) = 0;
 	virtual IOGfxSurface* upload(SDL_Surface* s) = 0;
 	virtual IOGfxSurface* allocBuffer(int surfW, int surfH) = 0;

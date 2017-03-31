@@ -60,8 +60,6 @@ bool IOGfxDisplayGL2::open() {
 	if (!createPrograms()) return false;
 	if (!createPalette()) return false;
 
-	androidWorkAround();
-
 	return true;
 }
 
@@ -445,16 +443,6 @@ void IOGfxDisplayGL2::logDisplayInfo() {
 }
 
 
-
-void IOGfxDisplayGL2::androidWorkAround() {
-#ifdef __ANDROID__
-	// Android/GalaxyS/CM11 is buggy (no/delayed texture blits) on startup, a full standard blit seems to help
-	gl->UseProgram(blit->program);
-	gl->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	SDL_GL_SwapWindow(window);
-#endif
-}
-
 void IOGfxDisplayGL2::clear() {
 	gl->BindFramebuffer(GL_FRAMEBUFFER, 0);
 	gl->ClearColor(0,0,0,1);
@@ -508,7 +496,8 @@ void IOGfxDisplayGL2::setVertexAttrib(IOGfxGLProg* prog, GLuint attribLocation, 
 			);
 }
 
-void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer, SDL_Rect* dstrect, bool interpolation) {
+void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer, SDL_Rect* dstrect,
+						   bool interpolation, bool hwflip) {
 	if (backbuffer == NULL)
 		SDL_SetError("IOGfxDisplayGL2::flip: passed a NULL surface");
 	IOGfxSurfaceGL2* surf = dynamic_cast<IOGfxSurfaceGL2*>(backbuffer);
@@ -555,7 +544,8 @@ void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer, SDL_Rect* dstrect, bool int
 //	gl->DisableVertexAttribArray(prog->attributes["v_coord"]);
 //	gl->DisableVertexAttribArray(blit->attributes["v_texcoord"]);
 
-	SDL_GL_SwapWindow(window);
+	if (hwflip)
+		SDL_GL_SwapWindow(window);
 }
 
 

@@ -105,6 +105,7 @@ public:
 		//flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 		//if (gl) flags |= SDL_WINDOW_HIDDEN; // off-screen rendering
 		//SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengles2");
+		//SDL_SetHint(SDL_HINT_RENDER_DRIVER, "software");
 
 		// cache
 		if (display && lastDisplay.gl == gl && lastDisplay.truecolor == truecolor) {
@@ -153,7 +154,7 @@ public:
 
 	void ctestSplash() {
 		// A first inter-texture blit before anything else
-		// Tests IOGfxDisplayGL2->androidWorkAround()
+		// In 2015 the splash screen (first blit+flip) was ignored/delayed
 		SDL_Surface* img;
 		IOGfxSurface *backbuffer, *splash;
 
@@ -178,10 +179,13 @@ public:
 		//g->flip(splash); // not a single flip
 
 		SDL_Rect dstrect = {0, 0, -1, -1};
-		// without workaround, the blit is ignored/delayed
 		backbuffer->blit(splash, NULL, &dstrect);
 
 		// Check the result:
+		display->flipStretch(backbuffer);
+		// Double the blit in case snapshot() reads from the backbuffer
+		// https://bugzilla.libsdl.org/show_bug.cgi?id=3619#c4
+		// Kinda defeats the goal of this test...
 		display->flipStretch(backbuffer);
 
 		SDL_Surface* screenshot = display->screenshot();

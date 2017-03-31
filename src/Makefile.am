@@ -243,4 +243,9 @@ else
 LOG_DRIVER = $(SHELL) $(top_srcdir)/autotools/test-driver
 endif
 
+if WOE
+# Outside of wine stdout/stderr is not working unless explicitely redirected with > and 2>
+TestIOGfxDisplay_LDFLAGS = -mconsole
+endif
+
 endif

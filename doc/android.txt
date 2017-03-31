@@ -138,9 +138,10 @@ arm-linux-androideabi-readelf -d libs/armeabi/libnative-activity.so | grep NEEDE
 Running the test-suite uses a number of tricks, including upload new files.
 Either run 'adb root', or prepare permissions:
 adb shell
-  chmod 775 /data/data/org.freedink/lib
-  chgrp shell /data/data/org.freedink/lib
+  chmod 775 /data/data/org.freedink/lib/
+  chgrp shell /data/data/org.freedink/lib/
 exit
+# => this seems to be causing issues on (re)install though
 
 To get stdout output from cxxtest:
 adb shell stop

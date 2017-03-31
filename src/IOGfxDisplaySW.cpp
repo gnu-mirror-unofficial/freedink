@@ -188,7 +188,8 @@ void gfx_fade_apply(SDL_Surface* screen, int brightness) {
 	SDL_UnlockSurface(screen);
 }
 
-void IOGfxDisplaySW::flip(IOGfxSurface* backbuffer, SDL_Rect* dstrect, bool interpolation) {
+void IOGfxDisplaySW::flip(IOGfxSurface* backbuffer, SDL_Rect* dstrect,
+						  bool interpolation, bool hwflip) {
 	/* For now we do all operations on the CPU side and perform a big
 	   texture update at each frame; this is necessary to support
 	   palette and fade_down/fade_up. */
@@ -227,7 +228,9 @@ void IOGfxDisplaySW::flip(IOGfxSurface* backbuffer, SDL_Rect* dstrect, bool inte
 		SDL_UpdateTexture(render_texture_nearest, NULL, source->pixels, source->pitch);
 		SDL_RenderCopy(renderer, render_texture_nearest, NULL, dstrect);
 	}
-	SDL_RenderPresent(renderer);
+
+	if (hwflip)
+		SDL_RenderPresent(renderer);
 }
 
 void IOGfxDisplaySW::onSizeChange(int w, int h) {

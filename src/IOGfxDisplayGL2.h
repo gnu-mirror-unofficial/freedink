@@ -67,7 +67,8 @@ public:
 	virtual void onSizeChange(int w, int h);
 	virtual IOGfxSurface* upload(SDL_Surface* image);
 	virtual IOGfxSurface* allocBuffer(int surfW, int surfH);
-	virtual void flip(IOGfxSurface* backbuffer, SDL_Rect* dstrect, bool interpolation);
+	virtual void flip(IOGfxSurface* backbuffer, SDL_Rect* dstrect,
+					  bool interpolation, bool hwflip);
 	virtual void updatePalette();
 
 	virtual SDL_Surface* screenshot(SDL_Rect* rect);
@@ -86,7 +87,6 @@ public:
 	GLint getUniformLocation(GLuint program, const char* name);
 	void setVertexAttrib(IOGfxGLProg* prog, GLuint attribLocation, GLuint vbo, GLint size);
 	bool createPalette();
-	void androidWorkAround();
 };
 
 #endif

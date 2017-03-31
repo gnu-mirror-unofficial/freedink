@@ -6,11 +6,11 @@ all: build.xml
 	ant debug
 
 install:
-	ant installd
+#	ant installd
+	adb install -r bin/freedink-debug.apk
 	adb shell am start -a android.intenon.MAIN -n org.freedink/org.freedink.FreeDink
 
 update:
-	(cd ../cross-android/ && make)
 	adb shell am force-stop org.freedink
 	adb push ../cross-android/src/freedink /data/data/org.freedink/lib/libmain.so
 	adb shell am start -a android.intenon.MAIN -n org.freedink/org.freedink.FreeDink
