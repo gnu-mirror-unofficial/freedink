@@ -44,25 +44,25 @@ mkdir zip/
 
 # documentation
 for i in TRANSLATIONS.txt; do
-    cp $i zip/freedink-$i
+    cp $i zip/$PACKAGE-$i
 done
 for i in AUTHORS COPYING NEWS README THANKS TROUBLESHOOTING; do
-    cp $i zip/freedink-$i.txt
+    cp $i zip/$PACKAGE-$i.txt
 done
-cat <<EOF > zip/freedink-SOURCE.txt
+cat <<EOF > zip/$PACKAGE-SOURCE.txt
 The FreeDink source code is available at:
   http://ftp.gnu.org/gnu/freedink/
 
 The source code is the "recipe" of FreeDink, that let you study it,
 modify it, and redistribute your changes.  The GNU GPL license
-explicitely allows you to do so (see freedink-COPYING.txt).
+explicitely allows you to do so (see $PACKAGE-COPYING.txt).
 
 If you upload a FreeDink .exe on your website, you must also offer the
 corresponding source code for download.
 EOF
 
 # Include documentation with MS-DOS newlines (if not already)
-sed -i -e 's/\(^\|[^\r]\)$/\1\r/' zip/freedink-*.txt
+sed -i -e 's/\(^\|[^\r]\)$/\1\r/' zip/$PACKAGE-*.txt
 
 
 # full-static
