@@ -8,33 +8,6 @@ These instructions may sound redundant with the packaging specs (.deb,
 compile the latest, not-yet-packaged sources :)
 
 
-Required fixes for SDL2, some still needed as of 2015-07 because SDL2
-maintainers don't release so often :/
-
-- SDL2_ttf 2.0.12: vgasys.fon doesn't load
-  - https://bugzilla.libsdl.org/show_bug.cgi?id=2574
-    Fixed in development version: https://hg.libsdl.org/SDL_ttf/raw-rev/86aa91bce20c
-    (cd /usr/src/SDL2_ttf/ && hg diff -c 86aa91bce20c) > /usr/src/mxe/src/sdl2_ttf-1-beuc.patch
-- SDL2_mixer 2.0.0:
-  - speed issues with TiMidity back-end
-    - https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=750706
-      https://bugzilla.libsdl.org/show_bug.cgi?id=2140
-      Fixed in development version: https://hg.libsdl.org/SDL_mixer/raw-rev/8ef083375857
-      (cd /usr/src/SDL2_mixer/ && hg diff -c 8ef083375857) > /usr/src/mxe/src/sdl2_mixer-1-beuc.patch
-  - Enable TiMidity++ on Android
-    https://bugzilla.libsdl.org/show_bug.cgi?id=2600
-    Fixed in development version: https://hg.libsdl.org/SDL_mixer/rev/80c2a4592ff4
-  - Fluidsynth can't be enabled AFAICS
-    - TODO: check and report me
-- SDL2_image 2.0.0: no transparency when loading XPM files
-  - https://bugzilla.libsdl.org/show_bug.cgi?id=2578
-    Fixed in development version: https://hg.libsdl.org/SDL_image/raw-rev/c0132bb6251a
-    (cd /usr/src/SDL2_image/ && hg diff -c c0132bb6251a) > /usr/src/mxe/src/sdl2_image-1-beuc.patch
-
-This can help:
-sed -i -e 's/^Version: 2.0.[0-9]\+$/&.scm/' /usr/src/mxe/usr/i686-w64-mingw32.static/lib/pkgconfig/SDL2_*
-
-
 On a minimal Debian system
 ==========================
 
