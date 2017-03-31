@@ -9,7 +9,7 @@ all:
 	cp -a build.sh wd/
 	(cd ../../native/ && make dist)
 	mv ../../native/freedink-$(VERSION).tar.gz wd/
-	docker run -it -v "$$(pwd)/wd:/home/repro/wd" -v "$$(pwd)/../..:/usr/src/freedink" \
+	docker run -it -v "$$(pwd)/wd:/home/repro/wd" \
 	   freedink-android:snapshot /home/repro/wd/build.sh \
 	     $(VERSION) $$(git log --format="%ct" -n 1)
 	ls -lh wd/freedink-$(VERSION)/android/bin/freedink-debug.apk
