@@ -151,3 +151,4 @@ https://fedoraproject.org/wiki/Package_maintenance_guide#Typical_fedpkg_session
 See also:
 https://admin.fedoraproject.org/pkgdb/package/freedink/
 http://pkgs.fedoraproject.org/cgit/freedink.git/
+https://apps.fedoraproject.org/packages/freedink
