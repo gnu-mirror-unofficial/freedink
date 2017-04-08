@@ -72,11 +72,13 @@ rm -rf cross-w32/
 mkdir cross-w32/
 pushd cross-w32/
 # Reproducible build:
-# --no-insert-timestamp + strip is *almost* reproducible with this version of binutils
-# http://blog.beuc.net/posts/Practical_basics_of_reproducible_builds_2/
+# --no-insert-timestamp: set PE build timestamp to 0
+# Security:
+# --nxcompat: DEP
+# --dynamicbase: ASLR
 ../configure --host=i686-w64-mingw32.static \
   --enable-static --enable-upx --disable-tests \
-  LDFLAGS='-Wl,--no-insert-timestamp'
+  LDFLAGS='-Wl,--no-insert-timestamp -Wl,--nxcompat -Wl,--dynamicbase'
 make -j $(nproc)
 make install-strip DESTDIR=$(pwd)/destdir
 # move .exe but avoid symlinks
