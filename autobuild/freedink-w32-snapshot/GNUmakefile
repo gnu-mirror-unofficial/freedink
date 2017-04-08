@@ -6,6 +6,7 @@ all:
 	docker build -t freedink-w32:snapshot .
 	if [ ! -e wd/ ]; then mkdir wd/; fi
 	chown 1000:1000 wd/
+	chmod 00755 wd/
 	cp -a build.sh wd/
 	(cd ../../native/ && make dist)
 	mv ../../native/freedink-$(VERSION).tar.gz wd/
