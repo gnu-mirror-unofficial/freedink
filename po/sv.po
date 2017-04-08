@@ -1,0 +1,214 @@
+# Swedish messages for freedink
+# Copyright © 2015 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the freedink package.
+# Sebastian Rasmussen <sebras@gmail.com>, 2015.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: freedink 108.2\n"
+"Report-Msgid-Bugs-To: bug-freedink@gnu.org\n"
+"POT-Creation-Date: 2014-05-27 20:36+0000\n"
+"PO-Revision-Date: 2016-04-09 23:25+0200\n"
+"Last-Translator: Sebastian Rasmussen <sebras@gmail.com>\n"
+"Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
+"Language: sv\n"
+"X-Bugs: Report translation errors to the Language-Team address.\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.8.7.1\n"
+
+#: src/init.c:108
+#, c-format
+msgid "Usage: %s [OPTIONS]...\n"
+msgstr "Användning: %s [FLAGGOR]…\n"
+
+#: src/init.c:110
+#, c-format
+msgid "Starts the Dink Smallwood game or one of its D-Mods."
+msgstr "Startar spelet Dink Smallwood eller en av dess D-moduler."
+
+#: src/init.c:112
+#, c-format
+msgid "Edit the Dink Smallwood game or one of its D-Mods."
+msgstr "Redigera spelet Dink Smallwood eller en av dess D-moduler."
+
+#: src/init.c:115
+#, c-format
+msgid "  -h, --help            Display this help screen\n"
+msgstr "  -h, --help            Visa denna hjälptext\n"
+
+#: src/init.c:116
+#, c-format
+msgid "  -v, --version         Display the version\n"
+msgstr "  -v, --version         Visa versionen\n"
+
+#: src/init.c:118
+#, c-format
+msgid "  -g, --game <dir>      Specify a DMod directory\n"
+msgstr "  -g, --game <kat>      Ange en DMod-katalog\n"
+
+#: src/init.c:119
+#, c-format
+msgid "  -r, --refdir <dir>    Specify base directory for dink/graphics, D-Mods, etc.\n"
+msgstr "  -r, --refdir <kat>    Ange en grundkatalog för dink/graphics, D-moduler, etc.\n"
+
+#: src/init.c:121
+#, c-format
+msgid "  -d, --debug           Explain what is being done\n"
+msgstr "  -d, --debug           Förklara vad som händer\n"
+
+#: src/init.c:122
+#, c-format
+msgid "  -i, --noini           Do not attempt to write dinksmallwood.ini\n"
+msgstr "  -i, --noini           Försök inte att skriva till dinksmallwood.ini\n"
+
+#: src/init.c:123
+#, c-format
+msgid "  -j, --nojoy           Do not attempt to use joystick\n"
+msgstr "  -j, --nojoy           Försök inte att använda en joystick\n"
+
+#: src/init.c:124
+#, c-format
+msgid "  -s, --nosound         Do not play sound\n"
+msgstr "  -s, --nosound         Spela inte upp ljud\n"
+
+#: src/init.c:125
+#, c-format
+msgid "  -t, --truecolor       Allow more colours (for recent D-Mod graphics)\n"
+msgstr "  -t, --truecolor       Tillåt fler färger (för nyare D-modulgrafik)\n"
+
+#: src/init.c:126
+#, c-format
+msgid "  -w, --window          Use windowed mode instead of screen mode\n"
+msgstr "  -w, --window          Använd fönsterläge istället för skärmläge\n"
+
+#: src/init.c:127
+#, c-format
+msgid "  -7, --v1.07           Enable v1.07 compatibility mode\n"
+msgstr "  -7, --v1.07           Aktivera v1.07-kompatibilitetsläge\n"
+
+#. TRANSLATORS: The placeholder indicates the bug-reporting address
+#. for this package.  Please add _another line_ saying "Report
+#. translation bugs to <...>\n" with the address for translation
+#. bugs (typically your translation team's web or email
+#. address).
+#: src/init.c:137
+#, c-format
+msgid "Report bugs to %s.\n"
+msgstr ""
+"Rapportera fel till %s.\n"
+"Skicka synpunkter på översättningen till <tp-sv@listor.tp-sv.se>.\n"
+"\n"
+
+#: src/init.c:279
+#, c-format
+msgid "Note: -nomovie is accepted for compatiblity, but has no effect.\n"
+msgstr "Not: -nomovie accepteras för kompatibilitet, men har ingen effekt.\n"
+
+#: src/freedink.c:2679
+msgid "`$I don't see anything here."
+msgstr "`$Jag ser ingenting här."
+
+#: src/freedink.c:2680
+msgid "`$Huh?"
+msgstr "`$Va?"
+
+#: src/freedink.c:2681
+msgid "`$I'm fairly sure I can't talk to or use that."
+msgstr "`$Jag är ganska säker på att jag inte kan prata med eller använda den där."
+
+#: src/freedink.c:2682
+msgid "`$What?"
+msgstr "`$Va?"
+
+#: src/freedink.c:2683
+msgid "`$I'm bored."
+msgstr "`$Jag är uttråkad."
+
+#: src/freedink.c:2684
+msgid "`$Not much happening here."
+msgstr "`$Det händer inte mycket här."
+
+#: src/freedink.c:2792
+msgid "`$I don't know any magic."
+msgstr "`$Jag kan ingen magi."
+
+#: src/freedink.c:2793
+msgid "`$I'm no wizard!"
+msgstr "`$Jag är inte någon magiker!"
+
+#: src/freedink.c:2794
+msgid "`$I need to learn magic before trying this."
+msgstr "`$Jag måste lära mig magi innan jag provar detta."
+
+#: src/freedink.c:2795
+msgid "`$I'm gesturing wildly to no avail!"
+msgstr "`$Jag gestikulerar vilt till ingen nytta!"
+
+#: src/freedink.c:2796
+msgid "`$Nothing happened."
+msgstr "`$Inget händer."
+
+#: src/freedink.c:2797
+msgid "`$Hocus pocus!"
+msgstr "`$Hokus pokus!"
+
+#: src/dinkc.c:687
+msgid "Attack"
+msgstr "Attackera"
+
+#: src/dinkc.c:688
+msgid "Talk/Examine"
+msgstr "Prata/undersök"
+
+#: src/dinkc.c:689
+msgid "Magic"
+msgstr "Magi"
+
+#: src/dinkc.c:690
+msgid "Item Screen"
+msgstr "Föremålsskärm"
+
+#: src/dinkc.c:691
+msgid "Main Menu"
+msgstr "Huvudmeny"
+
+#: src/dinkc.c:692
+msgid "Map"
+msgstr "Karta"
+
+#: src/dinkc.c:693 src/dinkc.c:694 src/dinkc.c:695 src/dinkc.c:696
+msgid "Unused"
+msgstr "Oanvänd"
+
+#: src/dinkc.c:697
+msgid "Down"
+msgstr "Ner"
+
+#: src/dinkc.c:698
+msgid "Left"
+msgstr "Vänster"
+
+#: src/dinkc.c:699
+msgid "Right"
+msgstr "Höger"
+
+#: src/dinkc.c:700
+msgid "Up"
+msgstr "Upp"
+
+#: src/dinkc.c:701
+msgid "Error: not mapped"
+msgstr "Fel: ej på karta"
+
+#: src/dinkc.c:712
+#, c-format
+msgid "Slot %d - %d:%02d - %s"
+msgstr "Lucka %d - %d:%02d - %s"
+
+#: src/dinkc.c:715
+#, c-format
+msgid "Slot %d - Empty"
+msgstr "Lucka %d - Tom"
