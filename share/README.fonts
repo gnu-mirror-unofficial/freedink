@@ -12,23 +12,21 @@ https://fedorahosted.org/liberation-fonts/
 http://web.archive.org/web/20170215065644/https://fedorahosted.org/liberation-fonts/
 
 - 2007-08 -> 2009-09
-b3c71dfd8148097a4bbd7f4f4f598accbb06c7dd
-0feb3c4da229cf4cad0355d2e3e6c3be55a43185
+git: b3c71dfd8148097a4bbd7f4f4f598accbb06c7dd -> 0feb3c4da229cf4cad0355d2e3e6c3be55a43185
 http://www.redhat.com/f/fonts/liberation-fonts-ttf-3.tar.gz
 http://download.fedora.redhat.com/pub/fedora/linux/releases/8/Fedora/source/SRPMS/liberation-fonts-0.2-3.fc8.src.rpm
 https://archives.fedoraproject.org/pub/archive/fedora/linux/releases/8/Fedora/source/SRPMS/liberation-fonts-0.2-3.fc8.src.rpm
 http://ftp.gnu.org/gnu/freedink/fonts/liberation-fonts-0.2-3.fc8.src.rpm
 
 - 2008-08
-92f71fcb0e01d5acd0b170952b309093011fb764
-5553fa99d749edb93bc0624e2fc80ac44e9e798c
-http://web.archive.org/web/20170226043241/https://fedorahosted.org/releases/l/i/liberation-fonts/liberation-fonts-1.04-1.fc9.src.rpm
+git: 92f71fcb0e01d5acd0b170952b309093011fb764 -> 5553fa99d749edb93bc0624e2fc80ac44e9e798c
+https://releases.pagure.org/liberation-fonts/liberation-fonts-1.04-1.fc9.src.rpm
 http://ftp.gnu.org/gnu/freedink/fonts/liberation-fonts-1.04-1.fc9.src.rpm
 
 - 2009-09 -> today
-67892d259f8bfec4505b0c33f7afe0793ebb606f
-http://web.archive.org/web/20170226043241/https://fedorahosted.org/releases/l/i/liberation-fonts/liberation-fonts-1.04.93.devel.tar.gz
-http://web.archive.org/web/20170226043241/https://fedorahosted.org/releases/l/i/liberation-fonts/liberation-fonts-1.04.93.devel.src.tar.gz
+git: 67892d259f8bfec4505b0c33f7afe0793ebb606f -> now
+https://releases.pagure.org/liberation-fonts/liberation-fonts-1.04.93.devel.tar.gz
+https://releases.pagure.org/liberation-fonts/liberation-fonts-1.04.93.devel.src.tar.gz
 http://ftp.gnu.org/gnu/freedink/fonts/liberation-fonts-1.04.93.devel.src.tar.gz
 http://ftp.gnu.org/gnu/freedink/fonts/liberation-fonts-1.04.93.devel.tar.gz
 
