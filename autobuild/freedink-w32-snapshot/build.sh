@@ -76,10 +76,16 @@ pushd cross-w32/
 # Security:
 # --nxcompat: DEP
 # --dynamicbase: ASLR
+# From $(dpkg-buildflags --get CXXFLAGS):
+# -DFORTIFY_SOURCE=2: additional checks on string operations
+# -fstack-protector-strong: use canary in more functions
+# -Wformat -Werror=format-security: stop on insecure format string
+#   => disabled for now due to gcc 5.4 bitching about gettext strings
 ../configure --host=i686-w64-mingw32.static \
   --enable-static --enable-upx --disable-tests \
+  CXXFLAGS='-DFORTIFY_SOURCE=2 -fstack-protector-strong' \
   LDFLAGS='-Wl,--no-insert-timestamp -Wl,--nxcompat -Wl,--dynamicbase'
-make -j $(nproc)
+make V=1 -j$(nproc)
 make install-strip DESTDIR=$(pwd)/destdir
 # move .exe but avoid symlinks
 find destdir/usr/local/bin/ -type f -name "*.exe" | while read file; do

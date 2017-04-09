@@ -125,7 +125,7 @@ int gfx_fonts_init()
   putenv("FREETYPE_PROPERTIES=truetype:interpreter-version=35");
 
   if (TTF_Init() == -1) {
-    log_error(TTF_GetError());
+    log_error("%s", TTF_GetError());
     return -1;
   }
 

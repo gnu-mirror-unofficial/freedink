@@ -1,25 +1,19 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
-#
-# This file was originally written by Joey Hess and Craig Small.
-# As a special exception, when this file is copied by dh-make into a
-# dh-make output file, you may use that output file without restriction.
-# This special exception was added by Craig Small in version 0.37 of dh-make.
-#
-# Modified to make a template file for a multi-binary package with separated
-# build-arch and build-indep targets  by Bill Allombert 2001
+# See debhelper(7) (uncomment to enable)
+# output every command that modifies files on the build system.
+#export DH_VERBOSE = 1
 
-# Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
 
-# This has to be exported to make some magic below work.
-export DH_OPTIONS
+# see FEATURE AREAS in dpkg-buildflags(1)
+#export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
-# As of 2014-05, there are issues on Raspbian with -O2 or -Os
-# Cf. https://bugs.launchpad.net/raspbian/+bug/1322849
-ifeq ($(DEB_HOST_ARCH), armhf)
-	export DEB_CFLAGS_MAINT_SET=$(patsubst -O%,-O1,$(shell dpkg-buildflags --get CFLAGS))
-endif
+# see ENVIRONMENT in dpkg-buildflags(1)
+# package maintainers to append CFLAGS
+#export DEB_CFLAGS_MAINT_APPEND  = -Wall -pedantic
+# package maintainers to append LDFLAGS
+#export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
+
 
 %:
 	dh $@ --parallel --with autotools_dev
@@ -28,11 +22,12 @@ override_dh_auto_configure:
 	# Using '--bindir=/usr/games' by Debian policy
 	#   (e.g. not the case for Fedora)
 	dh_auto_configure -- --bindir=/usr/games --datadir=/usr/share/games \
-		--disable-silent-rules
+		--disable-silent-rules --disable-tests
 
 override_dh_strip:
-	# Create -dbg package with debug symbols for gdb
-	dh_strip --dbg-package=freedink-engine-dbg
+	# https://wiki.debian.org/AutomaticDebugPackages
+	# TODO: fix version with actual Debian release
+	dh_strip --dbgsym-migration='freedink-engine-dbg (<< 109.0-1~)'
 
 override_dh_auto_install:
 	# There's only one real package, let's not bother with
@@ -42,12 +37,3 @@ override_dh_auto_install:
 	# Lintian complains with 'duplicate-font-file', let's have
 	# FreeDink rely on libfontconfig + depend on ttf-liberation
 	rm debian/freedink-engine/usr/share/games/freedink/LiberationSans-Regular.ttf
-	# Install XPM icon
-	cp -a src/freedink_xpm.c debian/freedink-engine/usr/share/pixmaps/freedink.xpm
-
-override_dh_installdocs:
-	# --link-doc requires debhelper 7.4.2
-	dh_installdocs --link-doc=freedink-engine
-
-override_dh_installchangelogs:
-	dh_installchangelogs ChangeLog

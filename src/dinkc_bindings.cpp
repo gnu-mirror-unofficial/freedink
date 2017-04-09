@@ -1381,7 +1381,7 @@ void dc_debug(int script, int* yield, int* preturnint,
      shown on the screen in debug mode */
   char* buf = latin1_to_utf8(text);
   decipher_string(&buf, script);
-  log_debug(buf);
+  log_debug("%s", buf);
   free(buf);
 }
 

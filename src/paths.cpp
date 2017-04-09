@@ -304,7 +304,7 @@ bool paths_init(char *argv0, char *refdir_opt, char *dmoddir_opt)
 	      asprintf_append(&msg, "- ./%s\n", dmoddir_opt);
 	    asprintf_append(&msg, "- %s (refdir is '%s')", dmoddir, refdir);
 
-	    log_error(msg);
+	    log_error("%s", msg);
 	    free(msg);
 	    return false;
 	  }
