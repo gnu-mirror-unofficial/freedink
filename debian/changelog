@@ -5,7 +5,14 @@ freedink (109.0-1) UNRELEASED; urgency=medium
   * Add upstream GPG key
   * Bump debhelper compat to 10
 
- -- Sylvain Beucler <beuc@debian.org>  Sun, 09 Apr 2017 23:41:13 +0200
+ -- Sylvain Beucler <beuc@debian.org>  Sun, 11 Apr 2017 23:41:13 +0200
+
+freedink (108.4+dfsg-3) unstable; urgency=medium
+
+  * Properly implement /usr/share/doc/freedink symlink_to_dir - thanks anbe
+  (Closes: #860114)
+
+ -- Sylvain Beucler <beuc@debian.org>  Tue, 11 Apr 2017 19:35:07 +0200
 
 freedink (108.4+dfsg-2) unstable; urgency=medium
 

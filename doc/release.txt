@@ -134,12 +134,18 @@ Check this for updates:
 - /usr/share/doc/debian-policy/upgrading-checklist.txt.gz
 - http://lintian.debian.org/full/pkg-games-devel@lists.alioth.debian.org.html#freedink
 
-pdebuild
+sudo pbuilder create
+sudo pbuilder update
+ln -nfs freedink-$VERSION.tar.gz freedink-$VERSION.orig.tar.gz
+rm -rf freedink-$VERSION/ && tar xf freedink-$VERSION.tar.gz
+cd freedink-data-$VERSION/ && rm -rf debian/ && \cp -a ../debian .
+pdebuild --buildresult ..
+lintian
+debsign
+debrelease --dput
 
-# http://mentors.debian.net/cgi-bin/maintainer-intro
-cd /var/cache/pbuilder/result/
-debsign freedink_$VERSION-1_*.changes
-dput mentors freedink_$VERSION-1_*.changes
+For backports:
+https://wiki.debian.org/BuildingFormalBackports#Self-contained_example_for_Apache_2.4
 
 
 Fedora notes:

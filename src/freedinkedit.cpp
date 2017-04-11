@@ -2944,7 +2944,7 @@ int gui_logic(int h) {
 			if ( (input_getcharstate(SDLK_s)) && (SDL_GetModState()&KMOD_ALT ) ) {
 				//change ALL to 'low hard'
 				change_tile(hard_tile, 3);
-				log_debug("Chaning whole tile to 3");
+				log_debug("Changing whole tile to 3");
 
 				return 2;
 			}

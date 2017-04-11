@@ -302,7 +302,7 @@ bool App::check_arg(int argc, char *argv[]) {
 			dinkgl = 1;
 			break;
 		case ',':
-			printf(_("Note: -nomovie is accepted for compatiblity, but has no effect.\n"));
+			printf(_("Note: -nomovie is accepted for compatibility, but has no effect.\n"));
 			break;
 		default:
 			return false;
