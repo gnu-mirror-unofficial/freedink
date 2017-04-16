@@ -72,6 +72,7 @@ rm -rf cross-w32/
 mkdir cross-w32/
 pushd cross-w32/
 # Reproducible build:
+# --build=...: force cross_compiling=yes even with wine-binfmt
 # --no-insert-timestamp: set PE build timestamp to 0
 # Security:
 # --nxcompat: DEP
@@ -81,7 +82,8 @@ pushd cross-w32/
 # -fstack-protector-strong: use canary in more functions
 # -Wformat -Werror=format-security: stop on insecure format string
 #   => disabled for now due to gcc 5.4 bitching about gettext strings
-../configure --host=i686-w64-mingw32.static \
+../configure \
+  --build=$(../autotools/config.guess) --host=i686-w64-mingw32.static \
   --enable-static --enable-upx --disable-tests \
   CXXFLAGS='-DFORTIFY_SOURCE=2 -fstack-protector-strong' \
   LDFLAGS='-Wl,--no-insert-timestamp -Wl,--nxcompat -Wl,--dynamicbase'
@@ -120,3 +122,6 @@ popd  # $PACKAGE-$VERSION/
 #strip-nondeterminism -T $SOURCE_DATE_EPOCH $PACKAGE-$VERSION-bin.zip
 # ^ stuck in the '80s until Stretch is stable, no -T
 #strip-nondeterminism $PACKAGE-$VERSION-bin.zip
+
+ls -lh $PACKAGE-$VERSION-bin.zip
+sha256sum $PACKAGE-$VERSION-bin.zip

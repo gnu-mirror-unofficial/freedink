@@ -46,6 +46,7 @@ git checkout -b $VERSION
 # (Note: po/freedink.pot is updated automatically)
 # Edit doc/gnulib.txt with the version used
 rsync -Lrtvz  translationproject.org::tp/latest/freedink/  po
+# Update po/LINGUAS
 
 make  # otherwise *** No rule to make target `../gnulib/lib/libgnu.a'
 make distcheck
