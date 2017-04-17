@@ -25,6 +25,7 @@ SOURCE_DATE_EPOCH=$(shell git log --format="%ct" -n 1)
 
 all: wd/$(PACKAGE)-$(VERSION).tar.gz
 	docker build -t $(PACKAGE)-w32:snapshot .
+	cp -a build.sh wd/
 	docker run -it -v "$$(pwd)/wd:/home/repro/wd" \
 	   $(PACKAGE)-w32:snapshot /home/repro/wd/build.sh \
 	     $(VERSION) $(SOURCE_DATE_EPOCH)
@@ -78,7 +79,7 @@ wd/$(PACKAGE)-$(VERSION).tar.gz:
 	if [ ! -e wd/ ]; then mkdir wd/; fi
 	chown 1000:1000 wd/
 	chmod 00755 wd/
-	cp -a build.sh wd/
+	#mkdir ../../native && cd ../../native && ../configure
 	(cd ../../native/ && make dist)
 	mv ../../native/$(PACKAGE)-$(VERSION).tar.gz wd/
 
