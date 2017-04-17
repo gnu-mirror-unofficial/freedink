@@ -34,7 +34,7 @@ all: wd/$(PACKAGE)-$(VERSION).tar.gz
 # => different BuildID than direct build
 reprotest-docker: clean-build wd/$(PACKAGE)-$(VERSION).tar.gz ssh/authorized_keys
 	# Run in docker through SSH
-	# --security-opt seccomp=unconfined: kernel (linux32/lunux64)
+	# --security-opt seccomp=unconfined: kernel (linux32/linux64)
 	# --cap-add SYS_ADMIN --device /dev/fuse: fileordering
 	cid=$$(docker run -d -ti -u root \
 	    --cap-add SYS_ADMIN --device /dev/fuse \
@@ -52,7 +52,7 @@ reprotest-chroot: clean-build wd/$(PACKAGE)-$(VERSION).tar.gz
 	#sudo cp -a dependencies.sh build-deps.sh ../chroot/usr/src/
 	#sudo chroot ../chroot /usr/src/dependencies.sh
 	#sudo chroot ../chroot /usr/src/build-deps.sh
-	# disorderfs:
+	# fileordering:
 	#sudo mknod -m 666 ../chroot/dev/fuse c 10 229
 	# sem_open: Function not implemented:
 	-sudo chroot ../chroot umount /dev/shm
