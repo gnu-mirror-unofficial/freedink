@@ -51,4 +51,16 @@ diff -ru binutils-2.25.1/bfd/peXXigen.c binutils-2.25.1b/bfd/peXXigen.c
  		      filehdr_out->f_symptr);
 EOF
 
+make -j2 JOBS=$(nproc) gcc
+# Fixup libstdc++.a ordering
+(
+    cd /opt/mxe/usr/lib/gcc/i686-w64-mingw32.static/5.4.0/
+    mkdir t && cd t/
+    ar x ../libstdc++.a
+    rm -f ../libstdc++.a
+    ar Dvcr ../libstdc++.a $(ls | LC_ALL=C sort)
+    cd ..
+    rm -rf t/
+)
+
 make -j2 JOBS=$(nproc) sdl2 sdl2_gfx sdl2_image sdl2_mixer sdl2_ttf glm libzip gettext
