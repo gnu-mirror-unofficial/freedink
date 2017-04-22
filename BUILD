@@ -34,7 +34,7 @@ sh bootstrap
 ## Dependencies
 # Base: GCC, make & al.
 apt-get install build-essential
-# Required: SDL
+# Required: libraries
 apt-get install pkg-config \
   libsdl2-dev \
   libsdl2-image-dev libsdl2-image-dbg \

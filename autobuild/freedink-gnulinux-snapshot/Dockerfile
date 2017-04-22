@@ -17,11 +17,14 @@ WORKDIR /home/repro/wd/
 
 # Build Stage 1 - rebuild dependencies
 USER root
-RUN mkdir /opt/mxe
-RUN chown repro: /opt/mxe
+RUN chown repro: /usr/src
 USER repro
+COPY download-deps.sh /usr/src/download-deps.sh
+RUN /usr/src/download-deps.sh
+USER root
 COPY build-deps.sh /usr/src/build-deps.sh
 RUN /usr/src/build-deps.sh
+USER repro
 
 # Build Stage 2
 CMD /bin/bash

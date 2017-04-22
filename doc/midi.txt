@@ -26,6 +26,7 @@ Apparently there are 2 patches set worthy to mention:
 
 - freepats: free-as-in-freedom, included in Debian main (so compatible
   with the DFSG, the Debian Free Software Guidelines).
+  http://freepats.zenvoid.org/SoundSets/general-midi.html
 
 - eawpatches: best quality but apparently non-free, and pretty hard to
   find (TiMidity++ is surrounded by 404 pages :/). The free parts of

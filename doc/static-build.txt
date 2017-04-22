@@ -31,9 +31,9 @@ cd SDL2_image/
 make -j$(nproc)
 sudo make install
 
-sd SDL2_mixer/
+cd SDL2_mixer/
 aptitude install libmodplug-dev
-CFLAGS="-g -O2 -I/usr/include/libmodplug" \
+EXTRA_CFLAGS='-I/usr/include/libmodplug' \
   ./configure --disable-shared --disable-music-mp3
 make -j$(nproc)
 sudo make install
