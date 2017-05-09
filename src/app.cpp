@@ -166,6 +166,7 @@ void App::print_help(int argc, char *argv[])
   printf(_("  -t, --truecolor       Allow more colours (for recent D-Mod graphics)\n"));
   printf(_("  -w, --window          Use windowed mode instead of screen mode\n"));
   printf(_("  -7, --v1.07           Enable v1.07 compatibility mode\n"));
+  printf(_("  -S, --software-rendering  Don't use OpenGL\n"));
   printf("\n");
   // Tentative option names:
   //printf(_("  --dinkgl              Full OpenGL acceleration\n"));
@@ -192,7 +193,7 @@ App::App() :
   g_b_no_write_ini(0),
   opt_version(108),
   dinkini_playmidi(false),
-  dinkgl(false), windowed(false) {
+  dinkgl(true), windowed(false) {
   /* chdir to resource paths under woe&android */
   app_chdir();
 
@@ -253,11 +254,11 @@ bool App::check_arg(int argc, char *argv[]) {
 			{"v1.07",     no_argument,       NULL, '7'},
 			{"truecolor", no_argument,       NULL, 't'},
 			{"nomovie"  , no_argument,       NULL, ','},
-			{"dinkgl"   , no_argument,       NULL, 'o'}, // non-final
+			{"software-rendering", no_argument, NULL, 'S'},
 			{0, 0, 0, 0}
 		};
 	
-	char short_options[] = "dr:g:hijsvw7to";
+	char short_options[] = "dr:g:hijsvw7tS";
 	
 	/* Loop through each argument */
 	while ((c = getopt_long_only (argc, argv, short_options, long_options, NULL)) != EOF)
@@ -298,8 +299,8 @@ bool App::check_arg(int argc, char *argv[]) {
 		case 't':
 			truecolor = 1;
 			break;
-		case 'o':
-			dinkgl = 1;
+		case 'S':
+			dinkgl = false;
 			break;
 		case ',':
 			printf(_("Note: -nomovie is accepted for compatibility, but has no effect.\n"));

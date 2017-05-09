@@ -22,6 +22,8 @@
 
   - CD-ROM support dropped.
 
+- Default harware-accelerated (OpenGL) rendering
+
 - Debug mode is toggled once when Alt+D is pressed (no more fighting
   with continous toggling).
 
