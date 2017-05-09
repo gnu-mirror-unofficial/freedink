@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2014 Sylvain Beucler <beuc@beuc.net> -->
-<application>
- <id type="desktop">freedink.desktop</id>
+<!-- Copyright 2014, 2017 Sylvain Beucler <beuc@beuc.net> -->
+<component type="desktop-application">
+ <id>freedink.desktop</id>
  <metadata_license>CC0-1.0</metadata_license>
  <project_license>GPL-3.0+</project_license>
  <name>GNU FreeDink</name>
@@ -20,11 +20,11 @@
   </p>
  </description>
  <screenshots>
-  <screenshot type="default" width="624" height="351">http://www.gnu.org/software/freedink/screenshots/freedink-appdata1.png</screenshot>
+  <screenshot type="default" width="624" height="344">http://www.gnu.org/software/freedink/screenshots/freedink-appdata1.png</screenshot>
   <screenshot width="624" height="351">http://www.gnu.org/software/freedink/screenshots/freedink-appdata2.png</screenshot>
   <screenshot width="624" height="351">http://www.gnu.org/software/freedink/screenshots/dfarc-appdata1.png</screenshot>
  </screenshots>
  <url type="homepage">http://www.gnu.org/software/freedink/</url>
- <updatecontact>bug-freedink@gnu.org</updatecontact>
+ <update_contact>bug-freedink@gnu.org</update_contact>
  <project_group>GNU</project_group>
-</application>
+</component>
