@@ -349,15 +349,13 @@ void check_midi(void)
 /**
  * Load 1 screen from map.dat, which contains all 768 game screens
  */
-int game_load_screen(int num)
+int game_load_screen(int mapdat_num)
 {
-  if (num > 768)
+  if (g_dmod.map.ts_loc_mem[mapdat_num] != NULL) {
+    memcpy(&cur_ed_screen, g_dmod.map.ts_loc_mem[mapdat_num], sizeof(struct editor_screen));
+  } else if (load_screen_to(g_dmod.map.map_dat.c_str(), mapdat_num, &cur_ed_screen) < 0) {
     return -1;
-
-  if (g_dmod.map.ts_loc_mem[num] != NULL)
-    memcpy(&cur_ed_screen, g_dmod.map.ts_loc_mem[num], sizeof(struct editor_screen));
-  else if (load_screen_to(g_dmod.map.map_dat.c_str(), num, &cur_ed_screen) < 0)
-    return -1;
+  }
   
   spr[1].move_active = 0;
   if (dversion >= 108)

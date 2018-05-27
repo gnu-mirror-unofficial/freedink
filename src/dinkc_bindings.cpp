@@ -656,6 +656,14 @@ void dc_load_screen(int script, int* yield, int* preturnint)
 
   //Msg("Loading map %d..",*pplayer_map);
   update_screen_time();
+
+  if (*pplayer_map > 768) {
+    log_error("[DinkC] %s:%d:%s(): invalid screen %d", rinfo[script]->name,
+			  rinfo[script]->debug_line, cur_funcname,
+			  *pplayer_map);
+	return;
+  }
+
   game_load_screen(g_dmod.map.loc[*pplayer_map]);
 
   // update indicator on mini-map
