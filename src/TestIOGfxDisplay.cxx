@@ -494,6 +494,40 @@ public:
 		SDL_FreeSurface(screenshot);
 
 		delete surf;
+
+
+		if (display->truecolor) {
+			// BMP typically encoded as BGR need to be uploaded with proper format
+			img = SDL_CreateRGBSurface(0, 5, 5, 24,
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+									   0x0000ff00, 0x00ff0000, 0xff000000, 0x00000000
+#else
+									   0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000
+#endif
+									   );
+			pixels = (Uint8*)img->pixels;
+			pixels[0] = 255; pixels[1] = 0; pixels[2] = 0;
+			pixels[3] = 255; pixels[4] = 0; pixels[5] = 0;
+			pixels[img->pitch  ] = 255; pixels[img->pitch+1] = 0; pixels[img->pitch+2] = 0;
+			pixels[img->pitch+3] = 255; pixels[img->pitch+4] = 0; pixels[img->pitch+5] = 0;
+			IOGfxSurface *surfRgb = display->upload(img);
+
+			dstrect = {0, 0, -1, -1};
+
+			dstrect.x = 0; dstrect.y = 0;
+			backbuffer->blit(surfRgb, NULL, &dstrect);
+			display->flipDebug(backbuffer);
+			screenshot = display->screenshot(&bbbox);
+			getColorAtRGBA(screenshot, 0, 0, &cs);
+			TS_ASSERT_SAME_DATA(&cs, &blue, sizeof(SDL_Color));
+			SDL_FreeSurface(screenshot);
+
+			delete surfRgb;
+		} else {
+			// Image already converted to 8-bit by
+			// ImageLoader::loadToBlitFormat, no 24-bit
+		}
+
 		delete backbuffer;
 	}
 

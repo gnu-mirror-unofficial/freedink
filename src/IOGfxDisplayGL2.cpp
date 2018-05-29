@@ -582,7 +582,7 @@ IOGfxSurface* IOGfxDisplayGL2::upload(SDL_Surface* surf) {
 
 	if (truecolor) {
 		// Dink images get alpha disabled, so use 24-bit for simplicity
-		if (surf->format->BitsPerPixel != 24) {
+		if (surf->format->BitsPerPixel != 24 || surf->format->format != SDL_PIXELFORMAT_RGB888) {
 			// don't black out transparent pixels, keep original color
 			SDL_SetColorKey(surf, SDL_FALSE, 0);
 			SDL_PixelFormat fmt;
