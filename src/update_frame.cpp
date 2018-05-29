@@ -35,7 +35,6 @@
 /* #include <windows.h> */
 /* #include <ddraw.h> */
 #include "SDL.h"
-#include "SDL2_framerate.h"
 
 #include "game_engine.h"
 #include "live_sprites_manager.h"
