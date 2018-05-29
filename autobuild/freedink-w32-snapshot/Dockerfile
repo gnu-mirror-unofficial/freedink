@@ -1,4 +1,4 @@
-FROM debian:stretch
+FROM debian:9.4
 MAINTAINER Sylvain Beucler <beuc@beuc.net>
 
 # Packaged dependencies

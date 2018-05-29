@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 # MS Woe release, built with MXE
 
-# Copyright (C) 2008, 2009, 2010, 2012, 2013, 2014, 2017  Sylvain Beucler
+# Copyright (C) 2008, 2009, 2010, 2012, 2013, 2014, 2017, 2018  Sylvain Beucler
 
 # This file is part of GNU FreeDink
 
@@ -119,9 +119,8 @@ popd  # $PACKAGE-$VERSION/
 
 # Alternatively we might use strip-nondeterminism:
 # Sort file list and insert timezone-independent timestamp
+# Needs fixing: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=859103
 #strip-nondeterminism -T $SOURCE_DATE_EPOCH $PACKAGE-$VERSION-bin.zip
-# ^ stuck in the '80s until Stretch is stable, no -T
-#strip-nondeterminism $PACKAGE-$VERSION-bin.zip
 
 ls -lh $PACKAGE-$VERSION-bin.zip
 sha256sum $PACKAGE-$VERSION-bin.zip

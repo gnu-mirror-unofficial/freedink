@@ -1,6 +1,6 @@
 # Reproducible build MS Woe release environment and tests
 
-# Copyright (C) 2017  Sylvain Beucler
+# Copyright (C) 2017, 2018  Sylvain Beucler
 
 # This file is part of GNU FreeDink
 
@@ -17,6 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see
 # <http://www.gnu.org/licenses/>.
+
+# Authorize docker for the build, e.g.:
+# $ time sudo -g docker make
 
 .PHONY: all
 PACKAGE=freedink
@@ -40,12 +43,15 @@ reprotest-docker: clean-build wd/$(PACKAGE)-$(VERSION).tar.gz ssh/authorized_key
 	cid=$$(docker run -d -ti -u root \
 	    --cap-add SYS_ADMIN --device /dev/fuse \
 	    --security-opt seccomp=unconfined \
-	    -p 127.0.0.1:10022:22 -v "$$(pwd)/ssh:/home/repro/.ssh" $(PACKAGE)-w32:snapshot \
+	    -p 127.0.0.1:10022:22 \
+            -v "$$(pwd)/ssh:/home/repro/.ssh" \
+            $(PACKAGE)-w32:snapshot \
             sh -c 'mkdir /run/sshd && /usr/sbin/sshd -D') \
 	  && reprotest --store-dir wd/reprotest/ \
-	    'cd wd/ && ../build.sh $(VERSION) $(SOURCE_DATE_EPOCH)' \
+	    'cd wd/ && ../build.sh $(VERSION) $(SOURCE_DATE_EPOCH) && touch -d@$(SOURCE_DATE_EPOCH) .' \
 	    'wd/$(PACKAGE)-$(VERSION)-bin.zip' \
-	    -- ssh -p 10022 -H repro@localhost -i ssh/id_rsa**** \
+	    -- ssh \
+            -p 10022 -H repro@localhost -i ssh/id_rsa \
 	  ; echo -n "Killing Docker container: "; docker kill $$cid
 
 reprotest-chroot: clean-build wd/$(PACKAGE)-$(VERSION).tar.gz
