@@ -124,3 +124,5 @@ popd  # $PACKAGE-$VERSION/
 
 ls -lh $PACKAGE-$VERSION-bin.zip
 sha256sum $PACKAGE-$VERSION-bin.zip
+# silence reprotest about current directory timestamp
+touch --date="@${SOURCE_DATE_EPOCH}" .

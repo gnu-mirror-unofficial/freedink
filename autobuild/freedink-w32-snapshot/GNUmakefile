@@ -34,8 +34,6 @@ all: wd/$(PACKAGE)-$(VERSION).tar.gz
 	     $(VERSION) $(SOURCE_DATE_EPOCH)
 
 
-# Test with reprotest - sadly the build path changes and cannot be configured
-# => different BuildID than direct build
 reprotest-docker: clean-build wd/$(PACKAGE)-$(VERSION).tar.gz ssh/authorized_keys
 	# Run in docker through SSH
 	# --security-opt seccomp=unconfined: kernel (linux32/linux64)
