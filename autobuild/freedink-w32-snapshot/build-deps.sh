@@ -24,6 +24,11 @@ git clone -n https://github.com/mxe/mxe.git
 cd mxe/
 git reset --hard 5d4c388be33414e7a802c4959d3d22f759840587
 
+# Reproducible build
+# MXE has patched binutils with linker SOURCE_DATE_EPOCH support
+# This should trigger some reproducible support
+export SOURCE_DATE_EPOCH=$(cd /opt/mxe && git log --format="%ct" -n 1)
+
 make -j2 JOBS=$(nproc) gcc
 # Reproducible build
 # Fixup libstdc++.a ordering; would require stable ordering in the GCC build system
