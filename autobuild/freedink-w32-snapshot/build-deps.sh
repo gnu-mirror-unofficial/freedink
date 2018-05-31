@@ -22,12 +22,13 @@
 cd /opt/
 git clone -n https://github.com/mxe/mxe.git
 cd mxe/
-git reset --hard a26337b6898e35b9c224c48da8ac6d55db83eb16
+git reset --hard 5d4c388be33414e7a802c4959d3d22f759840587
 
 make -j2 JOBS=$(nproc) gcc
-# Fixup libstdc++.a ordering
+# Reproducible build
+# Fixup libstdc++.a ordering; would require stable ordering in the GCC build system
 (
-    cd /opt/mxe/usr/lib/gcc/i686-w64-mingw32.static/5.4.0/
+    cd /opt/mxe/usr/lib/gcc/i686-w64-mingw32.static/5.5.0/
     mkdir t && cd t/
     ar x ../libstdc++.a
     rm -f ../libstdc++.a
