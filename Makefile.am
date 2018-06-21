@@ -16,6 +16,8 @@ EXTRA_DIST += debian freedink.spec
 EXTRA_DIST += contrib
 # Android
 EXTRA_DIST += android
+# Emscripten
+EXTRA_DIST += emscripten
 
 dist-hook:
 	find $(distdir) -name '*~' | xargs -r rm -f

@@ -47,7 +47,7 @@
 
 #include "paths.h"
 
-#if defined _WIN32 || defined __WIN32__ || defined __CYGWIN__ || defined __EMX__ || defined __DJGPP__
+#if defined _WIN32 || defined __WIN32__ || defined __CYGWIN__ || defined __EMX__ || defined __DJGPP__ || defined __EMSCRIPTEN__
 #else
 /* Returns a pointer to the end of the current path element (file or
    directory) */
@@ -71,7 +71,17 @@ void
 ciconvert (char *filename)
 {
 #if defined _WIN32 || defined __WIN32__ || defined __CYGWIN__ || defined __EMX__ || defined __DJGPP__
+	/* For __EMSCRIPTEN__ remember to -s CASE_INSENSITIVE_FS=1 */
   return;
+#elif defined __EMSCRIPTEN__
+  /* skip leading or multiple slashes */
+  char *pcur_elt = filename;
+  while (*pcur_elt)
+	{
+		if (*pcur_elt == '\\')
+			*pcur_elt = '/';
+		pcur_elt++;
+	}
 #else
   /* Parse all the directories that composes filename */
   char *cur_dir = NULL;
@@ -175,7 +185,7 @@ ciconvert (char *filename)
      file didn't exist yet, but leading directories still needed to be
      converted); otherwise, filename contains the fully-converted
      path, ready to be opened on a case-sensitive filesystem. */
-#endif /* !_WIN32 */
+#endif /* !_WIN32 !__EMSCRIPTEN__*/
 }
 
 /**

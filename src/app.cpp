@@ -211,6 +211,7 @@ App::App() :
      LANG=fr_FR.UTF-8  1.1 -> 1,000000
      LANG=fr_FR.UTF-8  1,1 -> 1,100000 */
   /* setlocale (LC_ALL, ""); */
+  // log_info("LANG=%s", getenv("LANG"));  // no debug log yet
   setlocale(LC_MESSAGES, "");
   bindtextdomain(PACKAGE, LOCALEDIR);
   bindtextdomain(PACKAGE "-gnulib", LOCALEDIR);
@@ -357,12 +358,14 @@ int App::main(int argc, char *argv[]) {
   
   /* SDL */
   /* Init timer subsystem */
+#ifndef __EMSCRIPTEN__
   if (SDL_Init(SDL_INIT_TIMER) == -1) {
     log_error("Timer initialization error: %s\n", SDL_GetError());
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, PACKAGE_STRING,
 								 log_getLastLog(), NULL);
     return EXIT_FAILURE;
   }
+#endif
 
   /* Quits in case we couldn't do it properly first (i.e. attempt to
      avoid stucking the user in 640x480 when crashing) */
@@ -420,10 +423,26 @@ int App::main(int argc, char *argv[]) {
 }
 
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+void myemscripten_loop(void* arg) {
+	App* app = (App*)arg;
+	app->one_iter();
+}
+#endif
+
 void App::loop() {
 	/* Main loop */
-	int run = 1;
+#ifdef __EMSCRIPTEN__
+	emscripten_set_main_loop_arg(myemscripten_loop, this, 0, 1);
+#else
 	while(run) {
+		one_iter();
+    }
+#endif
+}
+
+void App::one_iter() {
 		/* Controller: dispatch events */
 		SDL_Event event;
 		SDL_Event* ev = &event;
@@ -447,9 +466,7 @@ void App::loop() {
 		   SDL_mixer but since we're using effects tricks to
 		   stream&resample sounds, we need to do this manually. */
 		sfx_cleanup_finished_channels();
-    }
 }
-
 
 /**
  * Release all objects we use
@@ -476,4 +493,8 @@ App::~App() {
 	paths_quit();
 	
 	log_quit();
+
+#ifdef __EMSCRIPTEN__
+	emscripten_cancel_main_loop();
+#endif
 }

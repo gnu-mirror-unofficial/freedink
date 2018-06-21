@@ -25,6 +25,10 @@
 #include <config.h>
 #endif
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
 #include "AppFreeDink.h"
 #include "SDL.h"
 
@@ -33,6 +37,15 @@
  */
 int main(int argc, char* argv[])
 {
+#ifdef __EMSCRIPTEN__
+	EM_ASM(
+        // populate savegames
+        FS.mkdir('/home/web_user/.dink');
+        FS.mount(IDBFS, {}, '/home/web_user/.dink');
+        FS.syncfs(true, function(err) { console.log(err); })
+        //FS.syncfs(false, function(err) { console.log(err); })
+    );
+#endif
 	AppFreeDink freedink;
 	return freedink.main(argc, argv);
 }

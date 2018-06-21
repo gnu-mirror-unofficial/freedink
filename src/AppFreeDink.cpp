@@ -213,7 +213,10 @@ void AppFreeDink::input(SDL_Event* ev) {
 }
 
 void AppFreeDink::logic() {
+#ifndef __EMSCRIPTEN__
+	// TODO: fine-tune framerate from emscripten - should mostly be 60FPS as we want *for 1.08*
 	SDL_framerateDelay(&framerate_manager);
+#endif
 	debug_logic();
 	updateFrame();
 

@@ -25,6 +25,10 @@
 #include <config.h>
 #endif
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
 #include <string.h>
 
 #include "game_engine.h"
@@ -484,4 +488,11 @@ void save_game(int num)
   fwrite(skipbuf, 750, 1, f);
 
   fclose(f);
+
+#ifdef __EMSCRIPTEN__
+  // Flush changes to IDBFS
+  EM_ASM(
+	FS.syncfs(false, function(err) { console.log(err); })
+  );
+#endif
 }

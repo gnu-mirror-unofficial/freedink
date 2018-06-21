@@ -476,9 +476,12 @@ FILE *paths_savegame_fopen(int num, const char *mode)
   ciconvert(fullpath_in_dmoddir);
   
 
-  /* Try ~/.dink (if present) when reading - but don't try that
-     first when writing */
+  /* Try ~/.dink (if present) when reading - but don't try that first
+     when writing - except in Emscripten where we need a stable,
+     exclusive mount point. */
+#ifndef __EMSCRIPTEN__
   if (strchr(mode, 'r') != NULL)
+#endif
     fp = fopen(fullpath_in_userappdir, mode);
 
   /* Try in the D-Mod dir */

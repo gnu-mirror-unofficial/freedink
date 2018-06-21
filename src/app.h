@@ -31,6 +31,8 @@ public:
 	std::string description;
 	char* splash_path;
 
+	int run = 1;
+
 	int g_b_no_write_ini; // -noini passed to command line?
 	int opt_version;
 	bool dinkini_playmidi;
@@ -46,6 +48,7 @@ public:
 
 	int main(int argc, char* argv[]);
 	void loop();
+	void one_iter();
 
 	void print_version();
 	void print_help(int argc, char *argv[]);

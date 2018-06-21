@@ -146,9 +146,10 @@ case "${host}" in
 # (cf. (autoconf.info)Using System Type) (2002)
 *-*-msdos* | *-*-go32* | *-*-mingw32* | *-*-cygwin* | *-*-windows* \
 | mipsallegrexel-psp-elf \
-| arm-unknown-linux-androideabi)
+| arm-unknown-linux-androideabi \
+| *-emscripten)
     # Can't search fonts using fontconfig under ms woe
-    # Nor under Android
+    # Nor under Android or Emscripten (unless we recreate a full fontconfig root? ;))
     use_fontconfig="no"
     ;;
 *)

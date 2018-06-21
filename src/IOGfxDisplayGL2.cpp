@@ -103,7 +103,10 @@ bool IOGfxDisplayGL2::createOpenGLContext() {
 	// Let FramerateManager handle frame delay
 	// TODO: drop the extra SwapWindow/RenderPresent during speed mode
 	// TODO: ideally we should set to 1 to get VSync and avoid tearing, if achievable
+	// Commented out for emscripten to avoid "emscripten_set_main_loop_timing: Cannot set timing mode for main loop since a main loop does not exist! Call emscripten_set_main_loop first to set one up." warning
+#ifndef __EMSCRIPTEN__
 	SDL_GL_SetSwapInterval(0);
+#endif
 
 	gl = new IOGfxGLFuncs();
 
@@ -426,6 +429,8 @@ void IOGfxDisplayGL2::logOpenGLInfo() {
 	int doublebuffer;
 	SDL_GL_GetAttribute(SDL_GL_DOUBLEBUFFER, &doublebuffer);
 	log_info("Double buffered: %d", doublebuffer);
+#ifndef __EMSCRIPTEN__
+	// Error: WebGL warning: getParameter: parameter: invalid enum value READ_BUFFER
 	int read_buffer;
 	gl->GetIntegerv(GL_READ_BUFFER, &read_buffer);
 	if (read_buffer == GL_FRONT)
@@ -434,6 +439,7 @@ void IOGfxDisplayGL2::logOpenGLInfo() {
 		log_info("Read buffer: GL_BACK");
 	else
 		log_info("Read buffer: 0x%04X", read_buffer);
+#endif
 }
 
 void IOGfxDisplayGL2::logDisplayInfo() {
