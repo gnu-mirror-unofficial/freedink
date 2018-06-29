@@ -2,7 +2,7 @@ Module['onRuntimeInitialized'] = function() {
     // populate savegames
     FS.mkdir('/home/web_user/.dink');
     FS.mount(IDBFS, {}, '/home/web_user/.dink');
-    FS.syncfs(true, function(err) { console.log(err); })
+    FS.syncfs(true, function(err) { if (err) { console.trace(); console.log(err); } })
 
     document.getElementById('ID_Play').disabled = 0;
     document.getElementById('ID_DmodInstallDecoy').disabled = 0;
