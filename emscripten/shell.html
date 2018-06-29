@@ -71,6 +71,7 @@
         margin-left: 20px;
         font-weight: bold;
         color: rgb(255, 255, 2);
+        height: 30px;
       }
 
       #progress {
@@ -176,7 +177,7 @@
     <div class="spinner" id="spinner"></div>
     <div class="emscripten" id="status">Downloading...</div>
 
-    <div class="emscripten">
+    <div class="emscripten" style="height: 20px;">
       <progress value="0" max="100" id="progress" hidden=1></progress>
     </div>
     
@@ -221,6 +222,11 @@
         @licend  The above is the entire license notice
         for the JavaScript code in this page.
       */
+
+      /* Redirect to asmjs version if no WebAssembly support */
+      if (typeof WebAssembly !== 'object' && location.href.search('asmjs/') == -1)
+        location.href = 'asmjs/' + location.search;
+
       var args = [];
       var dmodname = 'dink';
       function OnPlay() {
