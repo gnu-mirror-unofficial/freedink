@@ -37,15 +37,10 @@
  */
 int main(int argc, char* argv[])
 {
-#ifdef __EMSCRIPTEN__
-	EM_ASM(
-        // populate savegames
-        FS.mkdir('/home/web_user/.dink');
-        FS.mount(IDBFS, {}, '/home/web_user/.dink');
-        FS.syncfs(true, function(err) { console.log(err); })
-        //FS.syncfs(false, function(err) { console.log(err); })
-    );
-#endif
-	AppFreeDink freedink;
-	return freedink.main(argc, argv);
+	// Create app
+	// Store it in the heap as Emscripten will trash the stack
+	AppFreeDink* freedink = new AppFreeDink();
+	int ret = freedink->main(argc, argv);
+	delete freedink;
+	return ret;
 }

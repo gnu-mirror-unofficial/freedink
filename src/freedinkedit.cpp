@@ -4772,7 +4772,10 @@ void AppFreeDinkedit::input(SDL_Event* ev) {
  */
 int main(int argc, char *argv[])
 {
-  /* Initialize/setup */
-	AppFreeDinkedit freedinkedit;
-	return freedinkedit.main(argc, argv);
+	// Create app
+	// Store it in the heap as Emscripten will trash the stack
+	AppFreeDinkedit* freedinkedit = new AppFreeDinkedit();
+	int ret = freedinkedit->main(argc, argv);
+	delete freedinkedit;
+	return ret;
 }

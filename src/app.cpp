@@ -466,6 +466,13 @@ void App::one_iter() {
 		   SDL_mixer but since we're using effects tricks to
 		   stream&resample sounds, we need to do this manually. */
 		sfx_cleanup_finished_channels();
+
+#ifdef __EMSCRIPTEN__
+		if (!run) {
+			emscripten_cancel_main_loop();
+			delete this;
+		}
+#endif
 }
 
 /**
@@ -493,8 +500,4 @@ App::~App() {
 	paths_quit();
 	
 	log_quit();
-
-#ifdef __EMSCRIPTEN__
-	emscripten_cancel_main_loop();
-#endif
 }
