@@ -2803,6 +2803,9 @@ void dinkc_bindings_add(Hash_table* hash, struct binding* pbd)
 
 void dinkc_init()
 {
+  memset(&rinfo, 0, sizeof(rinfo));
+  game_choice_clear();
+
   /* Set all string params pointers to NULL */
   int i = 0;
   for (; i < 10; i++)
@@ -2825,7 +2828,7 @@ void dinkc_quit()
   for (; i < 10; i++)
     {
       if (slist[i] != NULL)
-	free(slist[i]);
+        free(slist[i]);
       slist[i] = NULL;
     }
   kill_all_vars();

@@ -260,7 +260,11 @@ bool App::check_arg(int argc, char *argv[]) {
 		};
 	
 	char short_options[] = "dr:g:hijsvw7tS";
-	
+
+	/* Allow parsing options multiple times, e.g. in EMSCRIPTEN */
+	optind = 0;
+	truecolor = 0;
+
 	/* Loop through each argument */
 	while ((c = getopt_long_only (argc, argv, short_options, long_options, NULL)) != EOF)
     {
@@ -469,7 +473,6 @@ void App::one_iter() {
 
 #ifdef __EMSCRIPTEN__
 		if (!run) {
-			emscripten_cancel_main_loop();
 			delete this;
 		}
 #endif
@@ -492,12 +495,17 @@ App::~App() {
 	g_dmod.unload();
 	gfx_quit();
 	
-	//SDL_QuitSubSystem(SDL_INIT_EVENTTHREAD);
+	SDL_QuitSubSystem(SDL_INIT_EVENTS);
 	SDL_QuitSubSystem(SDL_INIT_TIMER);
 	
 	SDL_Quit();
 	
 	paths_quit();
-	
+
 	log_quit();
+
+#ifdef __EMSCRIPTEN__
+	emscripten_cancel_main_loop();
+	EM_ASM( Module.onExit() );
+#endif
 }

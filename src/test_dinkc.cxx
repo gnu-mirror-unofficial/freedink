@@ -40,7 +40,6 @@ int last_sprite_created;
 int input_get_button_action(int button_index) { return -1; }
 void game_choice_start(int script, int nb_choices) {}
 void game_choice_clear() {}
-void game_choice_process() {}
 void kill_text_owned_by(int sprite) {}
 Uint32 game_GetTicks(void) {return 0; }
 

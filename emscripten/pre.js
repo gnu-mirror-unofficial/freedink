@@ -101,3 +101,9 @@ Module['onRuntimeInitialized'] = function() {
 	}
     }
 }
+
+Module['onExit'] = function() {
+    document.getElementById('ID_Play').disabled = 0;
+    document.getElementById('ID_DmodInstall').disabled = 0;
+    document.getElementById('ID_DmodInstallDecoy').disabled = 0;
+}

@@ -24,6 +24,5 @@
 #define _UPDATE_FRAME_H
 
 extern void updateFrame(void);
-extern void game_choice_process();
 
 #endif

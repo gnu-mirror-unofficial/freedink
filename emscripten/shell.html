@@ -227,9 +227,9 @@
       if (typeof WebAssembly !== 'object' && location.href.search('asmjs/') == -1)
         location.href = 'asmjs/' + location.search;
 
-      var args = [];
       var dmodname = 'dink';
       function OnPlay() {
+        var args = [];
         ENV['LANG'] = document.getElementById('language').value;
         //var args = ['freedink'];
         if (document.getElementById('ID_TrueColor').checked) args.push('--truecolor');
@@ -250,6 +250,7 @@
         document.getElementById('ID_DmodInstallDecoy').disabled = 1;
         document.getElementById('Fullscreen').disabled = 0;
 
+        Module.setStatus('');
         console.log("Running freedink " + args);
         Module.print("Loading, please wait...");
 

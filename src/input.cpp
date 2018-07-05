@@ -130,7 +130,9 @@ void input_init(void)
        doesn't work at all */
 
   /* Clear keyboard/joystick buffer */
-  memset(&sjoy,0,sizeof(sjoy));
+  memset(&scancodestate, 0, sizeof(scancodestate));
+  memset(&scancodejustpressed, 0, sizeof(scancodejustpressed));
+  memset(&sjoy, 0, sizeof(sjoy));
   {
     int a = ACTION_FIRST;
     for (a = ACTION_FIRST; a < ACTION_LAST; a++) 
