@@ -219,7 +219,7 @@ int TarIsPathInsecure(char* path, char* prefix) {
   return 0;
 }
 
-int DmodExtract(FILE* dmodFile, char* destDir) {
+int DmodExtract(FILE* dmodFile, char* destDir, char** extractedDmodDir) {
   // Get the file size
   unsigned long dmodFileCompressedSize;
   if (fseek(dmodFile, 0, SEEK_END) < 0) perror("fseek");
@@ -367,19 +367,22 @@ int DmodExtract(FILE* dmodFile, char* destDir) {
   }
   
   BZ2_bzReadClose(&bzerror, bzin);
-  
+
+  if (extractedDmodDir != NULL) {
+    *extractedDmodDir = strdup(dmodDir);
+  }
   return 0;
 }
 
-int emDmodExtract(char* filename, char* destdir) {
-  printf("emDmodExtract(%s, %s)\n", filename, destdir);
+int emDmodExtract(char* filename, char* destdir, char** extractedDmodDir) {
+  // printf("emDmodExtract(%s, %s)\n", filename, destdir);
   FILE* in = fopen(filename, "rb");
   if (in == NULL) {
     perror("fopen");
     printf("Cannot open %s\n", filename);
     return 1;
   }
-  return DmodExtract(in, destdir);
+  return DmodExtract(in, destdir, extractedDmodDir);
 }
 
 #ifdef TEST
@@ -412,6 +415,6 @@ int main(int argc, char* argv[]) {
     assert((strcpy(buf, "dink.exe"),          TarIsPathInsecure(buf, "path") == 1));
     assert((strcpy(buf, "dink.exe"),          TarIsPathInsecure(buf, "path") == 1));
   }
-  return emDmodExtract(argv[1], "/tmp/testdmod");
+  return emDmodExtract(argv[1], "/tmp/testdmod", NULL);
 }
 #endif

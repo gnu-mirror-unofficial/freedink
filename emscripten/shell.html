@@ -244,7 +244,6 @@
         args.push(dmodname);
 
         document.getElementById('ID_Play').blur(); 
-        document.getElementById('ID_Play').textContent = "Playing!";
         document.getElementById('ID_Play').disabled = 1;
         document.getElementById('ID_DmodInstall').disabled = 1;
         document.getElementById('ID_DmodInstallDecoy').disabled = 1;
@@ -276,19 +275,25 @@
       }
 
       function DmodExtract() {
-            start = Date.now();
-            Module.ccall('emDmodExtract', 'number', ['string','string'], ['mine.dmod', '/usr/local/share/dink']);
-            Module.print("Extracted in " + (Date.now()-start)/1000.0 + "s");
-            subdirs = FS.readdir('/usr/local/share/dink')
-            newdir = subdirs.filter(function(e) { return e != 'dink' && e != '.' && e != '..'; })[0]
-            dmodname = newdir;
-            document.getElementById('ID_Play').disabled = 0;
-            document.getElementById('ID_Play').textContent = "Play " + dmodname;
-            dmoddiz = new TextDecoder().decode(FS.readFile('/usr/local/share/dink/'+dmodname+'/dmod.diz'), {encoding:'ISO-8859-1'});
-            Module.print(dmoddiz);
-            Module.print("");
-            Module.print("D-Mod loaded - adjust options and click Play!");
-	}
+        start = Date.now();
+        ptr_dmoddir = Module.ccall('malloc', 'number', ['number'], [8]);
+        Module.ccall('emDmodExtract', 'number',
+          ['string','string','number'],
+          ['mine.dmod', '/usr/local/share/dink', ptr_dmoddir]);
+        Module.print("Extracted in " + (Date.now()-start)/1000.0 + "s");
+        dmodname = Pointer_stringify(getValue(ptr_dmoddir, 'i64'));
+        Module.ccall('free', 'number', ['number'], [getValue(ptr_dmoddir, 'i64')]);
+        Module.ccall('free', 'number', ['number'], [ptr_dmoddir]);
+        document.getElementById('ID_Play').disabled = 0;
+        document.getElementById('ID_Play').textContent = "Play " + dmodname;
+        document.getElementById('ID_DmodInstallDecoy').disabled = 0;
+        dmoddiz = new TextDecoder().decode(
+          FS.readFile('/usr/local/share/dink/'+dmodname+'/dmod.diz'),
+	  {encoding:'ISO-8859-1'});
+        Module.print(dmoddiz);
+        Module.print("");
+        Module.print("D-Mod loaded - adjust options and click Play!");
+      }
 
       function OnScriptInstall() {
         document.getElementById('ID_ScriptInstallDecoy').disabled = 1;
