@@ -492,7 +492,7 @@ void save_game(int num)
 #ifdef __EMSCRIPTEN__
   // Flush changes to IDBFS
   EM_ASM(
-	FS.syncfs(false, function(err) { console.log(err); })
+	FS.syncfs(false, function(err) { if (err) { console.trace(); console.log(err); } })
   );
 #endif
 }

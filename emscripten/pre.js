@@ -15,21 +15,25 @@ Module['preInit'] = function() {
     loadChildScript('/freedink-data.js', function() {
         Module['removeRunDependency']('download_t/freedink-data.js');
     });
+
+    // populate savegames
+    Module['addRunDependency']('fs_dotdink');
+    try {
+	FS.mkdir('/home/web_user/.dink');
+	FS.mount(IDBFS, {}, '/home/web_user/.dink');
+    } catch(e) {
+	Module.print("Could not create ~/.dink/");
+    }
+    FS.syncfs(true, function(err) {
+        Module['removeRunDependency']('fs_dotdink');
+        if (err) { console.trace(); console.log(err); }
+    })
 }
 
 Module['onRuntimeInitialized'] = function() {
     // music can be added after the game starts
     loadChildScript('/freedink-data-bgm.js',
         function() { Module.setStatus('Downloading music...') });
-
-    // populate savegames
-    try {
-	FS.mkdir('/home/web_user/.dink');
-	FS.mount(IDBFS, {}, '/home/web_user/.dink');
-	FS.syncfs(true, function(err) { if (err) { console.trace(); console.log(err); } })
-    } catch(e) {
-	Module.print("Could not create ~/.dink/");
-    }
 
     document.getElementById('ID_Play').disabled = 0;
     document.getElementById('ID_DmodInstallDecoy').disabled = 0;
