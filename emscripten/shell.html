@@ -139,7 +139,7 @@
 
         <button id="ID_Play" onclick="OnPlay()" disabled="disabled">Play</button>
 
-	<br />
+        <br />
 
 
         <input id="ID_ScriptInstall" type="file" onchange="OnScriptInstall()" style=display:none>
@@ -150,19 +150,19 @@
 
         <br />
         <select id='language'>
-	  <option value='ca'>Catalán (ca)</option>
-	  <option value='da'>Dansk (da)</option>
-	  <option value='de'>Deutsch (de)</option>
+          <option value='ca'>Catalán (ca)</option>
+          <option value='da'>Dansk (da)</option>
+          <option value='de'>Deutsch (de)</option>
           <option value='en' selected="selected">English (en)</option>
           <option value='eo'>Esperanto (eo)</option>
-	  <option value='es'>Español (es)</option>
-	  <option value='fi'>Suomi (fi)</option>
+          <option value='es'>Español (es)</option>
+          <option value='fi'>Suomi (fi)</option>
           <option value='fr'>Français (fr)</option>
-	  <option value='hr'>Hrvatski (hr)</option>
-	  <option value='hu'>Magyar (hu)</option>
-	  <option value='mk'>Mакедонски (mk)</option>
-	  <option value='nl'>Nederlands (nl)</option>
-	  <option value='sv'>Svenska (sv)</option>
+          <option value='hr'>Hrvatski (hr)</option>
+          <option value='hu'>Magyar (hu)</option>
+          <option value='mk'>Mакедонски (mk)</option>
+          <option value='nl'>Nederlands (nl)</option>
+          <option value='sv'>Svenska (sv)</option>
         </select>
 
       </span>
@@ -227,6 +227,26 @@
       if (typeof WebAssembly !== 'object' && location.href.search('asmjs/') == -1)
         location.href = 'asmjs/' + location.search;
 
+      /* Enforce disabled state on reload (Firefox remembers the disabled state) */
+      function UISetState(can_launch, is_playing) {
+        if (can_launch) {
+          document.getElementById('ID_Play').disabled = 0;
+          document.getElementById('ID_DmodInstall').disabled = 0;
+          document.getElementById('ID_DmodInstallDecoy').disabled = 0;
+        } else {
+          document.getElementById('ID_Play').disabled = 1;
+          document.getElementById('ID_DmodInstall').disabled = 1;
+          document.getElementById('ID_DmodInstallDecoy').disabled = 1;
+        }
+        if (is_playing) {
+          document.getElementById('Fullscreen').disabled = 0;
+        } else {
+          document.getElementById('Fullscreen').disabled = 1;
+        }
+      }
+      UISetState(false, false);
+      document.getElementById('ID_ScriptInstallDecoy').disabled = 1;
+
       var dmodname = 'dink';
       function OnPlay() {
         var args = [];
@@ -244,10 +264,7 @@
         args.push(dmodname);
 
         document.getElementById('ID_Play').blur(); 
-        document.getElementById('ID_Play').disabled = 1;
-        document.getElementById('ID_DmodInstall').disabled = 1;
-        document.getElementById('ID_DmodInstallDecoy').disabled = 1;
-        document.getElementById('Fullscreen').disabled = 0;
+        UISetState(false, true);
 
         Module.setStatus('');
         console.log("Running freedink " + args);
@@ -259,8 +276,7 @@
       }
 
       function OnInstall() {
-        document.getElementById('ID_Play').disabled = 1;
-        document.getElementById('ID_DmodInstallDecoy').disabled = 1;
+        UISetState(false, false);
         Module.print("Extracting, please wait...");
 
         window.setTimeout(function() {
@@ -284,12 +300,11 @@
         dmodname = Pointer_stringify(getValue(ptr_dmoddir, 'i64'));
         Module.ccall('free', 'number', ['number'], [getValue(ptr_dmoddir, 'i64')]);
         Module.ccall('free', 'number', ['number'], [ptr_dmoddir]);
-        document.getElementById('ID_Play').disabled = 0;
+        UISetState(true, false);
         document.getElementById('ID_Play').textContent = "Play " + dmodname;
-        document.getElementById('ID_DmodInstallDecoy').disabled = 0;
         dmoddiz = new TextDecoder().decode(
           FS.readFile('/usr/local/share/dink/'+dmodname+'/dmod.diz'),
-	  {encoding:'ISO-8859-1'});
+          {encoding:'ISO-8859-1'});
         Module.print(dmoddiz);
         Module.print("");
         Module.print("D-Mod loaded - adjust options and click Play!");
@@ -300,8 +315,8 @@
         input = document.getElementById('ID_ScriptInstall')
         reader = new FileReader();
         reader.onload = function(e) {
-	  FS.writeFile('/usr/local/share/dink/dink/Story/key-67.c', new Uint8Array(e.target.result));
-	  Module.print('key-67.c installed - enjoy!');
+          FS.writeFile('/usr/local/share/dink/dink/Story/key-67.c', new Uint8Array(e.target.result));
+          Module.print('key-67.c installed - enjoy!');
           document.getElementById('ID_ScriptInstallDecoy').disabled = 0;
           document.getElementById('ID_ScriptInstallDecoy').blur();
         }
