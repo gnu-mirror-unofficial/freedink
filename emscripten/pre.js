@@ -20,6 +20,10 @@ Module['preInit'] = function() {
     loadChildScript('/freedink-data.js', function() {
         Module['removeRunDependency']('download_t/freedink-data.js');
     });
+    Module['addRunDependency']('download_t/freedink-soundfonts.js');
+    loadChildScript('/freedink-soundfonts.js', function() {
+        Module['removeRunDependency']('download_t/freedink-soundfonts.js');
+    });
 
     // populate savegames
     Module['addRunDependency']('fs_dotdink');
@@ -39,7 +43,7 @@ Module['onRuntimeInitialized'] = function() {
     document.getElementById('ID_ScriptInstallDecoy').disabled = 0;
 
     // music can be added after the game starts
-    loadChildScript('/freedink-data-bgm.js',
+    loadChildScript('/freedink-data-bgm-ogg.js',
         function() { Module.setStatus('Downloading music...'); });
 
     _GET = {}
