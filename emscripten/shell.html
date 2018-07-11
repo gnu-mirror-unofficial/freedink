@@ -17,7 +17,7 @@
       .emscripten {
         padding-right: 0; margin-left: auto; margin-right: auto; display: block;
         width: 640px;
-        /* height: 480px; */
+        height: 480px;
       }
       div.emscripten { text-align: center; }
       div.emscripten_border { border: 1px solid black; }
@@ -91,8 +91,10 @@
         display: inline-block;
         float: left;
         vertical-align: top;
-        margin-top: 80px;
+        margin-top: 90px;
         margin-left: 20px;
+        background-color: seagreen;
+        padding: 5px;
       }
 
       #output {
@@ -112,7 +114,7 @@
       }
 
       a {
-        color: blue;
+        color: gold;
         text-decoration: none;
       }
       a:hover {
@@ -140,15 +142,11 @@
         <button id="ID_Play" onclick="OnPlay()" disabled="disabled">Play</button>
 
         <br />
-
-
-        <input id="ID_ScriptInstall" type="file" onchange="OnScriptInstall()" style=display:none>
-        <button id="ID_ScriptInstallDecoy" disabled="disabled" onclick="document.getElementById('ID_ScriptInstall').click()">Install your key-67.c...</button>
-
-        <br />
         <button id="Fullscreen" disabled="disabled" onclick="Module.requestFullscreen(document.getElementById('pointerLock').checked, document.getElementById('resize').checked)">Fullscreen</button>
 
         <br />
+        <br />
+	Language:<br />
         <select id='language'>
           <option value='ca'>Catalán (ca)</option>
           <option value='da'>Dansk (da)</option>
@@ -164,6 +162,13 @@
           <option value='nl'>Nederlands (nl)</option>
           <option value='sv'>Svenska (sv)</option>
         </select>
+
+        <br />
+	Local files:<br />
+        <button id="ID_SavegamesExport" onclick="OnSavegamesExport()" disabled="disabled">Export saved games</button><br />
+        <input id="ID_ScriptInstall" type="file" onchange="OnScriptInstall()" style=display:none>
+        <button id="ID_ScriptInstallDecoy" disabled="disabled" onclick="document.getElementById('ID_ScriptInstall').click()">Install your key-67.c...</button>
+
 
       </span>
     </div>
@@ -246,6 +251,7 @@
       }
       UISetState(false, false);
       document.getElementById('ID_ScriptInstallDecoy').disabled = 1;
+      document.getElementById('ID_SavegamesExport').disabled = 1;
 
       var dmodname = 'dink';
       function OnPlay() {
@@ -321,6 +327,21 @@
           document.getElementById('ID_ScriptInstallDecoy').blur();
         }
         reader.readAsArrayBuffer(input.files[0])
+      }
+
+      function OnSavegamesExport() {
+        ret = Module.ccall('emSavegamesExport', 'number', [], []);
+        if (ret) {
+          savegames = FS.readFile('savegames.zip');
+          obj_url = window.URL.createObjectURL(new Blob([savegames]));
+          a = document.createElement('a');
+          a.download = 'savegames.zip';
+          a.href = obj_url;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(obj_url);
+        }
       }
     </script>
 

@@ -41,6 +41,7 @@ Module['preInit'] = function() {
 
 Module['onRuntimeInitialized'] = function() {
     document.getElementById('ID_ScriptInstallDecoy').disabled = 0;
+    document.getElementById('ID_SavegamesExport').disabled = 0;
 
     // music can be added after the game starts
     loadChildScript('/freedink-data-bgm-ogg.js',
