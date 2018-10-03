@@ -16,13 +16,13 @@ function loadChildScript(name, then) {
 
 Module['preInit'] = function() {
     // load game data externally so we can update it independently
-    Module['addRunDependency']('download_t/freedink-data.js');
-    loadChildScript('/freedink-data.js', function() {
-        Module['removeRunDependency']('download_t/freedink-data.js');
+    Module['addRunDependency']('download_t/freedink-data-data.js');
+    loadChildScript('/freedink-data-data.js', function() {
+        Module['removeRunDependency']('download_t/freedink-data-data.js');
     });
-    Module['addRunDependency']('download_t/freedink-soundfonts.js');
-    loadChildScript('/freedink-soundfonts.js', function() {
-        Module['removeRunDependency']('download_t/freedink-soundfonts.js');
+    Module['addRunDependency']('download_t/soundfonts-data.js');
+    loadChildScript('/soundfonts-data.js', function() {
+        Module['removeRunDependency']('download_t/soundfonts-data.js');
     });
 
     // populate savegames
@@ -44,7 +44,7 @@ Module['onRuntimeInitialized'] = function() {
     document.getElementById('ID_SavegamesExport').disabled = 0;
 
     // music can be added after the game starts
-    loadChildScript('/freedink-data-bgm-ogg.js',
+    loadChildScript('/freedink-data-bgm-ogg-data.js',
         function() { Module.setStatus('Downloading music...'); });
 
     _GET = {}
