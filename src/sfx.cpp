@@ -99,6 +99,10 @@ static const char *format2string(Uint16 format) {
     case AUDIO_S16LSB: format_str = "S16LSB"; break;
     case AUDIO_U16MSB: format_str = "U16MSB"; break;
     case AUDIO_S16MSB: format_str = "S16MSB"; break;
+    case AUDIO_S32LSB: format_str = "S32LSB"; break;
+    case AUDIO_S32MSB: format_str = "S32MSB"; break;
+    case AUDIO_F32LSB: format_str = "F32LSB"; break;
+    case AUDIO_F32MSB: format_str = "F32MSB"; break;
     }
   return format_str;
 }
