@@ -74,7 +74,7 @@ ciconvert (char *filename)
 	/* For __EMSCRIPTEN__ remember to -s CASE_INSENSITIVE_FS=1 */
   return;
 #elif defined __EMSCRIPTEN__
-  /* skip leading or multiple slashes */
+  /* convert windows-style backslashes in paths */
   char *pcur_elt = filename;
   while (*pcur_elt)
 	{
