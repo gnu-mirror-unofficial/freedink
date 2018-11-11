@@ -308,11 +308,16 @@
         Module.ccall('free', 'number', ['number'], [ptr_dmoddir]);
         UISetState(true, false);
         document.getElementById('ID_Play').textContent = "Play " + dmodname;
-        dmoddiz = new TextDecoder().decode(
-          FS.readFile('/usr/local/share/dink/'+dmodname+'/dmod.diz'),
-          {encoding:'ISO-8859-1'});
-        Module.print(dmoddiz);
-        Module.print("");
+        try {
+          dmoddiz = new TextDecoder().decode(
+            FS.readFile('/usr/local/share/dink/'+dmodname+'/dmod.diz'),
+            {encoding:'ISO-8859-1'});
+	  // note: -s CASE_INSENSITIVE_FS=1
+          Module.print(dmoddiz);
+          Module.print("");
+        } catch(e) {
+          Module.print("Note: no D-Mod description file (dmod.diz)");
+        }
         Module.print("D-Mod loaded - adjust options and click Play!");
       }
 
