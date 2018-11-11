@@ -1,13 +1,12 @@
 //Module.arguments = ["--debug", "--window"];
 Module['noInitialRun'] = true;
-Module.filePackagePrefixURL = '/';
 
 function loadChildScript(name, then) {
     var js = document.createElement('script');
     js.onerror = function(err) {
-      console.log(err);
-      Module.print("Could not download " + name);
-      Module.setStatus("Missing data file!");
+	console.log(err);
+	Module.print("Could not download " + name);
+	Module.setStatus("Missing data file!");
     };
     if (then) js.onload = then;
     js.src = name;
@@ -47,10 +46,16 @@ Module['onRuntimeInitialized'] = function() {
     loadChildScript('/freedink-data-bgm-ogg-data.js',
         function() { Module.setStatus('Downloading music...'); });
 
-    _GET = {}
-    location.search.substr(1).split('&').forEach(function(item) {
+    _GET = {};
+    if (location.search.length > 0) {
+      location.search.substr(1).split('&').forEach(function(item) {
         _GET[item.split("=")[0]] = item.split("=")[1]
-    });
+      });
+    }
+    //var query_string = '?';
+    //for (i in _GET) { query_string += i+'='+_GET[i]+'&'; }
+    //query_string = query_string.slice(0, -1);
+
     if (_GET['dmod']) {
         if (!_GET['dmod'].startsWith('http://') && !_GET['dmod'].startsWith('http://'))
             _GET['dmod'] = 'https://' + _GET['dmod']
