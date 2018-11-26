@@ -140,9 +140,11 @@
         <button id="ID_DmodInstallDecoy" onclick="document.getElementById('ID_DmodInstall').click()" disabled="disabled">Open D-Mod</button>
 
         <button id="ID_Play" onclick="OnPlay()" disabled="disabled">Play</button>
-
+	<!--
+	Not supported by SDL2:
         <br />
         <button id="Fullscreen" disabled="disabled" onclick="Module.requestFullscreen(document.getElementById('pointerLock').checked, document.getElementById('resize').checked)">Fullscreen</button>
+	-->
 
         <br />
         <br />
@@ -242,11 +244,6 @@
           document.getElementById('ID_Play').disabled = 1;
           document.getElementById('ID_DmodInstall').disabled = 1;
           document.getElementById('ID_DmodInstallDecoy').disabled = 1;
-        }
-        if (is_playing) {
-          document.getElementById('Fullscreen').disabled = 0;
-        } else {
-          document.getElementById('Fullscreen').disabled = 1;
         }
       }
       UISetState(false, false);
