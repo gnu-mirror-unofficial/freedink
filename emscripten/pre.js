@@ -14,16 +14,6 @@ function loadChildScript(name, then) {
 }
 
 Module['preInit'] = function() {
-    // load game data externally so we can update it independently
-    Module['addRunDependency']('download_t/freedink-data-data.js');
-    loadChildScript('/freedink-data-data.js', function() {
-        Module['removeRunDependency']('download_t/freedink-data-data.js');
-    });
-    Module['addRunDependency']('download_t/soundfonts-data.js');
-    loadChildScript('/soundfonts-data.js', function() {
-        Module['removeRunDependency']('download_t/soundfonts-data.js');
-    });
-
     // populate savegames
     Module['addRunDependency']('fs_dotdink');
     try {
@@ -114,11 +104,11 @@ Module['onRuntimeInitialized'] = function() {
         try {
             dmoddiz = new TextDecoder().decode(FS.readFile('/usr/local/share/dink/dink/dmod.diz'), {encoding:'ISO-8859-1'});
             Module.print(dmoddiz);
-            Module.print("");
-            Module.print("Welcome! Click Play, or load one of your D-Mods!");
         } catch(e) {
             Module.print("Could not read dmod.diz");
         }
+        Module.print("");
+        Module.print("Welcome! Click Play, or load one of your D-Mods!");
         UISetState(true, false);
     }
 }
