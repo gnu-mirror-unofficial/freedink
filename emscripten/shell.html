@@ -136,7 +136,7 @@
         <input id="ID_V107" type="checkbox">v1.07 mode</input><br />
         <!--<input id="ID_DinkGL" type="checkbox" checked="checked">OpenGL</input><br />-->
 
-        <input id="ID_DmodInstall" type="file" onchange="OnInstall()" accept="application/x-dmod" style=display:none></input>
+        <input id="ID_DmodInstall" type="file" onchange="OnInstall(this)" accept=".dmod" style=display:none></input>
         <button id="ID_DmodInstallDecoy" onclick="document.getElementById('ID_DmodInstall').click()" disabled="disabled">Open D-Mod</button>
 
         <button id="ID_Play" onclick="OnPlay()" disabled="disabled">Play</button>
@@ -167,6 +167,8 @@
 
         <br />
 	Local files:<br />
+        <input id="ID_SavegamesImport" type="file" onchange="OnSavegamesImport(this)" accept="application/zip" style=display:none>
+        <button id="ID_SavegamesImportDecoy" onclick="document.getElementById('ID_SavegamesImport').click()" disabled="disabled">Import saved games</button><br />
         <button id="ID_SavegamesExport" onclick="OnSavegamesExport()" disabled="disabled">Export saved games</button><br />
         <input id="ID_ScriptInstall" type="file" onchange="OnScriptInstall()" style=display:none>
         <button id="ID_ScriptInstallDecoy" disabled="disabled" onclick="document.getElementById('ID_ScriptInstall').click()">Install your key-67.c...</button>
@@ -248,6 +250,7 @@
       }
       UISetState(false, false);
       document.getElementById('ID_ScriptInstallDecoy').disabled = 1;
+      document.getElementById('ID_SavegamesImportDecoy').disabled = 1;
       document.getElementById('ID_SavegamesExport').disabled = 1;
 
       var dmodname = 'dink';
@@ -278,12 +281,11 @@
         window.setTimeout(function() { Module.callMain(args); }, 10);
       }
 
-      function OnInstall() {
+      function OnInstall(input) {
         UISetState(false, false);
         Module.print("Extracting, please wait...");
 
         window.setTimeout(function() {
-          input = document.getElementById('ID_DmodInstall')
           reader = new FileReader();
           reader.onload = function(e) {
             FS.writeFile('mine.dmod', new Uint8Array(e.target.result));
@@ -327,6 +329,19 @@
           Module.print('key-67.c installed - enjoy!');
           document.getElementById('ID_ScriptInstallDecoy').disabled = 0;
           document.getElementById('ID_ScriptInstallDecoy').blur();
+        }
+        reader.readAsArrayBuffer(input.files[0])
+      }
+
+      function OnSavegamesImport(input) {
+        reader = new FileReader();
+        reader.onload = function(e) {
+          FS.writeFile('savegames.zip', new Uint8Array(e.target.result));
+          Module.ccall('emSavegamesImport', 'void', [], []);
+          FS.syncfs(false, function(err) {
+            if (err) { console.trace(); console.log(err); }
+          });
+          Module.print("Saved games imported.");
         }
         reader.readAsArrayBuffer(input.files[0])
       }

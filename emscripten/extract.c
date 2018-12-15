@@ -58,7 +58,7 @@ struct TarHeader {
 
 #define TAR_HEADER_SIZE	512
 
-int mkdir_rec(char* path){
+int mkdir_rec(char* path) {
   int ret;
   mode_t mode = 00755;
   ret = mkdir(path, mode);
@@ -318,8 +318,10 @@ int DmodExtract(FILE* dmodFile, char* destDir, char** extractedDmodDir) {
       int ret = mkdir_rec(dir);
       if (ret < 0) printf("Error creating directory %s\n", dir);
       free(dir);
-      if (ret < 0)
+      if (ret < 0) {
+	free(destFullPath);
 	break;
+      }
 
       {
 	// bzip2 -9 -> 900kiB blocks - randomly using 4MiB buf, we

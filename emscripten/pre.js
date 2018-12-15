@@ -25,11 +25,12 @@ Module['preInit'] = function() {
     FS.syncfs(true, function(err) {
         Module['removeRunDependency']('fs_dotdink');
         if (err) { console.trace(); console.log(err); }
-    })
+    });
 }
 
 Module['onRuntimeInitialized'] = function() {
     document.getElementById('ID_ScriptInstallDecoy').disabled = 0;
+    document.getElementById('ID_SavegamesImportDecoy').disabled = 0;
     document.getElementById('ID_SavegamesExport').disabled = 0;
 
     // music can be added after the game starts
