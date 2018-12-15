@@ -443,6 +443,18 @@
         };
       };
     </script>
+    <script type='text/javascript''>
+    // Check parent directory if we're in asmjs/ fallback dir
+    // Used by xxx-data.js to locate xxx.data
+    Module['locateFile'] = function(url) {
+        if (location.href.search('asmjs/') >= 0) {
+            if (url.endsWith(".data")) {  // e.g. not index.html.mem
+                url = '../' + url;
+            }
+        }
+        return url;
+    }
+    </script>
     <script type='text/javascript' src="/freedink-data-data.js"></script>
     <script type='text/javascript' src="/soundfonts-data.js"></script>
     {{{ SCRIPT }}}
