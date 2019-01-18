@@ -1,11 +1,14 @@
-freedink (109.0-1) UNRELEASED; urgency=medium
+freedink (109.2-1) unstable; urgency=medium
 
   * New Upstream Version
   * Drop item and icon for obsolete debian menu system
   * Add upstream GPG key
   * Bump debhelper compat to 10
+  * Update obsolete 'extra' priority to 'optional'
+  * Use https for Homepage and Vcs-Browser fields, and for watch file
+  * Remove now-default options to 'dh' invocation
 
- -- Sylvain Beucler <beuc@debian.org>  Sun, 11 Apr 2017 23:41:13 +0200
+ -- Sylvain Beucler <beuc@debian.org>  Sat, 19 Jan 2019 00:05:00 +0100
 
 freedink (108.4+dfsg-3) unstable; urgency=medium
 
