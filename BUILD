@@ -91,12 +91,12 @@ sh bootstrap
 
 ## Dependencies
 # Base: GCC, make & al.
-# Note: 'groupinstall' not working with pkcon yet
 yum groupinstall 'Development Tools'
 # or just:
-#yum install make gcc
-yum install SDL-devel SDL_gfx-devel SDL_ttf-devel SDL_image-devel \
-  SDL_mixer-devel fontconfig-devel
+#yum install make gcc-c++
+yum install SDL2-devel \
+  SDL2_gfx-devel SDL2_ttf-devel SDL2_image-devel SDL2_mixer-devel \
+  fontconfig-devel glm-devel
 # Optional:
 # - upx compresses binary
 # - bzip is for .tar.bz2 release tarballs
