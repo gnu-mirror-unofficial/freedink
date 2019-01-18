@@ -30,6 +30,7 @@ ABOUT-NLS
 # gnulib
 gnulib/po
 gnulib/lib
+gnulib-git/
 # emacs
 TAGS
 # gprof
