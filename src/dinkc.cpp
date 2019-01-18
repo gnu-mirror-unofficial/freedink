@@ -257,6 +257,7 @@ static int script_init(const char* name, char* code) {
 
   return script;
 }
+/* export (non-static) for the test suite */
 int ts_script_init(const char* name, char* code) {
   return script_init(name, code);
 }

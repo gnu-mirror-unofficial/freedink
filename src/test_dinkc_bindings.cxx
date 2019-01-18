@@ -70,11 +70,12 @@ public:
   */
   void test_dinkc_concurrent_fades() {
     int yield, returnint;
+    dinkc_init();
+    dinkc_bindings_init();
+
     int script_id1 = ts_script_init("fade1", strdup(""));
     int script_id2 = ts_script_init("fade2", strdup(""));
     
-    dinkc_init();
-    dinkc_bindings_init();
     process_upcycle = process_downcycle = 0;
     dc_fade_down(script_id1, &yield, &returnint);
     dc_fade_up(script_id2, &yield, &returnint);

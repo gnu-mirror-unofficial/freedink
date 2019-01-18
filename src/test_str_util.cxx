@@ -36,9 +36,9 @@ public:
   void test_strtoupper() {
     char str[] = "toto";
     char* str2 = strdup(str);
-    //strtoupper(str);
-    //TS_ASSERT_EQUALS(str, "TOTO");
     TS_ASSERT_EQUALS(str, str2);
+    strtoupper(str2);
+    TS_ASSERT_EQUALS(str2, "TOTO");
     TS_ASSERT_DIFFERS(str, str2);
   }
 
