@@ -1,13 +1,21 @@
 Source: freedink
 Section: games
-Priority: extra
+Priority: optional
 Maintainer: Debian Games Team <pkg-games-devel@lists.alioth.debian.org>
 Uploaders: Sylvain Beucler <beuc@debian.org>
-Build-Depends: debhelper (>= 10), autotools-dev, pkg-config, libsdl1.2-dev, libsdl-gfx1.2-dev, libsdl-ttf2.0-dev, libsdl-image1.2-dev, libsdl-mixer1.2-dev, libfontconfig1-dev, check
-Standards-Version: 3.9.8
-Homepage: http://www.gnu.org/software/freedink/
+Build-Depends: debhelper (>= 10), pkg-config,
+  libsdl2-dev,
+  libsdl2-image-dev,
+  libsdl2-mixer-dev,
+  libsdl2-ttf-dev,
+  libsdl2-gfx-dev,
+  libfontconfig1-dev,
+  libglm-dev,
+  cxxtest
+Standards-Version: 4.3.0.1
+Homepage: https://www.gnu.org/software/freedink/
 Vcs-Git: git://git.savannah.gnu.org/freedink.git
-Vcs-Browser: http://git.savannah.gnu.org/cgit/freedink.git
+Vcs-Browser: https://git.savannah.gnu.org/cgit/freedink.git
 
 Package: freedink-engine
 Architecture: any

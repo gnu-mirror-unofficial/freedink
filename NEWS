@@ -1,7 +1,11 @@
-109.0
+109.3
 =====
 
 * UNRELEASED
+
+
+109.2
+=====
 
 * User-visible changes:
 
@@ -23,6 +27,8 @@
   - CD-ROM support dropped.
 
 - Default harware-accelerated (OpenGL) rendering
+
+- Web browser support (Emscripten)
 
 - Debug mode is toggled once when Alt+D is pressed (no more fighting
   with continous toggling).
@@ -57,9 +63,17 @@
 - Sprites colors are more stable after a palette change and a savegame
   load to a different palette (compatibility with 1.08)
 
+- New translation for the engine strings in Friulian (thanks Fabio
+  Tomat); updated Spanish translation (thanks Francisco Javier
+  Serrador)
+
 * Developer notes:
 
-- Move to C++
+- Move from C to C++
+
+- Move from 'check' to 'cxxtest'
+
+- Start a comprehensive test suite
 
 
 108.4

@@ -1,21 +1,22 @@
 Name:		freedink
-Version:	108.4
+Version:	109.2
 Release:	1%{?dist}
 Summary:	Humorous top-down adventure and role-playing game
 
 Group:		Amusements/Games
-BuildRequires:	SDL-devel SDL_gfx-devel SDL_ttf-devel SDL_image-devel SDL_mixer-devel
+BuildRequires:  gcc-c++
+BuildRequires:	SDL2-devel SDL2_gfx-devel SDL2_ttf-devel SDL2_image-devel SDL2_mixer-devel
 BuildRequires:	fontconfig-devel
+BuildRequires:  glm-devel
 BuildRequires:	desktop-file-utils
-BuildRequires:	check-devel
+BuildRequires:	cxxtest
 %if 0%{?suse_version}
 BuildRequires:	update-desktop-files
 %endif
 License:	GPLv3+
-URL:		http://www.gnu.org/software/freedink/
-Source0:	ftp://ftp.gnu.org/gnu/freedink/freedink-%{version}.tar.gz
+URL:		https://www.gnu.org/software/freedink/
+Source0:	https://ftp.gnu.org/gnu/freedink/freedink-%{version}.tar.gz
 
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires:	freedink-engine = %{version}-%{release} freedink-dfarc
 # Reference bundled copy of gnulib - cf. https://fedorahosted.org/fpc/ticket/174
 Provides:	bundled(gnulib)
@@ -71,7 +72,7 @@ This package contains the game engine alone.
 
 
 %prep
-%setup -q
+%autosetup -p1
 # openSUSE does not allow empty packages, so create at least one file
 %if 0%{?suse_version}
 cat > README.META << EOF
@@ -80,7 +81,9 @@ EOF
 %endif
 
 %build
-%configure
+# Using '--disable-embedded-resources' because 'rpmbuild' will remove
+# them anyway (so it can make the -debuginfo package -- too bad :/)
+%configure --disable-embedded-resources 
 make %{?_smp_mflags}
 
 %install
@@ -109,22 +112,17 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}edit.desktop
 rm $RPM_BUILD_ROOT%{_datadir}/%{name}/LiberationSans-Regular.ttf
 %endif
 
-%clean
-rm -rf $RPM_BUILD_ROOT
-
 
 %files
-%defattr(-,root,root,-)
 # openSUSE does not allow empty packages
 %if 0%{?suse_version}
 %doc README.META
 %endif
 
 %files engine -f %{name}.lang
-%defattr(-,root,root,-)
 %doc AUTHORS COPYING NEWS README THANKS TROUBLESHOOTING ChangeLog
 %{_bindir}/*
-%{_datadir}/appdata/*
+%{_datadir}/metainfo/*
 %{_datadir}/applications/*
 %{_datadir}/%{name}/
 %{_datadir}/pixmaps/*
@@ -132,6 +130,33 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Jan 19 2019 Sylvain Beucler <beuc@beuc.net> - 109.2-1
+- New upstream release
+
+* Fri Jul 13 2018 Fedora Release Engineering <releng@fedoraproject.org> - 108.4-9
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
+
+* Fri Jun 01 2018 Sylvain Beucler <beuc@beuc.net> - 108.4-8
+- Fix crash on loading game (#1448761)
+
+* Wed Feb 07 2018 Fedora Release Engineering <releng@fedoraproject.org> - 108.4-7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
+
+* Wed Aug 02 2017 Fedora Release Engineering <releng@fedoraproject.org> - 108.4-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Binutils_Mass_Rebuild
+
+* Wed Jul 26 2017 Fedora Release Engineering <releng@fedoraproject.org> - 108.4-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
+
+* Fri Feb 10 2017 Fedora Release Engineering <releng@fedoraproject.org> - 108.4-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
+
+* Wed Feb 03 2016 Fedora Release Engineering <releng@fedoraproject.org> - 108.4-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
+
+* Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 108.4-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
 * Wed Oct 22 2014 Sylvain Beucler <beuc@beuc.net> - 108.4-1
 - New upstream release
 

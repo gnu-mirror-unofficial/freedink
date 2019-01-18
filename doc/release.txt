@@ -21,10 +21,6 @@ The next release has a version number higher than the latest snapshot,
 so that people tracking the snapshots also upgrade when there is a new
 release.
 
-Currently FreeDink aims at compatibility with the original v1.08
-version, so the versions are 108.x(.y).  We will switch to 109.x(.y)
-when we start adding new features.
-
 
 Bootstrapping
 -------------
@@ -35,7 +31,7 @@ Cf. doc/bootstrap.txt
 On the developer computer:
 --------------------------
 
-VERSION=110.x
+VERSION=109.x
 cd freedink/
 git checkout -b $VERSION
 # Edit NEWS
@@ -91,7 +87,7 @@ lftp -e "mput freedink-$VERSION.tar.gz*; exit" -u anonymous, ftp-upload.gnu.org/
 # Check ftp://ftp.gnu.org/gnu/freedink/
 
 # Pristine TAR - efficienty storing the release in the Git repository
-pristine-tar commit freedink-$VERSION.tar.gz v$VERSION
+pristine-tar commit -s freedink-$VERSION.tar.gz freedink-$VERSION.tar.gz v$VERSION
 git push origin pristine-tar
 
 # Upload sigs to freedink.org
@@ -146,7 +142,7 @@ debsign
 debrelease --dput
 
 For backports:
-https://wiki.debian.org/BuildingFormalBackports#Self-contained_example_for_Apache_2.4
+https://wiki.debian.org/BuildingFormalBackports#Self-contained_example_for_Fossil_2
 
 
 Fedora notes:

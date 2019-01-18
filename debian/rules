@@ -16,7 +16,7 @@
 
 
 %:
-	dh $@ --parallel --with autotools_dev
+	dh $@
 
 override_dh_auto_configure:
 	# Using '--bindir=/usr/games' by Debian policy

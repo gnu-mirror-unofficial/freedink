@@ -20,7 +20,7 @@
 # <http://www.gnu.org/licenses/>.
  
 AC_PREREQ(2.61)
-AC_INIT([GNU FreeDink],[109.0],[bug-freedink@gnu.org])
+AC_INIT([GNU FreeDink],[109.3],[bug-freedink@gnu.org])
 AC_CONFIG_AUX_DIR(autotools)
 AC_CONFIG_MACRO_DIR(autotools/m4)
 AM_INIT_AUTOMAKE([gnits dist-zip silent-rules])
