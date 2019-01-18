@@ -1,3 +1,2856 @@
+2019-01-19  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, configure.ac, debian/changelog, debian/control,
+	debian/rules, debian/watch, doc/release.txt, freedink.spec: Start
+	branch 109.2
+
+2019-01-18  Sylvain Beucler <beuc@beuc.net>
+
+	* po/LINGUAS: translations: enable 'fur'
+
+2019-01-18  Sylvain Beucler <beuc@beuc.net>
+
+	* BUILD: BUILD: update Fedora dependencies
+
+2019-01-18  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc.cpp, src/test_dinkc_bindings.cxx, src/test_str_util.cxx: 
+	test suite: fix for Debian's cxxtest and emscripten-related clean-up
+
+2019-01-18  Sylvain Beucler <beuc@beuc.net>
+
+	* .gitignore: gnulib: gitignore local clone
+
+2019-01-18  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/media/README: vgasys.fon: only keep in .cpp
+	format as it's flagged as windows executable
+
+2019-01-18  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/emscripten.txt: emscripten: compilation notes
+
+2019-01-18  Sylvain Beucler <beuc@beuc.net>
+
+	* AUTHORS, po/es.po, po/fur.po: Sync Translation Project
+
+2018-12-15  Sylvain Beucler <beuc@beuc.net>
+
+	* emscripten/shell.html: git commit -m "emscripten: fix fetching
+	data files for asmjs fallback" broken in
+	085446deb4a1379ce1e5e68d6609a1ac7e1e8e7a
+
+2018-12-15  Sylvain Beucler <beuc@beuc.net>
+
+	* emscripten/extract.c, emscripten/importexport.c,
+	emscripten/pre.js, emscripten/shell.html: emscripten: import
+	savegames
+
+2018-11-26  Sylvain Beucler <beuc@beuc.net>
+
+	* emscripten/pre.js, emscripten/shell.html: Emscripten: simplify
+	data loading
+
+2018-11-26  Sylvain Beucler <beuc@beuc.net>
+
+	* emscripten/shell.html: Emscripten: disable fullscreen button as it
+	doesn't integrate well with SDL2 (can crash)
+
+2018-11-11  Sylvain Beucler <beuc@beuc.net>
+
+	* src/io_util.cpp: emscripten: fix incorrect comment
+
+2018-11-11  Sylvain Beucler <beuc@beuc.net>
+
+	* emscripten/shell.html: emscripten: don't break on missing dmod.diz
+
+2018-11-11  Sylvain Beucler <beuc@beuc.net>
+
+	* emscripten/pre.js: emscripten: better query_string handling
+
+2018-10-11  Sylvain Beucler <beuc@beuc.net>
+
+	* emscripten/shell.html: emscripten: fix HTML
+
+2018-10-03  Sylvain Beucler <beuc@beuc.net>
+
+	* emscripten/pre.js: emscripten: normalize data filenames
+
+2018-10-03  Sylvain Beucler <beuc@beuc.net>
+
+	* src/sfx.cpp: audio: debug more system formats
+
+2018-07-11  Sylvain Beucler <beuc@beuc.net>
+
+	* emscripten/importexport.c, emscripten/pre.js,
+	emscripten/shell.html, emscripten/source.html: emscripten: savegames
+	export
+
+2018-07-10  Sylvain Beucler <beuc@beuc.net>
+
+	* emscripten/pre.js: emscripten: ensure soundfonts are present
+	before a D-Mod can start
+
+2018-07-10  Sylvain Beucler <beuc@beuc.net>
+
+	* emscripten/source.html: librejs: reference asmjs version
+
+2018-07-09  Sylvain Beucler <beuc@beuc.net>
+
+	* emscripten/pre.js, emscripten/shell.html: emscripten: make sure
+	buttons are enabled/disabled as needed
+
+2018-07-08  Sylvain Beucler <beuc@beuc.net>
+
+	* emscripten/pre.js, src/savegame.cpp: emscripten: ensure async FS
+	is loaded
+
+2018-07-06  Sylvain Beucler <beuc@beuc.net>
+
+	* emscripten/extract.c, emscripten/shell.html: emscripten: can load
+	multiple D-Mods in a row
+
+2018-07-05  Sylvain Beucler <beuc@beuc.net>
+
+	* emscripten/pre.js, emscripten/shell.html, src/app.cpp,
+	src/dinkc.cpp, src/input.cpp, src/test_dinkc.cxx,
+	src/update_frame.h: emscripten: allow multiple runs so the user
+	doesn't have to reload
+
+2018-06-29  Sylvain Beucler <beuc@beuc.net>
+
+	* emscripten/post.js, emscripten/pre.js: emscripten: split data
+	files
+
+2018-06-29  Sylvain Beucler <beuc@beuc.net>
+
+	* emscripten/shell.html: emscripten: fallback to asmjs automatically
+
+2018-06-29  Sylvain Beucler <beuc@beuc.net>
+
+	* emscripten/post.js: emscripten: remove spurious output
+
+2018-06-29  Sylvain Beucler <beuc@beuc.net>
+
+	* emscripten/post.js, src/app.cpp, src/freedink_main.cpp,
+	src/freedinkedit.cpp: emscripten: properly quit the game
+
+2018-06-29  Sylvain Beucler <beuc@beuc.net>
+
+	* src/gfx_fonts.cpp: gfx_fonts: remove old FreeType double-free
+	work-around
+
+2018-06-21  Sylvain Beucler <beuc@beuc.net>
+
+	* share/freedink/LiberationSans-Regular.sfd: font: add
+	LiberationSans-Regular's source
+
+2018-06-21  Sylvain Beucler <beuc@beuc.net>
+
+	* Makefile.am, configure.ac, emscripten/extract.c,
+	emscripten/post.js, emscripten/pre.js, emscripten/shell.html,
+	emscripten/source.html, src/AppFreeDink.cpp,
+	src/IOGfxDisplayGL2.cpp, src/app.cpp, src/app.h,
+	src/freedink_main.cpp, src/io_util.cpp, src/paths.cpp,
+	src/savegame.cpp: emscripten experiment from last month
+
+2018-05-31  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-w32-snapshot/build-deps.sh: build:
+	reproducible: merge changes from dfarc
+
+2018-05-31  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-w32-snapshot/build-deps.sh: build:
+	reproducible: merge changes from dfarc
+
+2018-05-30  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/.gitignore,
+	autobuild/freedink-w32-snapshot/GNUmakefile,
+	autobuild/freedink-w32-snapshot/build.sh: build: reproducible: merge
+	changes from dfarc
+
+2018-05-30  Sylvain Beucler <beuc@beuc.net>
+
+	* src/update_frame.cpp: cleanup: remove extra header
+
+2018-05-30  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-w32-snapshot/Dockerfile,
+	autobuild/freedink-w32-snapshot/GNUmakefile,
+	autobuild/freedink-w32-snapshot/build-deps.sh,
+	autobuild/freedink-w32-snapshot/build.sh,
+	autobuild/freedink-w32-snapshot/dependencies.sh: build:
+	reproducible: update setup
+
+2018-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp, src/TestIOGfxDisplay.cxx: gfx: convert
+	BGR to RGB if necessary
+
+2018-05-27  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc_bindings.cpp, src/game_engine.cpp: load_screen: fix
+	incorrect safety check that e.g. broke Quest For Dorinthia 2's intro
+
+2017-05-09  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, src/app.cpp: Use OpenGL rendering by default It's the most ubiquitous renderer, e.g. the only working one for
+	Android
+
+2017-05-09  Sylvain Beucler <beuc@beuc.net>
+
+	* android/AndroidManifest.xml, share/Makefile.am, share/{appdata =>
+	metainfo}/freedink.appdata.xml: appdata: update to new format
+
+2017-04-22  Sylvain Beucler <beuc@beuc.net>
+
+	* BUILD, autobuild/freedink-gnulinux-snapshot/.dockerignore,
+	autobuild/freedink-gnulinux-snapshot/Dockerfile,
+	autobuild/freedink-gnulinux-snapshot/GNUmakefile,
+	autobuild/freedink-gnulinux-snapshot/build-deps.sh,
+	autobuild/freedink-gnulinux-snapshot/build.sh,
+	autobuild/freedink-gnulinux-snapshot/dependencies.sh,
+	autobuild/freedink-gnulinux-snapshot/download-deps.sh,
+	autobuild/freedink-w32-snapshot/Dockerfile, doc/midi.txt,
+	doc/static-build.txt: build: first steps with appimage environment
+
+2017-04-19  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-w32-snapshot/build-deps.sh: build:
+	reproducible: fixup libstdc++.a inner ordering
+
+2017-04-17  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-w32-snapshot/GNUmakefile: build: copying
+	build.sh in wd/ only for the Docker build with mount point
+
+2017-04-17  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-w32-snapshot/GNUmakefile: build: fix typos
+
+2017-04-16  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/.gitignore,
+	autobuild/freedink-w32-snapshot/.dockerignore,
+	autobuild/freedink-w32-snapshot/Dockerfile,
+	autobuild/freedink-w32-snapshot/GNUmakefile,
+	autobuild/freedink-w32-snapshot/{dependencies-mxe.sh =>
+	build-deps.sh}, autobuild/freedink-w32-snapshot/build.sh,
+	autobuild/freedink-w32-snapshot/dependencies.sh, doc/release.txt: 
+	build: integrate reprotest in the build environments
+
+2017-04-11  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/changelog, debian/freedink.maintscript, doc/release.txt,
+	src/app.cpp, src/freedinkedit.cpp: debian: sync
+
+2017-04-09  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/changelog: debian: sync
+
+2017-04-09  Sylvain Beucler <beuc@beuc.net>
+
+	* share/README.fonts: fonts: liberation-fonts moved to pagure.io at
+	last - update links
+
+2017-04-09  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-w32-snapshot/build.sh, debian/changelog,
+	debian/compat, debian/control, debian/copyright,
+	debian/freedink.maintscript, debian/menu, debian/rules,
+	debian/upstream/signing-key.asc, src/dinkc_bindings.cpp,
+	src/gfx_fonts.cpp, src/paths.cpp: debian: rework packaging
+
+2017-04-08  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-w32-snapshot/build.sh: build: w32: add security
+	flags
+
+2017-04-08  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/release.txt: release: document new Fedora URL for package
+	browsing
+
+2017-04-08  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-w32-snapshot/GNUmakefile: build: avoid g+s
+	permission in reproducible environment
+
+2017-04-08  Sylvain Beucler <beuc@beuc.net>
+
+	* AUTHORS, po/sv.po: Sync TranslationProject (and add new
+	translations)
+
+2017-03-31  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-w32-snapshot/build.sh: build: factor out a few
+	'freedink' strings
+
+2017-03-31  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-android-snapshot/GNUmakefile,
+	autobuild/freedink-w32-snapshot/GNUmakefile: build: remove
+	unnecessary mount point from docker environments
+
+2017-03-31  Sylvain Beucler <beuc@beuc.net>
+
+	* BUILD: doc: no more need to patch SDL2
+
+2017-03-31  Sylvain Beucler <beuc@beuc.net>
+
+	* po/ca.po, po/cs.po, po/da.po, po/de.po, po/el.po, po/eo.po,
+	po/es.po, po/eu.po, po/fi.po, po/fr.po, po/hr.po, po/hu.po,
+	po/id.po, po/it.po, po/nb.po, po/nl.po, po/pl.po, po/pt_BR.po,
+	po/ru.po, po/sl.po, po/sr.po, po/th.po, po/vi.po: Sync
+	TranslationProject
+
+2017-03-31  Sylvain Beucler <beuc@beuc.net>
+
+	* android/GNUmakefile, doc/android.txt, src/FakeIOGfxDisplay.cpp,
+	src/FakeIOGfxDisplay.h, src/IOGfxDisplay.cpp, src/IOGfxDisplay.h,
+	src/IOGfxDisplayGL2.cpp, src/IOGfxDisplayGL2.h,
+	src/IOGfxDisplaySW.cpp, src/IOGfxDisplaySW.h, src/Makefile.am,
+	src/TestIOGfxDisplay.cxx: gfx: android work-around not necessary
+	anymore + read pixels from backbuffer
+
+2017-03-31  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-android-snapshot/GNUmakefile,
+	autobuild/freedink-w32-snapshot/GNUmakefile,
+	autobuild/freedink-w32-snapshot/build.sh,
+	autobuild/freedink-w32-snapshot/dependencies-mxe.sh,
+	autobuild/freedink-w32-snapshot/dependencies.sh: build: w32 should
+	now be reproducible with patched ld and improved zip generation
+
+2017-03-30  Sylvain Beucler <beuc@beuc.net>
+
+	* Makefile.am, android/GNUmakefile,
+	autobuild/freedink-android-snapshot/.dockerignore,
+	autobuild/freedink-android-snapshot/Dockerfile,
+	autobuild/freedink-android-snapshot/GNUmakefile,
+	autobuild/freedink-android-snapshot/build.sh,
+	autobuild/freedink-android-snapshot/dependencies-dl-android.sh,
+	autobuild/freedink-android-snapshot/dependencies-dl-sdl.sh,
+	autobuild/freedink-android-snapshot/dependencies-sdl.sh,
+	doc/android-libsdlwiki.txt: build: automated build environment for
+	android
+
+2017-03-30  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/.gitignore,
+	autobuild/freedink-w32-snapshot/.dockerignore,
+	autobuild/freedink-w32-snapshot/Dockerfile,
+	autobuild/freedink-w32-snapshot/GNUmakefile,
+	autobuild/freedink-w32-snapshot/build.sh,
+	autobuild/freedink-w32-snapshot/dependencies-mxe.sh,
+	autobuild/freedink-w32-snapshot/dependencies.sh: build: first
+	attempt at fully-automated reproducible build
+
+2017-03-30  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/android-libsdlwiki.txt, doc/android.txt: android: split copy
+	of my SDL wiki page for easier updates
+
+2017-03-29  Sylvain Beucler <beuc@beuc.net>
+
+	* src/TestIOGfxDisplay.cxx: test: use consistent order (actual,
+	expected) in tests
+
+2017-03-29  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp, src/IOGfxDisplaySW.cpp,
+	src/IOGfxGLFuncs.cpp, src/IOGfxGLFuncs.h: GL: revert glReadBuffer as
+	it's not supported on GLES + improve debug logs
+
+2017-03-29  Sylvain Beucler <beuc@beuc.net>
+
+	* android/AndroidManifest.xml, android/GNUmakefile,
+	android/remote-test-driver,
+	android/src/org/libsdl/app/SDLActivity.java, doc/android.txt,
+	src/Makefile.am: android: refresh SDL2 stub and documentation
+
+2017-03-29  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp, src/IOGfxGLFuncs.cpp, src/IOGfxGLFuncs.h: 
+	GL: fix new issues in snapshot() by explicitely setting the read
+	buffer
+
+2017-03-29  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am: build: declare missing header file
+
+2017-03-29  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-exe-mxe.sh: autobuild: sdl_mixer->sdl2_mixer
+
+2017-03-28  Sylvain Beucler <beuc@beuc.net>
+
+	* bootstrap, configure.ac, share/Makefile.am: build: mkdir_p is
+	obsoleted
+
+2017-03-27  Sylvain Beucler <beuc@beuc.net>
+
+	* src/TestIOGfxDisplay.cxx: gl: avoid rendering offscreen + make it
+	clearer that uploaded surfaces are freed At least one setup (Windows XP + SDL 2.0.5) has specific issues with
+	offscreen rendering https://bugzilla.libsdl.org/show_bug.cgi?id=3619
+	Since FreeDink does not normally render offscreen, let's avoid
+	testing that entirely (even if windows popping-up during tests are
+	annoying)
+
+2017-03-27  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp: gl: pre-concat shader sources to
+	anticipate issues with buggy drivers
+
+2017-03-27  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-exe-mxe.sh, doc/plg.txt: build doc
+	fixes/updates
+
+2017-03-27  Sylvain Beucler <beuc@beuc.net>
+
+	* src/test_gfx_fonts.cxx: fonts: fix test case with freetype >=2.7
+
+2017-03-26  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-exe-mxe.sh: w32 build: add glm dependency
+
+2017-03-26  Sylvain Beucler <beuc@beuc.net>
+
+	* src/gfx_fonts.cpp: fonts: force freetype<2.7 renderer to avoid
+	ugly blocky letters
+
+2017-03-04  Sylvain Beucler <beuc@beuc.net>
+
+	* share/README.fonts: liberation-fonts: fedorahosted was taken down,
+	link alternate copies
+
+2017-01-22  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/changelog, debian/control, debian/watch,
+	share/README.fonts: debian: sync
+
+2016-06-12  Sylvain Beucler <beuc@beuc.net>
+
+	* BUILD, configure.ac: Update documented Debian dependencies
+
+2015-09-10  Sylvain Beucler <beuc@beuc.net>
+
+	* src/FakeIOGfxDisplay.cpp, src/FakeIOGfxDisplay.h,
+	src/ImageLoader.cpp, src/ImageLoader.h, src/Makefile.am,
+	src/gfx.cpp, src/gfx_fonts.cpp, src/test_gfx_fonts.cxx: gfx_fonts:
+	simple tests
+
+2015-09-10  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/gfx_fonts.cpp, src/gfx_fonts.h,
+	src/test_gfx_fonts.cxx, src/test_gfx_fonts_libe.h: Add test
+	structure for gfx_fonts
+
+2015-09-09  Sylvain Beucler <beuc@beuc.net>
+
+	* src/gfx_fonts.cpp, src/gfx_fonts.h, src/test_text.cxx,
+	src/text.cpp: Fix test_text
+
+2015-09-08  Sylvain Beucler <beuc@beuc.net>
+
+	* src/app.cpp, src/live_sprite.h, src/live_sprites_manager.cpp,
+	src/text.cpp: Cache text sprites
+
+2015-09-08  Sylvain Beucler <beuc@beuc.net>
+
+	* src/text.cpp: Create text sprites with relative offsets
+
+2015-09-08  Sylvain Beucler <beuc@beuc.net>
+
+	* src/ImageLoader.cpp, src/ImageLoader.h, src/TestIOGfxDisplay.cxx,
+	src/gfx_fonts.cpp, src/gfx_fonts.h, src/test_text.cxx, src/text.cpp: 
+	Flatten text sprites from a dialog
+
+2015-09-06  Sylvain Beucler <beuc@beuc.net>
+
+	* src/brain_text.cpp, src/game_choice_renderer.cpp,
+	src/game_engine.cpp, src/gfx_fonts.cpp, src/gfx_fonts.h,
+	src/live_sprite.h, src/live_sprites_manager.cpp,
+	src/test_brain_text.cxx, src/test_text.cxx, src/text.cpp: Return
+	text textures instead of directly blitting them
+
+2015-09-06  Sylvain Beucler <beuc@beuc.net>
+
+	* src/AppFreeDink.cpp, src/brain.cpp, src/brain_diagonal.cpp,
+	src/brain_duck.cpp, src/brain_lateral.cpp, src/brain_missile.cpp,
+	src/brain_onetime.cpp, src/brain_people.cpp, src/brain_scale.cpp,
+	src/brain_shadow.cpp, src/brain_text.cpp, src/dinkc.cpp,
+	src/dinkc_bindings.cpp, src/freedinkedit.cpp, src/game_engine.cpp,
+	src/live_sprite.h, src/live_sprites_manager.cpp,
+	src/live_sprites_manager.h, src/sfx.cpp, src/test_brain_text.cxx,
+	src/test_dinkc_bindings.cxx, src/test_integration.cxx,
+	src/test_live_sprites_manager.cxx, src/update_frame.cpp: Encapsulate
+	live sprite deletion
+
+2015-09-06  Sylvain Beucler <beuc@beuc.net>
+
+	* src/game_choice_renderer.cpp, src/gfx_fonts.cpp, src/gfx_fonts.h,
+	src/test_text.cxx, src/text.cpp: Clean-up text display
+
+2015-09-06  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplay.cpp, src/IOGfxDisplay.h,
+	src/IOGfxDisplayGL2.cpp, src/IOGfxDisplayGL2.h,
+	src/IOGfxDisplaySW.cpp, src/IOGfxDisplaySW.h, src/IOGfxGLFuncs.cpp,
+	src/IOGfxGLFuncs.h, src/TestIOGfxDisplay.cxx: Implement GL2
+	truecolor fading
+
+2015-09-06  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplaySW.cpp: Disable linear interpolation to fix
+	Android testsuite
+
+2015-09-05  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplay.cpp, src/IOGfxDisplay.h,
+	src/IOGfxDisplayGL2.cpp, src/IOGfxDisplayGL2.h,
+	src/IOGfxDisplaySW.cpp, src/IOGfxDisplaySW.h: Factor out
+	flipStretch/flipDebug
+
+2015-09-05  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp, src/IOGfxDisplayGL2.h,
+	src/IOGfxSurfaceGL2.cpp: Extract setVertexAttrib
+
+2015-09-05  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp: Factor out some truecolor/indexed
+	differences in flipStretch
+
+2015-09-05  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxGLFuncs.cpp, src/IOGfxGLFuncs.h: Add gl->UniformMatrix3fv
+
+2015-09-05  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp, src/IOGfxDisplayGL2.h: Improve shader
+	debugging
+
+2015-09-04  Sylvain Beucler <beuc@beuc.net>
+
+	* src/TestIOGfxDisplay.cxx: Indexed texture screenshot test
+
+2015-09-04  Sylvain Beucler <beuc@beuc.net>
+
+	* src/TestIOGfxDisplay.cxx: Clarify gfx tests a bit
+
+2015-09-02  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxSurface.h, src/IOGfxSurfaceGL2.cpp,
+	src/IOGfxSurfaceGL2.h, src/IOGfxSurfaceSW.cpp,
+	src/IOGfxSurfaceSW.h, src/TestIOGfxDisplay.cxx: More precise
+	screenshot at the texture level
+
+2015-09-01  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp, src/IOGfxSurfaceGL2.cpp: Minimize
+	framebuffer changes
+
+2015-08-31  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp, src/IOGfxSurfaceGL2.cpp,
+	src/IOGfxSurfaceGL2.h: Factor-out and lazy-create FBOs
+
+2015-08-31  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp, src/IOGfxDisplayGL2.h,
+	src/IOGfxSurfaceGL2.cpp, src/IOGfxSurfaceGL2.h: Structure shaders
+	data
+
+2015-08-30  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedinkedit.cpp: Give back ALT to FreeDinkedit (and allow
+	select tiles 31-41)
+
+2015-08-30  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc.cpp: Fix segfault when calling a non-existing procedure
+	in console
+
+2015-08-30  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp, src/ImageLoader.cpp, src/ImageLoader.h,
+	src/gfx_fonts.cpp: Fix font colors and transparency
+
+2015-08-30  Sylvain Beucler <beuc@beuc.net>
+
+	* src/gfx.cpp: Fix crash when displaying render info before render
+	is opened
+
+2015-08-30  Sylvain Beucler <beuc@beuc.net>
+
+	* src/gfx_fonts.cpp: Optimize text rendering
+
+2015-08-30  Sylvain Beucler <beuc@beuc.net>
+
+	* src/gfx.cpp: Fix splash palette
+
+2015-08-30  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplay.h, src/IOGfxDisplayGL2.cpp,
+	src/IOGfxDisplayGL2.h, src/IOGfxDisplaySW.cpp,
+	src/IOGfxDisplaySW.h, src/TestIOGfxDisplay.cxx, src/gfx.cpp: Fix
+	indexed mode on Android
+
+2015-08-30  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp: Clarify GLES detection
+
+2015-08-30  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp, src/IOGfxDisplayGL2.h,
+	src/IOGfxSurfaceGL2.cpp, src/TestIOGfxDisplay.cxx: First version of
+	DinkGL palette emulation
+
+2015-08-30  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplay.h, src/IOGfxDisplayGL2.cpp,
+	src/IOGfxDisplayGL2.h, src/IOGfxDisplaySW.cpp,
+	src/IOGfxDisplaySW.h, src/IOGfxSurface.cpp, src/IOGfxSurface.h,
+	src/IOGfxSurfaceGL2.cpp, src/IOGfxSurfaceGL2.h,
+	src/IOGfxSurfaceSW.cpp, src/IOGfxSurfaceSW.h,
+	src/TestIOGfxDisplay.cxx, src/brain_missile.cpp, src/freedink.cpp,
+	src/freedinkedit.cpp: Unify vline/hline
+
+2015-08-30  Sylvain Beucler <beuc@beuc.net>
+
+	* src/TestIOGfxDisplay.cxx: Optimize gfx tests
+
+2015-08-29  Sylvain Beucler <beuc@beuc.net>
+
+	* src/AppFreeDink.cpp, src/IOGfxDisplay.cpp, src/IOGfxDisplay.h,
+	src/IOGfxDisplayGL2.cpp, src/IOGfxDisplayGL2.h,
+	src/IOGfxDisplaySW.cpp, src/IOGfxDisplaySW.h, src/IOGfxGLFuncs.h,
+	src/IOGfxSurfaceGL2.cpp, src/Makefile.am, src/TestIOGfxDisplay.cxx,
+	src/freedink.cpp, src/freedinkedit.cpp, src/game_engine.cpp,
+	src/gfx.cpp: Clean-up gfx logs and tests; fix for Android
+
+2015-08-28  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp, src/IOGfxDisplayGL2.h,
+	src/IOGfxGLFuncs.cpp, src/IOGfxGLFuncs.h, src/IOGfxSurface.h,
+	src/IOGfxSurfaceGL2.cpp, src/IOGfxSurfaceGL2.h,
+	src/IOGfxSurfaceSW.cpp, src/IOGfxSurfaceSW.h,
+	src/TestIOGfxDisplay.cxx: Implement fillRect and fill_screen
+
+2015-08-27  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplay.h, src/IOGfxDisplayGL2.cpp,
+	src/IOGfxDisplayGL2.h, src/IOGfxDisplaySW.cpp,
+	src/IOGfxDisplaySW.h, src/TestIOGfxDisplay.cxx: Improve blit tests
+
+2015-08-26  Sylvain Beucler <beuc@beuc.net>
+
+	* src/TestIOGfxDisplay.cxx: Paletted test
+
+2015-08-26  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplay.cpp, src/IOGfxDisplay.h,
+	src/IOGfxDisplayGL2.cpp, src/IOGfxDisplayGL2.h,
+	src/IOGfxDisplaySW.cpp, src/IOGfxDisplaySW.h, src/Makefile.am,
+	src/TestIOGfxDisplay.cxx, src/app.cpp, src/app.h, src/gfx.cpp,
+	src/gfx.h: Move graphics buffer init in the graphics driver
+
+2015-08-26  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplay.cpp, src/IOGfxDisplay.h, src/IOGfxDisplayGL2.h,
+	src/IOGfxDisplaySW.cpp, src/IOGfxSurfaceGL2.h,
+	src/IOGfxSurfaceSW.cpp, src/IOGfxSurfaceSW.h, src/Makefile.am,
+	src/{TestIOGfxDisplayGL2.cxx => TestIOGfxDisplay.cxx},
+	src/TestIOGfxDisplaySW.cxx: Test all display types with the same
+	tests
+
+2015-08-26  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplay.cpp, src/IOGfxDisplay.h,
+	src/IOGfxDisplayGL2.cpp, src/IOGfxDisplayGL2.h,
+	src/IOGfxDisplaySW.cpp, src/IOGfxDisplaySW.h, src/IOGfxSurface.cpp,
+	src/IOGfxSurface.h, src/IOGfxSurfaceGL2.cpp, src/IOGfxSurfaceGL2.h,
+	src/IOGfxSurfaceSW.cpp, src/TestIOGfxDisplayGL2.cxx: Make Gfx tests
+	more automated
+
+2015-08-25  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp, src/IOGfxDisplayGL2.h, src/gfx.cpp: Move
+	Android work-around in the gfx driver for all tests to rely on
+
+2015-08-25  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxSurfaceGL2.cpp: Mark missing gfx primitives
+
+2015-08-25  Sylvain Beucler <beuc@beuc.net>
+
+	* src/gfx.cpp: Android splash work-around
+
+2015-08-25  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplay.cpp, src/IOGfxDisplayGL2.cpp: Log a bit less
+
+2015-08-25  Sylvain Beucler <beuc@beuc.net>
+
+	* src/gfx.cpp: Fix splash screen on woe
+
+2015-08-25  Sylvain Beucler <beuc@beuc.net>
+
+	* src/AppFreeDink.cpp, src/IOGfxDisplay.cpp,
+	src/IOGfxDisplayGL2.cpp, src/IOGfxDisplayGL2.h,
+	src/IOGfxDisplaySW.cpp, src/IOGfxDisplaySW.h,
+	src/IOGfxSurfaceGL2.cpp, src/IOGfxSurfaceGL2.h,
+	src/TestIOGfxDisplayGL2.cxx, src/gfx.cpp: Center GL display and
+	attempt to fix issues when starting fullscreen
+
+2015-08-25  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp, src/IOGfxSurfaceGL2.cpp,
+	src/TestIOGfxDisplayGL2.cxx, src/gfx.cpp: Cropped GL blits
+
+2015-08-25  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxSurfaceGL2.cpp, src/IOGfxSurfaceGL2.h,
+	src/TestIOGfxDisplayGL2.cxx, src/gfx.cpp, src/status.cpp: Stretched
+	GL blits
+
+2015-08-25  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp, src/IOGfxDisplayGL2.h,
+	src/IOGfxGLFuncs.cpp, src/IOGfxGLFuncs.h, src/IOGfxSurfaceGL2.cpp,
+	src/IOGfxSurfaceGL2.h, src/TestIOGfxDisplayGL2.cxx: IOGfxDisplayGL2:
+	color key support
+
+2015-08-24  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp, src/IOGfxGLFuncs.cpp,
+	src/IOGfxGLFuncs.h, src/IOGfxSurfaceGL2.cpp, src/gfx.cpp: gfx: more
+	error reporting
+
+2015-08-24  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp, src/IOGfxGLFuncs.cpp,
+	src/IOGfxGLFuncs.h, src/IOGfxSurfaceGL2.cpp,
+	src/TestIOGfxDisplayGL2.cxx, src/gfx.cpp: Inter-texture GL blit
+
+2015-08-24  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/gfx.cpp: Add GL2 to common objects
+
+2015-08-24  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp, src/IOGfxDisplaySW.cpp,
+	src/ImageLoader.cpp, src/fastfile.cpp, src/gfx_sprites.cpp: Move RLE
+	optimization in the SW display
+
+2015-08-24  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp, src/IOGfxSurfaceGL2.cpp,
+	src/IOGfxSurfaceGL2.h, src/TestIOGfxDisplayGL2.cxx: Convert image
+	format on upload
+
+2015-08-24  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp, src/IOGfxDisplayGL2.h,
+	src/IOGfxGLFuncs.cpp, src/IOGfxGLFuncs.h, src/IOGfxPrimitives.h,
+	src/IOGfxSurfaceGL2.cpp, src/IOGfxSurfaceGL2.h,
+	src/IOGfxSurfaceSW.cpp, src/Makefile.am,
+	src/TestIOGfxDisplayGL2.cxx: Preliminary support for GL2 display
+
+2015-08-23  Sylvain Beucler <beuc@beuc.net>
+
+	* src/BgTilesetsManager.cpp, src/IOGfxDisplay.cpp,
+	src/IOGfxDisplay.h, src/IOGfxPrimitivesSW.cpp, src/IOGfxSurface.h,
+	src/IOGfxSurfaceSW.cpp, src/IOGfxSurfaceSW.h, src/ImageLoader.cpp,
+	src/ImageLoader.h, src/dinkc_bindings.cpp, src/freedink.cpp,
+	src/freedinkedit.cpp, src/gfx.cpp, src/gfx.h, src/gfx_fonts.cpp,
+	src/gfx_sprites.cpp, src/live_screen.cpp, src/test_integration.cxx,
+	src/update_frame.cpp: Switch global buffers to IOGfxSurface
+
+2015-08-23  Sylvain Beucler <beuc@beuc.net>
+
+	* src/BgTilesetsManager.cpp, src/BgTilesetsManager.h,
+	src/IOGfxDisplay.h, src/IOGfxDisplayGL2.cpp, src/IOGfxDisplayGL2.h,
+	src/IOGfxDisplaySW.cpp, src/IOGfxDisplaySW.h,
+	src/IOGfxPrimitives.h, src/IOGfxPrimitivesSW.cpp,
+	src/IOGfxSurface.h, src/IOGfxSurfaceSW.cpp, src/IOGfxSurfaceSW.h,
+	src/brain_onetime.cpp, src/freedink.cpp, src/freedinkedit.cpp,
+	src/game_choice_renderer.cpp, src/game_engine.cpp,
+	src/game_engine.h, src/gfx.cpp, src/gfx_sprites.cpp,
+	src/gfx_sprites.h, src/gfx_tiles.cpp, src/gfx_tiles.h,
+	src/inventory.cpp, src/live_screen.cpp, src/live_screen.h,
+	src/status.cpp, src/test_integration.cxx, src/update_frame.cpp: 
+	Switch sprites to IOGfxSurface
+
+2015-08-23  Sylvain Beucler <beuc@beuc.net>
+
+	* src/TestIOGfxDisplayGL2.cxx, src/TestIOGfxDisplaySW.cxx,
+	src/fastfile.cpp, src/fastfile.h, src/gfx_sprites.cpp,
+	src/test_dinkini.cxx, src/test_text.cxx: Fix some warnings, drop
+	unused fastfile code
+
+2015-08-23  Sylvain Beucler <beuc@beuc.net>
+
+	* src/BgTilesetsManager.cpp, src/IOGfxDisplay.h,
+	src/IOGfxDisplayGL2.cpp, src/IOGfxDisplayGL2.h,
+	src/IOGfxDisplaySW.cpp, src/IOGfxDisplaySW.h,
+	src/IOGfxPrimitivesSW.cpp, src/ImageLoader.cpp, src/ImageLoader.h,
+	src/Makefile.am, src/dinkc_bindings.cpp, src/freedink.cpp,
+	src/freedinkedit.cpp, src/gfx.cpp, src/gfx.h, src/gfx_sprites.cpp,
+	src/savegame.cpp, src/test_dinkini.cxx, src/test_text.cxx: gfx: move
+	out bmp loading and reference palette, introduce display->upload
+
+2015-08-23  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxPrimitives.cpp, src/IOGfxPrimitivesSW.cpp,
+	src/IOGfxPrimitivesSW.h, src/IOGfxSurface.h,
+	src/IOGfxSurfaceSW.cpp, src/IOGfxSurfaceSW.h, src/Makefile.am,
+	src/brain_missile.cpp, src/freedink.cpp, src/freedinkedit.cpp: Move
+	vline/hline/draw_box to IOGFXSurface
+
+2015-08-23  Sylvain Beucler <beuc@beuc.net>
+
+	* src/AppFreeDink.cpp, src/IOGfxDisplay.h,
+	src/IOGfxPrimitivesSW.cpp, src/freedink.cpp, src/freedinkedit.cpp,
+	src/game_engine.cpp, src/gfx.cpp: Drop flip_it
+
+2015-08-23  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplay.cpp, src/IOGfxDisplay.h,
+	src/IOGfxDisplayGL2.cpp, src/IOGfxDisplayGL2.h,
+	src/IOGfxDisplaySW.cpp, src/IOGfxDisplaySW.h,
+	src/IOGfxPrimitivesSW.cpp, src/Makefile.am,
+	src/TestIOGfxDisplayGL2.cxx, src/TestIOGfxDisplaySW.cxx,
+	src/freedink.cpp, src/gfx.cpp, src/gfx.h, src/gfx_fade.cpp,
+	src/gfx_fade.h, src/test_text.cxx, src/text.cpp, src/text.h,
+	src/update_frame.cpp: Move fade in software display
+
+2015-08-23  Sylvain Beucler <beuc@beuc.net>
+
+	* src/AppFreeDink.cpp, src/IOGfxDisplay.cpp, src/IOGfxDisplay.h,
+	src/IOGfxPrimitivesSW.cpp, src/freedinkedit.cpp,
+	src/game_engine.cpp, src/gfx.cpp, src/gfx.h, src/gfx_sprites.h: 
+	IOGfxDisplay: now responsible for SDL_Init-ialization
+
+2015-08-23  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedink.cpp, src/gfx.cpp: gfx: doc fixes
+
+2015-08-23  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplay.cpp, src/IOGfxDisplay.h,
+	src/IOGfxDisplayGL2.cpp, src/IOGfxDisplayGL2.h,
+	src/IOGfxDisplaySW.cpp, src/IOGfxDisplaySW.h: Factor out window
+	open/close
+
+2015-08-23  Sylvain Beucler <beuc@beuc.net>
+
+	* src/AppFreeDink.cpp, src/IOGfxDisplay.cpp, src/IOGfxDisplay.h,
+	src/IOGfxDisplayGL2.cpp, src/IOGfxDisplayGL2.h,
+	src/IOGfxDisplaySW.cpp, src/IOGfxDisplaySW.h,
+	src/TestIOGfxDisplayGL2.cxx, src/freedinkedit.cpp, src/gfx.cpp,
+	src/gfx.h: Reduce external calls to display members
+
+2015-08-23  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplaySW.cpp: Note that using SDL_SetPaletteColors is
+	mandatory
+
+2015-08-23  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp, src/IOGfxDisplayGL2.h, src/app.cpp,
+	src/app.h, src/dinkc_bindings.cpp, src/freedinkedit.cpp,
+	src/live_screen.cpp: Fix some harmless warnings
+
+2015-08-23  Sylvain Beucler <beuc@beuc.net>
+
+	* .gitignore, doc/eclipse-cdt.txt: Use autotools mode in Eclipse
+
+2015-08-22  Sylvain Beucler <beuc@beuc.net>
+
+	* .gitignore, src/AppFreeDink.cpp, src/IOGfxDisplay.cpp,
+	src/IOGfxDisplay.h, src/IOGfxDisplayGL2.cpp, src/IOGfxDisplayGL2.h,
+	src/IOGfxDisplaySW.cpp, src/IOGfxDisplaySW.h,
+	src/IOGfxPrimitives.h, src/IOGfxPrimitivesSW.cpp,
+	src/IOGfxSurface.h, src/IOGfxSurfaceSW.cpp, src/IOGfxSurfaceSW.h,
+	src/Makefile.am, src/TestIOGfxDisplayGL2.cxx,
+	src/TestIOGfxDisplaySW.cxx, src/dinkc_bindings.cpp,
+	src/freedinkedit.cpp, src/game_engine.cpp, src/gfx.cpp, src/gfx.h,
+	src/inventory.cpp: Prepare multi-render infra
+
+2015-08-22  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxSurface.cpp, src/IOGfxSurface.h, src/IOGfxSurfaceSW.cpp,
+	src/IOGfxSurfaceSW.h, src/Makefile.am: IOGfx: introduce intermediary
+	structure for surfaces
+
+2015-08-22  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxPrimitives.h, src/IOGfxPrimitivesSW.cpp, src/gfx.cpp: 
+	IOGfxPrimitivesSW: drop dead code
+
+2015-08-22  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/v1.08.txt, src/gfx_sprites.cpp: palettes: more documentation
+	(sigh)
+
+2015-08-22  Sylvain Beucler <beuc@beuc.net>
+
+	* src/AppFreeDink.cpp, src/BgTilesetsManager.cpp, src/IOGfx.h,
+	src/IOGfxDisplay.cpp, src/IOGfxDisplay.h, src/{IOGfxGL2.cpp =>
+	IOGfxDisplayGL2.cpp}, src/{IOGfxGL2.h => IOGfxDisplayGL2.h},
+	src/{IOGfx.cpp => IOGfxPrimitives.cpp}, src/IOGfxPrimitives.h,
+	src/IOGfxPrimitivesSW.cpp, src/IOGfxPrimitivesSW.h,
+	src/Makefile.am, src/{TestIOGfxGL2.cxx => TestIOGfxDisplayGL2.cxx},
+	src/app.cpp, src/brain_missile.cpp, src/dinkc_bindings.cpp,
+	src/freedink.cpp, src/freedinkedit.cpp, src/game_engine.cpp,
+	src/gfx.cpp, src/gfx.h, src/gfx_sprites.cpp, src/inventory.cpp,
+	src/live_screen.cpp, src/status.cpp: gfx: start moving out
+	primitives
+
+2015-08-21  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedinkedit.cpp, src/game_engine.cpp, src/gfx_tiles.cpp,
+	src/gfx_tiles.h, src/update_frame.cpp: gfx_tiles: use lower-level
+	dependencies
+
+2015-08-21  Sylvain Beucler <beuc@beuc.net>
+
+	* src/BgTilesetsManager.cpp, src/BgTilesetsManager.h, src/DMod.cpp,
+	src/DMod.h, src/Makefile.am, src/dinkc_bindings.cpp,
+	src/freedinkedit.cpp, src/game_engine.cpp, src/gfx.cpp,
+	src/gfx_tiles.cpp, src/gfx_tiles.h, src/savegame.cpp,
+	src/update_frame.cpp: gfx_tiles: move background tiles slot
+	management to a new class
+
+2015-08-21  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedinkedit.cpp, src/game_engine.cpp, src/gfx_tiles.cpp,
+	src/gfx_tiles.h, src/update_frame.cpp: gfx_tiles: don't use
+	cur_ed_screen global
+
+2015-08-21  Sylvain Beucler <beuc@beuc.net>
+
+	* src/DMod.cpp, src/DMod.h, src/app.cpp, src/dinkc_bindings.cpp,
+	src/freedinkedit.cpp, src/game_engine.cpp, src/gfx.cpp,
+	src/gfx_tiles.cpp, src/gfx_tiles.h, src/savegame.cpp,
+	src/update_frame.cpp: gfx_tiles: step towards objectification
+
+2015-08-21  Sylvain Beucler <beuc@beuc.net>
+
+	* src/paths.cpp: paths: simplify refdir error message a bit
+
+2015-08-21  Sylvain Beucler <beuc@beuc.net>
+
+	* src/DMod.cpp, src/DMod.h, src/IOGfx.cpp, src/IOGfx.h,
+	src/IOGfxGL2.cpp, src/IOGfxGL2.h, src/IOGfxGLFuncs.cpp,
+	src/IOGfxGLFuncs.h, src/TestIOGfxGL2.cxx: Typo
+
+2015-08-21  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedinkedit.cpp, src/gfx.cpp: Fix gargage in fullscreen
+	letterboxing
+
+2015-08-21  Sylvain Beucler <beuc@beuc.net>
+
+	* src/test_dinkini.cxx, src/test_text.cxx: Fix testsuite linking
+
+2015-08-21  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, doc/palettes.txt, src/gfx.cpp, src/gfx_sprites.cpp: Sprites
+	colors are more stable after a palette change and a savegame load to
+	a different palette
+
+2015-08-21  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/palettes.txt, src/dinkc_bindings.cpp, src/freedink.cpp,
+	src/freedinkedit.cpp, src/gfx.cpp, src/gfx.h, src/gfx_fonts.cpp,
+	src/gfx_palette.cpp, src/gfx_palette.h, src/gfx_sprites.cpp,
+	src/savegame.cpp, src/test_dinkini.cxx, src/test_text.cxx: Simplify
+	palette handling
+
+2015-08-21  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedinkedit.cpp: Fix FreeDinkedit screen refresh
+
+2015-08-21  Sylvain Beucler <beuc@beuc.net>
+
+	* src/live_sprites_manager.cpp: Clean-up does_sprite_have_text
+
+2015-08-21  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, src/live_sprites_manager.cpp: Fix segfault (off-by-one array
+	out of bounds) in does_sprite_have_text
+
+2015-08-21  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/game_choice.cpp, src/inventory.cpp: Fix 'make
+	distcheck'
+
+2015-08-21  Sylvain Beucler <beuc@beuc.net>
+
+	* android/remote-test-driver, src/Makefile.am,
+	src/test_android_workaround.h: testsuite: android support
+
+2015-08-20  Sylvain Beucler <beuc@beuc.net>
+
+	* src/DMod.cpp, src/DMod.h: DMod: fix compilation on android
+
+2015-08-20  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/app.cpp, src/msgbox.cpp, src/msgbox.h: 
+	msgbox: drop
+
+2015-08-20  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/app.cpp, src/log.cpp, src/paths.cpp,
+	src/paths.h: Break paths' dependency on msgbox
+
+2015-08-20  Sylvain Beucler <beuc@beuc.net>
+
+	* src/DMod.cpp, src/DMod.h, src/EditorMap.cpp, src/EditorMap.h,
+	src/TestEditorMap.cxx, src/app.cpp, src/dinkc_bindings.cpp,
+	src/freedink.cpp, src/freedinkedit.cpp, src/game_engine.cpp,
+	src/savegame.cpp, src/test_integration.cxx: Move g_map to g_dmod.map
+
+2015-08-20  Sylvain Beucler <beuc@beuc.net>
+
+	* src/DMod.cpp, src/DMod.h, src/Makefile.am: DMod: stub
+
+2015-08-20  Sylvain Beucler <beuc@beuc.net>
+
+	* src/EditorMap.cpp, src/EditorMap.h, src/hardness_tiles.cpp: Move
+	hard_dat from EditorMap to hardness_tiles
+
+2015-08-20  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am: IOGfxGL2: avoid stack corruption on woe + free
+	resources
+
+2015-08-20  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxGL2.cpp, src/IOGfxGL2.h, src/IOGfxGLFuncs.cpp,
+	src/IOGfxGLFuncs.h, src/Makefile.am, src/TestIOGfxGL2.cxx: IOGfxGL2:
+	avoid stack corruption on woe + free resources
+
+2015-08-20  Sylvain Beucler <beuc@beuc.net>
+
+	* src/app.cpp, src/debug_renderer.cpp, src/gfx.cpp,
+	src/gfx_fonts.cpp, src/gfx_fonts.h, src/log.cpp, src/log.h,
+	src/msgbox.cpp, src/msgbox.h: log: break dependency on paths.cpp,
+	and simplify
+
+2015-08-20  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfx.cpp, src/IOGfx.h, src/IOGfxGL2.cpp, src/IOGfxGL2.h,
+	src/IOGfxGLFuncs.cpp, src/IOGfxGLFuncs.h, src/Makefile.am,
+	src/TestIOGfxGL2.cxx: Prepare OpenGL renderer
+
+2015-08-20  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/android.txt, src/Makefile.am, src/test_sdl_workaround.h: 
+	android: enable tests
+
+2015-08-20  Sylvain Beucler <beuc@beuc.net>
+
+	* android/GNUmakefile: android: shortcut install
+
+2015-08-20  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-exe-mxe.sh, configure.ac: Fix woe build
+
+2015-08-18  Sylvain Beucler <beuc@beuc.net>
+
+	* src/AppFreeDink.cpp: android: add handler for Back key
+
+2015-08-17  Sylvain Beucler <beuc@beuc.net>
+
+	* src/AppFreeDink.h: Properly add AppFreeDink.h
+
+2015-08-17  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/TODO: TODO: mark test done
+
+2015-08-17  Sylvain Beucler <beuc@beuc.net>
+
+	* src/app.cpp: android: reference alternate locale detection method
+
+2015-08-17  Sylvain Beucler <beuc@beuc.net>
+
+	* src/live_sprites_manager.cpp: random_blood: document slight
+	compatibility break
+
+2015-08-17  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/palettes.txt: palette: emulation idea
+
+2015-08-17  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/v1.09.txt: doc: reference 1.09/HD
+
+2015-08-17  Sylvain Beucler <beuc@beuc.net>
+
+	* src/input.cpp: android: reference where mouse emulation comes from
+
+2015-08-17  Sylvain Beucler <beuc@beuc.net>
+
+	* src/gfx.cpp: gfx: more renderer info
+
+2015-08-16  Sylvain Beucler <beuc@beuc.net>
+
+	* src/gfx.cpp: gfx: log renderer flags
+
+2015-08-16  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/midi.txt: midi: more doc
+
+2015-08-16  Sylvain Beucler <beuc@beuc.net>
+
+	* src/app.cpp, src/app.h, src/log.cpp: android: avoid crash when
+	restarting the game
+
+2015-08-15  Sylvain Beucler <beuc@beuc.net>
+
+	* src/AppFreeDink.cpp: transition: fix blank frame
+
+2015-08-15  Sylvain Beucler <beuc@beuc.net>
+
+	* src/AppFreeDink.cpp, src/IOTouchDragAnywhere.cpp,
+	src/IOTouchDragAnywhere.h, src/Makefile.am,
+	src/TestIOTouchDragAnywhere.cxx, src/input.cpp: touchscreen: rough
+	drag anywhere support
+
+2015-08-15  Sylvain Beucler <beuc@beuc.net>
+
+	* src/brain_diagonal.cpp, src/update_frame.cpp: update_frame:
+	clarify some more
+
+2015-08-15  Sylvain Beucler <beuc@beuc.net>
+
+	* src/status.cpp: status: straighten update_status_all
+
+2015-08-15  Sylvain Beucler <beuc@beuc.net>
+
+	* src/status.cpp: status: rename magic gauge functions
+
+2015-08-15  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc_bindings.cpp, src/game_engine.cpp, src/game_state.cpp,
+	src/game_state.h, src/status.cpp: Rename pexper -> pexp
+
+2015-08-15  Sylvain Beucler <beuc@beuc.net>
+
+	* src/status.cpp: status: drop old comments
+
+2015-08-15  Sylvain Beucler <beuc@beuc.net>
+
+	* src/update_frame.cpp: Clarify vars
+
+2015-08-15  Sylvain Beucler <beuc@beuc.net>
+
+	* src/game_engine.cpp, src/game_engine.h, src/update_frame.cpp: 
+	update_frame: move out mode setting
+
+2015-08-15  Sylvain Beucler <beuc@beuc.net>
+
+	* : Provide pixel-art-style 256x256 icon so some tools stop
+	complaining about 32x32 icon
+
+2015-08-14  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/android.txt, src/app.cpp: android: support translations
+
+2015-08-14  Sylvain Beucler <beuc@beuc.net>
+
+	* src/gfx.cpp: Restore loading pic
+
+2015-08-14  Sylvain Beucler <beuc@beuc.net>
+
+	* BUILD, android/GNUmakefile,
+	android/src/org/libsdl/app/SDLActivity.java, configure.ac,
+	doc/android.txt, src/Makefile.am, src/SDL_android_main.c,
+	src/SDL_android_main.cpp, src/app.cpp, src/brain.cpp,
+	src/brain_bounce.cpp, src/brain_text.cpp, src/freedink_main.cpp,
+	src/hardness_tiles.cpp, src/live_screen.cpp, src/status.cpp,
+	src/text.cpp: android: refresh
+
+2015-08-14  Sylvain Beucler <beuc@beuc.net>
+
+	* src/AppFreeDink.cpp, src/gfx.cpp: Test drawing outside of game
+	screen
+
+2015-08-14  Sylvain Beucler <beuc@beuc.net>
+
+	* src/test_dinkc_console.cxx: Fix testsuite under woe
+
+2015-08-14  Sylvain Beucler <beuc@beuc.net>
+
+	* src/AppFreeDink.cpp, src/gfx.cpp: Increase available drawing space
+
+2015-08-13  Sylvain Beucler <beuc@beuc.net>
+
+	* src/gfx.cpp: gfx: window can be resized (will stretch the game
+	screen by default)
+
+2015-08-13  Sylvain Beucler <beuc@beuc.net>
+
+	* src/gfx.cpp: gfx: window size issue is a bug in the software
+	renderer, work-around inoperant
+
+2015-08-13  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/test_dinkc_console.cxx: dinkc_console: test
+	skeleton
+
+2015-08-13  Sylvain Beucler <beuc@beuc.net>
+
+	* src/game_state.h: game_state: mark play.mouse as transient
+
+2015-08-13  Sylvain Beucler <beuc@beuc.net>
+
+	* src/live_sprite.cpp, src/live_sprite.h, src/update_frame.cpp: 
+	update_frame: move out live_sprite_animate
+
+2015-08-13  Sylvain Beucler <beuc@beuc.net>
+
+	* src/update_frame.cpp: live_sprite_animate: break dependency on
+	dinkc
+
+2015-08-13  Sylvain Beucler <beuc@beuc.net>
+
+	* src/update_frame.cpp: update_frame: player push handling already
+	done in humain_brain(), remove useless code
+
+2015-08-13  Sylvain Beucler <beuc@beuc.net>
+
+	* src/update_frame.cpp: updateFrame: semi-extract sprite animation
+
+2015-08-13  Sylvain Beucler <beuc@beuc.net>
+
+	* src/brain_keyboard.cpp, src/freedink.cpp, src/game_state.h,
+	src/update_frame.cpp: play.push_active: booleanify
+
+2015-08-13  Sylvain Beucler <beuc@beuc.net>
+
+	* src/brain_keyboard.cpp, src/game_engine.cpp, src/game_engine.h,
+	src/update_frame.cpp: Clarify 'flub_mode'
+
+2015-08-13  Sylvain Beucler <beuc@beuc.net>
+
+	* src/status.cpp: Dink may get 100000 coins
+
+2015-08-13  Sylvain Beucler <beuc@beuc.net>
+
+	* src/update_frame.cpp: updateFrame: indent some more
+
+2015-08-13  Sylvain Beucler <beuc@beuc.net>
+
+	* src/update_frame.cpp: updateFrame: indent a bit
+
+2015-08-12  Sylvain Beucler <beuc@beuc.net>
+
+	* src/update_frame.cpp: transition: fix initial glitch frame
+
+2015-08-12  Sylvain Beucler <beuc@beuc.net>
+
+	* src/game_engine.cpp, src/update_frame.cpp: Doc fixes
+
+2015-08-12  Sylvain Beucler <beuc@beuc.net>
+
+	* src/AppFreeDink.cpp, src/game_engine.cpp, src/game_engine.h,
+	src/update_frame.cpp: updateFrame: move out speed handling
+
+2015-08-12  Sylvain Beucler <beuc@beuc.net>
+
+	* src/update_frame.cpp: updateFrame: clarify a bit
+
+2015-08-12  Sylvain Beucler <beuc@beuc.net>
+
+	* src/update_frame.cpp: show_bmp: fix double blit
+
+2015-08-12  Sylvain Beucler <beuc@beuc.net>
+
+	* src/game_choice.cpp, src/game_choice_renderer.cpp,
+	src/update_frame.cpp: game_choice: internalize check on 'active'
+
+2015-08-12  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/debug_renderer.cpp,
+	src/game_choice_renderer.cpp, src/game_choice_renderer.h,
+	src/inventory.cpp, src/update_frame.cpp: game_choice: move out
+	rendering to a separate unit
+
+2015-08-12  Sylvain Beucler <beuc@beuc.net>
+
+	* src/game_choice.cpp: game_choice: fix glitch when going up the
+	last entries of a multi-page menu
+
+2015-08-12  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/game_choice.cpp, src/game_choice.h,
+	src/update_frame.cpp: game_choices: extract logic and rendering
+
+2015-08-12  Sylvain Beucler <beuc@beuc.net>
+
+	* src/AppFreeDink.cpp, src/brain_keyboard.cpp, src/dinkc.cpp,
+	src/game_choice.cpp, src/game_choice.h, src/inventory.cpp,
+	src/status.cpp, src/test_dinkc.cxx, src/update_frame.cpp,
+	src/update_frame.h: talk: rename to game_choice (variables)
+
+2015-08-12  Sylvain Beucler <beuc@beuc.net>
+
+	* src/AppFreeDink.cpp, src/Makefile.am, src/brain_keyboard.cpp,
+	src/dinkc.cpp, src/dinkc_bindings.cpp, src/freedink.cpp,
+	src/{talk.cpp => game_choice.cpp}, src/{talk.h => game_choice.h},
+	src/inventory.cpp, src/status.cpp, src/test_dinkc.cxx,
+	src/update_frame.cpp: talk: rename to game_choice
+
+2015-08-12  Sylvain Beucler <beuc@beuc.net>
+
+	* src/AppFreeDink.cpp, src/debug.cpp, src/debug.h,
+	src/update_frame.cpp: updateFrame: move out FPS counter
+
+2015-08-12  Sylvain Beucler <beuc@beuc.net>
+
+	* src/AppFreeDink.cpp, src/Makefile.am, src/debug.cpp, src/debug.h,
+	src/debug_renderer.cpp, src/debug_renderer.h, src/update_frame.cpp: 
+	updateFrame: move out debug rendering
+
+2015-08-12  Sylvain Beucler <beuc@beuc.net>
+
+	* src/AppFreeDink.cpp, src/Makefile.am,
+	src/dinkc_console_renderer.cpp, src/dinkc_console_renderer.h,
+	src/update_frame.cpp: updateFrame: move out console display
+
+2015-08-12  Sylvain Beucler <beuc@beuc.net>
+
+	* src/brain_onetime.cpp, src/dinkc_bindings.cpp, src/freedink.cpp,
+	src/freedinkedit.cpp, src/game_engine.cpp, src/gfx.cpp, src/gfx.h,
+	src/gfx_fade.cpp, src/gfx_fonts.cpp, src/gfx_sprites.cpp,
+	src/gfx_tiles.cpp, src/inventory.cpp, src/live_screen.cpp,
+	src/status.cpp, src/test_dinkini.cxx, src/test_text.cxx,
+	src/update_frame.cpp: gfx: rename buffers
+
+2015-08-12  Sylvain Beucler <beuc@beuc.net>
+
+	* src/AppFreeDink.cpp, src/brain_duck.cpp, src/brain_missile.cpp,
+	src/dinkc_bindings.cpp, src/editor_screen.cpp, src/editor_screen.h,
+	src/freedinkedit.cpp, src/game_engine.cpp, src/live_sprite.h,
+	src/live_sprites_manager.cpp, src/update_frame.cpp: Rename
+	spr[].timer -> timing for consistency with sp_timing
+
+2015-08-12  Sylvain Beucler <beuc@beuc.net>
+
+	* src/editor_screen.h: Rename sprite_placement -> editor_sprite
+
+2015-08-12  Sylvain Beucler <beuc@beuc.net>
+
+	* src/editor_screen.cpp, src/editor_screen.h: editor_sprite: mark
+	unused fields
+
+2015-08-11  Sylvain Beucler <beuc@beuc.net>
+
+	* src/update_frame.cpp: updateFrame: drop dead code
+
+2015-08-11  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc.cpp, src/dinkc.h, src/update_frame.cpp: dinkc: break
+	dependency on game_engine.cpp
+
+2015-08-11  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc.cpp, src/dinkc.h, src/update_frame.cpp: dinkc: extract
+	purge of scripts with dead sprites
+
+2015-08-11  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc.cpp: dinkc: describe spr[] usage
+
+2015-08-11  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc.cpp, src/dinkc_bindings.cpp, src/live_sprite.h,
+	src/update_frame.cpp: live_sprite: rename callback ->
+	say_stop_callback
+
+2015-08-11  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc_bindings.cpp: kill_cur_item/kill_cur_magic: note
+	documentation error
+
+2015-08-11  Sylvain Beucler <beuc@beuc.net>
+
+	* src/AppFreeDink.cpp, src/brain_keyboard.cpp, src/dinkc.cpp,
+	src/dinkc.h, src/dinkc_bindings.cpp, src/game_engine.cpp,
+	src/inventory.cpp, src/live_sprite.h, src/savegame.cpp,
+	src/status.cpp, src/update_frame.cpp: dinkc: break part of
+	dependency on spr[]
+
+2015-08-11  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedinkedit.cpp: freedinkedit: move g_editorMode from const
+	to enum
+
+2015-08-11  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedinkedit.cpp: freedinkedit: rename mode to g_editorMode
+
+2015-08-11  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedinkedit.cpp: freedinkedit: document cursor handling
+
+2015-08-11  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedinkedit.cpp, src/gfx_tiles.cpp, src/gfx_tiles.h,
+	src/update_frame.cpp: gfx_tiles: break dependency on game_engine.cpp
+
+2015-08-11  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/plg.txt: More deployment doc
+
+2015-08-10  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedinkedit.cpp: freedinkedit: fix use non-constants use of
+	mode
+
+2015-08-10  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedinkedit.cpp: freedinkedit: fix nasty selector
+	misalignement bug introduced in
+	4359f92b8cdb3da812d36ce2be76ae1b1504ab2b AFAICS
+
+2015-08-10  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedinkedit.cpp: freedinkedit: indent separated code
+
+2015-08-10  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedinkedit.cpp: freedinkedit: separate main interaction
+	logic
+
+2015-08-10  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedinkedit.cpp, src/gfx.cpp, src/gfx.h: freedinkedit:
+	simplify grid drawing
+
+2015-08-10  Sylvain Beucler <beuc@beuc.net>
+
+	* src/text.cpp: Drop dead code with sprite_owner=1200 which doesn't
+	happen in 1.08 short of a buffer overflow with spr[1200].active=1
+	and consistent x/y values
+
+2015-08-10  Sylvain Beucler <beuc@beuc.net>
+
+	* src/brain_text.cpp, src/dinkc_bindings.cpp,
+	src/test_brain_text.cxx: Kill text with invalid sprite_owner
+
+2015-08-10  Sylvain Beucler <beuc@beuc.net>
+
+	* src/live_sprite.cpp, src/live_sprite.h, src/update_frame.cpp: 
+	Extract sprite expiration
+
+2015-08-10  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/eclipse-cdt.txt: Better build command
+
+2015-08-10  Sylvain Beucler <beuc@beuc.net>
+
+	* src/test_live_sprites_manager.cxx: live_sprites_manager: precise
+	test purpose
+
+2015-08-10  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, src/brain_keyboard.cpp: Can skip Mom's first dialog line
+	when quickly starting a new game
+
+2015-08-10  Sylvain Beucler <beuc@beuc.net>
+
+	* src/brain.cpp, src/brain_keyboard.cpp, src/dinkc.cpp,
+	src/dinkc_bindings.cpp, src/game_engine.cpp, src/live_sprite.h,
+	src/test_brain_text.cxx, src/test_text.cxx, src/text.cpp,
+	src/update_frame.cpp: Rename spr[].kill -> kill_ttl,
+	spr[].kill_timer -> kill_start
+
+2015-08-10  Sylvain Beucler <beuc@beuc.net>
+
+	* src/brain_text.cpp: brain_text: reindent/comment
+
+2015-08-10  Sylvain Beucler <beuc@beuc.net>
+
+	* src/brain_text.cpp, src/test_brain_text.cxx, src/test_text.cxx,
+	src/text.cpp: text: unbreak damage/experience animation
+
+2015-08-10  Sylvain Beucler <beuc@beuc.net>
+
+	* src/test_text.cxx, src/text.cpp: text: avoid crash with bad text
+	owner
+
+2015-08-10  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/test_text.cxx, src/text.cpp: text: add tests
+
+2015-08-10  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedink.cpp, src/freedink.h, src/text.cpp, src/text.h: Move
+	text_draw from freedink to text
+
+2015-08-10  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc.cpp: dinkc: fix log output on missing procedure
+
+2015-08-09  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedink.cpp, src/freedink.h, src/game_engine.cpp,
+	src/game_engine.h, src/live_screen.cpp, src/live_screen.h,
+	src/update_frame.cpp: Move screen transition to live_screen
+
+2015-08-09  Sylvain Beucler <beuc@beuc.net>
+
+	* .gitignore, doc/eclipse-cdt.txt: Notes about Eclipse CDT
+
+2015-08-09  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedink.cpp, src/freedink.h, src/status.cpp, src/status.h: 
+	Move drawscreenlock from freedink to status
+
+2015-08-09  Sylvain Beucler <beuc@beuc.net>
+
+	* src/brain_text.cpp, src/test_brain_text.cxx: brain_text: protect
+	against bad spr[].owner
+
+2015-08-09  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/test_brain_text.cxx: brain_text: add tests
+
+2015-08-09  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedink.cpp: text_draw: a bit of indentation
+
+2015-08-09  Sylvain Beucler <beuc@beuc.net>
+
+	* src/live_sprite.h: live_sprite: document owner
+
+2015-08-09  Sylvain Beucler <beuc@beuc.net>
+
+	* src/live_sprites_manager.cpp, src/live_sprites_manager.h,
+	src/test_live_sprites_manager.cxx: Add isValidSprite central check
+
+2015-08-09  Sylvain Beucler <beuc@beuc.net>
+
+	* src/live_sprites_manager.cpp: Clean-up get_last_sprite
+
+2015-08-09  Sylvain Beucler <beuc@beuc.net>
+
+	* src/test_live_sprites_manager.cxx: More get_last_sprite testing
+
+2015-08-09  Sylvain Beucler <beuc@beuc.net>
+
+	* src/live_sprites_manager.cpp: Clean-up
+	lsm_kill_all_nonlive_sprites
+
+2015-08-09  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedinkedit.cpp, src/game_engine.cpp, src/live_sprite.h,
+	src/live_sprites_manager.cpp, src/live_sprites_manager.h,
+	src/test_live_sprites_manager.cxx: Extract while(kill_last_sprite())
+
+2015-08-09  Sylvain Beucler <beuc@beuc.net>
+
+	* src/test_live_sprites_manager.cxx: Reflect actual usage of
+	kill_last_sprite on tests
+
+2015-08-09  Sylvain Beucler <beuc@beuc.net>
+
+	* src/test_live_sprites_manager.cxx: Add missing
+	test_live_sprites_manager test file
+
+2015-08-09  Sylvain Beucler <beuc@beuc.net>
+
+	* src/live_sprites_manager.cpp, src/live_sprites_manager.h: Move
+	last_sprite_created initialization to live_sprites_manager_init
+
+2015-08-09  Sylvain Beucler <beuc@beuc.net>
+
+	* src/game_engine.h: Remove duplicate declaration
+
+2015-08-09  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedink.cpp, src/freedink.h, src/live_sprites_manager.cpp,
+	src/live_sprites_manager.h: Move get_last_sprite from freedink to
+	live_sprites_manager
+
+2015-08-09  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/live_sprite.h: Add test for
+	live_sprites_manager
+
+2015-08-09  Sylvain Beucler <beuc@beuc.net>
+
+	* src/brain_duck.cpp, src/freedink.cpp, src/live_sprites_manager.h: 
+	Move kill_sprite_all from freedink to brain_duck
+
+2015-08-09  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedink.cpp, src/game_engine.cpp, src/game_engine.h,
+	src/game_state.cpp, src/game_state.h: Document push event some more
+
+2015-08-09  Sylvain Beucler <beuc@beuc.net>
+
+	* src/AppFreeDink.cpp: AppFreeDink: indent new file
+
+2015-08-08  Sylvain Beucler <beuc@beuc.net>
+
+	* src/.dir-locals.el, src/AppFreeDink.cpp, src/AppFreeDink.h,
+	src/AppFreeDinkedit.cpp, src/AppFreeDinkedit.h, src/Makefile.am,
+	src/app.cpp, src/app.h, src/freedink_main.cpp,
+	src/freedinkedit.cpp, src/gfx.cpp: Objectify app init
+
+2015-08-08  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/app.cpp, src/app.h, src/dinkini.cpp,
+	src/dinkini.h, src/freedink.cpp, src/freedink_main.cpp,
+	src/freedinkedit.cpp, src/game_engine.cpp, src/game_engine.h,
+	src/gfx.cpp, src/gfx.h, src/gfx_fonts.cpp,
+	src/live_sprites_manager.cpp, src/log.cpp, src/log.h,
+	src/test_dinkini.cxx, src/update_frame.cpp: Break dependencies on
+	app
+
+2015-08-08  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/bgm.cpp, src/brain.cpp,
+	src/brain_bounce.cpp, src/brain_keyboard.cpp, src/brain_scale.cpp,
+	src/brains.h, src/dinkc_bindings.cpp, src/dinkvar.cpp,
+	src/freedink.cpp, src/freedink.h, src/freedinkedit.cpp,
+	src/game_engine.cpp, src/game_engine.h, src/{dinkvar.h =>
+	game_state.cpp}, src/game_state.h, src/inventory.cpp,
+	src/inventory.h, src/savegame.cpp, src/status.cpp, src/status.h,
+	src/talk.cpp, src/test_integration.cxx, src/update_frame.cpp: Finish
+	splitting dinkvar.h
+
+2015-08-08  Sylvain Beucler <beuc@beuc.net>
+
+	* src/brain_onetime.cpp, src/dinkvar.cpp, src/dinkvar.h,
+	src/freedink.cpp, src/freedink.h, src/game_engine.cpp,
+	src/game_engine.h, src/live_screen.cpp, src/live_screen.h: Split
+	dinkvar some more
+
+2015-08-08  Sylvain Beucler <beuc@beuc.net>
+
+	* src/app.cpp, src/bgm.cpp, src/brain.cpp, src/brain_keyboard.cpp,
+	src/brain_onetime.cpp, src/dinkc_bindings.cpp, src/dinkini.cpp,
+	src/dinkini.h, src/dinkvar.cpp, src/dinkvar.h,
+	src/editor_screen.cpp, src/freedink.cpp, src/freedink_main.cpp,
+	src/freedinkedit.cpp, src/game_engine.cpp, src/gfx_fonts.cpp,
+	src/gfx_sprites.cpp, src/gfx_tiles.cpp, src/inventory.cpp,
+	src/live_screen.cpp, src/live_sprite.cpp, src/live_sprite.h,
+	src/savegame.cpp, src/status.cpp, src/test_dinkc_bindings.cxx,
+	src/test_integration.cxx, src/text.cpp, src/update_frame.cpp: Split
+	dinkvar some more
+
+2015-08-08  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkvar.cpp, src/dinkvar.h, src/gfx.cpp, src/gfx.h: Move
+	show_bmp from dinkvar to gfx
+
+2015-08-08  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc_bindings.cpp, src/dinkvar.cpp, src/dinkvar.h,
+	src/freedink.cpp, src/freedink.h: Extract game mode handling from
+	show_bmp
+
+2015-08-08  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkvar.cpp, src/dinkvar.h, src/gfx.cpp, src/gfx.h: Move
+	copy_bmp from dinkvar to gfx
+
+2015-08-08  Sylvain Beucler <beuc@beuc.net>
+
+	* src/app.cpp, src/app.h, src/dinkini.cpp, src/dinkini.h,
+	src/dinkvar.cpp, src/dinkvar.h, src/freedinkedit.cpp: dinkini: drop
+	'dinkedit' dependency
+
+2015-08-08  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkvar.cpp, src/dinkvar.h, src/live_screen.cpp,
+	src/live_screen.h: Move get_box from dinkvar to live_screen
+
+2015-08-08  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkvar.cpp, src/dinkvar.h, src/freedinkedit.cpp: get_box:
+	remove dependencies to dinkedit
+
+2015-08-07  Sylvain Beucler <beuc@beuc.net>
+
+	* src/brain_keyboard.cpp, src/dinkvar.cpp, src/dinkvar.h,
+	src/freedink.cpp, src/game_engine.cpp, src/game_engine.h,
+	src/live_screen.cpp, src/live_screen.h: Move screenlock to
+	game_engine.cpp
+
+2015-08-07  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkvar.cpp, src/dinkvar.h, src/freedinkedit.cpp,
+	src/game_engine.cpp, src/game_engine.h, src/update_frame.cpp: Move
+	vars out of dinkvar
+
+2015-08-07  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkvar.cpp, src/dinkvar.h, src/update_frame.cpp: dinkvar.h:
+	prune dead code and declaration
+
+2015-08-07  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkvar.cpp: Remove unused lmon method
+
+2015-08-07  Sylvain Beucler <beuc@beuc.net>
+
+	* src/live_screen.cpp: Drop unused get_hard_map parameter
+
+2015-08-07  Sylvain Beucler <beuc@beuc.net>
+
+	* src/brain_keyboard.cpp: Drop unused get_hard_play parameter
+
+2015-08-07  Sylvain Beucler <beuc@beuc.net>
+
+	* src/brain_keyboard.cpp, src/dinkvar.cpp, src/live_screen.h: Move
+	get_hard_play from dinkvar to brain_keyboard
+
+2015-08-07  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkvar.cpp, src/dinkvar.h, src/game_engine.cpp,
+	src/game_engine.h: Move set_mode and set_keep_mouse from dinkvar to
+	game_engine
+
+2015-08-07  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkvar.cpp, src/dinkvar.h, src/gfx.cpp, src/gfx.h: Move
+	fill_screen from dinkvar to gfx
+
+2015-08-07  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkvar.cpp, src/dinkvar.h, src/live_screen.cpp,
+	src/live_screen.h: Move fill_hardxy from dinkvar to live_screen
+
+2015-08-07  Sylvain Beucler <beuc@beuc.net>
+
+	* src/test_editor_screen.cxx: Improve editor_screen test
+
+2015-08-07  Sylvain Beucler <beuc@beuc.net>
+
+	* src/paths.cpp: paths: improve test suite mode
+
+2015-08-07  Sylvain Beucler <beuc@beuc.net>
+
+	* src/app.cpp, src/editor_screen.cpp, src/editor_screen.h,
+	src/live_screen.cpp, src/live_screen.h, src/test_editor_screen.cxx: 
+	Rename screen_init -> live_screen_init
+
+2015-08-07  Sylvain Beucler <beuc@beuc.net>
+
+	* src/EditorMap.h, src/editor_screen.cpp, src/editor_screen.h,
+	src/game_engine.cpp, src/live_screen.cpp, src/live_screen.h,
+	src/test_integration.cxx: Rename struct screen -> struct
+	editor_screen
+
+2015-08-07  Sylvain Beucler <beuc@beuc.net>
+
+	* src/TestEditorMap.cxx: EditorMap: more tests
+
+2015-08-07  Sylvain Beucler <beuc@beuc.net>
+
+	* src/game_engine.h: player_info: more doc
+
+2015-08-07  Sylvain Beucler <beuc@beuc.net>
+
+	* src/paths.cpp: paths: add working test suite mode
+
+2015-08-07  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am: Fix spacing
+
+2015-08-06  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/app.cpp, src/app.h, src/brain.cpp,
+	src/brain.h, src/brain_button.cpp, src/brain_diagonal.cpp,
+	src/brain_duck.cpp, src/brain_keyboard.cpp, src/brain_lateral.cpp,
+	src/brain_missile.cpp, src/brain_mouse.cpp, src/brain_none.cpp,
+	src/brain_onetime.cpp, src/brain_people.cpp, src/brain_pig.cpp,
+	src/brain_repeat.cpp, src/brain_scale.cpp, src/brain_shadow.cpp,
+	src/brain_text.cpp, src/brains.h, src/dinkc_bindings.cpp,
+	src/dinkvar.cpp, src/dinkvar.h, src/fastfile.cpp, src/freedink.cpp,
+	src/freedink.h, src/freedinkedit.cpp, src/game_engine.cpp,
+	src/game_engine.h, src/gfx.cpp, src/gfx.h, src/gfx_sprites.cpp,
+	src/gfx_sprites.h, src/live_screen.cpp, src/live_screen.h,
+	src/live_sprite.h, src/live_sprites_manager.cpp,
+	src/live_sprites_manager.h, src/rect.cpp, src/rect.h,
+	src/savegame.cpp, src/text.cpp, src/update_frame.cpp: Split brains
+
+2015-08-06  Sylvain Beucler <beuc@beuc.net>
+
+	* src/EditorMap.cpp, src/EditorMap.h, src/TestEditorMap.cxx,
+	src/app.cpp, src/dinkc_bindings.cpp, src/freedinkedit.cpp,
+	src/savegame.cpp: Finish converting map to object
+
+2015-08-06  Sylvain Beucler <beuc@beuc.net>
+
+	* src/TestEditorMap.cxx, src/freedinkedit.cpp: Replace map_new ->
+	EditorMap::load
+
+2015-08-06  Sylvain Beucler <beuc@beuc.net>
+
+	* src/EditorMap.cpp, src/EditorMap.h: Move map_save to
+	EditorMap::save
+
+2015-08-06  Sylvain Beucler <beuc@beuc.net>
+
+	* src/EditorMap.cpp: Move map_new to EditorMap::Load
+
+2015-08-06  Sylvain Beucler <beuc@beuc.net>
+
+	* src/TestEditorMap.cxx: Test EditorMap::load
+
+2015-08-06  Sylvain Beucler <beuc@beuc.net>
+
+	* src/EditorMap.cpp, src/EditorMap.h, src/TestEditorMap.cxx,
+	src/editor_screen.cpp, src/editor_screen.h, src/freedinkedit.cpp,
+	src/game_engine.cpp, src/savegame.cpp: Move current_map to
+	g_map.map_dat
+
+2015-08-06  Sylvain Beucler <beuc@beuc.net>
+
+	* src/EditorMap.cpp, src/EditorMap.h, src/TestEditorMap.cxx,
+	src/dinkc_bindings.cpp, src/savegame.cpp: Move current_dat to
+	g_map.dink_dat
+
+2015-08-06  Sylvain Beucler <beuc@beuc.net>
+
+	* src/EditorMap.cpp, src/EditorMap.h, src/TestEditorMap.cxx: 
+	EditorMap constructor with alternate filenames
+
+2015-08-06  Sylvain Beucler <beuc@beuc.net>
+
+	* src/game_engine.h, src/savegame.cpp: Drop redundant play.dinkdat
+	and play.mapdat
+
+2015-08-06  Sylvain Beucler <beuc@beuc.net>
+
+	* src/EditorMap.cpp, src/EditorMap.h, src/TestEditorMap.cxx: 
+	Objectify EditorMap
+
+2015-08-06  Sylvain Beucler <beuc@beuc.net>
+
+	* src/paths.cpp, src/paths.h: Make paths use const char*
+
+2015-08-06  Sylvain Beucler <beuc@beuc.net>
+
+	* src/EditorMap.cpp, src/EditorMap.h, src/TestEditorMap.cxx,
+	src/bgm.cpp, src/dinkc_bindings.cpp, src/freedink.cpp,
+	src/freedinkedit.cpp, src/game_engine.cpp, src/savegame.cpp,
+	src/test_integration.cxx, src/update_frame.cpp: Rename map -> g_map
+	(avoids clash with std::map)
+
+2015-08-06  Sylvain Beucler <beuc@beuc.net>
+
+	* src/.dir-locals.el: Add Emacs directory configuration for coding
+	style
+
+2015-08-06  Sylvain Beucler <beuc@beuc.net>
+
+	* src/{map.cpp => EditorMap.cpp}, src/{map.h => EditorMap.h},
+	src/Makefile.am, src/{test_map.cxx => TestEditorMap.cxx},
+	src/app.cpp, src/bgm.cpp, src/dinkc_bindings.cpp, src/dinkvar.cpp,
+	src/freedink.cpp, src/freedinkedit.cpp, src/game_engine.cpp,
+	src/hardness_tiles.cpp, src/savegame.cpp,
+	src/test_dinkc_bindings.cxx, src/test_integration.cxx,
+	src/update_frame.cpp: Rename struct map_info -> EditorMap
+
+2015-08-06  Sylvain Beucler <beuc@beuc.net>
+
+	* src/test_map.cxx: map: more tests
+
+2015-08-06  Sylvain Beucler <beuc@beuc.net>
+
+	* src/map.cpp, src/map.h: Make map a class
+
+2015-08-06  Sylvain Beucler <beuc@beuc.net>
+
+	* src/app.cpp, src/dinkc_bindings.cpp, src/freedinkedit.cpp,
+	src/map.cpp, src/map.h, src/savegame.cpp, src/test_map.cxx: Rename
+	*_info to map_*
+
+2015-08-06  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/app.cpp, src/bgm.cpp, src/bgm.h,
+	src/dinkc.cpp, src/dinkc_bindings.cpp, src/dinkvar.cpp,
+	src/dinkvar.h, src/{screen.cpp => editor_screen.cpp}, src/{screen.h
+	=> editor_screen.h}, src/freedink.cpp, src/freedink_main.cpp,
+	src/freedinkedit.cpp, src/game_engine.cpp, src/gfx.cpp, src/gfx.h,
+	src/gfx_fonts.cpp, src/gfx_sprites.cpp, src/gfx_tiles.cpp,
+	src/input.cpp, src/input.h, src/inventory.h, src/live_screen.cpp,
+	src/live_screen.h, src/live_sprites_manager.cpp, src/map.h,
+	src/paths.cpp, src/savegame.cpp, src/savegame.h, src/sfx.cpp,
+	src/status.cpp, src/status.h, src/talk.cpp, src/talk.h,
+	src/test_dinkc_bindings.cxx, src/{test_screen.cxx =>
+	test_editor_screen.cxx}, src/test_integration.cxx,
+	src/update_frame.cpp: Rename screen -> editor_screen
+
+2015-08-06  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/dinkc.cpp, src/dinkc_bindings.cpp,
+	src/dinkvar.cpp, src/dinkvar.h, src/freedink.cpp,
+	src/freedink_main.cpp, src/freedinkedit.cpp, src/game_engine.cpp,
+	src/game_engine.h, src/gfx_tiles.cpp, src/hardness_tiles.cpp,
+	src/inventory.cpp, src/live_screen.cpp, src/live_screen.h,
+	src/live_sprite.cpp, src/live_sprite.h,
+	src/live_sprites_manager.cpp, src/live_sprites_manager.h,
+	src/savegame.cpp, src/screen.cpp, src/screen.h, src/sfx.cpp,
+	src/status.cpp, src/talk.cpp, src/talk.h, src/test_dinkc.cxx,
+	src/test_dinkc_bindings.cxx, src/test_integration.cxx,
+	src/test_screen.cxx, src/text.cpp, src/update_frame.cpp,
+	src/update_frame.h: Split codebase some more
+
+2015-08-05  Sylvain Beucler <beuc@beuc.net>
+
+	* src/game_engine.h: Rename mydata -> editor_sprite_override
+
+2015-08-05  Sylvain Beucler <beuc@beuc.net>
+
+	* src/game_engine.h: spmap: doc
+
+2015-08-05  Sylvain Beucler <beuc@beuc.net>
+
+	* src/gfx_tiles.h, src/hardness_tiles.h, src/screen.h: Clarify
+	various tiles structures
+
+2015-08-05  Sylvain Beucler <beuc@beuc.net>
+
+	* src/gfx_tiles.h, src/hardness_tiles.h: Clarify
+	GFX_TILES_NB_SQUARES doc
+
+2015-08-05  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/app.cpp, src/dinkvar.cpp, src/dinkvar.h,
+	src/freedinkedit.cpp, src/hardness_tiles.cpp, src/hardness_tiles.h,
+	src/map.h, src/screen.cpp: Separate hardness tileset code
+
+2015-08-05  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkvar.cpp, src/map.cpp, src/map.h: Reference hard.dat as
+	being part of the map
+
+2015-08-05  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/freedinkedit.cpp, src/map.cpp, src/map.h,
+	src/screen.cpp, src/screen.h, src/test_map.cxx, src/test_screen.cxx: 
+	screen: drop global reference
+
+2015-08-05  Sylvain Beucler <beuc@beuc.net>
+
+	* BUILD, Makefile.am, autobuild/freedink-exe-mxe.sh, configure.ac: 
+	Tidy release system
+
+2015-08-04  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, src/test_dinkc_bindings.cxx, src/update_frame.cpp: sp_custom
+	now works for sprite 1 instead of crashing the game
+
+2015-08-04  Sylvain Beucler <beuc@beuc.net>
+
+	* src/test_dinkc_bindings.cxx: Clean-up sp_custom test
+
+2015-08-04  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkvar.cpp: Clarify add_sprite/add_sprite_dumb a bit
+
+2015-08-04  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/dinkc_bindings.cpp, src/dinkc_sp_custom.cpp,
+	src/dinkc_sp_custom.h, src/game_engine.cpp, src/game_engine.h,
+	src/screen.h, src/test_dinkc.cxx, src/test_dinkc_bindings.cxx: Move
+	sp_custom from gnulib:hash to std::map
+
+2015-08-04  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/TODO: Reference fade speed (too fast?)
+
+2015-08-04  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/test_dinkc_bindings.cxx,
+	src/test_integration.cxx: Prepare test for sp_custom
+
+2015-08-04  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, src/dinkc_sp_custom.cpp: sp_custom returns 0 rather than -1
+	if the lookup key doesn't exist
+
+2015-08-04  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/dinkc.cpp, src/dinkc.h,
+	src/dinkc_bindings.cpp, src/dinkc_bindings.h, src/dinkvar.cpp,
+	src/dinkvar.h, src/game_engine.cpp, src/talk.cpp, src/talk.h,
+	src/test_dinkc.cxx, src/test_integration.cxx: Make DinkC parser code
+	more stand-alone
+
+2015-08-04  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/cxxtest_freedink.hpp, src/freedinkedit.cpp,
+	src/gfx_fonts.cpp, src/io_util.cpp, src/io_util.h,
+	src/resources.cpp, src/resources.h, src/test_dinkc.cxx,
+	src/test_integration.cxx, src/test_io_util.cxx,
+	src/test_sdl_workaround.h, src/test_str_util.cxx: Split CxxTest
+	units
+
+2015-08-04  Sylvain Beucler <beuc@beuc.net>
+
+	* THANKS: Refresh THANKS
+
+2015-08-04  Sylvain Beucler <beuc@beuc.net>
+
+	* valgrind/suppressions-debian_testing.txt: Remove Valgrind
+	nearly-empty, SDL1 suppressions
+
+2015-08-04  Sylvain Beucler <beuc@beuc.net>
+
+	* psp/README: Remove old PSP files
+
+2015-08-04  Sylvain Beucler <beuc@beuc.net>
+
+	* test/enum.cpp, test/fontconfig.c, test/getmodulefilename.c,
+	test/sdl/.gitignore, test/sdl/Makefile, test/sdl/README,
+	test/sdl/SDL_rwops_libzip.c, test/sdl/SDL_rwops_libzip.h,
+	test/sdl/SDL_rwops_zzip.c, test/sdl/SDL_rwops_zzip.h,
+	test/sdl/embedded_font.c, test/sdl/embedded_font2.c,
+	test/sdl/fade.c, test/sdl/joytest.c, test/sdl/keycodes.c,
+	test/sdl/mixer_stream.c, test/sdl/mousetest.c, test/sdl/msb.c,
+	test/sdl/paltest.c, test/sdl/sdl_freq.c, test/sdl/sdl_stretch.c,
+	test/sdl/sdlgfx_resize.c, test/sdl/ticks.c, test/sdl/videoinfo.c,
+	test/test.cpp, test/woefont.c, test/woepaths.c,
+	test/x11_messagebox.c: Remove old technology tests
+
+2015-08-04  Sylvain Beucler <beuc@beuc.net>
+
+	* configure.ac, src/Makefile.am, src/check_freedink.cpp,
+	src/cxxtest_freedink.hpp: check->CxxTest
+
+2015-08-04  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-exe-mxe.sh, src/fastfile.cpp,
+	src/gfx_fonts.cpp, src/paths.cpp: Fix woe build
+
+2015-08-04  Sylvain Beucler <beuc@beuc.net>
+
+	* BUILD: doc: clarify SDL2 issues status
+
+2015-08-04  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/midi.txt: doc: add note about ScummVM MIDI backends
+
+2015-08-04  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/dinkc.cpp, src/dinkvar.h, src/freedink.cpp,
+	src/freedinkedit.cpp, src/game_engine.h, src/gfx.cpp,
+	src/gfx_tiles.cpp, src/inventory.cpp, src/io_util.cpp,
+	src/io_util.h, src/savegame.cpp, src/screen.h, src/status.cpp,
+	src/talk.h: Fix sign issues
+
+2015-08-03  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, configure.ac, po/POTFILES.in, src/Makefile.am,
+	src/{SDL_android_main.c => SDL_android_main.cpp}, src/{app.c =>
+	app.cpp}, src/{bgm.c => bgm.cpp}, src/{check_freedink.c =>
+	check_freedink.cpp}, src/{dinkc.c => dinkc.cpp},
+	src/{dinkc_bindings.c => dinkc_bindings.cpp}, src/{dinkc_console.c
+	=> dinkc_console.cpp}, src/{dinkc_sp_custom.c =>
+	dinkc_sp_custom.cpp}, src/dinkc_sp_custom.h, src/{dinkini.c =>
+	dinkini.cpp}, src/{dinkvar.c => dinkvar.cpp}, src/{fastfile.c =>
+	fastfile.cpp}, src/fastfile.h, src/{freedink.c => freedink.cpp},
+	src/{freedink_main.c => freedink_main.cpp}, src/{freedink_xpm.c =>
+	freedink_xpm.cpp}, src/{freedinkedit.c => freedinkedit.cpp},
+	src/{game_engine.c => game_engine.cpp}, src/game_engine.h,
+	src/{gfx.c => gfx.cpp}, src/{gfx_fade.c => gfx_fade.cpp},
+	src/{gfx_fonts.c => gfx_fonts.cpp}, src/{gfx_palette.c =>
+	gfx_palette.cpp}, src/{gfx_sprites.c => gfx_sprites.cpp},
+	src/gfx_sprites.h, src/{gfx_tiles.c => gfx_tiles.cpp}, src/{i18n.c
+	=> i18n.cpp}, src/i18n.h, src/{input.c => input.cpp}, src/input.h,
+	src/{inventory.c => inventory.cpp}, src/{io_util.c => io_util.cpp},
+	src/io_util.h, src/{log.c => log.cpp}, src/{map.c => map.cpp},
+	src/{meminfo.c => meminfo.cpp}, src/{msgbox.c => msgbox.cpp},
+	src/{paths.c => paths.cpp}, src/paths.h, src/{rect.c => rect.cpp},
+	src/rect.h, src/{savegame.c => savegame.cpp}, src/{screen.c =>
+	screen.cpp}, src/{sfx.c => sfx.cpp}, src/{status.c => status.cpp},
+	src/{str_util.c => str_util.cpp}, src/str_util.h, src/{talk.c =>
+	talk.cpp}, src/{text.c => text.cpp}, src/{update_frame.c =>
+	update_frame.cpp}, src/{vgasys_fon.c => vgasys_fon.cpp},
+	src/vgasys_fon.h: Move to C++
+
+2015-08-03  Sylvain Beucler <beuc@beuc.net>
+
+	* src/check_freedink.c: testsuite: DinkC variables carry a '&' even
+	internally
+
+2015-08-03  Sylvain Beucler <beuc@beuc.net>
+
+	* src/check_freedink.c, src/game_engine.c, src/map.c, src/map.h,
+	src/screen.h: Allow loading screens and scripts from memory (rather
+	than disk) to finish
+	test_integration_player_position_is_updated_after_screen_is_loaded
+
+2015-08-03  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc.h, src/dinkc_bindings.c, src/dinkvar.c, src/dinkvar.h,
+	src/freedink.c, src/freedinkedit.c, src/game_engine.c,
+	src/game_engine.h, src/savegame.c, src/screen.c, src/screen.h,
+	src/update_frame.c: Rename map -> screen
+
+2015-08-03  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkvar.c, src/dinkvar.h, src/freedinkedit.c, src/screen.c: 
+	Rename ts_block.x[].y[] -> ts_block.hm[][]
+
+2015-08-03  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkvar.c, src/freedinkedit.c, src/game_engine.c,
+	src/screen.c, src/screen.h: Rename hm -> screen_hitmap
+
+2015-08-03  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc_bindings.c, src/dinkvar.c, src/dinkvar.h,
+	src/freedink.c, src/freedinkedit.c, src/game_engine.c,
+	src/gfx_tiles.c, src/screen.c, src/screen.h, src/update_frame.c: 
+	Rename struct small_map -> struct screen ; pam -> cur_screen
+
+2015-08-03  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/app.c, src/bgm.c, src/check_freedink.c,
+	src/dinkc_bindings.c, src/dinkvar.c, src/dinkvar.h, src/freedink.c,
+	src/freedinkedit.c, src/map.c, src/map.h, src/savegame.c,
+	src/screen.c, src/screen.h, src/update_frame.c: Move
+	dink.dat-related functions to new map.c
+
+2015-08-03  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedinkedit.c: Rename draw_map -> draw_map_editor
+
+2015-08-03  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, src/dinkvar.c, src/freedinkedit.c: editor: fix non-portable
+	new screen save
+
+2015-08-03  Sylvain Beucler <beuc@beuc.net>
+
+	* src/check_freedink.c, src/freedink.c: More did_player_cross_screen
+	tests
+
+2015-08-03  Sylvain Beucler <beuc@beuc.net>
+
+	* src/update_frame.c: Remove dead code
+
+2015-08-03  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkvar.c, src/dinkvar.h, src/update_frame.c: Remove dead code
+
+2015-08-02  Sylvain Beucler <beuc@beuc.net>
+
+	* src/check_freedink.c, src/game_engine.c, src/paths.c, src/paths.h: 
+	Start test for player position during screen change
+
+2015-08-02  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/app.h, src/freedink.c, src/freedink_main.c: 
+	Separate FreeDink main and initialization
+
+2015-08-02  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, src/dinkvar.c, src/dinkvar.h, src/freedinkedit.c: Move
+	save_info() to freedinkedit.c
+
+2015-08-02  Sylvain Beucler <beuc@beuc.net>
+
+	* src/bgm.c, src/dinkc_bindings.c, src/dinkvar.c, src/dinkvar.h,
+	src/freedink.c, src/freedinkedit.c, src/game_engine.c,
+	src/savegame.c, src/update_frame.c: Rename pmap->pplayer_map
+
+2015-08-02  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedink.c, src/freedink.h, src/update_frame.c: 
+	did_player_cross_screen: remove dead code
+
+2015-08-02  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc_bindings.c, src/dinkvar.c, src/dinkvar.h,
+	src/game_engine.c, src/game_engine.h, src/gfx_sprites.c,
+	src/gfx_sprites.h: Move "Please wait" animation from common code to
+	game engine
+
+2015-08-02  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/CPP2C.txt, doc/cleanup.txt, doc/cleanup_g++.txt,
+	doc/fonts.txt, doc/log.txt, doc/ncc.txt,
+	doc/sdl_existing_window.txt, doc/sound_resources.txt,
+	doc/troubleshootings.txt: Remove obsolete documentation
+
+2015-08-02  Sylvain Beucler <beuc@beuc.net>
+
+	* BUILD, autobuild/freedink-exe-mxe.sh: Precise woe build
+
+2015-08-02  Sylvain Beucler <beuc@beuc.net>
+
+	* configure.ac, contrib/search_music.c, contrib/search_script.c,
+	doc/psp.txt, doc/psp/PSP-MEM, doc/psp/PSP-READ2, doc/psp/TODO-PSP,
+	doc/psp/memstat_hungry.c, doc/psp/memstat_mallinfo.c,
+	doc/psp/zooming.patch, src/Makefile.am, src/app.c, src/dinkvar.c,
+	src/input.c, src/savegame.c: Drop PSP support
+
+2015-08-02  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedink.c, src/freedinkedit.c, src/update_frame.c: input:
+	avoid key-xx.c loops and "dink keeps walking" issues by forwarding
+	keyup events
+
+2015-08-02  Sylvain Beucler <beuc@beuc.net>
+
+	* src/input.h: input: tidy functions export
+
+2015-08-02  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedink.c: input: use modifiers at the time of the keystroke
+
+2015-08-02  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc_bindings.c: Fix printf warnings
+
+2015-08-02  Sylvain Beucler <beuc@beuc.net>
+
+	* nsis/.gitignore: .gitignore woe installer construction files
+
+2015-08-02  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/TODO: Precision on potential woe midi issues
+
+2015-08-01  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/TODO: Revolution issue reported by Paul seems unrelated to
+	FreeDink Cf. http://www.dinknetwork.com/forum.cgi?MID=190166#190260
+	and the lack of other reports.
+
+2015-08-01  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, src/check_freedink.c: Document Scourger fix
+
+2015-08-01  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/TODO: Reference a few bug reports from the forum
+
+2015-08-01  Sylvain Beucler <beuc@beuc.net>
+
+	* po/fr.po, po/nl.po: Sync TranslationProject
+
+2015-07-31  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc.c: Find available script slot using rinfo for clarity
+
+2015-07-31  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc.c: Clarify rbuf role
+
+2015-07-31  Sylvain Beucler <beuc@beuc.net>
+
+	* src/check_freedink.c, src/dinkc.c, src/dinkc.h: Test suite: can
+	now create dinkc scripts unit-ly
+
+2015-07-31  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc.c: Fix some log output (printf format mismatch)
+
+2015-07-31  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/TODO, src/check_freedink.c, src/dinkc.c, src/dinkc.h: Add unit
+	test for Scourger fix
+
+2015-07-29  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc_bindings.c: Fix freeze in The Scourger fade_up() is prioritary over fade_down(), but post-fade callback
+	script is still overwritten
+	http://www.dinknetwork.com/forum.cgi?MID=189461#189461
+	"FreeDink-specific" http://www.dinknetwork.com/forum.cgi?MID=107994
+	6b6bef615c4aae45206fa98bb8b4bfea96eb0f3b   "Give priority to fade_up() over fade_down() - fix SoB intro in
+	  truecolor mode" -> in Pilgrim Quest, not Stone of Balance
+	http://lists.gnu.org/archive/html/bug-freedink/2009-08/msg00042.html
+
+2015-07-29  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/TODO: tests: reference another tricky test case
+
+2015-07-29  Sylvain Beucler <beuc@beuc.net>
+
+	* BUILD: Freshen build instructions a bit
+
+2015-07-29  Sylvain Beucler <beuc@beuc.net>
+
+	* contrib/d2c.c: d2c: fix compilation with newer GCC
+
+2014-12-29  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/freedink.scm: Guix rules merged to
+
+	http://git.savannah.gnu.org/cgit/guix.git/tree/gnu/packages/games.scm
+
+2014-10-26  Sylvain Beucler <beuc@beuc.net>
+
+	* nsis/MultiUser64.nsh, nsis/README, nsis/freedink-all.nsi: 
+	installer: 64-bit support
+
+2014-10-26  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-exe-mxe.sh, nsis/README: Update NSIS installer
+
+2014-10-26  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/freedink.scm: Add test Guix recipe
+
+2014-10-25  Sylvain Beucler <beuc@beuc.net>
+
+	* src/gfx.c: Fix infinite resize ratio when the source sprite has
+	height or width set to 0 (and a segfault, since SDL2 is less
+	tolerant to weird coordinates)
+
+2014-10-22  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, autobuild/freedink-exe-mxe.sh, doc/release.txt: Sync 108.4
+	doc
+
+2014-10-22  Sylvain Beucler <beuc@beuc.net>
+
+	* freedink.spec: Sync Fedora
+
+2014-10-22  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/changelog, debian/control: Prepare Debian release
+
+2014-10-22  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/gnulib.txt: gnulib: fix version used for 108.2
+
+2014-10-17  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc_bindings.c: sp_script: more detail in error log
+
+2014-10-17  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, src/dinkvar.c: Never recreate an empty hard.dat in the game Conflicts:         NEWS         src/dinkvar.c
+
+2014-10-17  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/release.txt: Remember to add modified version files when
+	merging a release to the master branch
+
+2014-10-15  Sylvain Beucler <beuc@beuc.net>
+
+	* Makefile.am, autobuild/freedink-exe-mxe.sh: autobuild:
+	freedink-exe-mxe.sh is now automated and tested
+
+2014-10-15  Sylvain Beucler <beuc@beuc.net>
+
+	* src/paths.c: Fix dmod name check
+
+2014-10-14  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedinkedit.c: freedinkedit: clean headers
+
+2014-10-14  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/guile.txt: Notes on cross-compiling guile for Android
+
+2014-10-14  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/release.txt: Refresh release process
+
+2014-10-14  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-exe-mxe.sh: MXE now requires explicit static
+	mode
+
+2014-10-14  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/rules: debian: build in verbose mode so build logs can be
+	parsed for common errors
+
+2014-10-14  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/upstream/signing-key.asc, debian/watch: debian: don't
+	bother check tarball signature, having to maintain a copy of the
+	signing key is cumbersome, plus I make the tarballs myself
+
+2014-08-28  Sylvain Beucler <beuc@beuc.net>
+
+	* configure.ac: configure.ac: fix non-portable test
+
+2014-07-09  Sylvain Beucler <beuc@beuc.net>
+
+	* src/talk.c: Fix spurious text choice change in subtext menus
+
+2014-07-02  Sylvain Beucler <beuc@beuc.net>
+
+	* src/SDL_android_main.c, src/app.c, src/freedink.c: android:
+	show/hide IME
+
+2014-07-01  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, autobuild/freedink-exe-mxe.sh, configure.ac, po/fr.po,
+	src/Makefile.am, src/app.c, src/paths.c, src/paths.h: Game engine
+	translations are loaded under Windows.
+
+2014-07-01  Sylvain Beucler <beuc@beuc.net>
+
+	* src/app.c: woe: fix crash on game exit when writing
+	dinksmallwood.ini
+
+2014-07-01  Sylvain Beucler <beuc@beuc.net>
+
+	* src/check_freedink.c: tests: properly clean-up temp dirs
+
+2014-06-30  Sylvain Beucler <beuc@beuc.net>
+
+	* src/check_freedink.c, src/dinkc.c, src/dinkc_bindings.c,
+	src/game_engine.c, src/game_engine.h, src/savegame.c: tests: run on
+	woe
+
+2014-06-30  Sylvain Beucler <beuc@beuc.net>
+
+	* src/check_freedink.c, src/dinkc_sp_custom.c: tests: include
+	dinkc_sp_custom test
+
+2014-06-30  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/dinkc_bindings.c, src/freedink.c,
+	src/freedink.h, src/game_engine.c, src/game_engine.h,
+	src/savegame.c, src/savegame.h, src/status.h: Fix 'make check'
+
+2014-06-30  Sylvain Beucler <beuc@beuc.net>
+
+	* AUTHORS, NEWS, po/LINGUAS, po/hu.po: New Hungarian translation
+
+2014-06-29  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/app.c, src/app.h, src/bgm.c, src/bgm.h,
+	src/dinkc.c, src/dinkc.h, src/dinkc_bindings.c, src/dinkvar.c,
+	src/dinkvar.h, src/freedink.c, src/freedink.h, src/freedinkedit.c,
+	src/game_engine.c, src/game_engine.h, src/gfx_tiles.c,
+	src/gfx_tiles.h, src/input.c, src/input.h, src/inventory.c,
+	src/inventory.h, src/log.c, src/paths.c, src/screen.c,
+	src/screen.h, src/sfx.c, src/sfx.h, src/status.c, src/status.h,
+	src/talk.c, src/talk.h, src/text.c, src/text.h, src/update_frame.c: 
+	Extract game-specific code from COMMON_OBJS
+
+2014-06-29  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedinkedit.c: freedinkedit: added PageUp/PageDown
+	alternatives to '[' and ']'
+
+2014-06-29  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, src/freedink.c: console: going back to Alt+C
+
+2014-06-29  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedink.c: game keys: map layout-independent scancodes rather
+	than layout-dependent keycodes
+
+2014-06-29  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc.c: Note that division by 0 is not handled
+
+2014-06-29  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc_bindings.c, src/dinkvar.c, src/dinkvar.h,
+	src/freedink.c, src/freedink.h, src/input.c, src/update_frame.c: 
+	mouse: use absolute mode so it works better with touchscreens and
+	tablets (except for talk choices)
+
+2014-06-29  Sylvain Beucler <beuc@beuc.net>
+
+	* src/app.c, src/game_engine.c: Group game (non-dinkedit) init
+	outside of 'app'
+
+2014-06-29  Sylvain Beucler <beuc@beuc.net>
+
+	* src/gfx_fonts.c: console: avoid SDL warning when input text is
+	empty
+
+2014-06-26  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/android.txt, gnulib/m4/.gitignore, gnulib/m4/gnulib-cache.m4,
+	src/dinkc.c, src/input.c, src/paths.c: gnulib: drop a few modules
+
+2014-06-26  Sylvain Beucler <beuc@beuc.net>
+
+	* src/paths.c: paths: improve error message
+
+2014-06-26  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/android.txt: android: doc: a bit more concision
+
+2014-06-26  Sylvain Beucler <beuc@beuc.net>
+
+	* configure.ac: automake: use terse output
+
+2014-06-24  Sylvain Beucler <beuc@beuc.net>
+
+	* src/app.c, src/log.c, src/log.h: log: rely on SDL2's logging
+	system (supports Android and woe console)
+
+2014-06-24  Sylvain Beucler <beuc@beuc.net>
+
+	* src/input.c: Make sure we don't leave joystick enabled when there
+	are not; ignore accelerometers
+
+2014-06-24  Sylvain Beucler <beuc@beuc.net>
+
+	* src/paths.c: Add missing include
+
+2014-06-24  Sylvain Beucler <beuc@beuc.net>
+
+	* AUTHORS, BUILD, acsite.m4, android/redeploy.sh,
+	autobuild/freedink-exe-mxe.sh, configure.ac, debian/rules,
+	doc/android.txt, doc/binreloc.txt, doc/directory_layout.txt,
+	doc/gnulib.txt, freedink.spec, gnulib/m4/gnulib-cache.m4,
+	src/Makefile.am, src/SDL_rwops_libzip.c, src/SDL_rwops_libzip.h,
+	src/SDL_rwops_zzip.c, src/SDL_rwops_zzip.h, src/app.c,
+	src/binreloc.c, src/binreloc.h, src/freedinkedit.c,
+	src/gfx_fonts.c, src/io_util.c, src/paths.c, src/paths.h: Drop
+	relocatability; drop embedded resources; use platform-specific chdir
+
+2014-06-24  Sylvain Beucler <beuc@beuc.net>
+
+	* src/gfx_palette.c: gfx_palette: better error reporting
+
+2014-06-24  Sylvain Beucler <beuc@beuc.net>
+
+	* src/log.c: DEBUG.TXT: use native carriage return
+
+2014-06-23  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/android.txt: android: pkg-config installed as a native tool
+
+2014-06-23  Sylvain Beucler <beuc@beuc.net>
+
+	* .gitignore, BUILD, Makefile.am, bootstrap, configure.ac,
+	gnulib/lib/.gitignore, po/POTFILES.in: autotools: update generated
+	files list
+
+2014-06-22  Sylvain Beucler <beuc@beuc.net>
+
+	* BUILD, android/redeploy.sh,
+	android/src/org/libsdl/app/SDLActivity.java, doc/android.txt,
+	src/log.c: android: more build doc
+
+2014-06-22  Sylvain Beucler <beuc@beuc.net>
+
+	* BUILD: android: reference TiMidity fix
+
+2014-06-22  Sylvain Beucler <beuc@beuc.net>
+
+	* src/gfx.c: gfx: remove unneeded include
+
+2014-06-22  Sylvain Beucler <beuc@beuc.net>
+
+	* src/input.c: android: disable mouse emulation
+
+2014-06-22  Sylvain Beucler <beuc@beuc.net>
+
+	* src/paths.c: android: chdir to internal storage path on startup
+
+2014-06-22  Sylvain Beucler <beuc@beuc.net>
+
+	* bootstrap, configure.ac: gnulib doc fixes
+
+2014-06-22  Sylvain Beucler <beuc@beuc.net>
+
+	* src/sfx.c: timidity: not how to change timidity.cfg location
+
+2014-06-21  Sylvain Beucler <beuc@beuc.net>
+
+	* android/.gitignore, android/AndroidManifest.xml,
+	android/redeploy.sh, android/res/layout/main.xml,
+	android/res/values/strings.xml,
+	android/src/org/freedink/FreeDink.java,
+	android/src/org/libsdl/app/SDLActivity.java, doc/android.txt: Add
+	Android project
+
+2014-06-21  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/debuglog-android.txt, doc/{woe-debug.txt => debuglog-woe.txt}: 
+	Add Android debug log
+
+2014-06-21  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/android.txt, src/Makefile.am, src/log.c, src/msgbox.c,
+	src/paths.c: android: first working build
+
+2014-06-21  Sylvain Beucler <beuc@beuc.net>
+
+	* src/check_freedink.c, src/io_util.c: ciconvert: support private
+	directory prefix
+
+2014-06-21  Sylvain Beucler <beuc@beuc.net>
+
+	* BUILD, configure.ac, doc/android.txt, src/Makefile.am,
+	src/SDL_android_main.c, src/freedink.c: android: app starts, load
+	.so libs... and exits :)
+
+2014-06-20  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/woe-debug.txt: woe: added FreeDink trace on 8.1
+
+2014-06-20  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/android.txt: Android: more build notes
+
+2014-06-20  Sylvain Beucler <beuc@beuc.net>
+
+	* src/check_freedink.c: tests: make more woe-friendly
+
+2014-06-20  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/mxe.txt: MXE: update static builds status
+
+2014-06-20  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/cross.txt: Typo
+
+2014-06-20  Sylvain Beucler <beuc@beuc.net>
+
+	* configure.ac, src/Makefile.am: Make tests optional (check doesn't
+	build on Android)
+
+2014-06-18  Sylvain Beucler <beuc@beuc.net>
+
+	* BUILD, autobuild/freedink-exe-mxe.sh, configure.ac,
+	doc/android.txt, doc/gnulib.txt: Build system review
+
+2014-06-18  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc.c: Don't access callback[MAX_CALLBACKS] (overflow)
+
+2014-06-16  Sylvain Beucler <beuc@beuc.net>
+
+	* src/app.c, src/freedink.c, src/freedinkedit.c, src/input.c,
+	src/input.h, src/update_frame.c: input: simplify handling + temp fix
+	for double input handling in game + shortcuts/console/etc.
+
+2014-06-16  Sylvain Beucler <beuc@beuc.net>
+
+	* BUILD, configure.ac, doc/static-build.txt: static build:
+	experiment with SDL2+dlopen
+
+2014-06-16  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, src/freedink.c: Doc update
+
+2014-06-15  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/TODO, src/freedink.c: Update Dink position after the new
+	screen is loaded.  This is nonsensical because scripts will then poll Dink's position
+	in the previous screen, but we've got to be compatible.  More details at:
+	http://www.dinknetwork.com/forum.cgi?MID=186069#186263
+
+2014-06-15  Sylvain Beucler <beuc@beuc.net>
+
+	* src/Makefile.am, src/{init.c => app.c}, src/{init.h => app.h},
+	src/dinkc_console.c, src/dinkc_console.h, src/dinkvar.c,
+	src/dinkvar.h, src/freedink.c, src/freedink.h, src/freedinkedit.c,
+	src/gfx.c, src/gfx_fonts.c, src/input.c, src/input.h,
+	src/update_frame.c: input: refactor
+
+2014-06-14  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedinkedit.c: freedinkedit: fix info box background opacity
+	on 'i' key
+
+2014-06-14  Sylvain Beucler <beuc@beuc.net>
+
+	* src/input.c: input: display joystick guid
+
+2014-06-14  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc.c: Update copyright notice + typo
+
+2014-06-14  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, src/update_frame.c: Use Meta-x for console
+
+2014-06-14  Sylvain Beucler <beuc@beuc.net>
+
+	* src/bgm.c: bgm: doc fix
+
+2014-06-14  Sylvain Beucler <beuc@beuc.net>
+
+	* src/check_freedink.c, src/dinkc.c, src/dinkc.h: tests: DinkC
+	variable lookup
+
+2014-06-14  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc_bindings.c: Use DINKC_GLOBAL_SCOPE instead of 0
+
+2014-06-14  Sylvain Beucler <beuc@beuc.net>
+
+	* src/bgm.c: Remove unused 'cd_track' variable
+
+2014-06-13  Sylvain Beucler <beuc@beuc.net>
+
+	* src/check_freedink.c, src/str_util.c: Tests: test case of
+	separate_string (tested against original separate_string results)
+
+2014-06-13  Sylvain Beucler <beuc@beuc.net>
+
+	* src/gfx.c: Don't crash if an hard-coded graphics isn't present
+
+2014-06-13  Sylvain Beucler <beuc@beuc.net>
+
+	* src/gfx.c: Doc fix
+
+2014-06-13  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/palettes.txt, src/gfx.c: Fix 24->8-bit sprite conversion
+
+2014-06-09  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/palettes.txt: palettes: more documentation
+
+2014-06-09  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, src/dinkc_bindings.c, src/dinkvar.c: load_palette: search
+	for palette in the right place
+
+2014-06-09  Sylvain Beucler <beuc@beuc.net>
+
+	* contrib/d2c.c: d2c: display the filename on error
+
+2014-06-09  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/android.txt: Added notes on SDL2+Android (pending SDL wiki
+	request for licensing policy)
+
+2014-06-09  Sylvain Beucler <beuc@beuc.net>
+
+	* BUILD: SDL2: refresh bugs status
+
+2014-06-08  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, src/dinkvar.c, src/dinkvar.h, src/freedink.c,
+	src/freedink.h, src/freedinkedit.c, src/update_frame.c: Centralize
+	input checks; clean-up screen transition code; fix debug mode
+	toggling
+
+2014-06-08  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc_bindings.c, src/dinkc_console.c, src/dinkc_console.h,
+	src/input.c: DinkC console: centralize input activation
+
+2014-06-08  Sylvain Beucler <beuc@beuc.net>
+
+	* configure.ac: Disabled .tar.bz2 generation - unused
+
+2014-06-08  Sylvain Beucler <beuc@beuc.net>
+
+	* configure.ac, src/bgm.c, src/bgm.h, src/dinkc_bindings.c,
+	src/dinkc_console.c, src/dinkvar.c, src/freedink.c,
+	src/freedinkedit.c, src/game_engine.c, src/gfx.c, src/gfx.h,
+	src/gfx_fonts.c, src/gfx_palette.c, src/gfx_sprites.c, src/init.c,
+	src/input.c, src/input.h, src/msgbox.c, src/sfx.c: Refresh copyright
+	notices
+
+2014-06-06  Sylvain Beucler <beuc@beuc.net>
+
+	* BUILD, NEWS, configure.ac, doc/TODO, doc/palettes.txt, src/bgm.c,
+	src/bgm.h, src/dinkc_bindings.c, src/dinkc_console.c,
+	src/dinkc_console.h, src/dinkvar.c, src/dinkvar.h, src/freedink.c,
+	src/freedinkedit.c, src/game_engine.c, src/game_engine.h,
+	src/gfx.c, src/gfx.h, src/gfx_fonts.c, src/gfx_fonts.h,
+	src/gfx_palette.c, src/gfx_sprites.c, src/init.c, src/init.h,
+	src/input.c, src/input.h, src/log.c, src/msgbox.c, src/msgbox.h,
+	src/paths.c, src/sfx.c, src/update_frame.c: Initial SDL2 support
+
+2014-06-07  Sylvain Beucler <beuc@beuc.net>
+
+	* src/gfx.c: debug: display video format
+
+2014-06-07  Sylvain Beucler <beuc@beuc.net>
+
+	* TROUBLESHOOTING, src/sfx.c: audio: log SDL_mixer capabilities
+
+2014-06-07  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc.c: DinkC: redefining globals is so common that we can't
+	say it's an error
+
+2014-06-04  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc.c: Typo
+
+2014-06-01  Sylvain Beucler <beuc@beuc.net>
+
+	* src/check_freedink.c: tests: update copyright notice - that test
+	is actually quite old :)
+
+2014-05-30  Sylvain Beucler <beuc@beuc.net>
+
+	* src/check_freedink.c, src/io_util.c: tests: ciconvert
+
+2014-05-30  Sylvain Beucler <beuc@beuc.net>
+
+	* AUTHORS, NEWS, po/LINGUAS, po/ru.po: Add Russian translation
+
+2014-05-30  Sylvain Beucler <beuc@beuc.net>
+
+	* freedink.spec: rpm: typo
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* src/check_freedink.c: tests: better structure
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* configure.ac, src/Makefile.am, src/check_freedink.c: tests: first
+	simple test with 'check'
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/changelog: debian: bump version
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* src/str_util.c: Typo
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* src/dinkc_bindings.c: Fix potential out-of-bound string access +
+	doc fixes
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/release.txt: Update FreshMeat -> FreeCode
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* freedink.spec: rpm: uniform capitalization
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* : commit 10ec46363d3be16f05f499b298b97bacbc6f0d3f Author: Sylvain
+	Beucler <beuc@beuc.net> Date:   Thu May 29 11:01:39 2014 +0200
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/changelog, doc/release.txt, freedink.spec: packaging: bump
+	dates
+
+2014-05-29  Sylvain Beucler <beuc@beuc.net>
+
+	* ChangeLog: ChangeLog update
+
 2014-05-29  Sylvain Beucler <beuc@beuc.net>
 
 	* freedink.spec: rpm: lint
@@ -323,7 +3176,7 @@
 2012-12-16  Sylvain Beucler <beuc@beuc.net>
 
 	* configure.ac, doc/autopackage.txt, doc/cross.txt, doc/fonts.txt,
-	doc/mingw-cross-env.txt, doc/mxe.txt, doc/woe-compile.txt: woe
+	doc/{mingw-cross-env.txt => mxe.txt}, doc/woe-compile.txt: woe
 	build: update docs
 
 2012-12-09  Sylvain Beucler <beuc@beuc.net>
@@ -907,7 +3760,7 @@
 2009-11-13  Sylvain Beucler <beuc@beuc.net>
 
 	* AUTHORS, NEWS, debian/copyright, po/LINGUAS, po/Makevars,
-	po/da.po, po/de.po, po/es.po, po/fr.po, po/pl.po, po/vi.po: New
+	po/{de.po => da.po}, po/es.po, po/fr.po, po/pl.po, po/vi.po: New
 	translations: es,da,pl,vi; updated French translation
 
 2009-09-30  Sylvain Beucler <beuc@beuc.net>
@@ -920,7 +3773,7 @@
 
 2009-09-30  Sylvain Beucler <beuc@beuc.net>
 
-	* debian/BUILD, debian/README.source, debian/changelog,
+	* debian/{BUILD => README.source}, debian/changelog,
 	debian/control, debian/copyright, debian/gbp.conf, debian/rules: 
 	Sync debian
 
@@ -1120,8 +3973,8 @@
 
 	* contrib/ffrextract.c, contrib/ffrpack.cpp, src/Makefile.am,
 	src/dinkc_bindings.c, src/dinkvar.c, src/freedink.c, src/gfx.c,
-	src/gfx.h, src/gfx_fonts.c, src/gfx_palette.c, src/gfx_palette.h,
-	src/gfx_utils.c, src/gfx_utils.h, src/init.c, src/update_frame.c: 
+	src/gfx.h, src/gfx_fonts.c, src/gfx_palette.c, src/{gfx_utils.h =>
+	gfx_palette.h}, src/gfx_utils.c, src/init.c, src/update_frame.c: 
 	Encapsulate and simplify physical palette manipulation
 
 2009-07-04  Sylvain Beucler <beuc@beuc.net>
@@ -2101,17 +4954,14 @@
 
 2008-09-20  Sylvain Beucler <beuc@beuc.net>
 
-	* gentoo/games-rpg/freedink/freedink-1.08.20080914.ebuild,
-	gentoo/games-rpg/freedink/freedink-1.08.20080920.ebuild: Also rename
-	Gentoo meta-package
+	* gentoo/games-rpg/freedink/{freedink-1.08.20080914.ebuild =>
+	freedink-1.08.20080920.ebuild}: Also rename Gentoo meta-package
 
 2008-09-20  Sylvain Beucler <beuc@beuc.net>
 
 	* NEWS, configure.ac, debian/changelog, freedink.spec,
-	gentoo/games-rpg/freedink-engine/freedink-engine-1.08.20080914.ebui
-	ld,
-	gentoo/games-rpg/freedink-engine/freedink-engine-1.08.20080920.ebui
-	ld: Release
+	gentoo/games-rpg/freedink-engine/{freedink-engine-1.08.20080914.ebu
+	ild => freedink-engine-1.08.20080920.ebuild}: Release
 
 2008-09-20  Sylvain Beucler <beuc@beuc.net>
 
@@ -2831,10 +5681,10 @@
 2008-07-20  Sylvain Beucler <beuc@beuc.net>
 
 	* doc/v1.08.txt, doc/v1.08_dinkvar.diff, src/Makefile.am,
-	src/dinkc_bindings.c, src/dinkc_sp_custom.c, src/dinkc_sp_custom.h,
-	src/dinkc_sp_custom_hash.c, src/dinkc_sp_custom_hash.h,
-	src/dinkvar.c, src/game_engine.c, src/game_engine.h, src/init.c: 
-	DinkC sp_custom
+	src/dinkc_bindings.c, src/{dinkc_sp_custom_hash.c =>
+	dinkc_sp_custom.c}, src/{dinkc_sp_custom_hash.h =>
+	dinkc_sp_custom.h}, src/dinkvar.c, src/game_engine.c,
+	src/game_engine.h, src/init.c: DinkC sp_custom
 
 2008-07-20  Sylvain Beucler <beuc@beuc.net>
 
@@ -3607,13 +6457,13 @@
 
 2008-02-02  Sylvain Beucler <beuc@beuc.net>
 
-	* share/README, share/freedink/Makefile.am,
-	share/freedink/system.sfd, src/Makefile.am, src/freedink_xpm.c,
-	src/freedink_xpm.h, src/gfx.c, src/gfx_fonts.c, src/init.c,
-	src/init.h, src/media/README, src/media/system.sfd, src/msgbox.c,
-	src/paths.c, src/str_util.c, src/str_util.h, src/vgasys_fon.h,
-	src/woeres.rc.in: Finish error handling for graphics initialization
-	+ move non-installed media out of share/
+	* share/README, share/freedink/Makefile.am, src/Makefile.am,
+	src/freedink_xpm.c, src/freedink_xpm.h, src/gfx.c, src/gfx_fonts.c,
+	src/init.c, src/init.h, src/media/README, {share/freedink =>
+	src/media}/system.sfd, src/msgbox.c, src/paths.c, src/str_util.c,
+	src/str_util.h, src/vgasys_fon.h, src/woeres.rc.in: Finish error
+	handling for graphics initialization + move non-installed media out
+	of share/
 
 2008-02-02  Sylvain Beucler <beuc@beuc.net>
 
@@ -3669,12 +6519,11 @@
 
 2008-01-16  Sylvain Beucler <beuc@beuc.net>
 
-	* contrib/bmpinspect.c, contrib/bmpinvertpalette.c, contrib/d2c.c,
-	contrib/dextract, contrib/dinkdat_inspect.c, contrib/ffinspect.c,
-	contrib/ffrextract.c, doc/data.txt, utils/bmpinspect.c,
-	utils/bmpinvertpalette.c, utils/d2c.c, utils/dinkdat_inspect.c,
-	utils/ffinspect.c, utils/ffrextract.c: Add script to extract game
-	data from the official .exe package
+	* {utils => contrib}/bmpinspect.c, {utils =>
+	contrib}/bmpinvertpalette.c, {utils => contrib}/d2c.c,
+	contrib/dextract, {utils => contrib}/dinkdat_inspect.c, {utils =>
+	contrib}/ffinspect.c, {utils => contrib}/ffrextract.c, doc/data.txt: 
+	Add script to extract game data from the official .exe package
 
 2008-01-13  Sylvain Beucler <beuc@beuc.net>
 
@@ -4228,12 +7077,11 @@
 2007-10-07  Sylvain Beucler <beuc@beuc.net>
 
 	* Makefile.am, autopackage/default.apspec.in, configure.ac,
-	doc/freedesktop.txt, share/Makefile.am, share/README,
-	share/README.fonts, share/applications/freedink.desktop,
-	share/applications/freedinkedit.desktop,
-	share/freedink/Makefile.am, share/freedink/README.fonts,
-	share/freedink/README.txt: Add freedesktop.org-compliant menu entry
-	and icon
+	doc/freedesktop.txt, share/Makefile.am, share/{freedink/README.txt
+	=> README}, share/{freedink => }/README.fonts,
+	share/applications/freedink.desktop,
+	share/applications/freedinkedit.desktop, share/freedink/Makefile.am: 
+	Add freedesktop.org-compliant menu entry and icon
 
 2007-10-07  Sylvain Beucler <beuc@beuc.net>
 
@@ -4379,7 +7227,7 @@
 
 	* configure.ac, doc/cross.txt, gnulib/lib/.gitignore,
 	src/.gitignore, src/Makefile.am, src/freedink.c,
-	src/freedinkedit.c, src/resource.h, src/woeres.rc, src/woeres.rc.in: 
+	src/freedinkedit.c, src/resource.h, src/{woeres.rc => woeres.rc.in}: 
 	Build system clean-ups, so we can cross-compile with a separate
 	build dir.
 
@@ -4452,9 +7300,9 @@
 
 2007-09-16  Sylvain Beucler <beuc@beuc.net>
 
-	* configure.ac, doc/cross.txt, freedink.rc,
-	share/freedink/Makefile.am, src/Makefile.am, src/woeres.rc: Add
-	support for windres (i.e. Woe .exe icons) in the build system.
+	* configure.ac, doc/cross.txt, share/freedink/Makefile.am,
+	src/Makefile.am, freedink.rc => src/woeres.rc: Add support for
+	windres (i.e. Woe .exe icons) in the build system.
 
 2007-09-16  Sylvain Beucler <beuc@beuc.net>
 
@@ -4502,9 +7350,8 @@
 2007-09-16  Sylvain Beucler <beuc@beuc.net>
 
 	* Makefile.am, acsite.m4, configure.ac, configure.sh,
-	doc/binreloc.txt, share/Makefile.am, share/README.fonts,
-	share/README.txt, share/freedink/Makefile.am,
-	share/freedink/README.fonts, share/freedink/README.txt,
+	doc/binreloc.txt, share/{ => freedink}/Makefile.am, share/{ =>
+	freedink}/README.fonts, share/{ => freedink}/README.txt,
 	src/Makefile.am, src/binreloc.c, src/binreloc.h, src/dinkvar.c,
 	src/freedink.c, src/init.c, src/io_util.c, src/io_util.h: Add
 	BinReloc support
@@ -4512,26 +7359,27 @@
 2007-09-15  Sylvain Beucler <beuc@beuc.net>
 
 	* .gitignore, ChangeLog, Makefile, Makefile.am, NEWS, README,
-	README.fonts, THANKS, autotools/.gitignore, autotools/.gitignore~,
-	bgm.c, bgm.h, bootstrap, compress.c, configure.ac, configure.sh,
-	dev-cpp/.cvsignore, dev-cpp/.gitignore, dinkedit_res/README.txt,
-	dinkvar.c, dinkvar.h, doc/ncc.txt, doc/valgrind.txt, fastfile.c,
-	fastfile.h, freedink.c, freedink.h, freedinkedit.c, gfx.c, gfx.h,
-	gfx_fonts.c, gfx_fonts.h, gfx_tiles.c, gfx_tiles.h, gfx_utils.c,
-	gfx_utils.h, init.c, init.h, input.c, input.h, io_util.c,
-	io_util.h, rect.c, rect.h, resource.h, sfx.c, sfx.h,
-	share/Makefile.am, share/README.fonts, share/README.txt,
-	src/.gitignore, src/Makefile.am, src/bgm.c, src/bgm.h,
-	src/compress.c, src/dinkvar.c, src/dinkvar.h, src/fastfile.c,
-	src/fastfile.h, src/freedink.c, src/freedink.h, src/freedinkedit.c,
-	src/gfx.c, src/gfx.h, src/gfx_fonts.c, src/gfx_fonts.h,
-	src/gfx_tiles.c, src/gfx_tiles.h, src/gfx_utils.c, src/gfx_utils.h,
-	src/init.c, src/init.h, src/input.c, src/input.h, src/io_util.c,
-	src/io_util.h, src/rect.c, src/rect.h, src/resource.h, src/sfx.c,
-	src/sfx.h, src/str_util.c, src/str_util.h, src/update_frame.c,
-	src/update_frame.h, str_util.c, str_util.h, update_frame.c,
-	update_frame.h, vc6/.cvsignore, vc6/.gitignore: First steps of
-	autoconfiscation
+	THANKS, autotools/.gitignore, autotools/.gitignore~, bootstrap,
+	configure.ac, configure.sh, dev-cpp/{.cvsignore => .gitignore},
+	doc/ncc.txt, doc/valgrind.txt, share/Makefile.am, README.fonts =>
+	share/README.fonts, {dinkedit_res => share}/README.txt,
+	src/.gitignore, src/Makefile.am, bgm.c => src/bgm.c, bgm.h =>
+	src/bgm.h, compress.c => src/compress.c, dinkvar.c =>
+	src/dinkvar.c, dinkvar.h => src/dinkvar.h, fastfile.c =>
+	src/fastfile.c, fastfile.h => src/fastfile.h, freedink.c =>
+	src/freedink.c, freedink.h => src/freedink.h, freedinkedit.c =>
+	src/freedinkedit.c, gfx.c => src/gfx.c, gfx.h => src/gfx.h,
+	gfx_fonts.c => src/gfx_fonts.c, gfx_fonts.h => src/gfx_fonts.h,
+	gfx_tiles.c => src/gfx_tiles.c, gfx_tiles.h => src/gfx_tiles.h,
+	gfx_utils.c => src/gfx_utils.c, gfx_utils.h => src/gfx_utils.h,
+	init.c => src/init.c, init.h => src/init.h, input.c => src/input.c,
+	input.h => src/input.h, io_util.c => src/io_util.c, io_util.h =>
+	src/io_util.h, rect.c => src/rect.c, rect.h => src/rect.h,
+	resource.h => src/resource.h, sfx.c => src/sfx.c, sfx.h =>
+	src/sfx.h, str_util.c => src/str_util.c, str_util.h =>
+	src/str_util.h, update_frame.c => src/update_frame.c,
+	update_frame.h => src/update_frame.h, vc6/{.cvsignore =>
+	.gitignore}: First steps of autoconfiscation
 
 2007-09-15  Sylvain Beucler <beuc@beuc.net>
 
@@ -4539,7 +7387,7 @@
 
 2007-09-15  Sylvain Beucler <beuc@beuc.net>
 
-	* .cvsignore, .gitignore: Converted .cvsignore to .gitignore
+	* .cvsignore => .gitignore: Converted .cvsignore to .gitignore
 
 2007-09-15  Sylvain Beucler <beuc@beuc.net>
 
@@ -4550,11 +7398,11 @@
 
 2007-09-15  Sylvain Beucler <beuc@beuc.net>
 
-	* bgm.c, bgm.cpp, dinkvar.c, dinkvar.cpp, freedink.c, freedink.cpp,
-	freedinkedit.c, freedinkedit.cpp, gfx.c, gfx.cpp, gfx_fonts.c,
-	gfx_fonts.cpp, gfx_tiles.c, gfx_tiles.cpp, gfx_utils.c,
-	gfx_utils.cpp, init.c, init.cpp, sfx.c, sfx.cpp, update_frame.c,
-	update_frame.cpp: Renamed *.ccpp->*.c
+	* bgm.cpp => bgm.c, dinkvar.cpp => dinkvar.c, freedink.cpp =>
+	freedink.c, freedinkedit.cpp => freedinkedit.c, gfx.cpp => gfx.c,
+	gfx_fonts.cpp => gfx_fonts.c, gfx_tiles.cpp => gfx_tiles.c,
+	gfx_utils.cpp => gfx_utils.c, init.cpp => init.c, sfx.cpp => sfx.c,
+	update_frame.cpp => update_frame.c: Renamed *.ccpp->*.c
 
 2007-09-14  Sylvain Beucler <beuc@beuc.net>
 
@@ -4727,7 +7575,7 @@
 	* AUTHORS, Makefile, dinkvar.cpp, dinkvar.h, fastfile.c,
 	fastfile.h, freedink.cpp, gfx.cpp, gfx.h, gfx_fonts.cpp,
 	gfx_fonts.h, gfx_tiles.cpp, gfx_tiles.h, rect.c, rect.h, sfx.cpp,
-	sfx.h, str_util.c, str_util.h, string_util.c, string_util.h,
+	sfx.h, string_util.c => str_util.c, string_util.h => str_util.h,
 	update_frame.cpp: The game compiles under GNU/Linux
 
 2007-08-15  Sylvain Beucler <beuc@beuc.net>
@@ -4930,7 +7778,7 @@
 
 2007-08-01  Sylvain Beucler <beuc@beuc.net>
 
-	* doc/game_libraries.txt, doc/roadmap.txt, doc/sdl.txt,
+	* doc/{sdl.txt => game_libraries.txt}, doc/roadmap.txt,
 	doc/woe-compile.txt: Update and complete compilation documentation.
 	More info about game libraries.
 
