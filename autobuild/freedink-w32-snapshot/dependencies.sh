@@ -52,6 +52,7 @@ apt-get -y install \
     libssl-dev \
     libtool-bin \
     libxml-parser-perl \
+    lzip \
     make \
     openssl \
     p7zip-full \
@@ -60,7 +61,6 @@ apt-get -y install \
     pkg-config \
     python \
     ruby \
-    scons \
     sed \
     unzip \
     wget \

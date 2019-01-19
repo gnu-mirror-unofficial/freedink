@@ -22,7 +22,7 @@
 cd /opt/
 git clone -n https://github.com/mxe/mxe.git
 cd mxe/
-git reset --hard 5d4c388be33414e7a802c4959d3d22f759840587
+git reset --hard 023da395bf995e67830a6456e1b576788375ead0
 
 # Reproducible build
 # MXE has patched binutils with linker SOURCE_DATE_EPOCH support
