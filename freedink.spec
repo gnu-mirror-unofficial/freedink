@@ -4,10 +4,10 @@ Release:	1%{?dist}
 Summary:	Humorous top-down adventure and role-playing game
 
 Group:		Amusements/Games
-BuildRequires:  gcc-c++
+BuildRequires:	gcc-c++
 BuildRequires:	SDL2-devel SDL2_gfx-devel SDL2_ttf-devel SDL2_image-devel SDL2_mixer-devel
 BuildRequires:	fontconfig-devel
-BuildRequires:  glm-devel
+BuildRequires:	glm-devel
 BuildRequires:	desktop-file-utils
 BuildRequires:	cxxtest
 %if 0%{?suse_version}
