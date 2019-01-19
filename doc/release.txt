@@ -84,10 +84,15 @@ directory: freedink
 filename: freedink-$VERSION.tar.gz
 EOF
 lftp -e "mput freedink-$VERSION.tar.gz*; exit" -u anonymous, ftp-upload.gnu.org/incoming/ftp/
-# Check ftp://ftp.gnu.org/gnu/freedink/
+# Check https://ftp.gnu.org/gnu/freedink/
 
 # Pristine TAR - efficienty storing the release in the Git repository
-pristine-tar commit -s freedink-$VERSION.tar.gz freedink-$VERSION.tar.gz v$VERSION
+gpg --enarmor freedink-$VERSION.tar.gz.sig  # pristine-tar stores a .asc whatever the format
+sed 's/ ARMORED FILE/ SIGNATURE/' freedink-$VERSION.tar.gz.sig.asc > freedink-$VERSION.tar.gz.asc
+cd ..
+pristine-tar commit -s native/freedink-$VERSION.tar.gz.asc native/freedink-$VERSION.tar.gz v$VERSION
+# pristine-tar checkout -s freedink-$VERSION.tar.gz.asc freedink-$VERSION.tar.gz
+# gpg --verify freedink-$VERSION.tar.gz.asc
 git push origin pristine-tar
 
 # Upload sigs to freedink.org
@@ -134,11 +139,12 @@ Check this for updates:
 sudo pbuilder create
 sudo pbuilder update
 ln -nfs freedink-$VERSION.tar.gz freedink-$VERSION.orig.tar.gz
-rm -rf freedink-$VERSION/ && tar xf freedink-$VERSION.tar.gz
+ln -nfs freedink-$VERSION.tar.gz.sig freedink-$VERSION.orig.tar.gz.sig
+rm -rf freedink-$VERSION/ && tar xf freedink_$VERSION.orig.tar.gz
 cd freedink-data-$VERSION/ && rm -rf debian/ && \cp -a ../debian .
 pdebuild --buildresult ..
-lintian
-debsign
+lintian -i
+debsign -k ...
 debrelease --dput
 
 For backports:
@@ -152,6 +158,5 @@ Check:
 https://fedoraproject.org/wiki/Package_maintenance_guide#Typical_fedpkg_session
 
 See also:
-https://admin.fedoraproject.org/pkgdb/package/freedink/
-http://pkgs.fedoraproject.org/cgit/freedink.git/
+https://src.fedoraproject.org/cgit/rpms/freedink.git/
 https://apps.fedoraproject.org/packages/freedink
