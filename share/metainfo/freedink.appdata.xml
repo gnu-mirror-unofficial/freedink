@@ -20,11 +20,11 @@
   </p>
  </description>
  <screenshots>
-  <screenshot type="default" width="624" height="344">http://www.gnu.org/software/freedink/screenshots/freedink-appdata1.png</screenshot>
-  <screenshot width="624" height="351">http://www.gnu.org/software/freedink/screenshots/freedink-appdata2.png</screenshot>
-  <screenshot width="624" height="351">http://www.gnu.org/software/freedink/screenshots/dfarc-appdata1.png</screenshot>
+  <screenshot type="default" width="624" height="344">https://www.gnu.org/software/freedink/screenshots/freedink-appdata1.png</screenshot>
+  <screenshot width="624" height="351">https://www.gnu.org/software/freedink/screenshots/freedink-appdata2.png</screenshot>
+  <screenshot width="624" height="351">https://www.gnu.org/software/freedink/screenshots/dfarc-appdata1.png</screenshot>
  </screenshots>
- <url type="homepage">http://www.gnu.org/software/freedink/</url>
+ <url type="homepage">https://www.gnu.org/software/freedink/</url>
  <update_contact>bug-freedink@gnu.org</update_contact>
  <project_group>GNU</project_group>
 </component>
