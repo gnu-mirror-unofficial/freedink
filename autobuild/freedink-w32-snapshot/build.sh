@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 # MS Woe release, built with MXE
 
-# Copyright (C) 2008, 2009, 2010, 2012, 2013, 2014, 2017, 2018  Sylvain Beucler
+# Copyright (C) 2008, 2009, 2010, 2012, 2013, 2014, 2017, 2018, 2019  Sylvain Beucler
 
 # This file is part of GNU FreeDink
 
@@ -38,7 +38,8 @@ unset LC_ALL LANGUAGE
 ##
 
 rm -rf $PACKAGE-$VERSION/
-tar xzf $PACKAGE-$VERSION.tar.gz
+# --no-same-owner: work-around reprotest issue in pseudo-root container
+tar --no-same-owner -xzf $PACKAGE-$VERSION.tar.gz
 pushd $PACKAGE-$VERSION/
 mkdir zip/
 
@@ -51,7 +52,7 @@ for i in AUTHORS COPYING NEWS README THANKS TROUBLESHOOTING; do
 done
 cat <<EOF > zip/$PACKAGE-SOURCE.txt
 The FreeDink source code is available at:
-  http://ftp.gnu.org/gnu/freedink/
+  https://ftp.gnu.org/gnu/freedink/
 
 The source code is the "recipe" of FreeDink, that let you study it,
 modify it, and redistribute your changes.  The GNU GPL license
