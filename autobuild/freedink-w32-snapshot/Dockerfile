@@ -1,4 +1,4 @@
-FROM debian:9.4
+FROM debian:9.6
 MAINTAINER Sylvain Beucler <beuc@beuc.net>
 
 # Packaged dependencies
