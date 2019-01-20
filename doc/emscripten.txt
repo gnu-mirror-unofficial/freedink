@@ -1,7 +1,7 @@
 # -*- shell-script -*-
 # Emscripten compilation instructions
 
-# Copyright (C) 2018  Sylvain Beucler
+# Copyright (C) 2018, 2019  Sylvain Beucler
 
 # This file is part of GNU FreeDink
 
@@ -338,6 +338,8 @@ exit 0
   cd .../freedink-data/
   make update-gmo
   make install DESTDIR=$(pwd)/destdir
+  rm -f $(pwd)/destdir/usr/local/share/dink/dink/Story/key-67.c
+  rm -f $(pwd)/destdir/usr/local/share/dink/dink/save*.dat
 
   (cd destdir; mkdir -p etc etc/timidity usr/share usr/share/midi/)
   \cp -a /usr/share/midi/freepats destdir/usr/share/midi/
@@ -520,7 +522,7 @@ cp -a ../../emsource/emscripten-freedink/LICENSE t/source/emscripten-LICENSE.txt
 
 
 # GPL :)
-cp -a freedink-109.0.tar.gz t/source/
+cp -a freedink-109.3.tar.gz t/source/
 
 gzip -f t/{freedink-data,freedink-data-bgm-ogg,soundfonts}{.data,-data.js}
 gzip -f t/index.{js,wasm}
