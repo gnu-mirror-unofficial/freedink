@@ -237,6 +237,7 @@ bool App::check_arg(int argc, char *argv[]) {
 	char *refdir_opt = NULL;
 	char *dmoddir_opt = NULL;
 	int debug_p = 0;
+	joystick = 1;
 	
 	/* Options '-debug', '-game', '-noini', '-nojoy', '-nosound' and
 	   '-window' (with one dash '-' only) are required to maintain
