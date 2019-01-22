@@ -198,9 +198,7 @@ void gfx_quit()
   IOGFX_tmp1 = NULL;
   IOGFX_tmp2 = NULL;
 
-  if (g_display != NULL)
-	  g_display->close();
-  delete g_display;
+  if (g_display != NULL) delete g_display;
   g_display = NULL;
 }
 

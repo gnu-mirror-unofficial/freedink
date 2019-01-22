@@ -78,7 +78,7 @@ void IOGfxDisplayGL2::close() {
 		gl = NULL;
 	}
 
-	if (glcontext) SDL_GL_DeleteContext(glcontext);
+	if (glcontext != NULL) SDL_GL_DeleteContext(glcontext);
 	glcontext = NULL;
 
 	IOGfxDisplay::close();
