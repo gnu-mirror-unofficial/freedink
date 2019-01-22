@@ -96,7 +96,7 @@ void input_init(void)
   /* Touch devices */
   {
     int i;
-    log_info("Touch devices: %d", SDL_GetNumTouchDevices());
+    log_info("Touch devices: %d found", SDL_GetNumTouchDevices());
     for (i = 0; i < SDL_GetNumTouchDevices(); i++) {
       SDL_TouchID touchId = SDL_GetTouchDevice(i);
       /* Always '0' on startup I guess: */
@@ -149,10 +149,12 @@ void input_init(void)
 
   /* JOY */
   /* Joystick initialization never makes Dink fail for now. */
-  /* Note: joystick is originaly only used by the game, not the
+  /* Note: joystick is originally only used by the game, not the
      editor. */
-  if (joystick == 0)
+  if (joystick == 0) {
+	log_info("joystick disabled by command-line option");
     return;
+  }
 
   joystick = 0;
   if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) == -1)
