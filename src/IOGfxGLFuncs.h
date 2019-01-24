@@ -60,7 +60,9 @@ typedef unsigned char GLboolean;
 #define GL_SRC_ALPHA 0x0302
 #define GL_ONE_MINUS_SRC_ALPHA 0x0303
 
-#define GL_COLOR_BUFFER_BIT 0x00004000
+#define GL_DEPTH_BUFFER_BIT   0x0100
+#define GL_STENCIL_BUFFER_BIT 0x0400
+#define GL_COLOR_BUFFER_BIT   0x4000
 
 #define GL_RGB 0x1907
 #define GL_RGBA 0x1908

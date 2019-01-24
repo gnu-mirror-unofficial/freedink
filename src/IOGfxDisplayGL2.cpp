@@ -74,6 +74,7 @@ void IOGfxDisplayGL2::close() {
 		gl->DeleteBuffers(1, &vboSpriteVertices);
 		gl->DeleteBuffers(1, &vboSpriteTexcoords);
 		gl->DeleteBuffers(1, &vboCroppedSpriteTexcoords);
+		gl->Clear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 		delete gl;
 		gl = NULL;
 	}
