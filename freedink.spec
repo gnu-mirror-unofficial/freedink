@@ -10,9 +10,6 @@ BuildRequires:	fontconfig-devel
 BuildRequires:	glm-devel
 BuildRequires:	desktop-file-utils
 BuildRequires:	cxxtest
-%if 0%{?suse_version}
-BuildRequires:	update-desktop-files
-%endif
 License:	GPLv3+
 URL:		https://www.gnu.org/software/freedink/
 Source0:	https://ftp.gnu.org/gnu/freedink/freedink-%{version}.tar.gz
@@ -39,23 +36,12 @@ front-end to manage game options and D-Mods.
 Summary:	Humorous top-down adventure and role-playing game (engine)
 Group:		Amusements/Games
 Requires:	freedink-data
-# TiMidity++ is useful to play midis when /dev/sequencer isn't
-# functional (most of the time) and installing it prevents some
-# SDL_mixer freezes (see TROUBLESHOOTING).  In Fedora this is done
-# through SDL_mixer dependencies.
-%if 0%{?suse_version}
-Requires: timidity
-%endif
 
 %if 0%{?with_included_liberation_font}
 # No dependency
 %else
-# Repect Fedora guidelines (see below)
-%if 0%{?fedora}
+# Respect Fedora guidelines (see below)
 Requires: liberation-sans-fonts
-%else
-Requires: liberation-fonts
-%endif
 %endif
 
 %description engine
@@ -89,18 +75,14 @@ make install DESTDIR=$RPM_BUILD_ROOT INSTALL="install -p"
 cat %{name}-gnulib.lang >> %{name}.lang
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}edit.desktop
-%if 0%{?suse_version}
-%suse_update_desktop_file -i %name
-%suse_update_desktop_file -i %{name}edit
-%endif
 # http://fedoraproject.org/wiki/Packaging/Guidelines#Avoid_bundling_of_fonts_in_other_packages
 # Policy insists on not installing a different version of "Liberation
 # Sans". Beware that the system version may be different than the
 # official FreeDink font, because Liberation changes regularly.
 %if 0%{?with_included_liberation_font}
 # Include it nonetheless for the sake of avoiding
-# liberation-fonts<->liberation-sans-fonts conflicts in the
-# freedink.org repository
+# liberation-fonts<->liberation-sans-fonts distro naming conflicts in
+# the freedink.org RPM repository
 %else
 # Remove it for compliance with Fedora guidelines
 rm $RPM_BUILD_ROOT%{_datadir}/%{name}/LiberationSans-Regular.ttf
