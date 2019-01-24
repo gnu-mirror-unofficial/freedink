@@ -28,6 +28,8 @@
 
 #ifdef __EMSCRIPTEN__
 // static access mandatory since ~1.38.21
+// might be fixed directly in the SDL2 port, cf.
+// https://groups.google.com/d/msg/emscripten-discuss/d3damBim3Mw/mrvJdC49FQAJ
 #include <GLES2/gl2.h>
 #define GETPROCADDRESS(x) x
 #else
