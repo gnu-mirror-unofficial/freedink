@@ -1,5 +1,5 @@
 Name:		freedink
-Version:	109.2
+Version:	109.3
 Release:	1%{?dist}
 Summary:	Humorous top-down adventure and role-playing game
 
