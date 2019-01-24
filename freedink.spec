@@ -73,12 +73,6 @@ This package contains the game engine alone.
 
 %prep
 %autosetup -p1
-# openSUSE does not allow empty packages, so create at least one file
-%if 0%{?suse_version}
-cat > README.META << EOF
-This is just a meta package to require all needed packages.
-EOF
-%endif
 
 %build
 # Using '--disable-embedded-resources' because 'rpmbuild' will remove
@@ -114,15 +108,11 @@ rm $RPM_BUILD_ROOT%{_datadir}/%{name}/LiberationSans-Regular.ttf
 
 
 %files
-# openSUSE does not allow empty packages
-%if 0%{?suse_version}
-%doc README.META
-%endif
+%{_datadir}/metainfo/*
 
 %files engine -f %{name}.lang
 %doc AUTHORS COPYING NEWS README THANKS TROUBLESHOOTING ChangeLog
 %{_bindir}/*
-%{_datadir}/metainfo/*
 %{_datadir}/applications/*
 %{_datadir}/%{name}/
 %{_datadir}/pixmaps/*
