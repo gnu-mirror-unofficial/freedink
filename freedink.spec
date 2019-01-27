@@ -1,5 +1,5 @@
 Name:		freedink
-Version:	109.3
+Version:	109.4
 Release:	1%{?dist}
 Summary:	Humorous top-down adventure and role-playing game
 
@@ -107,6 +107,9 @@ rm $RPM_BUILD_ROOT%{_datadir}/%{name}/LiberationSans-Regular.ttf
 
 
 %changelog
+* Sun Jan 27 2019 Sylvain Beucler <beuc@beuc.net> - 109.4-1
+- New upstream release
+
 * Sat Jan 19 2019 Sylvain Beucler <beuc@beuc.net> - 109.2-1
 - New upstream release
 
