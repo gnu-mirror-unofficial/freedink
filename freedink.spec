@@ -8,8 +8,10 @@ BuildRequires:	gcc-c++
 BuildRequires:	SDL2-devel SDL2_gfx-devel SDL2_ttf-devel SDL2_image-devel SDL2_mixer-devel
 BuildRequires:	fontconfig-devel
 BuildRequires:	glm-devel
-BuildRequires:	desktop-file-utils
 BuildRequires:	cxxtest
+# https://docs.fedoraproject.org/en-US/packaging-guidelines/#_desktop_files
+BuildRequires:	desktop-file-utils
+# https://docs.fedoraproject.org/en-US/packaging-guidelines/AppData/
 BuildRequires:	libappstream-glib
 License:	GPLv3+
 URL:		https://www.gnu.org/software/freedink/
@@ -100,6 +102,7 @@ rm $RPM_BUILD_ROOT%{_datadir}/%{name}/LiberationSans-Regular.ttf
 %{_datadir}/applications/*
 %{_datadir}/%{name}/
 %{_datadir}/pixmaps/*
+%{_datadir}/icons/*
 %{_mandir}/man6/*
 
 

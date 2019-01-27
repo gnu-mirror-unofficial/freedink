@@ -7,7 +7,7 @@
 
 * Improve AppStream metadata for GNU/Linux software centers: mark as
   localized, install proper meta-package, update screenshots
-  declaration
+  declaration, new SVG icon
 
 * Web version: support Emscripten 1.38.25
 
