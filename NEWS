@@ -5,6 +5,14 @@
 
 * Fix missing strings in the translation template
 
+* Improve AppStream metadata for GNU/Linux software centers: mark as
+  localized, install proper meta-package, update screenshots
+  declaration
+
+* Web version: support Emscripten 1.38.25
+
+* Windows version: update reproducible recipe
+
 
 109.2
 =====
