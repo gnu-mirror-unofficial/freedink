@@ -36,4 +36,5 @@
  <url type="homepage">https://www.gnu.org/software/freedink/</url>
  <update_contact>bug-freedink@gnu.org</update_contact>
  <project_group>GNU</project_group>
+ <translation type="gettext">dink</translation>
 </component>
