@@ -133,8 +133,8 @@ Debian notes:
 -------------
 
 Check this for updates:
+- https://tracker.debian.org/pkg/freedink
 - /usr/share/doc/debian-policy/upgrading-checklist.txt.gz
-- http://lintian.debian.org/full/pkg-games-devel@lists.alioth.debian.org.html#freedink
 
 sudo pbuilder create
 sudo pbuilder update
