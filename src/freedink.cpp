@@ -31,9 +31,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "gettext.h"
-#define _(String) gettext(String)
-
 #include "fastfile.h"
 
 #include "IOGfxPrimitives.h"
