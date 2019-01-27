@@ -10,6 +10,7 @@ BuildRequires:	fontconfig-devel
 BuildRequires:	glm-devel
 BuildRequires:	desktop-file-utils
 BuildRequires:	cxxtest
+BuildRequires:	libappstream-glib
 License:	GPLv3+
 URL:		https://www.gnu.org/software/freedink/
 Source0:	https://ftp.gnu.org/gnu/freedink/freedink-%{version}.tar.gz
@@ -75,6 +76,7 @@ make install DESTDIR=$RPM_BUILD_ROOT INSTALL="install -p"
 cat %{name}-gnulib.lang >> %{name}.lang
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}edit.desktop
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.appdata.xml
 # http://fedoraproject.org/wiki/Packaging/Guidelines#Avoid_bundling_of_fonts_in_other_packages
 # Policy insists on not installing a different version of "Liberation
 # Sans". Beware that the system version may be different than the
@@ -90,7 +92,7 @@ rm $RPM_BUILD_ROOT%{_datadir}/%{name}/LiberationSans-Regular.ttf
 
 
 %files
-%{_datadir}/metainfo/*
+%{_metainfodir}/*
 
 %files engine -f %{name}.lang
 %doc AUTHORS COPYING NEWS README THANKS TROUBLESHOOTING ChangeLog
