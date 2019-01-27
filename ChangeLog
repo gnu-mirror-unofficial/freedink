@@ -1,3 +1,150 @@
+2019-01-27  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, configure.ac, debian/changelog, doc/gnulib.txt,
+	freedink.spec: Start branch 109.4
+
+2019-01-27  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, doc/release.txt, freedink.spec: rpm: add links to
+	documentation and handle new icon
+
+2019-01-27  Sylvain Beucler <beuc@beuc.net>
+
+	* share/metainfo/freedink.appdata.xml: appstream: fix warnings from
+	Fedora - screenshot too short (< 351px) - caption too short (< 10 chars) - screenshot with transparent padding
+
+2019-01-27  Sylvain Beucler <beuc@beuc.net>
+
+	* contrib/ico2svg.py, share/Makefile.am,
+	share/icons/hicolor/scalable/apps/freedink.svg: appstream: add
+	alternate icon in alternate location so maybe Fedora will stop
+	ignoring us
+
+2019-01-27  Sylvain Beucler <beuc@beuc.net>
+
+	* freedink.spec: rpm: follow packaging guidelines for AppData
+
+2019-01-27  Sylvain Beucler <beuc@beuc.net>
+
+	* po/POTFILES.in: i18n: actually fix missing translation strings
+
+2019-01-27  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS: doc: update NEWS
+
+2019-01-27  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, doc/release.txt, src/AppFreeDinkedit.cpp, src/freedink.cpp: 
+	i18n: fix missing strings in the tranlation template
+
+2019-01-27  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/rules, doc/release.txt: debian: tidy doc
+
+2019-01-27  Sylvain Beucler <beuc@beuc.net>
+
+	* share/metainfo/freedink.appdata.xml: appstream: try to get flagged
+	as localized Cf.
+	https://gitlab.gnome.org/GNOME/gnome-software/issues/583
+
+2019-01-24  Sylvain Beucler <beuc@beuc.net>
+
+	* freedink.spec: rpm: bump version for testing
+
+2019-01-24  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxGLFuncs.cpp: emscripten: revert GL static loading, just
+	don't query non-existing glReadBuffer
+
+2019-01-24  Sylvain Beucler <beuc@beuc.net>
+
+	* freedink.spec: rpm: drop opensuse %if (untested for years)
+
+2019-01-24  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/changelog, debian/rules: debian: fix dbgsym-migration
+	version
+
+2019-01-24  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/changelog, debian/rules, freedink.spec, share/Makefile.am: 
+	appstream: install 'freedink' meta-package rather than
+	'freedink-engine'
+
+2019-01-24  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxGLFuncs.cpp: emscripten: link GL loading discussion
+
+2019-01-24  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp, src/IOGfxGLFuncs.h: GL: clear the screen
+	on exit especially since Emscripten/SDL2 doesn't do it anymore
+
+2019-01-22  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/emscripten.txt: emscripten: fix build issues and fix SDL2
+	joystick issue with 1.38.22
+
+2019-01-22  Sylvain Beucler <beuc@beuc.net>
+
+	* src/app.cpp: emscripten: retry loading joystick at each run
+
+2019-01-22  Sylvain Beucler <beuc@beuc.net>
+
+	* src/input.cpp: joystick: clarify debug output
+
+2019-01-22  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp, src/gfx.cpp: gfx: don't call close()
+	multiple times
+
+2019-01-22  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxGLFuncs.cpp: emscripten: load static GL symbols
+
+2019-01-20  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-w32-snapshot/Dockerfile: autobuild: update
+	Debian
+
+2019-01-20  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-w32-snapshot/build.sh: autobuild: fix
+	reprotest-null
+
+2019-01-20  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/emscripten.txt, emscripten/shell.html, emscripten/source.html: 
+	emscripten: update to newer freedink and freedink-data
+
+2019-01-20  Sylvain Beucler <beuc@beuc.net>
+
+	* share/metainfo/freedink.appdata.xml: appdata: fix screenshots
+	formatting
+
+2019-01-19  Sylvain Beucler <beuc@beuc.net>
+
+	* share/metainfo/freedink.appdata.xml: appdata: switch from http to
+	https just in case some (future) tools complain
+
+2019-01-19  Sylvain Beucler <beuc@beuc.net>
+
+	* autobuild/freedink-w32-snapshot/build-deps.sh,
+	autobuild/freedink-w32-snapshot/dependencies.sh: w32: update MXE,
+	previous commitid had issues with SDL2_ttf
+
+2019-01-19  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/release.txt: doc: update release process
+
+2019-01-19  Sylvain Beucler <beuc@beuc.net>
+
+	* freedink.spec: fedora: lint tab/spaces
+
+2019-01-19  Sylvain Beucler <beuc@beuc.net>
+
+	* : Merge 109.2
+
 2019-01-19  Sylvain Beucler <beuc@beuc.net>
 
 	* NEWS, configure.ac, debian/changelog, debian/control,

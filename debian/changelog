@@ -1,4 +1,4 @@
-freedink (109.2-2) UNRELEASED; urgency=medium
+freedink (109.4-1) unstable; urgency=medium
 
   * Make AppStream install 'freedink' meta-package rather than
     'freedink-engine'

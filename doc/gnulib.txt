@@ -35,4 +35,8 @@ Version used for 108.2:
   39cf9dff9bc7883e2a589b049fb11ee7beaadd4f
 Version used for 108.4:
   39cf9dff9bc7883e2a589b049fb11ee7beaadd4f
+Version used for 109.2:
+  39cf9dff9bc7883e2a589b049fb11ee7beaadd4f
+Version used for 109.4:
+  39cf9dff9bc7883e2a589b049fb11ee7beaadd4f
 (update with $(git rev-parse HEAD))
