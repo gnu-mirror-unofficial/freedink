@@ -44,13 +44,16 @@ rsync -Lrtvz  translationproject.org::tp/latest/freedink/  po
 # Update po/LINGUAS and po/POTFILES.in
 # (Note: po/freedink.pot is updated automatically)
 
+cd native/
 make  # otherwise *** No rule to make target `../gnulib/lib/libgnu.a'
 make distcheck
+git checkout ../po/  # canonical .po's are from TP
 git commit -am "Start branch $VERSION"
 git push origin $VERSION master
 # Here you can test the release in the autobuilder
 
 # When everything is tested:
+cd ..
 git2cl > ChangeLog
 git commit -m "Update ChangeLog" ChangeLog
 git tag -s v$VERSION -m v$VERSION -u ...
@@ -139,7 +142,7 @@ Check this for updates:
 sudo pbuilder create
 sudo pbuilder update
 ln -nfs freedink-$VERSION.tar.gz freedink-$VERSION.orig.tar.gz
-ln -nfs freedink-$VERSION.tar.gz.sig freedink-$VERSION.orig.tar.gz.sig
+ln -nfs freedink-$VERSION.tar.gz.sig freedink_$VERSION.orig.tar.gz.sig
 rm -rf freedink-$VERSION/ && tar xf freedink_$VERSION.orig.tar.gz
 cd freedink-data-$VERSION/ && rm -rf debian/ && \cp -a ../debian .
 pdebuild --buildresult ..
