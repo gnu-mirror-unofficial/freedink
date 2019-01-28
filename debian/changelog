@@ -1,10 +1,17 @@
+freedink (109.4-2) unstable; urgency=medium
+
+  * Use Breaks&Replace to move Appstream file from freedink-engine to
+    freedink (Closes: #920733)
+
+ -- Sylvain Beucler <beuc@debian.org>  Mon, 28 Jan 2019 21:54:00 +0100
+
 freedink (109.4-1) unstable; urgency=medium
 
   * Make AppStream install 'freedink' meta-package rather than
     'freedink-engine'
   * Fix dbgsym-migration version
 
- -- Sylvain Beucler <beuc@debian.org>  Thu, 24 Jan 2019 16:24:35 +0100
+ -- Sylvain Beucler <beuc@debian.org>  Sun, 27 Jan 2019 22:37:02 +0100
 
 freedink (109.2-1) unstable; urgency=medium
 
