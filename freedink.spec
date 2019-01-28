@@ -3,7 +3,6 @@ Version:	109.4
 Release:	1%{?dist}
 Summary:	Humorous top-down adventure and role-playing game
 
-Group:		Amusements/Games
 BuildRequires:	gcc-c++
 BuildRequires:	SDL2-devel SDL2_gfx-devel SDL2_ttf-devel SDL2_image-devel SDL2_mixer-devel
 BuildRequires:	fontconfig-devel
@@ -37,7 +36,6 @@ front-end to manage game options and D-Mods.
 
 %package engine
 Summary:	Humorous top-down adventure and role-playing game (engine)
-Group:		Amusements/Games
 Requires:	freedink-data
 
 %if 0%{?with_included_liberation_font}
