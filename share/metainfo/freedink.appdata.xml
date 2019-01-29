@@ -35,7 +35,9 @@
   </screenshot>
  </screenshots>
  <url type="homepage">https://www.gnu.org/software/freedink/</url>
+ <url type="translate">https://translationproject.org/domain/dink.html</url>
+ <url type="contact">mailto:bug-freedink@gnu.org</url>
+ <translation type="gettext">dink</translation>
  <update_contact>bug-freedink@gnu.org</update_contact>
  <project_group>GNU</project_group>
- <translation type="gettext">dink</translation>
 </component>
