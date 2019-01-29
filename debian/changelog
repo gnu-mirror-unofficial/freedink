@@ -1,3 +1,10 @@
+freedink (109.4-3) unstable; urgency=medium
+
+  * Revert AppStream to install 'freedink-engine' since splitting appdata
+    and desktop files is causing troubles
+
+ -- Sylvain Beucler <beuc@debian.org>  Tue, 29 Jan 2019 13:49:25 +0100
+
 freedink (109.4-2) unstable; urgency=medium
 
   * Use Breaks&Replace to move Appstream file from freedink-engine to

@@ -35,6 +35,3 @@ override_dh_auto_install:
 	# Lintian complains with 'duplicate-font-file', let's have
 	# FreeDink rely on libfontconfig + depend on ttf-liberation
 	rm debian/freedink-engine/usr/share/games/freedink/LiberationSans-Regular.ttf
-	# Move AppStream to the meta-package so it's the one that gets installed
-	mkdir -p debian/freedink/usr/share
-	mv debian/freedink-engine/usr/share/metainfo debian/freedink/usr/share/

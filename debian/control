@@ -22,7 +22,6 @@ Package: freedink-engine
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, freedink-data, fonts-liberation, freepats
 Recommends: freedink-dfarc
-Breaks: freedink (<< 109.4-1)
 Description: humorous top-down adventure and role-playing game (engine)
  Dink Smallwood is an adventure/role-playing game, similar to Zelda,
  made by RTsoft. Besides twisted humor, it includes the actual game
@@ -38,8 +37,6 @@ Description: humorous top-down adventure and role-playing game (engine)
 Package: freedink
 Architecture: all
 Depends: ${misc:Depends}, freedink-engine, freedink-dfarc
-Breaks: freedink-engine (<< 109.4-1)
-Replaces: freedink-engine (<< 109.4-1)
 Description: humorous top-down adventure and role-playing game
  Dink Smallwood is an adventure/role-playing game, similar to Zelda,
  made by RTsoft. Besides twisted humor, it includes the actual game

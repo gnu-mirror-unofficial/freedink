@@ -1,6 +1,6 @@
 Name:		freedink
 Version:	109.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	Humorous top-down adventure and role-playing game
 
 BuildRequires:	gcc-c++
@@ -15,6 +15,7 @@ BuildRequires:	libappstream-glib
 License:	GPLv3+
 URL:		https://www.gnu.org/software/freedink/
 Source0:	https://ftp.gnu.org/gnu/freedink/freedink-%{version}.tar.gz
+Patch0:		appdata.patch
 
 Requires:	freedink-engine = %{version}-%{release} freedink-dfarc
 # Reference bundled copy of gnulib - cf. https://fedorahosted.org/fpc/ticket/174
@@ -92,19 +93,24 @@ rm $RPM_BUILD_ROOT%{_datadir}/%{name}/LiberationSans-Regular.ttf
 
 
 %files
-%{_metainfodir}/*
 
 %files engine -f %{name}.lang
 %doc AUTHORS COPYING NEWS README THANKS TROUBLESHOOTING ChangeLog
 %{_bindir}/*
 %{_datadir}/applications/*
+%{_metainfodir}/*
 %{_datadir}/%{name}/
 %{_datadir}/pixmaps/*
-%{_datadir}/icons/*
+%{_datadir}/icons/hicolor/scalable/apps/*
 %{_mandir}/man6/*
 
 
 %changelog
+* Sun Jan 27 2019 Sylvain Beucler <beuc@beuc.net> - 109.4-2
+- Keep AppStream metadata in freedink-engine package
+- Backport AppStream metadata from upstream
+- Only package the icon and not the (shared) icon directories
+
 * Sun Jan 27 2019 Sylvain Beucler <beuc@beuc.net> - 109.4-1
 - New upstream release
 

@@ -16,7 +16,6 @@ install-data-local:
 	$(INSTALL_DATA) "$(srcdir)/icons/hicolor/scalable/apps/freedink.svg" "$(DESTDIR)$(datarootdir)/icons/hicolor/scalable/apps/"
 	$(INSTALL_DATA) "$(srcdir)/applications/freedink.desktop" "$(DESTDIR)$(datarootdir)/applications/"
 	$(INSTALL_DATA) "$(srcdir)/applications/freedinkedit.desktop" "$(DESTDIR)$(datarootdir)/applications/"
-#	 To be installed in a distro 'freedink' meta-package
 #	 TODO: https://www.freedesktop.org/software/appstream/docs/sect-Quickstart-Translation.html
 	$(MKDIR_P) "$(DESTDIR)$(datarootdir)/metainfo"
 	$(INSTALL_DATA) "$(srcdir)/metainfo/freedink.appdata.xml" "$(DESTDIR)$(datarootdir)/metainfo/freedink.appdata.xml"
