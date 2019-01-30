@@ -397,6 +397,9 @@ int App::main(int argc, char *argv[]) {
 	  char* dmod_localedir = paths_dmodfile("l10n");
 	  log_info("localedir: %s", LOCALEDIR);
 	  log_info("localedir for dmod: %s", dmod_localedir);
+	  // get translations in the D-Mod's "l10n" folder; for Dink
+	  // itself, it would be worth adding a fallback to LOCALEDIR, in
+	  // case we try to fix AppStream's 'gettext-data-not-found'
 	  bindtextdomain(paths_getdmodname(), dmod_localedir);
 	  bind_textdomain_codeset(paths_getdmodname(), "UTF-8");
 	  free(dmod_localedir);
