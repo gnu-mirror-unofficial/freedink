@@ -4,10 +4,10 @@ Date:   Tue Jan 29 13:52:51 2019 +0100
 
     appstream: add launchable tag just in case
 
-diff --git a/share/metainfo/freedink.appdata.xml b/share/metainfo/freedink.appdata.xml
-index c659d8a..b227ce9 100644
---- a/share/metainfo/freedink.appdata.xml
-+++ b/share/metainfo/freedink.appdata.xml
+Index: freedink-109.4/share/metainfo/freedink.appdata.xml
+===================================================================
+--- freedink-109.4.orig/share/metainfo/freedink.appdata.xml
++++ freedink-109.4/share/metainfo/freedink.appdata.xml
 @@ -2,6 +2,7 @@
  <!-- Copyright 2014, 2017, 2019 Sylvain Beucler <beuc@beuc.net> -->
  <component type="desktop-application">
@@ -16,3 +16,14 @@ index c659d8a..b227ce9 100644
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0+</project_license>
   <name>GNU FreeDink</name>
+@@ -34,7 +35,9 @@
+   </screenshot>
+  </screenshots>
+  <url type="homepage">https://www.gnu.org/software/freedink/</url>
++ <url type="translate">https://translationproject.org/domain/dink.html</url>
++ <url type="contact">mailto:bug-freedink@gnu.org</url>
++ <translation type="gettext">freedink</translation>
+  <update_contact>bug-freedink@gnu.org</update_contact>
+  <project_group>GNU</project_group>
+- <translation type="gettext">dink</translation>
+ </component>
