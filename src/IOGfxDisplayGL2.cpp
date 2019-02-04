@@ -518,10 +518,13 @@ void IOGfxDisplayGL2::flip(IOGfxSurface* backbuffer, SDL_Rect* dstrect,
 	gl->ActiveTexture(GL_TEXTURE0);
 	gl->Uniform1i(prog->uniforms["texture"], /*GL_TEXTURE*/0);
 	gl->BindTexture(GL_TEXTURE_2D, texture);
+	// GL_LINEAR's slight blur is closer to 90's CRT monitors
+	// GL_NEAREST is clean-pixellated and harder on the eyes
 	if (truecolor && interpolation) {
 		gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	} else {
+		// but GL_LINEAR messes palette emulation
 		// TODO: implement 2-step flip: 1) i2rgb 2) interpolation
 		gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
