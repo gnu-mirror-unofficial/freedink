@@ -46,8 +46,7 @@ else
 fi
 
 
-WGET=:
-#WGET='wget -c'
+WGET=${WGET:-wget -c}
 EMBUILDER=$(dirname $(which emcc))/embuilder.py
 FILE_PACKAGER="python $(dirname $(which emcc))/tools/file_packager.py"
 
