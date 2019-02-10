@@ -63,6 +63,7 @@ $EMBUILDER build binaryen
 # TODO: build/ -> cross-emscripten/
 
 # TODO: SDL2 seems to pick native libiconv incorrectly
+# Note: now using -s USE_SDL=2 instead as Emscripten 1.38.27 only works with their current SDL2 "port"
 $WGET http://libsdl.org/release/SDL2-2.0.8.tar.gz
 tar xf SDL2-2.0.8.tar.gz
 (
@@ -408,7 +409,9 @@ exit 0
   emconfigure ../configure \
     --host asmjs-unknown-emscripten --build $(sh ../autotools/config.guess) \
     PKG_CONFIG_LIBDIR=$PREFIX/lib/pkgconfig:$(emconfigure env|grep ^PKG_CONFIG_LIBDIR|sed 's/^PKG_CONFIG_LIBDIR=//') \
-    CPPFLAGS="-I$PREFIX/include" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+    CPPFLAGS="-I$PREFIX/include -s USE_SDL=2" \
+    CFLAGS="$CFLAGS -s USE_SDL=2" \
+    LDFLAGS="$LDFLAGS -L$PREFIX/lib -s USE_SDL=2"
   emmake make -j$(nproc)
   (cd share/ && emmake make install -k DESTDIR=$PREFIX/../freedink-data/destdir/)
   (cd po/ && emmake make update-gmo && emmake make install -k DESTDIR=$PREFIX/../freedink-data/destdir/)
@@ -449,7 +452,7 @@ exit 0
   emcc -c -I$PREFIX/include ../emscripten/extract.c -o extract.bc $CFLAGS
   emcc -c -I$PREFIX/include ../emscripten/importexport.c -o importexport.bc $CFLAGS
   emcc src/freedink.bc extract.bc importexport.bc -o t/index.html \
-    $LDFLAGS -L$PREFIX/lib -lintl -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer \
+    $LDFLAGS -L$PREFIX/lib -lintl -s USE_SDL=2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer \
       -lvorbisfile -lvorbis -logg -lfreetype -lpng -lzip -lz -lbz2 \
     -s CASE_INSENSITIVE_FS=1 \
     -s FORCE_FILESYSTEM=1 \
