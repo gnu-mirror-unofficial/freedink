@@ -1,210 +1,203 @@
 # Brazilian Portuguese translation for freedink.
-# Copyright (C) 2013 Enrico Nicoletto <liverig@gmail.com>
+# Copyright (C) 2019 Free Software Foundation, Inc.
 # This file is distributed under the same license as the freedink package.
 # Enrico Nicoletto <liverig@gmail.com>, 2013.
+# Rafael Fontenelle <rafaelff@gnome.org>, 2019.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: freedink 1.08.20120427\n"
+"Project-Id-Version: freedink 109.2\n"
 "Report-Msgid-Bugs-To: bug-freedink@gnu.org\n"
-"POT-Creation-Date: 2012-04-27 15:45+0200\n"
-"PO-Revision-Date: 2013-02-21 23:10-0300\n"
-"Last-Translator: Enrico Nicoletto <liverig@gmail.com>\n"
+"POT-Creation-Date: 2019-01-18 23:58+0100\n"
+"PO-Revision-Date: 2019-01-27 09:35-0200\n"
+"Last-Translator: Rafael Fontenelle <rafaelff@gnome.org>\n"
 "Language-Team: Brazilian Portuguese <ldpbr-translation@lists.sourceforge.net>\n"
 "Language: pt_BR\n"
-"X-Bugs: Report translation errors to the Language-Team address.\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Bugs: Report translation errors to the Language-Team address.\n"
+"X-Generator: Gtranslator 3.31.0\n"
+"Plural-Forms: nplurals=2; plural=(n > 1)\n"
 
-#: src/init.c:108
+#: src/app.cpp:152
 #, c-format
 msgid "Usage: %s [OPTIONS]...\n"
-msgstr "Utilização: %s [OPÇÕES]...\n"
+msgstr "Uso: %s [OPÇÕES]...\n"
 
-#: src/init.c:110
-#, c-format
-msgid "Starts the Dink Smallwood game or one of its D-Mods."
-msgstr "Inicia o jogo Dink Smallwood ou um de seus D-Mods."
-
-#: src/init.c:112
-#, c-format
-msgid "Edit the Dink Smallwood game or one of its D-Mods."
-msgstr "Edita o jogo Dink Smallwood ou um de seus D-Mods."
-
-#: src/init.c:115
+#: src/app.cpp:156
 #, c-format
 msgid "  -h, --help            Display this help screen\n"
 msgstr "  -h, --help            Exibe esta tela de ajuda\n"
 
-#: src/init.c:116
+#: src/app.cpp:157
 #, c-format
 msgid "  -v, --version         Display the version\n"
 msgstr "  -v, --version         Exibe a versão\n"
 
-#: src/init.c:118
+#: src/app.cpp:159
 #, c-format
 msgid "  -g, --game <dir>      Specify a DMod directory\n"
 msgstr "  -g, --game <dir>      Especifica um diretório DMod\n"
 
-#: src/init.c:119
+#: src/app.cpp:160
 #, c-format
 msgid "  -r, --refdir <dir>    Specify base directory for dink/graphics, D-Mods, etc.\n"
 msgstr "  -r, --refdir <dir>    Especifica diretório base para dink/gráficos, D-Mods, etc.\n"
 
-#: src/init.c:121
+#: src/app.cpp:162
 #, c-format
 msgid "  -d, --debug           Explain what is being done\n"
 msgstr "  -d, --debug           Explica o que está sendo feito\n"
 
-#: src/init.c:122
+#: src/app.cpp:163
 #, c-format
 msgid "  -i, --noini           Do not attempt to write dinksmallwood.ini\n"
 msgstr "  -i, --noini          Não tenta escrever dinksmallwood.ini\n"
 
-#: src/init.c:123
+#: src/app.cpp:164
 #, c-format
 msgid "  -j, --nojoy           Do not attempt to use joystick\n"
 msgstr "  -j, --nojoy           Não tenta utilizar joystick\n"
 
-#: src/init.c:124
+#: src/app.cpp:165
 #, c-format
 msgid "  -s, --nosound         Do not play sound\n"
 msgstr "  -s, --nosound         Não reproduz sons\n"
 
-#: src/init.c:125
+#: src/app.cpp:166
 #, c-format
 msgid "  -t, --truecolor       Allow more colours (for recent D-Mod graphics)\n"
 msgstr "  -t, --truecolor       Permite mais cores (para gráficos D-Mod recentes)\n"
 
-#: src/init.c:126
+#: src/app.cpp:167
 #, c-format
 msgid "  -w, --window          Use windowed mode instead of screen mode\n"
 msgstr "  -w, --window          Usa modo de janela ao invés de tela cheia\n"
 
-#: src/init.c:127
+#: src/app.cpp:168
 #, c-format
 msgid "  -7, --v1.07           Enable v1.07 compatibility mode\n"
 msgstr "  -7, --v1.07           Ativa o modo de compatibilidade v1.07\n"
+
+#: src/app.cpp:169
+#, c-format
+msgid "  -S, --software-rendering  Don't use OpenGL\n"
+msgstr "  -S, --software-rendering  Não usa OpenGL\n"
 
 #. TRANSLATORS: The placeholder indicates the bug-reporting address
 #. for this package.  Please add _another line_ saying "Report
 #. translation bugs to <...>\n" with the address for translation
 #. bugs (typically your translation team's web or email
 #. address).
-#: src/init.c:137
+#: src/app.cpp:182
 #, c-format
 msgid "Report bugs to %s.\n"
-msgstr "Informe erros para %s.\n"
+msgstr ""
+"Relate erros para %s.\n"
+"Relate erros de tradução para <http://translationproject.org/team/pt_BR.html>\n"
 
-#: src/init.c:277
+#: src/app.cpp:311
 #, c-format
-msgid "Note: -nomovie is accepted for compatiblity, but has no effect.\n"
+msgid "Note: -nomovie is accepted for compatibility, but has no effect.\n"
 msgstr "Observação: -nomovie é aceito por compatibilidade, mas não possui efeito.\n"
 
-#: src/freedink.c:2675
-msgid "`$I don't see anything here."
-msgstr "`$Eu não vejo nada aqui."
-
-#: src/freedink.c:2676
-msgid "`$Huh?"
-msgstr "`$Hâ?"
-
-#: src/freedink.c:2677
-msgid "`$I'm fairly sure I can't talk to or use that."
-msgstr "`$Estou bastante certo de que eu não posso falar com, ou usar, isto."
-
-#: src/freedink.c:2678
-msgid "`$What?"
-msgstr "`$O quê?"
-
-#: src/freedink.c:2679
-msgid "`$I'm bored."
-msgstr "`$Estou entediado."
-
-#: src/freedink.c:2680
-msgid "`$Not much happening here."
-msgstr "`$Não está acontecendo muita coisa por aqui."
-
-#: src/freedink.c:2788
-msgid "`$I don't know any magic."
-msgstr "`$Eu não conheço nenhuma mágica."
-
-#: src/freedink.c:2789
-msgid "`$I'm no wizard!"
-msgstr "`$IEu não sou nenhum mago!"
-
-#: src/freedink.c:2790
-msgid "`$I need to learn magic before trying this."
-msgstr "`$Eu preciso aprender mágica antes de tentar isto."
-
-#: src/freedink.c:2791
-msgid "`$I'm gesturing wildly to no avail!"
-msgstr "`$Estou gesticulando que nem louco sem nenhum resultado!"
-
-#: src/freedink.c:2792
-msgid "`$Nothing happened."
-msgstr "`$Não aconteceu nada."
-
-#: src/freedink.c:2793
-msgid "`$Hocus pocus!"
-msgstr "`$Hocus pocus!"
-
-#: src/dinkc.c:687
+#: src/dinkc.cpp:748
 msgid "Attack"
 msgstr "Ataque"
 
-#: src/dinkc.c:688
+#: src/dinkc.cpp:749
 msgid "Talk/Examine"
 msgstr "Falar/Examinar"
 
-#: src/dinkc.c:689
+#: src/dinkc.cpp:750
 msgid "Magic"
 msgstr "Mágica"
 
-#: src/dinkc.c:690
+#: src/dinkc.cpp:751
 msgid "Item Screen"
-msgstr "Tela de ítem"
+msgstr "Tela de item"
 
-#: src/dinkc.c:691
+#: src/dinkc.cpp:752
 msgid "Main Menu"
 msgstr "Menu principal"
 
-#: src/dinkc.c:692
+#: src/dinkc.cpp:753
 msgid "Map"
 msgstr "Mapa"
 
-#: src/dinkc.c:693 src/dinkc.c:694 src/dinkc.c:695 src/dinkc.c:696
+#: src/dinkc.cpp:754 src/dinkc.cpp:755 src/dinkc.cpp:756 src/dinkc.cpp:757
 msgid "Unused"
-msgstr "Não utilizado"
+msgstr "Não usado"
 
-#: src/dinkc.c:697
+#: src/dinkc.cpp:758
 msgid "Down"
-msgstr "Abaixo"
+msgstr "Baixo"
 
-#: src/dinkc.c:698
+#: src/dinkc.cpp:759
 msgid "Left"
 msgstr "Esquerda"
 
-#: src/dinkc.c:699
+#: src/dinkc.cpp:760
 msgid "Right"
 msgstr "Direita"
 
-#: src/dinkc.c:700
+#: src/dinkc.cpp:761
 msgid "Up"
-msgstr "Acima"
+msgstr "Cima"
 
-#: src/dinkc.c:701
+#: src/dinkc.cpp:762
 msgid "Error: not mapped"
 msgstr "Erro: não mapeado"
 
-#: src/dinkc.c:712
+#: src/dinkc.cpp:773
 #, c-format
 msgid "Slot %d - %d:%02d - %s"
 msgstr "Posição %d - %d:%02d - %s"
 
-#: src/dinkc.c:715
+#: src/dinkc.cpp:776
 #, c-format
 msgid "Slot %d - Empty"
 msgstr "Posição %d - Vazia"
+
+#~ msgid "Starts the Dink Smallwood game or one of its D-Mods."
+#~ msgstr "Inicia o jogo Dink Smallwood ou um de seus D-Mods."
+
+#~ msgid "Edit the Dink Smallwood game or one of its D-Mods."
+#~ msgstr "Edita o jogo Dink Smallwood ou um de seus D-Mods."
+
+#~ msgid "`$I don't see anything here."
+#~ msgstr "`$Eu não vejo nada aqui."
+
+#~ msgid "`$Huh?"
+#~ msgstr "`$Hã?"
+
+#~ msgid "`$I'm fairly sure I can't talk to or use that."
+#~ msgstr "`$Estou bastante certo de que eu não posso falar com, ou usar, isto."
+
+#~ msgid "`$What?"
+#~ msgstr "`$O quê?"
+
+#~ msgid "`$I'm bored."
+#~ msgstr "`$Estou entediado."
+
+#~ msgid "`$Not much happening here."
+#~ msgstr "`$Não está acontecendo muita coisa por aqui."
+
+#~ msgid "`$I don't know any magic."
+#~ msgstr "`$Eu não conheço nenhuma mágica."
+
+#~ msgid "`$I'm no wizard!"
+#~ msgstr "`$IEu não sou nenhum mago!"
+
+#~ msgid "`$I need to learn magic before trying this."
+#~ msgstr "`$Eu preciso aprender mágica antes de tentar isto."
+
+#~ msgid "`$I'm gesturing wildly to no avail!"
+#~ msgstr "`$Estou gesticulando que nem louco sem nenhum resultado!"
+
+#~ msgid "`$Nothing happened."
+#~ msgstr "`$Não aconteceu nada."
+
+#~ msgid "`$Hocus pocus!"
+#~ msgstr "`$Hocus pocus!"
