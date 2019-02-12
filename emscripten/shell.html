@@ -303,7 +303,7 @@
           ['string','string','number'],
           ['mine.dmod', '/usr/local/share/dink', ptr_dmoddir]);
         Module.print("Extracted in " + (Date.now()-start)/1000.0 + "s");
-        dmodname = Pointer_stringify(getValue(ptr_dmoddir, 'i64'));
+        dmodname = UTF8ToString(getValue(ptr_dmoddir, 'i64'), 256);
         Module.ccall('free', 'number', ['number'], [getValue(ptr_dmoddir, 'i64')]);
         Module.ccall('free', 'number', ['number'], [ptr_dmoddir]);
         UISetState(true, false);
