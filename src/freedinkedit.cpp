@@ -1733,7 +1733,7 @@ void shrink_screen_to_these_cords(int x1, int y1)
  */
 void write_moves(void)
 {
-  char crap[100];
+  char crap[100+6+2];
   char move[100];
   char fname[100];
 
