@@ -164,3 +164,4 @@ See also:
 https://src.fedoraproject.org/cgit/rpms/freedink.git/
 https://apps.fedoraproject.org/packages/freedink
 https://taskotron.fedoraproject.org/resultsdb/results?item:like=freedink*
+https://dl.fedoraproject.org/pub/alt/screenshots/f30/

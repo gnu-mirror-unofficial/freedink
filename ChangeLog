@@ -1,3 +1,117 @@
+2019-02-17  Sylvain Beucler <beuc@beuc.net>
+
+	* NEWS, README, configure.ac, debian/changelog, debian/control,
+	debian/patches/appdata.patch, debian/patches/series,
+	doc/release.txt, freedink.spec, share/metainfo/freedink.appdata.xml: 
+	Start branch 109.6
+
+2019-02-17  Sylvain Beucler <beuc@beuc.net>
+
+	* src/gfx_fonts.cpp, src/test_gfx_fonts.cxx: testsuite: fix for
+	SDL_ttf 2.0.15
+
+2019-02-17  Sylvain Beucler <beuc@beuc.net>
+
+	* src/freedinkedit.cpp: freedinkedit: fix warning (no actual
+	security impact)
+
+2019-02-12  Sylvain Beucler <beuc@beuc.net>
+
+	* share/metainfo/freedink.appdata.xml: appstream: add D-Mod
+	screenshot
+
+2019-02-12  Sylvain Beucler <beuc@beuc.net>
+
+	* emscripten/shell.html: emscripten: fix exception when loading
+	D-Mod
+
+2019-02-10  Sylvain Beucler <beuc@beuc.net>
+
+	* share/metainfo/freedink.appdata.xml: appstream: give the editor
+	some spotlight
+
+2019-02-10  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/emscripten.txt, emscripten/source.html: emscripten: upgrade to
+	1.38.27
+
+2019-02-10  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/emscripten.txt: emscripten: better handling of optional wget
+	during build
+
+2019-02-10  Sylvain Beucler <beuc@beuc.net>
+
+	* share/applications/freedink.desktop,
+	share/applications/freedinkedit.desktop: freedesktop: add keywords
+	just in case (Fedora warning)
+
+2019-02-10  Sylvain Beucler <beuc@beuc.net>
+
+	* AUTHORS, NEWS, po/da.po, po/de.po, po/eo.po, po/fr.po,
+	po/pt_BR.po, po/ru.po, po/sv.po: Sync Translation Project
+
+2019-02-05  Sylvain Beucler <beuc@beuc.net>
+
+	* share/applications/freedink.desktop,
+	share/applications/freedinkedit.desktop,
+	share/metainfo/freedink.appdata.xml: appstream: add categories and
+	rating
+
+2019-02-04  Sylvain Beucler <beuc@beuc.net>
+
+	* src/IOGfxDisplayGL2.cpp: doc: GL_LINEAR/GL_NEAREST usage
+
+2019-02-02  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/changelog, debian/patches/appdata.patch: debian: update
+	AppStream
+
+2019-01-30  Sylvain Beucler <beuc@beuc.net>
+
+	* share/metainfo/freedink.appdata.xml, src/app.cpp: appstream: stick
+	to easy-to-find locale Distros don't check for freedink-data's
+	non-standard locale path.  It's not even sure they all check outside
+	of current package.
+
+2019-01-29  Sylvain Beucler <beuc@beuc.net>
+
+	* share/metainfo/freedink.appdata.xml: appstream: add more contact
+	points
+
+2019-01-29  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/changelog, debian/control, debian/patches/appdata.patch,
+	debian/patches/series, debian/rules, freedink.spec,
+	share/Makefile.am: appstream: revert: install 'freedink'
+	meta-package rather than 'freedink-engine'
+
+2019-01-29  Sylvain Beucler <beuc@beuc.net>
+
+	* share/metainfo/freedink.appdata.xml: appstream: add launchable tag
+	just in case
+
+2019-01-28  Sylvain Beucler <beuc@beuc.net>
+
+	* freedink.spec: rpm: sync Fedora
+
+2019-01-28  Sylvain Beucler <beuc@beuc.net>
+
+	* debian/changelog, debian/control: debian: move
+	freedink.appdata.xml the hard way
+
+2019-01-27  Sylvain Beucler <beuc@beuc.net>
+
+	* share/README: icon: add copyright info for freedink.svg
+
+2019-01-27  Sylvain Beucler <beuc@beuc.net>
+
+	* doc/release.txt: doc: more fixes to the release process
+
+2019-01-27  Sylvain Beucler <beuc@beuc.net>
+
+	* : Merge 109.4
+
 2019-01-27  Sylvain Beucler <beuc@beuc.net>
 
 	* NEWS, configure.ac, debian/changelog, doc/gnulib.txt,

@@ -23,10 +23,10 @@ Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, freedink-data, fonts-liberation, freepats
 Recommends: freedink-dfarc
 Description: humorous top-down adventure and role-playing game (engine)
- Dink Smallwood is an adventure/role-playing game, similar to Zelda,
- made by RTsoft. Besides twisted humor, it includes the actual game
- editor, allowing players to create hundreds of new adventures called
- Dink Modules or D-Mods for short.
+ Dink Smallwood is an adventure/role-playing game, similar to classic
+ Zelda, made by RTsoft. Besides twisted humor, it includes the actual
+ game editor, allowing players to create hundreds of new adventures
+ called Dink Modules or D-Mods for short.
  .
  GNU FreeDink is a new and portable version of the game engine, which
  runs the original game as well as its D-Mods, with close
@@ -38,10 +38,10 @@ Package: freedink
 Architecture: all
 Depends: ${misc:Depends}, freedink-engine, freedink-dfarc
 Description: humorous top-down adventure and role-playing game
- Dink Smallwood is an adventure/role-playing game, similar to Zelda,
- made by RTsoft. Besides twisted humor, it includes the actual game
- editor, allowing players to create hundreds of new adventures called
- Dink Modules or D-Mods for short.
+ Dink Smallwood is an adventure/role-playing game, similar to classic
+ Zelda, made by RTsoft. Besides twisted humor, it includes the actual
+ game editor, allowing players to create hundreds of new adventures
+ called Dink Modules or D-Mods for short.
  .
  GNU FreeDink is a new and portable version of the game engine, which
  runs the original game as well as its D-Mods, with close
