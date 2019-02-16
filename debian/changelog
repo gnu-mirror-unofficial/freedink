@@ -1,3 +1,9 @@
+freedink (109.6-1) unstable; urgency=medium
+
+  * New Upstream Version
+
+ -- Sylvain Beucler <beuc@debian.org>  Sun, 17 Feb 2019 00:20:00 +0100
+
 freedink (109.4-4) unstable; urgency=medium
 
   * Update AppStream from upstream

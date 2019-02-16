@@ -1,10 +1,12 @@
-109.5
+109.6
 =====
 
-* Improve AppStream metadata some more
+* Improve distro integration some more (Desktop and AppStream files)
 
 * Updated translations: Danish, German, Esperanto, French, Brazilian
   Portuguese, Russian, Swedish
+
+* Web version: upgrade to Emscripten 1.38.27
 
 
 109.4

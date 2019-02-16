@@ -1,6 +1,6 @@
 Name:		freedink
-Version:	109.4
-Release:	2%{?dist}
+Version:	109.6
+Release:	1%{?dist}
 Summary:	Humorous top-down adventure and role-playing game
 
 BuildRequires:	gcc-c++
@@ -15,7 +15,6 @@ BuildRequires:	libappstream-glib
 License:	GPLv3+
 URL:		https://www.gnu.org/software/freedink/
 Source0:	https://ftp.gnu.org/gnu/freedink/freedink-%{version}.tar.gz
-Patch0:		appdata.patch
 
 Requires:	freedink-engine = %{version}-%{release} freedink-dfarc
 # Reference bundled copy of gnulib - cf. https://fedorahosted.org/fpc/ticket/174
@@ -47,10 +46,10 @@ Requires: liberation-sans-fonts
 %endif
 
 %description engine
-Dink Smallwood is an adventure/role-playing game, similar to Zelda,
-made by RTsoft. Besides twisted humor, it includes the actual game
-editor, allowing players to create hundreds of new adventures called
-Dink Modules or D-Mods for short.
+Dink Smallwood is an adventure/role-playing game, similar to classic
+Zelda, made by RTsoft. Besides twisted humor, it includes the actual
+game editor, allowing players to create hundreds of new adventures
+called Dink Modules or D-Mods for short.
 
 GNU FreeDink is a new and portable version of the game engine, which
 runs the original game as well as its D-Mods, with close
@@ -106,6 +105,12 @@ rm $RPM_BUILD_ROOT%{_datadir}/%{name}/LiberationSans-Regular.ttf
 
 
 %changelog
+* Sat Feb 16 2019 Sylvain Beucler <beuc@beuc.net> - 109.6-1
+- New upstream release
+
+* Thu Jan 31 2019 Fedora Release Engineering <releng@fedoraproject.org> - 109.4-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
+
 * Sun Jan 27 2019 Sylvain Beucler <beuc@beuc.net> - 109.4-2
 - Keep AppStream metadata in freedink-engine package
 - Backport AppStream metadata from upstream
