@@ -62,7 +62,7 @@ public:
 		Uint32 key;
 
 		SDL_Surface* img = print_text(dialog_font, "toto", {255,255,2});
-		TS_ASSERT_EQUALS(img->h, 19);
+		TS_ASSERT_EQUALS(img->h, 18); // 19 for SDL_ttf <= 2.0.14, 18 for SDL_ttf >= 2.0.15
 		TS_ASSERT_EQUALS(getIndexAt(img, 0,0), 0);
 		TS_ASSERT_EQUALS(getIndexAt(img, 1,4), 1);
 		ce = { 255, 255, 2, 255 };

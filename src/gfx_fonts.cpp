@@ -181,12 +181,17 @@ static TTF_Font *load_default_font() {
   if (rwops == NULL)
     {
       rwops = find_resource_as_rwops("LiberationSans-Regular.ttf");
+      if (rwops != NULL)
+          log_info("Loaded LiberationSans-Regular.ttf from %s", paths_getpkgdatadir());
     }
 #ifdef HAVE_FONTCONFIG
   if (rwops == NULL)
     {
       char *path = get_fontconfig_path("Liberation Sans:style=Regular");
       rwops = SDL_RWFromFile(path, "rb");
+      if (rwops != NULL)
+          log_info("Loaded LiberationSans-Regular:style=Regular from fontconfig at %s",
+                   path);
       free(path);
     }
 #endif
@@ -194,7 +199,6 @@ static TTF_Font *load_default_font() {
     {
       log_error("Could not open font 'LiberationSans-Regular.ttf'. I tried:\n"
 							 "- loading from '%s' [build prefix]\n"
-							 "- loading from executable's resources\n"
 #ifdef HAVE_FONTCONFIG
 			 "- querying fontconfig"
 #endif
