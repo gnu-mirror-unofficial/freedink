@@ -68,8 +68,7 @@ This package contains the game engine alone.
 make %{?_smp_mflags}
 
 %install
-rm -rf $RPM_BUILD_ROOT
-make install DESTDIR=$RPM_BUILD_ROOT INSTALL="install -p"
+%make_install
 %find_lang %{name}
 %find_lang %{name}-gnulib
 # %%files only support one '-f' argument (see below)
