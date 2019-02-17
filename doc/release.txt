@@ -144,7 +144,7 @@ sudo pbuilder update
 ln -nfs freedink-$VERSION.tar.gz freedink-$VERSION.orig.tar.gz
 ln -nfs freedink-$VERSION.tar.gz.sig freedink_$VERSION.orig.tar.gz.sig
 rm -rf freedink-$VERSION/ && tar xf freedink_$VERSION.orig.tar.gz
-cd freedink-data-$VERSION/ && rm -rf debian/ && \cp -a ../debian .
+cd freedink-$VERSION/ && rm -rf debian/ && \cp -a ../debian .
 pdebuild --buildresult ..
 lintian -i
 debsign -k ...
