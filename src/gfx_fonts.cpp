@@ -134,7 +134,7 @@ int gfx_fonts_init()
 			       1, FONT_SIZE);
   if (system_font == NULL)
     {
-      log_error("Failed to load built-in 'vgasys.fon' font: %s", SDL_GetError());
+      log_error("Failed to load built-in 'vgasys.fon' font: %s", TTF_GetError());
       return -1;
     }
   setup_font(system_font);
